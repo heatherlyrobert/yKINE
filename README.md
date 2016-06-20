@@ -1,0 +1,2 @@
+# yKINE
+hexapod kinematics library
