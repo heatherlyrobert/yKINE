@@ -17,7 +17,7 @@ LINK    = gcc
 LIBDIR  = -L/usr/local/lib
 LIBS    = ${LIBDIR}    -lm
 LIBD    = ${LIBDIR}    -lm      -lyLOG
-LIBU    = ${LIBDIR}    -lm      -lyLOG     -lyUNIT    -lyVAR
+LIBU    = ${LIBDIR}    -lm      -lyLOG     -lyUNIT    -lyVAR_debug
 #*---(file lists)---------------------*#
 HEADS   = ${BASE}.h   ${BASE}_priv.h
 OBJS    = ${BASE}.os  ${BASE}_old.os

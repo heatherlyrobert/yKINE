@@ -16,6 +16,8 @@ tSEG      gk [MAX_LEGS] [MAX_SEGS];    /* opengl kinematics check   */
 
 /*---(global characteristics)----------------------*/
 
+
+
 struct cLEGDATA
 {
    char        full        [25];
@@ -23,15 +25,18 @@ struct cLEGDATA
    char        caps        [ 5];
    double      deg;
 } leg_data [MAX_LEGS] = {
+   /* front is facing down the negative z-axis        */
    /* ---full------------ --two---- --caps--- ----deg */
-   { "right front"       , "rf"    , "RF"    ,   30.0 },
-   { "right middle"      , "rm"    , "RM"    ,   90.0 },
-   { "right rear"        , "rr"    , "RR"    ,  150.0 },
-   { "left rear"         , "lr"    , "LR"    ,  210.0 },
-   { "left middle"       , "lm"    , "LM"    ,  270.0 },
-   { "left front"        , "lf"    , "LF"    ,  330.0 },
+   { "right front"       , "rf"    , "RF"    ,   60.0 },
+   { "right middle"      , "rm"    , "RM"    ,    0.0 },
+   { "right rear"        , "rr"    , "RR"    ,  300.0 },
+   { "left rear"         , "lr"    , "LR"    ,  240.0 },
+   { "left middle"       , "lm"    , "LM"    ,  180.0 },
+   { "left front"        , "lf"    , "LF"    ,  120.0 },
    { "-----"             , "--"    , "--"    ,    0.0 },
 };
+
+
 
 struct cSEGDATA {
    char        full        [25];
@@ -47,9 +52,9 @@ struct cSEGDATA {
    { "thorax"            , "thor"  , "THOR"  ,  125.0,    0.0,    0.0 },
    { "coxa"              , "coxa"  , "COXA"  ,   30.0,    0.0,    0.0 },
    { "trochanter"        , "troc"  , "TROC"  ,    0.0,    0.0,    0.0 },
-   { "femur"             , "femu"  , "FEMU"  ,   30.0,    0.0,    0.0 },
-   { "patella"           , "pate"  , "PATE"  ,   57.0,    0.0,    0.0 },
-   { "tibia"             , "tibi"  , "TIBI"  ,  130.0,    0.0,    0.0 },
+   { "femur"             , "femu"  , "FEMU"  ,   30.0,  -90.0,   90.0 },
+   { "patella"           , "pate"  , "PATE"  ,   57.0,  -45.0,   90.0 },
+   { "tibia"             , "tibi"  , "TIBI"  ,  130.0, -130.0,  -10.0 },
    { "metatarsus"        , "meta"  , "META"  ,    0.0,    0.0,    0.0 },
    { "tarsus"            , "tars"  , "TARS"  ,    0.0,    0.0,    0.0 },
    { "claw"              , "claw"  , "CLAW"  ,    0.0,    0.0,    0.0 },
@@ -146,7 +151,7 @@ static void      o___FIXED___________________o (void) {;}
  */
 
 char         /*--: establish thorax endpoint -------------[ leaf   [ ------ ]-*/
-yKINO__thorax      (int   a_num)
+yKINO__thor        (int   a_num)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -156,8 +161,6 @@ yKINO__thorax      (int   a_num)
    double      d;                      /* degrees                             */
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
-   double      xz, cxz;                /* xz distances                        */
-   double      sl, fl;                 /* distances                           */
    tSEG       *x_leg       = NULL;
    /*---(defense)------------------------*/
    --rce;  if (a_num < 0)            return rce;
@@ -181,14 +184,14 @@ yKINO__thorax      (int   a_num)
       cz   =  x_leg [THOR].cz   =  z;
       cy   =  x_leg [THOR].cy   =  y;
       /*---(calc extras)--------------------*/
-      xz   =  x_leg [THOR].xz   =  sqrt (( x *  x) + ( z *  z));
-      sl   =  x_leg [THOR].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
-      cxz  =  x_leg [THOR].cxz  =  sqrt ((cx * cx) + (cz * cz));
-      /*> fl   = x_leg [THOR].fl   = sqrt((cx * cx) + (cz * cz) + ((cy - oy) * (cy - oy)));   <*/
+      x_leg [THOR].xz   =  sqrt (( x *  x) + ( z *  z));
+      x_leg [THOR].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+      x_leg [THOR].cxz  =  sqrt ((cx * cx) + (cz * cz));
+      x_leg [THOR].fl   =  x_leg [THOR].cxz;
       /*---(add to leg values)--------------*/
-      x_leg [CALC].x  += x;
-      x_leg [CALC].z  += z;
-      x_leg [CALC].y  += y;
+      x_leg [CALC].x   += x;
+      x_leg [CALC].z   += z;
+      x_leg [CALC].y   += y;
    }
    /*---(output)-------------------------*/
    /*> printf ("THOR : len = %8.2f, cx=%8.2f, cz=%8.2f, cy=%8.2f, h=%6.3f, v=%6.3f, dh=%6.2f, dv=%6.2f\n", fl, cx, cz, cy, h, v, h * RAD2DEG, v * RAD2DEG);   <*/
@@ -207,8 +210,6 @@ yKINO__coxa        (int  a_num)
    double      d;                      /* degrees                             */
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
-   double      xz, cxz;                /* xz distances                        */
-   double      sl, fl;                 /* distances                           */
    tSEG       *x_leg       = NULL;
    /*---(defense)------------------------*/
    --rce;  if (a_num < 0)            return rce;
@@ -219,10 +220,13 @@ yKINO__coxa        (int  a_num)
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
       /*---(save basics)--------------------*/
       l    =  x_leg [COXA].l;
-      d    =  x_leg [COXA].cd   =  x_leg [COXA].d;
-      /*---(calc radians)-------------------*/
-      v    =  x_leg [COXA].v    =  x_leg [COXA].cv  =  0.0f;
-      h    =  x_leg [COXA].h    =  x_leg [COXA].ch  =  d * DEG2RAD;
+      x_leg [COXA].d   =  0.0f;
+      x_leg [COXA].v   =  0.0f;
+      x_leg [COXA].h   =  0.0f;
+      /*---(calc basics)--------------------*/
+      d    =  x_leg [COXA].cd   =  x_leg [THOR].cd;
+      v    =  x_leg [COXA].cv   =  0.0f;
+      h    =  x_leg [COXA].ch   =  d * DEG2RAD;
       /*---(calc end coords)----------------*/
       x    =  x_leg [COXA].x    =  l * cos (h);
       z    =  x_leg [COXA].z    = -l * sin (h);
@@ -232,14 +236,14 @@ yKINO__coxa        (int  a_num)
       cz   =  x_leg [COXA].cz   =  x_leg [THOR].cz + z;
       cy   =  x_leg [COXA].cy   =  x_leg [THOR].cy + y;
       /*---(calc extras)--------------------*/
-      xz   =  x_leg [COXA].xz   =  sqrt (( x *  x) + ( z *  z));
-      sl   =  x_leg [COXA].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
-      cxz  =  x_leg [COXA].cxz  =  sqrt ((cx * cx) + (cz * cz));
-      /*> fl   = x_leg [THOR].fl   = sqrt((cx * cx) + (cz * cz) + ((cy - oy) * (cy - oy)));   <*/
+      x_leg [COXA].xz   =  sqrt (( x *  x) + ( z *  z));
+      x_leg [COXA].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+      x_leg [COXA].cxz  =  sqrt ((cx * cx) + (cz * cz));
+      x_leg [COXA].fl   =  x_leg [COXA].cxz;
       /*---(add to leg values)--------------*/
-      x_leg [CALC].x  += x;
-      x_leg [CALC].z  += z;
-      x_leg [CALC].y  += y;
+      x_leg [CALC].x   += x;
+      x_leg [CALC].z   += z;
+      x_leg [CALC].y   += y;
    }
    /*---(output)-------------------------*/
    /*> printf ("COXA : len = %8.2f, cx=%8.2f, cz=%8.2f, cy=%8.2f, h=%6.3f, v=%6.3f, dh=%6.2f, dv=%6.2f\n", fl, cx, cz, cy, h, v, h * RAD2DEG, v * RAD2DEG);   <*/
@@ -247,6 +251,110 @@ yKINO__coxa        (int  a_num)
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                      moving body parts                       ----===*/
+/*====================------------------------------------====================*/
+static void      o___MOVING__________________o (void) {;}
+
+char
+yKINO__FK_femu     (int  a_num, float a_deg)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   double      x,  y,  z;              /* coordintates                        */
+   double      l;                      /* length                              */
+   double      d;                      /* degrees                             */
+   double      h,  v;                  /* horz and vert angles in radians     */
+   double      cx, cy, cz;             /* coordintates                        */
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)                       return rce;
+   --rce;  if (a_num > MAX_LEGS)                return rce;
+   --rce;  if (a_deg < seg_data [FEMU].min)     return rce;
+   --rce;  if (a_deg > seg_data [FEMU].max)     return rce;
+   /*---(test and set)-------------------*/
+   x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
+   /*---(save basics)--------------------*/
+   l    =  x_leg [FEMU].l;
+   x_leg [FEMU].d    =  a_deg;
+   x_leg [FEMU].v    =  0.0f;
+   x_leg [FEMU].h    =  a_deg * DEG2RAD;
+   /*---(calc basics)--------------------*/
+   d    =  x_leg [FEMU].cd   =  x_leg [COXA].cd + a_deg;
+   v    =  x_leg [FEMU].cv   =  0.0f;
+   h    =  x_leg [FEMU].ch   =  d * DEG2RAD;
+   /*---(calc end coords)----------------*/
+   x    =  x_leg [FEMU].x    =  l * cos (h);
+   z    =  x_leg [FEMU].z    = -l * sin (h);
+   y    =  x_leg [FEMU].y    =  0.0f;
+   /*---(calc cums)----------------------*/
+   cx   =  x_leg [FEMU].cx   =  x_leg [COXA].cx + x;
+   cz   =  x_leg [FEMU].cz   =  x_leg [COXA].cz + z;
+   cy   =  x_leg [FEMU].cy   =  x_leg [COXA].cy + y;
+   /*---(calc extras)--------------------*/
+   x_leg [FEMU].xz   =  sqrt (( x *  x) + ( z *  z));
+   x_leg [FEMU].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+   x_leg [FEMU].cxz  =  sqrt ((cx * cx) + (cz * cz));
+   x_leg [FEMU].fl   =  x_leg [FEMU].cxz;
+   /*---(add to leg values)--------------*/
+   x_leg [CALC].x   += x;
+   x_leg [CALC].z   += z;
+   x_leg [CALC].y   += y;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINO__FK_pate     (int  a_num, float a_deg)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   double      x,  y,  z;              /* coordintates                        */
+   double      l;                      /* length                              */
+   double      d;                      /* degrees                             */
+   double      h,  v;                  /* horz and vert angles in radians     */
+   double      cx, cy, cz;             /* coordintates                        */
+   double      xz;                     /* xz plane length                     */
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)                       return rce;
+   --rce;  if (a_num > MAX_LEGS)                return rce;
+   --rce;  if (a_deg < seg_data [PATE].min)     return rce;
+   --rce;  if (a_deg > seg_data [PATE].max)     return rce;
+   /*---(test and set)-------------------*/
+   x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
+   /*---(save basics)--------------------*/
+   l    =  x_leg [PATE].l;
+   x_leg [PATE].d    =  a_deg;
+   x_leg [PATE].v    =  a_deg * DEG2RAD; 
+   x_leg [PATE].h    =  0.0f;
+   /*---(calc basics)--------------------*/
+   d    =  x_leg [PATE].cd   =  a_deg;
+   v    =  x_leg [PATE].cv   =  a_deg * DEG2RAD;
+   h    =  x_leg [PATE].ch   =  x_leg [FEMU].ch;
+   /*---(calc end coords)----------------*/
+   y    =  x_leg [PATE].y    = -l * sin (v);
+   xz   =  x_leg [PATE].xz   =  sqrt (( l *  l) - ( y *  y));
+   if (d < -90.0)  xz *= -1.0;
+   x    =  x_leg [PATE].x    =  xz * cos (h);
+   z    =  x_leg [PATE].z    = -xz * sin (h);
+   /*---(calc cums)----------------------*/
+   cx   =  x_leg [PATE].cx   =  x_leg [FEMU].cx + x;
+   cz   =  x_leg [PATE].cz   =  x_leg [FEMU].cz + z;
+   cy   =  x_leg [PATE].cy   =  x_leg [FEMU].cy + y;
+   /*---(calc extras)--------------------*/
+   x_leg [PATE].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+   x_leg [PATE].cxz  =  sqrt ((cx * cx) + (cz * cz));
+   x_leg [PATE].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
+   /*---(add to leg values)--------------*/
+   x_leg [CALC].x   += x;
+   x_leg [CALC].z   += z;
+   x_leg [CALC].y   += y;
+   /*---(complete)-----------------------*/
+   return 0;
+}
 
 
 
