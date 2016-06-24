@@ -54,7 +54,7 @@ struct cSEGDATA {
    { "trochanter"        , "troc"  , "TROC"  ,    0.0,    0.0,    0.0 },
    { "femur"             , "femu"  , "FEMU"  ,   30.0,  -90.0,   90.0 },
    { "patella"           , "pate"  , "PATE"  ,   57.0,  -45.0,   90.0 },
-   { "tibia"             , "tibi"  , "TIBI"  ,  130.0, -130.0,  -10.0 },
+   { "tibia"             , "tibi"  , "TIBI"  ,  130.0,   10.0,  130.0 },
    { "metatarsus"        , "meta"  , "META"  ,    0.0,    0.0,    0.0 },
    { "tarsus"            , "tars"  , "TARS"  ,    0.0,    0.0,    0.0 },
    { "claw"              , "claw"  , "CLAW"  ,    0.0,    0.0,    0.0 },
@@ -337,7 +337,6 @@ yKINO__FK_pate     (int  a_num, float a_deg)
    /*---(calc end coords)----------------*/
    y    =  x_leg [PATE].y    = -l * sin (v);
    xz   =  x_leg [PATE].xz   =  sqrt (( l *  l) - ( y *  y));
-   if (d < -90.0)  xz *= -1.0;
    x    =  x_leg [PATE].x    =  xz * cos (h);
    z    =  x_leg [PATE].z    = -xz * sin (h);
    /*---(calc cums)----------------------*/
@@ -348,6 +347,56 @@ yKINO__FK_pate     (int  a_num, float a_deg)
    x_leg [PATE].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
    x_leg [PATE].cxz  =  sqrt ((cx * cx) + (cz * cz));
    x_leg [PATE].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
+   /*---(add to leg values)--------------*/
+   x_leg [CALC].x   += x;
+   x_leg [CALC].z   += z;
+   x_leg [CALC].y   += y;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINO__FK_tibi     (int  a_num, float a_deg)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   double      x,  y,  z;              /* coordintates                        */
+   double      l;                      /* length                              */
+   double      d;                      /* degrees                             */
+   double      h,  v;                  /* horz and vert angles in radians     */
+   double      cx, cy, cz;             /* coordintates                        */
+   double      xz;                     /* xz plane length                     */
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)                       return rce;
+   --rce;  if (a_num > MAX_LEGS)                return rce;
+   --rce;  if (a_deg < seg_data [TIBI].min)     return rce;
+   --rce;  if (a_deg > seg_data [TIBI].max)     return rce;
+   /*---(test and set)-------------------*/
+   x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
+   /*---(save basics)--------------------*/
+   l    =  x_leg [TIBI].l;
+   x_leg [TIBI].d    =  a_deg;
+   x_leg [TIBI].v    =  a_deg * DEG2RAD; 
+   x_leg [TIBI].h    =  0.0f;
+   /*---(calc basics)--------------------*/
+   d    =  x_leg [TIBI].cd   =  a_deg;
+   v    =  x_leg [TIBI].cv   =  x_leg [PATE].cv + x_leg [TIBI].v;
+   h    =  x_leg [TIBI].ch   =  x_leg [PATE].ch;
+   /*---(calc end coords)----------------*/
+   y    =  x_leg [TIBI].y    = -l * sin (v);
+   xz   =  x_leg [TIBI].xz   =  sqrt (( l *  l) - ( y *  y));
+   if (d > 90.0)  xz *= -1.0;
+   x    =  x_leg [TIBI].x    =  xz * cos (h);
+   z    =  x_leg [TIBI].z    = -xz * sin (h);
+   /*---(calc cums)----------------------*/
+   cx   =  x_leg [TIBI].cx   =  x_leg [PATE].cx + x;
+   cz   =  x_leg [TIBI].cz   =  x_leg [PATE].cz + z;
+   cy   =  x_leg [TIBI].cy   =  x_leg [PATE].cy + y;
+   /*---(calc extras)--------------------*/
+   x_leg [TIBI].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+   x_leg [TIBI].cxz  =  sqrt ((cx * cx) + (cz * cz));
+   x_leg [TIBI].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
    /*---(add to leg values)--------------*/
    x_leg [CALC].x   += x;
    x_leg [CALC].z   += z;

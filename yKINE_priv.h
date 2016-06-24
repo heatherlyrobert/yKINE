@@ -103,6 +103,7 @@ char        yKINO__thor        (int  a_num);
 char        yKINO__coxa        (int  a_num);
 char        yKINO__FK_femu     (int  a_num, float a_deg);
 char        yKINO__FK_pate     (int  a_num, float a_deg);
+char        yKINO__FK_tibi     (int  a_num, float a_deg);
 
 
 #endif

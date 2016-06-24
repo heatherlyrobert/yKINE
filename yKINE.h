@@ -219,8 +219,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YKINE_VER_NUM   "0.5c"
-#define YKINE_VER_TXT   "ported and tested patella forward calcs from arachne"
+#define YKINE_VER_NUM   "0.5d"
+#define YKINE_VER_TXT   "ported and tested tibia forward calcs from arachne"
 
 char        yKINO_init         (void);
 
