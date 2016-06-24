@@ -219,8 +219,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YKINE_VER_NUM   "0.5f"
-#define YKINE_VER_TXT   "added metatarsus, tarsus, and foot then tested"
+#define YKINE_VER_NUM   "0.5g"
+#define YKINE_VER_TXT   "adapted IK on femur and tested successfully"
 
 char        yKINO_init         (void);
 

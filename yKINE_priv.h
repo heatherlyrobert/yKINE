@@ -56,10 +56,10 @@ enum      seg_nums {
    THOR  =  2,  COXA  =  3,  TROC  =  4,
    FEMU  =  5,  PATE  =  6,  TIBI  =  7,
    META  =  8,  TARS  =  9,  FOOT  = 10,
-   /*---(working areas)------------------*/
    CLAW  = 11,  MAGN  = 12,  HOOK  = 13,
-   ORIG  = 14,  TARG  = 15,
-   VERT  = 16,  CALC  = 17,
+   /*---(working areas)------------------*/
+   ORIG  = 14,  TARG  = 15,  LEGN  = 16,
+   VERT  = 17,  CALC  = 18,
 };
 
 
@@ -86,6 +86,7 @@ struct cSEG {
    float     h, v;                /* leg segment orientation in radians       */
    float     cd;                  /* cum joint angle                          */
    float     ch, cv;              /* cum segment orientation in radians       */
+   char      u;                   /* leg underneath body switch               */
    /*---(coordinates)--------------------*/
    float     x , y , z , xz;      /* segment location                         */
    float     cx, cy, cz, cxz;     /* cumulative location                      */
@@ -100,15 +101,21 @@ extern    tSEG      fk [MAX_LEGS] [MAX_SEGS];    /* forward kinematics        */
 extern    tSEG      ik [MAX_LEGS] [MAX_SEGS];    /* inverse kinematics        */
 
 char        yKINO_clear        (tSEG *a_curr, char *a_name, int a_leg, int a_seg);
+/*---(shared forward/inverse)------------*/
 char        yKINO__thor        (int  a_num);
 char        yKINO__coxa        (int  a_num);
 char        yKINO__troc        (int  a_num);
+/*---(forward kinematics)----------------*/
 char        yKINO__FK_femu     (int  a_num, float a_deg);
 char        yKINO__FK_pate     (int  a_num, float a_deg);
 char        yKINO__FK_tibi     (int  a_num, float a_deg);
+/*---(shared forward/inverse)------------*/
 char        yKINO__meta        (int  a_num);
 char        yKINO__tars        (int  a_num);
 char        yKINO__foot        (int  a_num);
+/*---(inverse kinematics)----------------*/
+char        yKINO__target      (int  a_num, float a_x, float a_z, float a_y);
+char        yKINO__IK_femu     (int  a_num);
 
 
 #endif

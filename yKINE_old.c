@@ -52,7 +52,7 @@ struct cSEGDATA {
    { "thorax"            , "thor"  , "THOR"  ,  125.0,    0.0,    0.0 },
    { "coxa"              , "coxa"  , "COXA"  ,   30.0,    0.0,    0.0 },
    { "trochanter"        , "troc"  , "TROC"  ,    0.0,    0.0,    0.0 },
-   { "femur"             , "femu"  , "FEMU"  ,   30.0,  -90.0,   90.0 },
+   { "femur"             , "femu"  , "FEMU"  ,   30.0,  -85.0,   85.0 },
    { "patella"           , "pate"  , "PATE"  ,   57.0,  -45.0,   90.0 },
    { "tibia"             , "tibi"  , "TIBI"  ,  130.0,   10.0,  130.0 },
    { "metatarsus"        , "meta"  , "META"  ,    0.0,    0.0,    0.0 },
@@ -110,32 +110,33 @@ yKINO_clear        (tSEG *a_curr, char *a_name, int a_leg, int a_seg)
    /*---(set name)-----------------------*/
    snprintf (a_curr->n, 11, "%s.%s.%s", leg_data [a_leg].caps, seg_data [a_seg].four, a_name);
    /*---(self-knowledge)-----------------*/
-   a_curr->leg = a_leg;
-   a_curr->seg = a_seg;
+   a_curr->leg    = a_leg;
+   a_curr->seg    = a_seg;
    /*---(set lengths)--------------------*/
-   a_curr->l   = seg_data [a_seg].len;
-   a_curr->sl  = seg_data [a_seg].len;
-   a_curr->fl  =   0.0;
+   a_curr->l      = seg_data [a_seg].len;
+   a_curr->sl     = seg_data [a_seg].len;
+   a_curr->fl     =   0.0;
    /*---(angles)-------------------------*/
-   a_curr->d   =   0.0;
+   a_curr->d      =   0.0;
    if (a_seg == THOR)  a_curr->d    =  leg_data [a_leg].deg;
-   a_curr->h   =   0.0;
-   a_curr->v   =   0.0;
-   a_curr->cd  =   0.0;
-   a_curr->ch  =   0.0;
-   a_curr->cv  =   0.0;
+   a_curr->h      =   0.0;
+   a_curr->v      =   0.0;
+   a_curr->cd     =   0.0;
+   a_curr->ch     =   0.0;
+   a_curr->cv     =   0.0;
+   a_curr->u      =   '-';
    /*---(coordinates)--------------------*/
-   a_curr->x   =   0.0;
-   a_curr->z   =   0.0;
-   a_curr->xz  =   0.0;
-   a_curr->y   =   0.0;
-   a_curr->cx  =   0.0;
-   a_curr->cz  =   0.0;
-   a_curr->cy  =   0.0;
+   a_curr->x      =   0.0;
+   a_curr->z      =   0.0;
+   a_curr->xz     =   0.0;
+   a_curr->y      =   0.0;
+   a_curr->cx     =   0.0;
+   a_curr->cz     =   0.0;
+   a_curr->cy     =   0.0;
    /*---(control)------------------------*/
-   a_curr->p   =   'n';
-   a_curr->m   =   'i';
-   a_curr->c   =   'n';
+   a_curr->p      =   'n';
+   a_curr->m      =   'i';
+   a_curr->c      =   'n';
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -167,29 +168,29 @@ yKINO__thor        (int   a_num)
    --rce;  if (a_num < 0)            return rce;
    --rce;  if (a_num > MAX_LEGS)     return rce;
    for (i = 0; i < 2; ++i) {
-      /*---(test and set)-------------------*/
+      /*---(test and set)----------------*/
       if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
-      /*---(save basics)--------------------*/
+      /*---(save basics)-----------------*/
       l    =  x_leg [THOR].l;
       d    =  x_leg [THOR].cd   =  x_leg [THOR].d;
-      /*---(calc radians)-------------------*/
+      /*---(calc radians)----------------*/
       v    =  x_leg [THOR].v    =  x_leg [THOR].cv  =  0.0f;
       h    =  x_leg [THOR].h    =  x_leg [THOR].ch  =  d * DEG2RAD;
-      /*---(calc end coords)----------------*/
+      /*---(calc end coords)-------------*/
       x    =  x_leg [THOR].x    =  l * cos (h);
       z    =  x_leg [THOR].z    = -l * sin (h);
       y    =  x_leg [THOR].y    =  0.0f;
-      /*---(calc cums)----------------------*/
+      /*---(calc cums)-------------------*/
       cx   =  x_leg [THOR].cx   =  x;
       cz   =  x_leg [THOR].cz   =  z;
       cy   =  x_leg [THOR].cy   =  y;
-      /*---(calc extras)--------------------*/
+      /*---(calc extras)-----------------*/
       x_leg [THOR].xz   =  sqrt (( x *  x) + ( z *  z));
       x_leg [THOR].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
       x_leg [THOR].cxz  =  sqrt ((cx * cx) + (cz * cz));
       x_leg [THOR].fl   =  x_leg [THOR].cxz;
-      /*---(add to leg values)--------------*/
+      /*---(add to leg values)-----------*/
       x_leg [CALC].x   += x;
       x_leg [CALC].z   += z;
       x_leg [CALC].y   += y;
@@ -216,29 +217,29 @@ yKINO__coxa        (int  a_num)
    --rce;  if (a_num < 0)            return rce;
    --rce;  if (a_num > MAX_LEGS)     return rce;
    for (i = 0; i < 2; ++i) {
-      /*---(test and set)-------------------*/
+      /*---(test and set)----------------*/
       if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
-      /*---(save basics)--------------------*/
+      /*---(save basics)-----------------*/
       l    =  x_leg [COXA].l;
-      /*---(calc basics)--------------------*/
+      /*---(calc basics)-----------------*/
       d    =  x_leg [COXA].cd   =  x_leg [THOR].cd;
       v    =  x_leg [COXA].cv   =  0.0f;
       h    =  x_leg [COXA].ch   =  d * DEG2RAD;
-      /*---(calc end coords)----------------*/
+      /*---(calc end coords)-------------*/
       x    =  x_leg [COXA].x    =  l * cos (h);
       z    =  x_leg [COXA].z    = -l * sin (h);
       y    =  x_leg [COXA].y    =  0.0f;
-      /*---(calc cums)----------------------*/
+      /*---(calc cums)-------------------*/
       cx   =  x_leg [COXA].cx   =  x_leg [THOR].cx + x;
       cz   =  x_leg [COXA].cz   =  x_leg [THOR].cz + z;
       cy   =  x_leg [COXA].cy   =  x_leg [THOR].cy + y;
-      /*---(calc extras)--------------------*/
+      /*---(calc extras)-----------------*/
       x_leg [COXA].xz   =  sqrt (( x *  x) + ( z *  z));
       x_leg [COXA].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
       x_leg [COXA].cxz  =  sqrt ((cx * cx) + (cz * cz));
       x_leg [COXA].fl   =  x_leg [COXA].cxz;
-      /*---(add to leg values)--------------*/
+      /*---(add to leg values)-----------*/
       x_leg [CALC].x   += x;
       x_leg [CALC].z   += z;
       x_leg [CALC].y   += y;
@@ -260,18 +261,18 @@ yKINO__troc        (int  a_num)
    --rce;  if (a_num < 0)            return rce;
    --rce;  if (a_num > MAX_LEGS)     return rce;
    for (i = 0; i < 2; ++i) {
-      /*---(test and set)-------------------*/
+      /*---(test and set)----------------*/
       if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
-      /*---(calc basics)--------------------*/
+      /*---(calc basics)-----------------*/
       x_leg [TROC].cd   =  x_leg [COXA].cd;
       x_leg [TROC].cv   =  x_leg [COXA].cv;
       x_leg [TROC].ch   =  x_leg [COXA].ch;
-      /*---(calc cums)----------------------*/
+      /*---(calc cums)-------------------*/
       x_leg [TROC].cx   =  x_leg [COXA].cx;
       x_leg [TROC].cz   =  x_leg [COXA].cz;
       x_leg [TROC].cy   =  x_leg [COXA].cy;
-      /*---(calc extras)--------------------*/
+      /*---(calc extras)-----------------*/
       x_leg [TROC].cxz  =  x_leg [COXA].cxz;
       x_leg [TROC].fl   =  x_leg [COXA].fl; 
    }
@@ -282,9 +283,9 @@ yKINO__troc        (int  a_num)
 
 
 /*====================------------------------------------====================*/
-/*===----                      moving body parts                       ----===*/
+/*===----                      foreward kinematics                     ----===*/
 /*====================------------------------------------====================*/
-static void      o___MOVING__________________o (void) {;}
+static void      o___FORWARD_________________o (void) {;}
 
 
 char
@@ -456,18 +457,18 @@ yKINO__meta        (int  a_num)
    --rce;  if (a_num < 0)            return rce;
    --rce;  if (a_num > MAX_LEGS)     return rce;
    for (i = 0; i < 2; ++i) {
-      /*---(test and set)-------------------*/
+      /*---(test and set)----------------*/
       if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
-      /*---(calc basics)--------------------*/
+      /*---(calc basics)-----------------*/
       x_leg [META].cd   =  x_leg [TIBI].cd;
       x_leg [META].cv   =  x_leg [TIBI].cv;
       x_leg [META].ch   =  x_leg [TIBI].ch;
-      /*---(calc cums)----------------------*/
+      /*---(calc cums)-------------------*/
       x_leg [META].cx   =  x_leg [TIBI].cx;
       x_leg [META].cz   =  x_leg [TIBI].cz;
       x_leg [META].cy   =  x_leg [TIBI].cy;
-      /*---(calc extras)--------------------*/
+      /*---(calc extras)-----------------*/
       x_leg [META].cxz  =  x_leg [TIBI].cxz;
       x_leg [META].fl   =  x_leg [TIBI].fl; 
    }
@@ -486,18 +487,18 @@ yKINO__tars        (int  a_num)
    --rce;  if (a_num < 0)            return rce;
    --rce;  if (a_num > MAX_LEGS)     return rce;
    for (i = 0; i < 2; ++i) {
-      /*---(test and set)-------------------*/
+      /*---(test and set)----------------*/
       if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
-      /*---(calc basics)--------------------*/
+      /*---(calc basics)-----------------*/
       x_leg [TARS].cd   =  x_leg [META].cd;
       x_leg [TARS].cv   =  x_leg [META].cv;
       x_leg [TARS].ch   =  x_leg [META].ch;
-      /*---(calc cums)----------------------*/
+      /*---(calc cums)-------------------*/
       x_leg [TARS].cx   =  x_leg [META].cx;
       x_leg [TARS].cz   =  x_leg [META].cz;
       x_leg [TARS].cy   =  x_leg [META].cy;
-      /*---(calc extras)--------------------*/
+      /*---(calc extras)-----------------*/
       x_leg [TARS].cxz  =  x_leg [META].cxz;
       x_leg [TARS].fl   =  x_leg [META].fl; 
    }
@@ -516,23 +517,86 @@ yKINO__foot        (int  a_num)
    --rce;  if (a_num < 0)            return rce;
    --rce;  if (a_num > MAX_LEGS)     return rce;
    for (i = 0; i < 2; ++i) {
-      /*---(test and set)-------------------*/
+      /*---(test and set)----------------*/
       if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
-      /*---(calc basics)--------------------*/
+      /*---(calc basics)-----------------*/
       x_leg [FOOT].cd   =  x_leg [TARS].cd;
       x_leg [FOOT].cv   =  x_leg [TARS].cv;
       x_leg [FOOT].ch   =  x_leg [TARS].ch;
-      /*---(calc cums)----------------------*/
+      /*---(calc cums)-------------------*/
       x_leg [FOOT].cx   =  x_leg [TARS].cx;
       x_leg [FOOT].cz   =  x_leg [TARS].cz;
       x_leg [FOOT].cy   =  x_leg [TARS].cy;
-      /*---(calc extras)--------------------*/
+      /*---(calc extras)-----------------*/
       x_leg [FOOT].cxz  =  x_leg [TARS].cxz;
       x_leg [FOOT].fl   =  x_leg [TARS].fl; 
    }
    /*---(complete)-----------------------*/
    return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     inverse kinematics                       ----===*/
+/*====================------------------------------------====================*/
+static void      o___INVERSE_________________o (void) {;};
+
+char       /*----: set the leg target ----------------------------------------*/
+yKINO__target      (int a_num, float a_x, float a_z, float a_y)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   double      x,  y,  z;              /* coordintates                        */
+   double      xz;                     /* xz plane length                     */
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)            return rce;
+   --rce;  if (a_num > MAX_LEGS)     return rce;
+   /*---(test and set)-------------------*/
+   x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);    /* trying to use only fk */
+   /*---(save cums)----------------------*/
+   x    =  x_leg [TARG].cx  =  a_x;
+   z    =  x_leg [TARG].cz  =  a_z;
+   y    =  x_leg [TARG].cy  =  a_y;
+   xz   =  x_leg [TARG].cxz  = sqrt  ((x * x) + (z * z));
+   /*---(calc basics)--------------------*/
+   x_leg [TARG].ch   = atan2 (z, x);
+   x_leg [TARG].cv   = atan2 (y, xz);
+   x_leg [TARG].fl   = sqrt  ((x * x) + (z * z) + (y * y));
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char       /*----: isolate the leg values ------------------------------------*/
+yKINO__IK_femu     (int a_num)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   char        rc          =   0;      /* generic return code                 */
+   double      d;                      /* degrees                             */
+   double      x,  y,  z;              /* coordintates                        */
+   double      xz;                     /* xz plane length                     */
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)            return rce;
+   --rce;  if (a_num > MAX_LEGS)     return rce;
+   /*---(test and set)-------------------*/
+   x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);    /* trying to use only fk */
+   /*----(remaining)---------------------*/
+   x    =  x_leg [TARG].cx          - x_leg [TROC].cx;
+   z    =  x_leg [TARG].cz          - x_leg [TROC].cz;
+   d    = (atan2 (-z, x) * RAD2DEG) - x_leg [TROC].cd;
+   if (d >  180.0) { d =  d - 360.0;  x_leg [FEMU].u = 'n'; }
+   if (d >   90.0) { d =  d - 180.0;  x_leg [FEMU].u = 'y'; }
+   if (d < -180.0) { d =  360.0 + d;  x_leg [FEMU].u = 'n'; }
+   if (d <  -90.0) { d =  180.0 + d;  x_leg [FEMU].u = 'y'; }
+   /*> printf ("\nDEBUGGING yKINO__IK_femu  x = %6.1f, z = %6.1f, d = %6.1f\n\n", x, z, d);   <*/
+   /*----(save)--------------------------*/
+   rc   = yKINO__FK_femu  (a_num, d);
+   /*---(complete)-----------------------*/
+   return rc;
 }
 
 
