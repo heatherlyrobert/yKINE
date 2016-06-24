@@ -55,10 +55,11 @@ enum      seg_nums {
    /*---(leg parts)----------------------*/
    THOR  =  2,  COXA  =  3,  TROC  =  4,
    FEMU  =  5,  PATE  =  6,  TIBI  =  7,
-   META  =  8,  TARS  =  9,  CLAW  = 10,
+   META  =  8,  TARS  =  9,  FOOT  = 10,
    /*---(working areas)------------------*/
-   ORIG  = 11,
-   TARG  = 12,  VERT  = 13,  CALC  = 14,
+   CLAW  = 11,  MAGN  = 12,  HOOK  = 13,
+   ORIG  = 14,  TARG  = 15,
+   VERT  = 16,  CALC  = 17,
 };
 
 
@@ -105,6 +106,9 @@ char        yKINO__troc        (int  a_num);
 char        yKINO__FK_femu     (int  a_num, float a_deg);
 char        yKINO__FK_pate     (int  a_num, float a_deg);
 char        yKINO__FK_tibi     (int  a_num, float a_deg);
+char        yKINO__meta        (int  a_num);
+char        yKINO__tars        (int  a_num);
+char        yKINO__foot        (int  a_num);
 
 
 #endif

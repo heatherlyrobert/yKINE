@@ -57,8 +57,10 @@ struct cSEGDATA {
    { "tibia"             , "tibi"  , "TIBI"  ,  130.0,   10.0,  130.0 },
    { "metatarsus"        , "meta"  , "META"  ,    0.0,    0.0,    0.0 },
    { "tarsus"            , "tars"  , "TARS"  ,    0.0,    0.0,    0.0 },
+   { "foot"              , "foot"  , "FOOT"  ,    0.0,    0.0,    0.0 },
    { "claw"              , "claw"  , "CLAW"  ,    0.0,    0.0,    0.0 },
-   { "-----"             , "----"  , "----"  ,    0.0,    0.0,    0.0 },
+   { "magnet"            , "magn"  , "MAGN"  ,    0.0,    0.0,    0.0 },
+   { "hook"              , "hook"  , "HOOK"  ,    0.0,    0.0,    0.0 },
    { "original"          , "orig"  , "ORIG"  ,    0.0,    0.0,    0.0 },
    { "target"            , "targ"  , "TARG"  ,    0.0,    0.0,    0.0 },
    { "vertical"          , "vert"  , "VERT"  ,    0.0,    0.0,    0.0 },
@@ -428,6 +430,107 @@ yKINO__FK_tibi     (int  a_num, float a_deg)
    x_leg [CALC].x   += x;
    x_leg [CALC].z   += z;
    x_leg [CALC].y   += y;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     endpoint body parts                      ----===*/
+/*====================------------------------------------====================*/
+static void      o___ENDS____________________o (void) {;}
+/*
+ *  fx, ik, etc makes no difference to the thorax and coxa (at this time)
+ *
+ */
+
+char
+yKINO__meta        (int  a_num)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   int         i           =   0;
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)            return rce;
+   --rce;  if (a_num > MAX_LEGS)     return rce;
+   for (i = 0; i < 2; ++i) {
+      /*---(test and set)-------------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
+      /*---(calc basics)--------------------*/
+      x_leg [META].cd   =  x_leg [TIBI].cd;
+      x_leg [META].cv   =  x_leg [TIBI].cv;
+      x_leg [META].ch   =  x_leg [TIBI].ch;
+      /*---(calc cums)----------------------*/
+      x_leg [META].cx   =  x_leg [TIBI].cx;
+      x_leg [META].cz   =  x_leg [TIBI].cz;
+      x_leg [META].cy   =  x_leg [TIBI].cy;
+      /*---(calc extras)--------------------*/
+      x_leg [META].cxz  =  x_leg [TIBI].cxz;
+      x_leg [META].fl   =  x_leg [TIBI].fl; 
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINO__tars        (int  a_num)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   int         i           =   0;
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)            return rce;
+   --rce;  if (a_num > MAX_LEGS)     return rce;
+   for (i = 0; i < 2; ++i) {
+      /*---(test and set)-------------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
+      /*---(calc basics)--------------------*/
+      x_leg [TARS].cd   =  x_leg [META].cd;
+      x_leg [TARS].cv   =  x_leg [META].cv;
+      x_leg [TARS].ch   =  x_leg [META].ch;
+      /*---(calc cums)----------------------*/
+      x_leg [TARS].cx   =  x_leg [META].cx;
+      x_leg [TARS].cz   =  x_leg [META].cz;
+      x_leg [TARS].cy   =  x_leg [META].cy;
+      /*---(calc extras)--------------------*/
+      x_leg [TARS].cxz  =  x_leg [META].cxz;
+      x_leg [TARS].fl   =  x_leg [META].fl; 
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINO__foot        (int  a_num)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   int         i           =   0;
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)            return rce;
+   --rce;  if (a_num > MAX_LEGS)     return rce;
+   for (i = 0; i < 2; ++i) {
+      /*---(test and set)-------------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
+      /*---(calc basics)--------------------*/
+      x_leg [FOOT].cd   =  x_leg [TARS].cd;
+      x_leg [FOOT].cv   =  x_leg [TARS].cv;
+      x_leg [FOOT].ch   =  x_leg [TARS].ch;
+      /*---(calc cums)----------------------*/
+      x_leg [FOOT].cx   =  x_leg [TARS].cx;
+      x_leg [FOOT].cz   =  x_leg [TARS].cz;
+      x_leg [FOOT].cy   =  x_leg [TARS].cy;
+      /*---(calc extras)--------------------*/
+      x_leg [FOOT].cxz  =  x_leg [TARS].cxz;
+      x_leg [FOOT].fl   =  x_leg [TARS].fl; 
+   }
    /*---(complete)-----------------------*/
    return 0;
 }
