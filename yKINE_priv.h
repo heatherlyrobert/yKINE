@@ -101,6 +101,7 @@ extern    tSEG      ik [MAX_LEGS] [MAX_SEGS];    /* inverse kinematics        */
 char        yKINO_clear        (tSEG *a_curr, char *a_name, int a_leg, int a_seg);
 char        yKINO__thor        (int  a_num);
 char        yKINO__coxa        (int  a_num);
+char        yKINO__troc        (int  a_num);
 char        yKINO__FK_femu     (int  a_num, float a_deg);
 char        yKINO__FK_pate     (int  a_num, float a_deg);
 char        yKINO__FK_tibi     (int  a_num, float a_deg);

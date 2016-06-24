@@ -117,7 +117,6 @@ yKINO_clear        (tSEG *a_curr, char *a_name, int a_leg, int a_seg)
    /*---(angles)-------------------------*/
    a_curr->d   =   0.0;
    if (a_seg == THOR)  a_curr->d    =  leg_data [a_leg].deg;
-   if (a_seg == COXA)  a_curr->d    =  leg_data [a_leg].deg;
    a_curr->h   =   0.0;
    a_curr->v   =   0.0;
    a_curr->cd  =   0.0;
@@ -220,9 +219,6 @@ yKINO__coxa        (int  a_num)
       if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
       /*---(save basics)--------------------*/
       l    =  x_leg [COXA].l;
-      x_leg [COXA].d   =  0.0f;
-      x_leg [COXA].v   =  0.0f;
-      x_leg [COXA].h   =  0.0f;
       /*---(calc basics)--------------------*/
       d    =  x_leg [COXA].cd   =  x_leg [THOR].cd;
       v    =  x_leg [COXA].cv   =  0.0f;
@@ -251,12 +247,43 @@ yKINO__coxa        (int  a_num)
    return 0;
 }
 
+char
+yKINO__troc        (int  a_num)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   int         i           =   0;
+   tSEG       *x_leg       = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_num < 0)            return rce;
+   --rce;  if (a_num > MAX_LEGS)     return rce;
+   for (i = 0; i < 2; ++i) {
+      /*---(test and set)-------------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * MAX_SEGS);
+      /*---(calc basics)--------------------*/
+      x_leg [TROC].cd   =  x_leg [COXA].cd;
+      x_leg [TROC].cv   =  x_leg [COXA].cv;
+      x_leg [TROC].ch   =  x_leg [COXA].ch;
+      /*---(calc cums)----------------------*/
+      x_leg [TROC].cx   =  x_leg [COXA].cx;
+      x_leg [TROC].cz   =  x_leg [COXA].cz;
+      x_leg [TROC].cy   =  x_leg [COXA].cy;
+      /*---(calc extras)--------------------*/
+      x_leg [TROC].cxz  =  x_leg [COXA].cxz;
+      x_leg [TROC].fl   =  x_leg [COXA].fl; 
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
 /*===----                      moving body parts                       ----===*/
 /*====================------------------------------------====================*/
 static void      o___MOVING__________________o (void) {;}
+
 
 char
 yKINO__FK_femu     (int  a_num, float a_deg)
@@ -282,7 +309,7 @@ yKINO__FK_femu     (int  a_num, float a_deg)
    x_leg [FEMU].v    =  0.0f;
    x_leg [FEMU].h    =  a_deg * DEG2RAD;
    /*---(calc basics)--------------------*/
-   d    =  x_leg [FEMU].cd   =  x_leg [COXA].cd + a_deg;
+   d    =  x_leg [FEMU].cd   =  x_leg [TROC].cd + a_deg;
    v    =  x_leg [FEMU].cv   =  0.0f;
    h    =  x_leg [FEMU].ch   =  d * DEG2RAD;
    /*---(calc end coords)----------------*/
@@ -290,9 +317,9 @@ yKINO__FK_femu     (int  a_num, float a_deg)
    z    =  x_leg [FEMU].z    = -l * sin (h);
    y    =  x_leg [FEMU].y    =  0.0f;
    /*---(calc cums)----------------------*/
-   cx   =  x_leg [FEMU].cx   =  x_leg [COXA].cx + x;
-   cz   =  x_leg [FEMU].cz   =  x_leg [COXA].cz + z;
-   cy   =  x_leg [FEMU].cy   =  x_leg [COXA].cy + y;
+   cx   =  x_leg [FEMU].cx   =  x_leg [TROC].cx + x;
+   cz   =  x_leg [FEMU].cz   =  x_leg [TROC].cz + z;
+   cy   =  x_leg [FEMU].cy   =  x_leg [TROC].cy + y;
    /*---(calc extras)--------------------*/
    x_leg [FEMU].xz   =  sqrt (( x *  x) + ( z *  z));
    x_leg [FEMU].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));

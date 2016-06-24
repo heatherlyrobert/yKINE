@@ -31,7 +31,7 @@
  *   0 . core         : x, y, z position in space
  *   1 . thorax-a     : front-to-back tilt
  *   2 . thorax-b     : side-to-side tilt
- *   3 . thorax-c     : twist around vertical access
+ *   3 . thorax-c     : twist around vertical axis
  *   4 . coxa         : attachment angle radially around thorax
  *   5 . trochanter   : n/a for now (maybe rotation later)
  *   6 . femur        : horizontal joint that rotates front to back
@@ -219,8 +219,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YKINE_VER_NUM   "0.5d"
-#define YKINE_VER_TXT   "ported and tested tibia forward calcs from arachne"
+#define YKINE_VER_NUM   "0.5e"
+#define YKINE_VER_TXT   "added trochanter for future work and tested"
 
 char        yKINO_init         (void);
 
