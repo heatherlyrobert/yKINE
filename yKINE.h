@@ -219,8 +219,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YKINE_VER_NUM   "0.5g"
-#define YKINE_VER_TXT   "adapted IK on femur and tested successfully"
+#define YKINE_VER_NUM   "0.5h"
+#define YKINE_VER_TXT   "moved all functions to yKINE and yKINE.c file"
 
 char        yKINO_init         (void);
 
