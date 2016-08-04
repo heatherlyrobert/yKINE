@@ -792,7 +792,7 @@ yKINE__IK_femu     (int a_num)
    else if (d >   90.0) x_leg [TIBI].u     = 'y';
    else if (d < -180.0) x_leg [TIBI].u     = '-';
    else if (d <  -90.0) x_leg [TIBI].u     = 'y';
-   DEBUG_KINE   yLOG_char    ("tibia u"   , x_leg [FEMU].u);
+   DEBUG_KINE   yLOG_char    ("tibia u"   , x_leg [TIBI].u);
    /*---(complete)-----------------------*/
    DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -811,9 +811,15 @@ yKINE__IK_pate     (int a_num)
    double      a;                      /* angle in radians                    */
    double      d;                      /* degrees                             */
    tSEG       *x_leg       = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_KINE   yLOG_value   ("a_leg"     , a_num);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0)                       return rce;
-   --rce;  if (a_num > MAX_LEGS)                return rce;
+   --rce;  if (a_num < 0 || a_num > MAX_LEGS) {
+      DEBUG_KINE   yLOG_note    ("leg number is out of range");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
    /*---(test and set)-------------------*/
    x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
    /*---(patella angle)------------------*/
@@ -821,10 +827,14 @@ yKINE__IK_pate     (int a_num)
    sl   =  x_leg [LOWR].sl;
    pl   =  x_leg [PATE].l;
    tl   =  x_leg [TIBI].l;
+   DEBUG_KINE   yLOG_double  ("dv"        , dv);
+   DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fsl, %6.1fpl, %6.1ftl",  sl, pl, tl);
    a    =  acos (((sl * sl) + (pl * pl) - (tl * tl)) / (2.0 * sl * pl));
    d    =  round (a * RAD2DEG);
    if (isnan (a))    d = 0.0;
+   DEBUG_KINE   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*---(reorient as needed)-------------*/
+   DEBUG_KINE   yLOG_char    ("femu u"    , x_leg [FEMU].u);
    if (x_leg [FEMU].u == 'y') {
       if (x_leg [TIBI].u == 'y')         d = (d  - dv) - 180.0;
       else                               d =  d  - x_leg [LOWR].d;
@@ -833,10 +843,17 @@ yKINE__IK_pate     (int a_num)
       else if (x_leg [TIBI].u == 'y')    d =  dv - x_leg [LOWR].d;
       else                               d =  fabs (d) - fabs (dv);
    }
+   DEBUG_KINE   yLOG_double  ("new d"     , d);
    /*----(save)--------------------------*/
    rc   = yKINE__FK_pate  (a_num, d);
-   if (rc < 0)  return rc;
+   DEBUG_KINE   yLOG_value   ("rc"        , rc);
+   if (rc < 0) {
+      DEBUG_KINE   yLOG_note    ("fk function failed");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
    /*---(complete)-----------------------*/
+   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
