@@ -739,42 +739,62 @@ yKINE__IK_femu     (int a_num)
    double      x,  y,  z;              /* coordintates                        */
    double      xz;                     /* xz plane length                     */
    tSEG       *x_leg       = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_KINE   yLOG_value   ("a_leg"     , a_num);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0)            return rce;
-   --rce;  if (a_num > MAX_LEGS)     return rce;
+   --rce;  if (a_num < 0 || a_num > MAX_LEGS) {
+      DEBUG_KINE   yLOG_note    ("leg number is out of range");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
    /*---(test and set)-------------------*/
    x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);    /* trying to use only fk */
    /*----(check femur orientation)-------*/
+   DEBUG_KINE   yLOG_complex ("troc"     , "%6.1fcx, %6.1fcz, %6.1fcd", x_leg [TROC].cx, x_leg [TROC].cz, x_leg [TROC].cd);
    x    =  x_leg [TARG].cx          - x_leg [TROC].cx;
    z    =  x_leg [TARG].cz          - x_leg [TROC].cz;
    d    = (atan2 (-z, x) * RAD2DEG) - x_leg [TROC].cd;
+   DEBUG_KINE   yLOG_complex ("femu"     , "%6.1fx , %6.1fc , %6.1fd ", x, z, d);
    /*----(adjust direction)--------------*/
    if (d >  180.0) { d =  d - 360.0;  x_leg [FEMU].u     = '-'; }
    if (d >   90.0) { d =  d - 180.0;  x_leg [FEMU].u     = 'y'; }
    if (d < -180.0) { d =  360.0 + d;  x_leg [FEMU].u     = '-'; }
    if (d <  -90.0) { d =  180.0 + d;  x_leg [FEMU].u     = 'y'; }
+   DEBUG_KINE   yLOG_double  ("new d"     , d);
+   DEBUG_KINE   yLOG_char    ("femu u"    , x_leg [FEMU].u);
    /*----(save)--------------------------*/
    rc   = yKINE__FK_femu  (a_num, d);
-   if (rc < 0)  return rc;
+   DEBUG_KINE   yLOG_value   ("rc"        , rc);
+   if (rc < 0) {
+      DEBUG_KINE   yLOG_note    ("fk function failed");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
    /*---(patella/tibia calcs)------------*/
    x    =  x_leg [LOWR].x    =  x_leg [TARG].cx - x_leg [FEMU].cx;
    z    =  x_leg [LOWR].z    =  x_leg [TARG].cz - x_leg [FEMU].cz;
    y    =  x_leg [LOWR].y    =  x_leg [TARG].cy - x_leg [FEMU].cy;
    xz   =  x_leg [LOWR].xz   =  sqrt  (( x *  x) + ( z *  z));
+   DEBUG_KINE   yLOG_complex ("lower"    , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    x_leg [LOWR].sl   =  sqrt  (( x *  x) + ( z *  z) + ( y *  y));
    x_leg [LOWR].v    =  atan2  ( y , xz);
    x_leg [LOWR].h    =  atan2  ( z ,  x);
    x_leg [LOWR].d    =  x_leg [LOWR].v * RAD2DEG;
+   DEBUG_KINE   yLOG_complex ("radians"  , "%6.3fv , %6.3fh , %6.1fd ", x_leg [LOWR].v, x_leg [LOWR].h, x_leg [LOWR].d);
    /*---(check tibia orientation)--------*/
    d    = (atan2 (-z, x) * RAD2DEG) - x_leg [COXA].d;
    /*----(adjust direction)--------------*/
    while (round (d) <    0.0) d += 360.0;
    while (round (d) >= 360.0) d -= 360.0;
+   DEBUG_KINE   yLOG_double  ("another d" , d);
    if      (d >  180.0) x_leg [TIBI].u     = '-';
    else if (d >   90.0) x_leg [TIBI].u     = 'y';
    else if (d < -180.0) x_leg [TIBI].u     = '-';
    else if (d <  -90.0) x_leg [TIBI].u     = 'y';
+   DEBUG_KINE   yLOG_char    ("tibia u"   , x_leg [FEMU].u);
    /*---(complete)-----------------------*/
+   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

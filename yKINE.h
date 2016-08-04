@@ -219,8 +219,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YKINE_VER_NUM   "0.6b"
-#define YKINE_VER_TXT   "added debugging to target and FK functions"
+#define YKINE_VER_NUM   "0.6c"
+#define YKINE_VER_TXT   "added debugging to IK femu and its extras calcs"
 
 
 char*       yKINE_version      (void);
