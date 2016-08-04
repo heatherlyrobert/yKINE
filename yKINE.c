@@ -482,7 +482,7 @@ yKINE__FK_pate     (int  a_num, float a_deg)
    d    =  x_leg [PATE].cd   =  a_deg;
    v    =  x_leg [PATE].cv   =  a_deg * DEG2RAD;
    h    =  x_leg [PATE].ch   =  x_leg [FEMU].ch;
-   DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fv , %6.3fh ", l, d, v, h);
+   DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fcv, %6.3fch", l, d, v, h);
    /*---(calc end coords)----------------*/
    y    =  x_leg [PATE].y    = -l * sin (v);
    xz   =  x_leg [PATE].xz   =  sqrt (( l *  l) - ( y *  y));
@@ -554,7 +554,7 @@ yKINE__FK_tibi     (int  a_num, float a_deg)
    d    =  x_leg [TIBI].cd   =  a_deg;
    v    =  x_leg [TIBI].cv   =  x_leg [PATE].cv + x_leg [TIBI].v;
    h    =  x_leg [TIBI].ch   =  x_leg [PATE].ch;
-   DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fv , %6.3fh ", l, d, v, h);
+   DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fcv, %6.3fch", l, d, v, h);
    /*---(calc end coords)----------------*/
    y    =  x_leg [TIBI].y    = -l * sin (v);
    xz   =  x_leg [TIBI].xz   =  sqrt (( l *  l) - ( y *  y));
@@ -697,10 +697,20 @@ yKINE__target      (int a_num, float a_x, float a_z, float a_y)
    char        rce         = -10;      /* return code for errors              */
    double      x,  y,  z;              /* coordintates                        */
    double      xz;                     /* xz plane length                     */
+   double      ch, cv, fl;             /*                                     */
    tSEG       *x_leg       = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_KINE   yLOG_value   ("a_leg"     , a_num);
+   DEBUG_KINE   yLOG_double  ("x"         , a_x);
+   DEBUG_KINE   yLOG_double  ("z"         , a_z);
+   DEBUG_KINE   yLOG_double  ("y"         , a_y);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0)            return rce;
-   --rce;  if (a_num > MAX_LEGS)     return rce;
+   --rce;  if (a_num < 0 || a_num > MAX_LEGS) {
+      DEBUG_KINE   yLOG_note    ("leg number is out of range");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
    /*---(test and set)-------------------*/
    x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);    /* trying to use only fk */
    /*---(save cums)----------------------*/
@@ -708,11 +718,14 @@ yKINE__target      (int a_num, float a_x, float a_z, float a_y)
    z    =  x_leg [TARG].cz  =  a_z;
    y    =  x_leg [TARG].cy  =  a_y;
    xz   =  x_leg [TARG].cxz  = sqrt  ((x * x) + (z * z));
+   DEBUG_KINE   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(calc basics)--------------------*/
-   x_leg [TARG].ch   = atan2 (z, x);
-   x_leg [TARG].cv   = atan2 (y, xz);
-   x_leg [TARG].fl   = sqrt  ((x * x) + (z * z) + (y * y));
+   ch   =  x_leg [TARG].ch   = atan2 (z, x);
+   cv   =  x_leg [TARG].cv   = atan2 (y, xz);
+   fl   =  x_leg [TARG].fl   = sqrt  ((x * x) + (z * z) + (y * y));
+   DEBUG_KINE   yLOG_complex ("basics"   , "%6.3fcv, %6.3fch, %6.1ffl",  cv, ch, fl);
    /*---(complete)-----------------------*/
+   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
