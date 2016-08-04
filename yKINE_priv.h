@@ -21,21 +21,6 @@
 
 
 
-typedef struct cLOCAL tLOCAL;
-struct cLOCAL {
-   /*---(overall)-----------*/
-   char        debug;
-   int         logger;
-};
-extern  tLOCAL its;
-#define     DEBUG_KINE     if (its.debug == 'y')
-
-
-char        ySTR_testquiet     (void);
-char        ySTR_testloud      (void);
-char*       ySTR_unit          (char *a_question, int a_num);
-
-
 
 #define   MAX_LEGS   20
 enum      leg_nums {
@@ -98,7 +83,8 @@ extern    tSEG      ik [MAX_LEGS] [MAX_SEGS];    /* inverse kinematics        */
 
 
 
-char        yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg);
+/*---(setup)-----------------------------*/
+char        yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type);
 /*---(shared forward/inverse)------------*/
 char        yKINE__thor        (int  a_num);
 char        yKINE__coxa        (int  a_num);
@@ -116,6 +102,13 @@ char        yKINE__IK_tibi     (int  a_num);
 char        yKINE__meta        (int  a_num);
 char        yKINE__tars        (int  a_num);
 char        yKINE__foot        (int  a_num);
+/*---(unit testing)----------------------*/
+char        yKINE__setter      (char *a_request, int a_leg, int a_seg, double a_value);
+char*       yKINE__getter      (char *a_question, int a_leg,  int a_seg);
+char        yKINE__testquiet   (void);
+char        yKINE__testloud    (void);
+char        yKINE__testend     (void);
+
 
 
 #endif

@@ -219,10 +219,13 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YKINE_VER_NUM   "0.5h"
-#define YKINE_VER_TXT   "moved all functions to yKINE and yKINE.c file"
+#define YKINE_VER_NUM   "0.6a"
+#define YKINE_VER_TXT   "added debugging to thor, coxz, and troc"
 
-char        yKINO_init         (void);
+
+char*       yKINE_version      (void);
+char        yKINE_debug        (char a_flag);
+char        yKINE_init         (char a_type);
 
 
 
