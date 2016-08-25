@@ -217,15 +217,23 @@
 #define yKINE yes
 
 
+
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YKINE_VER_NUM   "0.6d"
-#define YKINE_VER_TXT   "added debugging to IK pate"
+#define YKINE_VER_NUM   "0.6e"
+#define YKINE_VER_TXT   "built the two forward/reverse driver functions"
+
 
 
 char*       yKINE_version      (void);
 char        yKINE_debug        (char a_flag);
 char        yKINE_init         (char a_type);
+
+char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
+yKINE_inverse      (int a_num, float a_x, float a_z, float a_y);
+
+char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
+yKINE_forward      (int a_num, float a_femu, float a_pate, float a_tibi);
 
 
 

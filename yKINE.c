@@ -870,9 +870,15 @@ yKINE__IK_tibi     (int a_num)
    double      a;                      /* angle in radians                    */
    double      d;                      /* degrees                             */
    tSEG       *x_leg       = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_KINE   yLOG_value   ("a_leg"     , a_num);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0)                       return rce;
-   --rce;  if (a_num > MAX_LEGS)                return rce;
+   --rce;  if (a_num < 0 || a_num > MAX_LEGS) {
+      DEBUG_KINE   yLOG_note    ("leg number is out of range");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
    /*---(test and set)-------------------*/
    x_leg = ((tSEG *) fk) + (a_num * MAX_SEGS);
    /*---(tibia angle)--------------------*/
@@ -880,12 +886,69 @@ yKINE__IK_tibi     (int a_num)
    sl   =  x_leg [LOWR].sl;
    pl   =  x_leg [PATE].l;
    tl   =  x_leg [TIBI].l;
+   DEBUG_KINE   yLOG_double  ("dv"        , dv);
+   DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fsl, %6.1fpl, %6.1ftl",  sl, pl, tl);
    a    =  acos (((tl * tl) + (pl * pl) - (sl * sl)  ) / (2.0 * pl * tl));
-   d    =  round  (a  * RAD2DEG);
+   a   -=  M_PI;
+   d    =  -(round  (a  * RAD2DEG));
    if (isnan (a))    d = 0.0;
+   DEBUG_KINE   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*----(save)--------------------------*/
    rc   = yKINE__FK_tibi  (a_num, d);
-   if (rc < 0)  return rc;
+   DEBUG_KINE   yLOG_value   ("rc"        , rc);
+   if (rc < 0) {
+      DEBUG_KINE   yLOG_note    ("fk function failed");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        full drivers                          ----===*/
+/*====================------------------------------------====================*/
+static void      o___DRIVERS_________________o (void) {;};
+
+char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
+yKINE_forward      (int a_num, float a_femu, float a_pate, float a_tibi)
+{
+   /*---(fixed body)---------------------*/
+   yKINE__thor    (a_num);
+   yKINE__coxa    (a_num);
+   yKINE__troc    (a_num);
+   /*---(movable)------------------------*/
+   yKINE__FK_femu (a_num, a_femu);
+   yKINE__FK_pate (a_num, a_pate);
+   yKINE__FK_tibi (a_num, a_tibi);
+   /*---(future)-------------------------*/
+   yKINE__meta    (a_num);
+   yKINE__tars    (a_num);
+   yKINE__foot    (a_num);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
+yKINE_inverse      (int a_num, float a_x, float a_z, float a_y)
+{
+   /*---(target setting)-----------------*/
+   yKINE__target  (a_num, a_x, a_z, a_y);
+   /*---(fixed body)---------------------*/
+   yKINE__thor    (a_num);
+   yKINE__coxa    (a_num);
+   yKINE__troc    (a_num);
+   /*---(movable)------------------------*/
+   yKINE__IK_femu (a_num);
+   yKINE__IK_pate (a_num);
+   yKINE__IK_tibi (a_num);
+   /*---(future)-------------------------*/
+   yKINE__meta    (a_num);
+   yKINE__tars    (a_num);
+   yKINE__foot    (a_num);
    /*---(complete)-----------------------*/
    return 0;
 }
