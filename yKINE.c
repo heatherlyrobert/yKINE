@@ -757,10 +757,11 @@ yKINE__IK_femu     (int a_num)
    d    = (atan2 (-z, x) * RAD2DEG) - x_leg [TROC].cd;
    DEBUG_KINE   yLOG_complex ("femu"     , "%6.1fx , %6.1fc , %6.1fd ", x, z, d);
    /*----(adjust direction)--------------*/
-   if (d >  180.0) { d =  d - 360.0;  x_leg [FEMU].u     = '-'; }
-   if (d >   90.0) { d =  d - 180.0;  x_leg [FEMU].u     = 'y'; }
-   if (d < -180.0) { d =  360.0 + d;  x_leg [FEMU].u     = '-'; }
-   if (d <  -90.0) { d =  180.0 + d;  x_leg [FEMU].u     = 'y'; }
+   if      (d >  180.0) { d =  d - 360.0;  x_leg [FEMU].u     = '-'; }
+   else if (d >   90.0) { d =  d - 180.0;  x_leg [FEMU].u     = 'y'; }
+   else if (d < -180.0) { d =  360.0 + d;  x_leg [FEMU].u     = '-'; }
+   else if (d <  -90.0) { d =  180.0 + d;  x_leg [FEMU].u     = 'y'; }
+   else                                    x_leg [FEMU].u     = '-';
    DEBUG_KINE   yLOG_double  ("new d"     , d);
    DEBUG_KINE   yLOG_char    ("femu u"    , x_leg [FEMU].u);
    /*----(save)--------------------------*/
@@ -792,6 +793,7 @@ yKINE__IK_femu     (int a_num)
    else if (d >   90.0) x_leg [TIBI].u     = 'y';
    else if (d < -180.0) x_leg [TIBI].u     = '-';
    else if (d <  -90.0) x_leg [TIBI].u     = 'y';
+   else                 x_leg [TIBI].u     = '-';
    DEBUG_KINE   yLOG_char    ("tibia u"   , x_leg [TIBI].u);
    /*---(complete)-----------------------*/
    DEBUG_KINE   yLOG_exit    (__FUNCTION__);

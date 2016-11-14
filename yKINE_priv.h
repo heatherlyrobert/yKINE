@@ -21,6 +21,12 @@
 
 
 
+/*===[[ UNIT TEST ]]======================================*/
+#ifndef DEBUG_TOPS
+#define DEBUG_TOPS   if (1 == 0)
+#endif
+
+
 
 #define   MAX_LEGS   20
 enum      leg_nums {
