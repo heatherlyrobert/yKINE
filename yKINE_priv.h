@@ -28,28 +28,6 @@
 
 
 
-/*> #define   MAX_LEGS   20                                                           <* 
- *> enum      leg_nums {                                                              <* 
- *>    L_RF=0  , L_RM=1  , L_RR=2  ,                                                  <* 
- *>    L_LR=3  , L_LM=4  , L_LF=5  ,                                                  <* 
- *> };                                                                                <*/
-
-/*> #define   YKINE_MAX_SEGS   20                                                     <* 
- *> enum      seg_nums {                                                              <* 
- *>    /+---(center position)----------------+/                                       <* 
- *>    FOCU  =  0,  CORE  =  1,                                                       <* 
- *>    /+---(leg parts)----------------------+/                                       <* 
- *>    YKINE_THOR  =  2,  YKINE_COXA  =  3,  YKINE_TROC  =  4,                                          <* 
- *>    YKINE_FEMU  =  5,  YKINE_PATE  =  6,  YKINE_TIBI  =  7,                                          <* 
- *>    YKINE_META  =  8,  YKINE_TARS  =  9,  YKINE_FOOT  = 10,                                          <* 
- *>    CLAW  = 11,  MAGN  = 12,  HOOK  = 13,                                          <* 
- *>    /+---(working areas)------------------+/                                       <* 
- *>    ORIG  = 14,  YKINE_TARG  = 15,  LEGN  = 16,                                          <* 
- *>    YKINE_LOWR  = 17,  YKINE_CALC  = 18,                                                       <* 
- *> };                                                                                <*/
-
-
-
 /*---(hexapod leg)-----------------------*/
 typedef struct cSEG  tSEG;
 struct cSEG {
