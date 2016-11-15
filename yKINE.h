@@ -220,48 +220,59 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6f"
-#define     YKINE_VER_TXT   "make constants public and name better"
+#define     YKINE_VER_NUM   "0.6g"
+#define     YKINE_VER_TXT   "convert to new constants internal to yKINE"
 
 
 
 /*===[[ CONSTANTS ]]======================================*/
+
+/*---(methods)------------------------*/
+#define     YKINE_MAX_METH   5
+#define     YKINE_FK         0
+#define     YKINE_IK         1
+#define     YKINE_GK         2
+
 /*---(big legs)-----------------------*/
-#define     YKINE_RR       0
-#define     YKINE_RM       1
-#define     YKINE_RF       2
-#define     YKINE_LF       3
-#define     YKINE_LM       4
-#define     YKINE_LR       5
+#define     YKINE_MAX_LEGS  15
+#define     YKINE_RR         0
+#define     YKINE_RM         1
+#define     YKINE_RF         2
+#define     YKINE_LF         3
+#define     YKINE_LM         4
+#define     YKINE_LR         5
 /*---(little legs)--------------------*/
-#define     YKINE_RP       6
-#define     YKINE_RA       7
-#define     YKINE_LA       8
-#define     YKINE_LA       9
+#define     YKINE_RP         6
+#define     YKINE_RA         7
+#define     YKINE_LA         8
+#define     YKINE_LA         9
+
 /*---(body)---------------------------*/
-#define     YKINE_YAW      0
-#define     YKINE_PITCH    1
-#define     YKINE_ROLL     2
+#define     YKINE_YAW        0
+#define     YKINE_PITCH      1
+#define     YKINE_ROLL       2
+
 /*---(segments)-----------------------*/
-#define     YKINE_FOCU     0
-#define     YKINE_CORE     1
-#define     YKINE_THOR     2
-#define     YKINE_COXA     3
-#define     YKINE_TROC     4
-#define     YKINE_FEMU     5
-#define     YKINE_PATE     6
-#define     YKINE_TIBI     7
-#define     YKINE_META     8
-#define     YKINE_TARS     9
-#define     YKINE_FOOT    10
-#define     YKINE_CLAW    11
-#define     YKINE_MAGN    12
-#define     YKINE_HOOK    13
-#define     YKINE_ORIG    14
-#define     YKINE_TARG    15
-#define     YKINE_LEGN    16
-#define     YKINE_LOWR    17
-#define     YKINE_CALC    18
+#define     YKINE_MAX_SEGS  25
+#define     YKINE_FOCU       0
+#define     YKINE_CORE       1
+#define     YKINE_THOR       2
+#define     YKINE_COXA       3
+#define     YKINE_TROC       4
+#define     YKINE_FEMU       5
+#define     YKINE_PATE       6
+#define     YKINE_TIBI       7
+#define     YKINE_META       8
+#define     YKINE_TARS       9
+#define     YKINE_FOOT      10
+#define     YKINE_CLAW      11
+#define     YKINE_MAGN      12
+#define     YKINE_HOOK      13
+#define     YKINE_ORIG      14
+#define     YKINE_TARG      15
+#define     YKINE_LEGN      16
+#define     YKINE_LOWR      17
+#define     YKINE_CALC      18
 
 
 

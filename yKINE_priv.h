@@ -28,25 +28,25 @@
 
 
 
-#define   MAX_LEGS   20
-enum      leg_nums {
-   L_RF=0  , L_RM=1  , L_RR=2  ,
-   L_LR=3  , L_LM=4  , L_LF=5  ,
-};
+/*> #define   MAX_LEGS   20                                                           <* 
+ *> enum      leg_nums {                                                              <* 
+ *>    L_RF=0  , L_RM=1  , L_RR=2  ,                                                  <* 
+ *>    L_LR=3  , L_LM=4  , L_LF=5  ,                                                  <* 
+ *> };                                                                                <*/
 
-#define   MAX_SEGS   20
-enum      seg_nums {
-   /*---(center position)----------------*/
-   FOCU  =  0,  CORE  =  1,
-   /*---(leg parts)----------------------*/
-   THOR  =  2,  COXA  =  3,  TROC  =  4,
-   FEMU  =  5,  PATE  =  6,  TIBI  =  7,
-   META  =  8,  TARS  =  9,  FOOT  = 10,
-   CLAW  = 11,  MAGN  = 12,  HOOK  = 13,
-   /*---(working areas)------------------*/
-   ORIG  = 14,  TARG  = 15,  LEGN  = 16,
-   LOWR  = 17,  CALC  = 18,
-};
+/*> #define   YKINE_MAX_SEGS   20                                                     <* 
+ *> enum      seg_nums {                                                              <* 
+ *>    /+---(center position)----------------+/                                       <* 
+ *>    FOCU  =  0,  CORE  =  1,                                                       <* 
+ *>    /+---(leg parts)----------------------+/                                       <* 
+ *>    YKINE_THOR  =  2,  YKINE_COXA  =  3,  YKINE_TROC  =  4,                                          <* 
+ *>    YKINE_FEMU  =  5,  YKINE_PATE  =  6,  YKINE_TIBI  =  7,                                          <* 
+ *>    YKINE_META  =  8,  YKINE_TARS  =  9,  YKINE_FOOT  = 10,                                          <* 
+ *>    CLAW  = 11,  MAGN  = 12,  HOOK  = 13,                                          <* 
+ *>    /+---(working areas)------------------+/                                       <* 
+ *>    ORIG  = 14,  YKINE_TARG  = 15,  LEGN  = 16,                                          <* 
+ *>    YKINE_LOWR  = 17,  YKINE_CALC  = 18,                                                       <* 
+ *> };                                                                                <*/
 
 
 
@@ -83,9 +83,9 @@ struct cSEG {
    char      p;                   /* planted y/n?                             */
    char      rc;                  /* kinematics status : 0 = no, 1 = yes      */
 };
-extern    tSEG      gk [MAX_LEGS] [MAX_SEGS];    /* opengl kinematics check   */
-extern    tSEG      fk [MAX_LEGS] [MAX_SEGS];    /* forward kinematics        */
-extern    tSEG      ik [MAX_LEGS] [MAX_SEGS];    /* inverse kinematics        */
+extern    tSEG      gk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* opengl kinematics check   */
+extern    tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinematics        */
+extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinematics        */
 
 
 
@@ -109,8 +109,8 @@ char        yKINE__meta        (int  a_num);
 char        yKINE__tars        (int  a_num);
 char        yKINE__foot        (int  a_num);
 /*---(unit testing)----------------------*/
-char        yKINE__setter      (char *a_request, int a_leg, int a_seg, double a_value);
-char*       yKINE__getter      (char *a_question, int a_leg,  int a_seg);
+char        yKINE__setter      (char *a_request , int a_leg, int a_seg, double a_value);
+char*       yKINE__getter      (char *a_question, int a_leg, int a_seg);
 char        yKINE__testquiet   (void);
 char        yKINE__testloud    (void);
 char        yKINE__testend     (void);
