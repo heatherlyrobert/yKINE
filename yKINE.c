@@ -199,6 +199,34 @@ yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_typ
    return 0;
 }
 
+char       /*----: change the center of gravity ------------------------------*/
+yKINE_center       (float a_x, float a_z, float a_y)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         x_legnum = 0;              /* iterator         */
+   tSEG       *x_leg       = NULL;
+   int         i           =   0;
+   /*---(header)-------------------------*/
+   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_KINE   yLOG_double  ("a_x"       , a_x);
+   DEBUG_KINE   yLOG_double  ("a_z"       , a_z);
+   DEBUG_KINE   yLOG_double  ("a_y"       , a_y);
+   /*---(kinematics)---------------------*/
+   for (x_legnum = 0; x_legnum < YKINE_MAX_LEGS; ++x_legnum) {
+      /*---(test and set)----------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (x_legnum * YKINE_MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (x_legnum * YKINE_MAX_SEGS);
+      /*---(save basics)-----------------*/
+      x_leg [YKINE_CORE].cx   =  x_leg [YKINE_CORE].x   = a_x;
+      x_leg [YKINE_CORE].cz   =  x_leg [YKINE_CORE].z   = a_z;
+      x_leg [YKINE_CORE].cy   =  x_leg [YKINE_CORE].y   = a_y;
+      /*---(done)------------------------*/
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -249,9 +277,9 @@ yKINE__thor        (int   a_num)
       y     =  x_leg [YKINE_THOR].y    =  0.0f;
       DEBUG_KINE   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy ",  x,  z,  y);
       /*---(calc cums)-------------------*/
-      cx    =  x_leg [YKINE_THOR].cx   =  x;
-      cz    =  x_leg [YKINE_THOR].cz   =  z;
-      cy    =  x_leg [YKINE_THOR].cy   =  y;
+      cx    =  x_leg [YKINE_THOR].cx   =  x_leg [YKINE_CORE].cx + x;
+      cz    =  x_leg [YKINE_THOR].cz   =  x_leg [YKINE_CORE].cz + z;
+      cy    =  x_leg [YKINE_THOR].cy   =  x_leg [YKINE_CORE].cy + y;
       DEBUG_KINE   yLOG_complex ("endpoint" , "%6.1fcx, %6.1fcz, %6.1fcy", cx, cz, cy);
       /*---(calc extras)-----------------*/
       xz    =  x_leg [YKINE_THOR].xz   =  sqrt (( x *  x) + ( z *  z));

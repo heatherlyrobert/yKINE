@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6i"
-#define     YKINE_VER_TXT   "redivided ik and fk data structures to allow better testing"
+#define     YKINE_VER_NUM   "0.6j"
+#define     YKINE_VER_TXT   "add the CORE location setting function"
 
 
 
@@ -281,11 +281,15 @@ char*       yKINE_version      (void);
 char        yKINE_debug        (char a_flag);
 char        yKINE_init         (char a_type);
 
+char         /*--> assign the body center location -------[ ------ [ ------ ]-*/
+yKINE_center       (float a_x, float a_z, float a_y);
+
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
 yKINE_inverse      (int a_num, float a_x, float a_z, float a_y);
 
 char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
 yKINE_forward      (int a_num, float a_femu, float a_pate, float a_tibi);
+
 
 
 
