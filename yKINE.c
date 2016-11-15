@@ -215,6 +215,7 @@ yKINE__thor        (int   a_num)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
+   int         i           =   0;
    double      x,  y,  z;              /* coordintates                        */
    double      l;                      /* length                              */
    double      d;                      /* degrees                             */
@@ -231,35 +232,40 @@ yKINE__thor        (int   a_num)
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   /*---(test and set)----------------*/
-   x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
-   /*---(save basics)-----------------*/
-   l     =  x_leg [YKINE_THOR].l;                        /* set during yKINE__clear */
-   d     =  x_leg [YKINE_THOR].cd   =  x_leg [YKINE_THOR].d;   /* set during yKINE__clear */
-   v     =  x_leg [YKINE_THOR].v    =  x_leg [YKINE_THOR].cv  =  0.0f;
-   h     =  x_leg [YKINE_THOR].h    =  x_leg [YKINE_THOR].ch  =  d * DEG2RAD;
-   DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fv , %6.3fh ", l, d, v, h);
-   /*---(calc end coords)-------------*/
-   x     =  x_leg [YKINE_THOR].x    =  l * cos (h);
-   z     =  x_leg [YKINE_THOR].z    = -l * sin (h);
-   y     =  x_leg [YKINE_THOR].y    =  0.0f;
-   DEBUG_KINE   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy ",  x,  z,  y);
-   /*---(calc cums)-------------------*/
-   cx    =  x_leg [YKINE_THOR].cx   =  x;
-   cz    =  x_leg [YKINE_THOR].cz   =  z;
-   cy    =  x_leg [YKINE_THOR].cy   =  y;
-   DEBUG_KINE   yLOG_complex ("endpoint" , "%6.1fcx, %6.1fcz, %6.1fcy", cx, cz, cy);
-   /*---(calc extras)-----------------*/
-   xz    =  x_leg [YKINE_THOR].xz   =  sqrt (( x *  x) + ( z *  z));
-   sl    =  x_leg [YKINE_THOR].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
-   x_leg [YKINE_THOR].cxz  =  sqrt ((cx * cx) + (cz * cz));
-   fl    =  x_leg [YKINE_THOR].fl   =  x_leg [YKINE_THOR].cxz;
-   DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", xz, sl, fl);
-   /*---(add to leg values)-----------*/
-   x_leg [YKINE_CALC].x   += x;
-   x_leg [YKINE_CALC].z   += z;
-   x_leg [YKINE_CALC].y   += y;
-   DEBUG_KINE   yLOG_note    ("add values to YKINE_CALC segment");
+   /*---(kinematics)---------------------*/
+   for (i = 0; i < 2; ++i) {
+      /*---(test and set)----------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
+      /*---(save basics)-----------------*/
+      l     =  x_leg [YKINE_THOR].l;                        /* set during yKINE__clear */
+      d     =  x_leg [YKINE_THOR].cd   =  x_leg [YKINE_THOR].d;   /* set during yKINE__clear */
+      v     =  x_leg [YKINE_THOR].v    =  x_leg [YKINE_THOR].cv  =  0.0f;
+      h     =  x_leg [YKINE_THOR].h    =  x_leg [YKINE_THOR].ch  =  d * DEG2RAD;
+      DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fv , %6.3fh ", l, d, v, h);
+      /*---(calc end coords)-------------*/
+      x     =  x_leg [YKINE_THOR].x    =  l * cos (h);
+      z     =  x_leg [YKINE_THOR].z    = -l * sin (h);
+      y     =  x_leg [YKINE_THOR].y    =  0.0f;
+      DEBUG_KINE   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy ",  x,  z,  y);
+      /*---(calc cums)-------------------*/
+      cx    =  x_leg [YKINE_THOR].cx   =  x;
+      cz    =  x_leg [YKINE_THOR].cz   =  z;
+      cy    =  x_leg [YKINE_THOR].cy   =  y;
+      DEBUG_KINE   yLOG_complex ("endpoint" , "%6.1fcx, %6.1fcz, %6.1fcy", cx, cz, cy);
+      /*---(calc extras)-----------------*/
+      xz    =  x_leg [YKINE_THOR].xz   =  sqrt (( x *  x) + ( z *  z));
+      sl    =  x_leg [YKINE_THOR].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+      x_leg [YKINE_THOR].cxz  =  sqrt ((cx * cx) + (cz * cz));
+      fl    =  x_leg [YKINE_THOR].fl   =  x_leg [YKINE_THOR].cxz;
+      DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", xz, sl, fl);
+      /*---(add to leg values)-----------*/
+      x_leg [YKINE_CALC].x   += x;
+      x_leg [YKINE_CALC].z   += z;
+      x_leg [YKINE_CALC].y   += y;
+      DEBUG_KINE   yLOG_note    ("add values to YKINE_CALC segment");
+      /*---(done)------------------------*/
+   }
    /*---(complete)-----------------------*/
    DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -287,35 +293,40 @@ yKINE__coxa        (int  a_num)
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   /*---(test and set)-------------------*/
-   x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
-   /*---(save basics)--------------------*/
-   l     =  x_leg [YKINE_COXA].l;
-   d     =  x_leg [YKINE_COXA].cd   =  x_leg [YKINE_THOR].cd;
-   v     =  x_leg [YKINE_COXA].cv   =  0.0f;
-   h     =  x_leg [YKINE_COXA].ch   =  d * DEG2RAD;
-   DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fv , %6.3fh ", l, d, v, h);
-   /*---(calc end coords)----------------*/
-   x     =  x_leg [YKINE_COXA].x    =  l * cos (h);
-   z     =  x_leg [YKINE_COXA].z    = -l * sin (h);
-   y     =  x_leg [YKINE_COXA].y    =  0.0f;
-   DEBUG_KINE   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy ",  x,  z,  y);
-   /*---(calc cums)----------------------*/
-   cx    =  x_leg [YKINE_COXA].cx   =  x_leg [YKINE_THOR].cx + x;
-   cz    =  x_leg [YKINE_COXA].cz   =  x_leg [YKINE_THOR].cz + z;
-   cy    =  x_leg [YKINE_COXA].cy   =  x_leg [YKINE_THOR].cy + y;
-   DEBUG_KINE   yLOG_complex ("endpoint" , "%6.1fcx, %6.1fcz, %6.1fcy", cx, cz, cy);
-   /*---(calc extras)-----------------*/
-   xz    =  x_leg [YKINE_COXA].xz   =  sqrt (( x *  x) + ( z *  z));
-   sl    =  x_leg [YKINE_COXA].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
-   x_leg [YKINE_COXA].cxz           =  sqrt ((cx * cx) + (cz * cz));
-   fl    =  x_leg [YKINE_COXA].fl   =  x_leg [YKINE_THOR].cxz;
-   DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", xz, sl, fl);
-   /*---(add to leg values)-----------*/
-   x_leg [YKINE_CALC].x   += x;
-   x_leg [YKINE_CALC].z   += z;
-   x_leg [YKINE_CALC].y   += y;
-   DEBUG_KINE   yLOG_note    ("add values to YKINE_CALC segment");
+   /*---(kinematics)---------------------*/
+   for (i = 0; i < 2; ++i) {
+      /*---(test and set)----------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
+      /*---(save basics)-----------------*/
+      l     =  x_leg [YKINE_COXA].l;
+      d     =  x_leg [YKINE_COXA].cd   =  x_leg [YKINE_THOR].cd;
+      v     =  x_leg [YKINE_COXA].cv   =  0.0f;
+      h     =  x_leg [YKINE_COXA].ch   =  d * DEG2RAD;
+      DEBUG_KINE   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fv , %6.3fh ", l, d, v, h);
+      /*---(calc end coords)-------------*/
+      x     =  x_leg [YKINE_COXA].x    =  l * cos (h);
+      z     =  x_leg [YKINE_COXA].z    = -l * sin (h);
+      y     =  x_leg [YKINE_COXA].y    =  0.0f;
+      DEBUG_KINE   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy ",  x,  z,  y);
+      /*---(calc cums)-------------------*/
+      cx    =  x_leg [YKINE_COXA].cx   =  x_leg [YKINE_THOR].cx + x;
+      cz    =  x_leg [YKINE_COXA].cz   =  x_leg [YKINE_THOR].cz + z;
+      cy    =  x_leg [YKINE_COXA].cy   =  x_leg [YKINE_THOR].cy + y;
+      DEBUG_KINE   yLOG_complex ("endpoint" , "%6.1fcx, %6.1fcz, %6.1fcy", cx, cz, cy);
+      /*---(calc extras)-----------------*/
+      xz    =  x_leg [YKINE_COXA].xz   =  sqrt (( x *  x) + ( z *  z));
+      sl    =  x_leg [YKINE_COXA].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+      x_leg [YKINE_COXA].cxz           =  sqrt ((cx * cx) + (cz * cz));
+      fl    =  x_leg [YKINE_COXA].fl   =  x_leg [YKINE_THOR].cxz;
+      DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", xz, sl, fl);
+      /*---(add to leg values)-----------*/
+      x_leg [YKINE_CALC].x   += x;
+      x_leg [YKINE_CALC].z   += z;
+      x_leg [YKINE_CALC].y   += y;
+      DEBUG_KINE   yLOG_note    ("add values to YKINE_CALC segment");
+      /*---(done)------------------------*/
+   }
    /*---(complete)-----------------------*/
    DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -337,22 +348,27 @@ yKINE__troc        (int  a_num)
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   /*---(test and set)-------------------*/
-   x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
-   /*---(calc basics)-----------------*/
-   x_leg [YKINE_TROC].cd   =  x_leg [YKINE_COXA].cd;
-   x_leg [YKINE_TROC].cv   =  x_leg [YKINE_COXA].cv;
-   x_leg [YKINE_TROC].ch   =  x_leg [YKINE_COXA].ch;
-   DEBUG_KINE   yLOG_note    ("save basics");
-   /*---(calc cums)-------------------*/
-   x_leg [YKINE_TROC].cx   =  x_leg [YKINE_COXA].cx;
-   x_leg [YKINE_TROC].cz   =  x_leg [YKINE_COXA].cz;
-   x_leg [YKINE_TROC].cy   =  x_leg [YKINE_COXA].cy;
-   DEBUG_KINE   yLOG_note    ("save endpoints");
-   /*---(calc extras)-----------------*/
-   x_leg [YKINE_TROC].cxz  =  x_leg [YKINE_COXA].cxz;
-   x_leg [YKINE_TROC].fl   =  x_leg [YKINE_COXA].fl; 
-   DEBUG_KINE   yLOG_note    ("save lengths");
+   /*---(kinematics)---------------------*/
+   for (i = 0; i < 2; ++i) {
+      /*---(test and set)----------------*/
+      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
+      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
+      /*---(calc basics)-----------------*/
+      x_leg [YKINE_TROC].cd   =  x_leg [YKINE_COXA].cd;
+      x_leg [YKINE_TROC].cv   =  x_leg [YKINE_COXA].cv;
+      x_leg [YKINE_TROC].ch   =  x_leg [YKINE_COXA].ch;
+      DEBUG_KINE   yLOG_note    ("save basics");
+      /*---(calc cums)-------------------*/
+      x_leg [YKINE_TROC].cx   =  x_leg [YKINE_COXA].cx;
+      x_leg [YKINE_TROC].cz   =  x_leg [YKINE_COXA].cz;
+      x_leg [YKINE_TROC].cy   =  x_leg [YKINE_COXA].cy;
+      DEBUG_KINE   yLOG_note    ("save endpoints");
+      /*---(calc extras)-----------------*/
+      x_leg [YKINE_TROC].cxz  =  x_leg [YKINE_COXA].cxz;
+      x_leg [YKINE_TROC].fl   =  x_leg [YKINE_COXA].fl; 
+      DEBUG_KINE   yLOG_note    ("save lengths");
+      /*---(done)------------------------*/
+   }
    /*---(complete)-----------------------*/
    DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
