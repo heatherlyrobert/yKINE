@@ -41,12 +41,12 @@ struct cLEGDATA
 } leg_data [YKINE_MAX_LEGS] = {
    /* front is facing down the negative z-axis        */
    /* ---full------------ --two---- --caps--- ----deg */
-   { "right front"       , "rf"    , "RF"    ,   60.0 },
-   { "right middle"      , "rm"    , "RM"    ,    0.0 },
    { "right rear"        , "rr"    , "RR"    ,  300.0 },
-   { "left rear"         , "lr"    , "LR"    ,  240.0 },
-   { "left middle"       , "lm"    , "LM"    ,  180.0 },
+   { "right middle"      , "rm"    , "RM"    ,    0.0 },
+   { "right front"       , "rf"    , "RF"    ,   60.0 },
    { "left front"        , "lf"    , "LF"    ,  120.0 },
+   { "left middle"       , "lm"    , "LM"    ,  180.0 },
+   { "left rear"         , "lr"    , "LR"    ,  240.0 },
    { "-----"             , "--"    , "--"    ,    0.0 },
 };
 
@@ -138,6 +138,8 @@ yKINE_init         (char a_type)
    /*---(locals)-------------------------*/
    int      x_leg = 0;              /* iterator         */
    int      x_seg = 0;              /* iterator         */
+   /*---(header)-------------------------*/
+   yLOG_enter   (__FUNCTION__);
    /*---(set body)-----------------------*/
    /*> kine_center       (0.0f, 0.0f);                                                <* 
     *> kine_height       (segs_len [YKINE_TIBI]);                                           <* 
@@ -152,12 +154,15 @@ yKINE_init         (char a_type)
       }
    }
    /*---(complete)-----------------------*/
+   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char       /*----: set segment kimematics to defaults ------------------------*/
 yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type)
 {
+   /*---(header)-------------------------*/
+   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
    /*---(defenses)-----------------------*/
    if (strlen(a_name) != 2)                   return -1;
    if (a_curr  == NULL)                       return -2;
@@ -196,6 +201,7 @@ yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_typ
    a_curr->m      =   'i';
    a_curr->c      =   'n';
    /*---(complete)-----------------------*/
+   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -296,7 +302,7 @@ yKINE__thor        (int   a_num)
       xz    =  x_leg [YKINE_THOR].xz   =  sqrt (( x *  x) + ( z *  z));
       sl    =  x_leg [YKINE_THOR].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
       x_leg [YKINE_THOR].cxz  =  sqrt ((cx * cx) + (cz * cz));
-      fl    =  x_leg [YKINE_THOR].fl   =  x_leg [YKINE_THOR].cxz;
+      fl    =  x_leg [YKINE_THOR].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
       DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", xz, sl, fl);
       /*---(add to leg values)-----------*/
       x_leg [YKINE_CALC].x   += x;
@@ -357,7 +363,7 @@ yKINE__coxa        (int  a_num)
       xz    =  x_leg [YKINE_COXA].xz   =  sqrt (( x *  x) + ( z *  z));
       sl    =  x_leg [YKINE_COXA].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
       x_leg [YKINE_COXA].cxz           =  sqrt ((cx * cx) + (cz * cz));
-      fl    =  x_leg [YKINE_COXA].fl   =  x_leg [YKINE_THOR].cxz;
+      fl    =  x_leg [YKINE_COXA].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
       DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", xz, sl, fl);
       /*---(add to leg values)-----------*/
       x_leg [YKINE_CALC].x   += x;
@@ -482,7 +488,7 @@ yKINE__femu        (int  a_num, float a_deg, int a_meth)
    xz   =  x_leg [YKINE_FEMU].xz   =  sqrt (( x *  x) + ( z *  z));
    sl   =  x_leg [YKINE_FEMU].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
    x_leg [YKINE_FEMU].cxz          =  sqrt ((cx * cx) + (cz * cz));
-   fl   =  x_leg [YKINE_FEMU].fl   =  x_leg [YKINE_FEMU].cxz;
+   fl   =  x_leg [YKINE_FEMU].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
    DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", xz, sl, fl);
    /*---(add to leg values)--------------*/
    x_leg [YKINE_CALC].x   += x;
@@ -1021,6 +1027,71 @@ yKINE__IK_tibi     (int a_num)
 
 
 /*====================------------------------------------====================*/
+/*===----                       opengl actuals                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___OPENGL__________________o (void) {;};
+
+char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
+yKINE_opengl       (int a_leg, int a_seg, float a_x, float a_z, float a_y, float a_len)
+{
+   /*---(locals)-----------+-----------+-*/
+   float       x_len       = 0.0;
+   float       x_y         = 0.0;
+   tSEG       *x_leg       = NULL;
+   /*---(set the leg)--------------------*/
+   x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);
+   /*---(set cumulatives)----------------*/
+   x_leg [a_seg].cx  = a_x;
+   x_leg [a_seg].cz  = a_z;
+   x_leg [a_seg].cy  = a_y;
+   x_leg [a_seg].fl  = sqrt ((a_x * a_x) + (a_z * a_z) + (a_y * a_y));
+   x_len             = x_leg [a_seg].fl;
+   x_leg [a_seg].cxz = sqrt ((x_len * x_len) - (a_y * a_y));
+   /*---(set individuals)----------------*/
+   x_leg [a_seg].l   = a_len;
+   x_leg [a_seg].sl  = a_len;
+   x_leg [a_seg].x   = a_x - x_leg [a_seg - 1].cx;
+   x_leg [a_seg].z   = a_z - x_leg [a_seg - 1].cz;
+   x_leg [a_seg].y   = a_y - x_leg [a_seg - 1].cy;
+   x_y               = x_leg [a_seg].y;
+   x_leg [a_seg].xz  = sqrt ((a_len * a_len) - (x_y * x_y));
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINE_finalgk      (double a_leg, int a_seg, float *a_len, float *a_x, float *a_z, float *a_y)
+{
+   if (a_len != NULL)  *a_len = gk [(int) a_leg][a_seg].fl;
+   if (a_x   != NULL)  *a_x   = gk [(int) a_leg][a_seg].cx;
+   if (a_z   != NULL)  *a_z   = gk [(int) a_leg][a_seg].cz;
+   if (a_y   != NULL)  *a_y   = gk [(int) a_leg][a_seg].cy;
+   return 0;
+}
+
+char
+yKINE_finaldiff    (double a_leg, int a_seg, float *a_len, float *a_x, float *a_z, float *a_y)
+{
+   if (a_len != NULL)  *a_len = fk [(int) a_leg][a_seg].fl - gk [(int) a_leg][a_seg].fl;
+   if (a_x   != NULL)  *a_x   = fk [(int) a_leg][a_seg].cx - gk [(int) a_leg][a_seg].cx;
+   if (a_z   != NULL)  *a_z   = fk [(int) a_leg][a_seg].cz - gk [(int) a_leg][a_seg].cz;
+   if (a_y   != NULL)  *a_y   = fk [(int) a_leg][a_seg].cy - gk [(int) a_leg][a_seg].cy;
+   return 0;
+}
+
+char
+yKINE_angles       (double a_leg, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi)
+{
+   if (a_coxa != NULL)  *a_coxa = fk [(int) a_leg][YKINE_COXA].d;
+   if (a_femu != NULL)  *a_femu = fk [(int) a_leg][YKINE_FEMU].d;
+   if (a_pate != NULL)  *a_pate = fk [(int) a_leg][YKINE_PATE].d;
+   if (a_tibi != NULL)  *a_tibi = fk [(int) a_leg][YKINE_TIBI].d;
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                        full drivers                          ----===*/
 /*====================------------------------------------====================*/
 static void      o___MAIN____________________o (void) {;};
@@ -1041,6 +1112,16 @@ yKINE_forward      (int a_num, float a_femu, float a_pate, float a_tibi)
    yKINE__tars    (a_num);
    yKINE__foot    (a_num);
    /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINE_finalfk      (double a_leg, int a_seg, float *a_len, float *a_x, float *a_z, float *a_y)
+{
+   if (a_len != NULL)  *a_len = fk [(int) a_leg][a_seg].fl;
+   if (a_x   != NULL)  *a_x   = fk [(int) a_leg][a_seg].cx;
+   if (a_z   != NULL)  *a_z   = fk [(int) a_leg][a_seg].cz;
+   if (a_y   != NULL)  *a_y   = fk [(int) a_leg][a_seg].cy;
    return 0;
 }
 
