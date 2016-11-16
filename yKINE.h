@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6j"
-#define     YKINE_VER_TXT   "add the CORE location setting function"
+#define     YKINE_VER_NUM   "0.6k"
+#define     YKINE_VER_TXT   "added helper functions for accessing static data"
 
 
 
@@ -234,7 +234,7 @@
 #define     YKINE_GK         2
 
 /*---(big legs)-----------------------*/
-#define     YKINE_MAX_LEGS  15
+#define     YKINE_MAX_LEGS  15       /* all possible legs      */
 #define     YKINE_RR         0
 #define     YKINE_RM         1
 #define     YKINE_RF         2
@@ -291,6 +291,17 @@ char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
 yKINE_forward      (int a_num, float a_femu, float a_pate, float a_tibi);
 
 
+char*    yKINE_legtwo       (int a_leg);
+char*    yKINE_legcaps      (int a_leg);
+char*    yKINE_legfull      (int a_leg);
+float    yKINE_legdeg       (int a_leg);
+
+char*    yKINE_segfour      (int a_seg);
+char*    yKINE_segcaps      (int a_seg);
+char*    yKINE_segfull      (int a_seg);
+float    yKINE_seglen       (int a_seg);
+float    yKINE_segmin       (int a_seg);
+float    yKINE_segmax       (int a_seg);
 
 
 #endif

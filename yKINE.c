@@ -66,22 +66,22 @@ struct cSEGDATA {
    /* ---full------------ --four--- --caps--- ----len ----min ----max --test1 --test2 --test3 */
    { "focus"             , "focu"  , "FOCU"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "core"              , "core"  , "CORE"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "thorax"            , "thor"  , "YKINE_THOR"  ,  125.0, -360.0,  360.0,   75.0,   75.0,    0.0 },
-   { "coxa"              , "coxa"  , "YKINE_COXA"  ,   30.0,    0.0,    0.0,   25.0,   30.0,    0.0 },
-   { "trochanter"        , "troc"  , "YKINE_TROC"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "femur"             , "femu"  , "YKINE_FEMU"  ,   30.0,  -85.0,   85.0,   25.0,   30.0,    0.0 },
-   { "patella"           , "pate"  , "YKINE_PATE"  ,   57.0,  -45.0,   90.0,   50.0,   57.0,    0.0 },
-   { "tibia"             , "tibi"  , "YKINE_TIBI"  ,  130.0,   10.0,  130.0,  100.0,  130.0,    0.0 },
-   { "metatarsus"        , "meta"  , "YKINE_META"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "tarsus"            , "tars"  , "YKINE_TARS"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "foot"              , "foot"  , "YKINE_FOOT"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "thorax"            , "thor"  , "THOR"  ,  125.0, -360.0,  360.0,   75.0,   75.0,    0.0 },
+   { "coxa"              , "coxa"  , "COXA"  ,   30.0,    0.0,    0.0,   25.0,   30.0,    0.0 },
+   { "trochanter"        , "troc"  , "TROC"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "femur"             , "femu"  , "FEMU"  ,   30.0,  -85.0,   85.0,   25.0,   30.0,    0.0 },
+   { "patella"           , "pate"  , "PATE"  ,   57.0,  -45.0,   90.0,   50.0,   57.0,    0.0 },
+   { "tibia"             , "tibi"  , "TIBI"  ,  130.0,   10.0,  130.0,  100.0,  130.0,    0.0 },
+   { "metatarsus"        , "meta"  , "META"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "tarsus"            , "tars"  , "TARS"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "foot"              , "foot"  , "FOOT"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "claw"              , "claw"  , "CLAW"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "magnet"            , "magn"  , "MAGN"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "hook"              , "hook"  , "HOOK"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "original"          , "orig"  , "ORIG"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "target"            , "targ"  , "YKINE_TARG"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "lower_leg"         , "lowr"  , "YKINE_LOWR"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "calculation"       , "calc"  , "YKINE_CALC"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "target"            , "targ"  , "TARG"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "lower_leg"         , "lowr"  , "LOWR"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "calculation"       , "calc"  , "CALC"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "-----"             , "----"  , "----"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
 };
 
@@ -227,6 +227,17 @@ yKINE_center       (float a_x, float a_z, float a_y)
    return 0;
 }
 
+char*    yKINE_legtwo       (int a_leg)    { return leg_data [a_leg].two;  }
+char*    yKINE_legcaps      (int a_leg)    { return leg_data [a_leg].caps; }
+char*    yKINE_legfull      (int a_leg)    { return leg_data [a_leg].full; }
+float    yKINE_legdeg       (int a_leg)    { return leg_data [a_leg].deg; }
+
+char*    yKINE_segfour      (int a_seg)    { return seg_data [a_seg].four; }
+char*    yKINE_segcaps      (int a_seg)    { return seg_data [a_seg].caps; }
+char*    yKINE_segfull      (int a_seg)    { return seg_data [a_seg].full; }
+float    yKINE_seglen       (int a_seg)    { return seg_data [a_seg].len; }
+float    yKINE_segmin       (int a_seg)    { return seg_data [a_seg].min; }
+float    yKINE_segmax       (int a_seg)    { return seg_data [a_seg].max; }
 
 
 /*====================------------------------------------====================*/
