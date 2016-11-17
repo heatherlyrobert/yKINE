@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6j"
-#define     YKINE_VER_TXT   "added helper functions for accessing dynamic data"
+#define     YKINE_VER_NUM   "0.6k"
+#define     YKINE_VER_TXT   "improved target and lower calculations"
 
 
 
@@ -282,34 +282,41 @@ char        yKINE_debug        (char a_flag);
 char        yKINE_init         (char a_type);
 
 char         /*--> assign the body center location -------[ ------ [ ------ ]-*/
-yKINE_center       (float a_x, float a_z, float a_y);
+yKINE_center       (double a_x, double a_z, double a_y);
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
-yKINE_inverse      (int a_num, float a_x, float a_z, float a_y);
+yKINE_inverse      (int a_num, double a_x, double a_z, double a_y);
 
 char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
-yKINE_forward      (int a_num, float a_femu, float a_pate, float a_tibi);
+yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi);
 
 char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
-yKINE_opengl       (int a_leg, int a_seg, float a_x, float a_z, float a_y, float a_len);
+yKINE_opengl       (int a_leg, int a_seg, double a_deg, double a_x, double a_z, double a_y, double a_len);
 
 /*---(static data accessors)----------*/
 char*    yKINE_legtwo       (int a_leg);
 char*    yKINE_legcaps      (int a_leg);
 char*    yKINE_legfull      (int a_leg);
-float    yKINE_legdeg       (int a_leg);
+double   yKINE_legdeg       (int a_leg);
 char*    yKINE_segfour      (int a_seg);
 char*    yKINE_segcaps      (int a_seg);
 char*    yKINE_segfull      (int a_seg);
-float    yKINE_seglen       (int a_seg);
-float    yKINE_segmin       (int a_seg);
-float    yKINE_segmax       (int a_seg);
+double   yKINE_seglen       (int a_seg);
+double   yKINE_segmin       (int a_seg);
+double   yKINE_segmax       (int a_seg);
 
 /*---(dynamic datae accessors)--------*/
-char     yKINE_angles       (double a_leg, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi);
-char     yKINE_finalfk      (double a_leg, int a_seg, float *a_len, float *a_x, float *a_z, float *a_y);
-char     yKINE_finalgk      (double a_leg, int a_seg, float *a_len, float *a_x, float *a_z, float *a_y);
-char     yKINE_finaldiff    (double a_leg, int a_seg, float *a_len, float *a_x, float *a_z, float *a_y);
+char     yKINE_final        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_diff         (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+
+char     yKINE_final_fk     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_final_ik     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_final_gk     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_final_fvg    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_final_ivg    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_final_fvi    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+
+char     yKINE_angles       (double a_leg, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi);
 
 
 #endif

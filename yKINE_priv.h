@@ -36,25 +36,25 @@ struct cSEG {
    int       seg;
    /*---(descriptions)-------------------*/
    char      n         [12];      /* short name                               */
-   float     l;                   /* joint length                             */
-   float     min;                 /* min articulation                         */
-   float     max;                 /* max articulation                         */
-   float     mass;                /* mass of link                             */
-   float     servo;               /* mass of servo                            */
+   double    l;                   /* joint length                             */
+   double    min;                 /* min articulation                         */
+   double    max;                 /* max articulation                         */
+   double    mass;                /* mass of link                             */
+   double    servo;               /* mass of servo                            */
    long      dlist;               /* display list                             */
    /*---(lengths)------------------------*/
-   float     fl;                  /* full calculated length from center       */
-   float     sl;                  /* full calculated length of segment        */
+   double    fl;                  /* full calculated length from center       */
+   double    sl;                  /* full calculated length of segment        */
    /*---(angles)-------------------------*/
-   float     d;                   /* joint angle                              */
-   float     h, v;                /* leg segment orientation in radians       */
-   float     cd;                  /* cum joint angle                          */
-   float     ch, cv;              /* cum segment orientation in radians       */
+   double    d;                   /* joint angle                              */
+   double    h, v;                /* leg segment orientation in radians       */
+   double    cd;                  /* cum joint angle                          */
+   double    ch, cv;              /* cum segment orientation in radians       */
    /*---(flags)--------------------------*/
    char      u;                   /* leg underneath body switch               */
    /*---(coordinates)--------------------*/
-   float     x , y , z , xz;      /* segment location                         */
-   float     cx, cy, cz, cxz;     /* cumulative location                      */
+   double    x , y , z , xz;      /* segment location                         */
+   double    cx, cy, cz, cxz;     /* cumulative location                      */
    /*---(flags)--------------------------*/
    char      c;                   /* changed/updated flag                     */
    char      m;                   /* mode (i=IK, f=FK)                        */
@@ -73,13 +73,16 @@ char        yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg
 char        yKINE__thor        (int  a_num);
 char        yKINE__coxa        (int  a_num);
 char        yKINE__troc        (int  a_num);
+char        yKINE__lower       (int  a_num, int    a_meth);
 /*---(forward kinematics)----------------*/
-char        yKINE__FK_femu     (int  a_num, float a_deg);
-char        yKINE__FK_pate     (int  a_num, float a_deg);
-char        yKINE__FK_tibi     (int  a_num, float a_deg);
+char        yKINE__FK_femu     (int  a_num, double a_deg);
+char        yKINE__FK_pate     (int  a_num, double a_deg);
+char        yKINE__FK_tibi     (int  a_num, double a_deg);
+char        yKINE__FK_targ     (int  a_num, int    a_meth);
 /*---(inverse kinematics)----------------*/
-char        yKINE__target      (int  a_num, float a_x, float a_z, float a_y);
+char        yKINE__IK_targ     (int  a_num, double a_x, double a_z, double a_y);
 char        yKINE__IK_femu     (int  a_num);
+char        yKINE__IK_lower    (int  a_num);
 char        yKINE__IK_pate     (int  a_num);
 char        yKINE__IK_tibi     (int  a_num);
 /*---(shared forward/inverse)------------*/
