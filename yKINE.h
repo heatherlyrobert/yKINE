@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6k"
-#define     YKINE_VER_TXT   "improved target and lower calculations"
+#define     YKINE_VER_NUM   "0.6l"
+#define     YKINE_VER_TXT   "solved some FK issues to align with arachne"
 
 
 

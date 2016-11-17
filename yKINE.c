@@ -70,7 +70,7 @@ struct cSEGDATA {
    { "coxa"              , "coxa"  , "COXA"  ,   30.0,    0.0,    0.0,   25.0,   30.0,    0.0 },
    { "trochanter"        , "troc"  , "TROC"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "femur"             , "femu"  , "FEMU"  ,   30.0,  -85.0,   85.0,   25.0,   30.0,    0.0 },
-   { "patella"           , "pate"  , "PATE"  ,   57.0,  -45.0,   90.0,   50.0,   57.0,    0.0 },
+   { "patella"           , "pate"  , "PATE"  ,   57.0,  -90.0,   45.0,   50.0,   57.0,    0.0 },
    { "tibia"             , "tibi"  , "TIBI"  ,  130.0,   10.0,  130.0,  100.0,  130.0,    0.0 },
    { "metatarsus"        , "meta"  , "META"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "tarsus"            , "tars"  , "TARS"  ,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
@@ -200,6 +200,58 @@ yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_typ
    a_curr->p      =   'n';
    a_curr->m      =   'i';
    a_curr->c      =   'n';
+   /*---(complete)-----------------------*/
+   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char       /*----: clear most recent kinematics working data -----------------*/
+yKINE__wipe        (int  a_leg, int a_meth)
+{
+   /*---(locals)-----------+-----------+-*/
+   tSEG       *x_leg       = NULL;
+   char        rce         = -10;      /* return code for errors              */
+   int         i           =   0;
+   /*---(header)-------------------------*/
+   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_KINE   yLOG_value   ("a_leg"     , a_leg);
+   /*---(defense)------------------------*/
+   --rce;  if (a_leg < 0 || a_leg > YKINE_MAX_LEGS) {
+      DEBUG_KINE   yLOG_note    ("leg number is out of range");
+      DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(test and set)-------------------*/
+   if (a_meth == YKINE_FK)  x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);
+   if (a_meth == YKINE_IK)  x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);
+   if (a_meth == YKINE_GK)  x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);
+   /*---(clear)--------------------------*/
+   for (i = 0; i < YKINE_MAX_SEGS; ++i) {
+      /*---(distances)----------------------*/
+      x_leg [i].fl     =   0.0;
+      x_leg [i].sl     =   0.0;
+      /*---(angles)-------------------------*/
+      if (i > YKINE_TROC)  x_leg [i].d      =   0.0;
+      x_leg [i].h      =   0.0;
+      x_leg [i].v      =   0.0;
+      x_leg [i].cd     =   0.0;
+      x_leg [i].ch     =   0.0;
+      x_leg [i].cv     =   0.0;
+      /*---(flags)--------------------------*/
+      x_leg [i].u      =   '-';
+      /*---(coordinates)--------------------*/
+      x_leg [i].x      =   0.0;
+      x_leg [i].z      =   0.0;
+      x_leg [i].xz     =   0.0;
+      x_leg [i].y      =   0.0;
+      x_leg [i].cx     =   0.0;
+      x_leg [i].cz     =   0.0;
+      x_leg [i].cy     =   0.0;
+      /*---(control)------------------------*/
+      x_leg [i].p      =   'n';
+      x_leg [i].m      =   'i';
+      x_leg [i].c      =   'n';
+   }
    /*---(complete)-----------------------*/
    DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1240,6 +1292,8 @@ static void      o___MAIN____________________o (void) {;};
 char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
 yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
 {
+   /*---(clear)--------------------------*/
+   yKINE__wipe     (a_num, YKINE_FK);
    /*---(fixed body)---------------------*/
    yKINE__thor     (a_num);
    yKINE__coxa     (a_num);
@@ -1262,6 +1316,8 @@ yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
 yKINE_inverse      (int a_num, double a_x, double a_z, double a_y)
 {
+   /*---(clear)--------------------------*/
+   yKINE__wipe     (a_num, YKINE_IK);
    /*---(target setting)-----------------*/
    yKINE__IK_targ  (a_num, a_x, a_z, a_y);
    /*---(fixed body)---------------------*/
