@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6n"
-#define     YKINE_VER_TXT   "updated accessors to provide complete unit testing data"
+#define     YKINE_VER_NUM   "0.6o"
+#define     YKINE_VER_TXT   "fix lower leg function to be both IK and FK"
 
 
 
@@ -311,14 +311,6 @@ char     yKINE_segment      (int a_leg, int a_seg, int a_type, double *a_deg, do
 char     yKINE_angle        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_v, double *a_h);
 char     yKINE_enddiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
 char     yKINE_segdiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-
-char     yKINE_final_fk     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-char     yKINE_final_ik     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-char     yKINE_final_gk     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-char     yKINE_final_fvg    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-char     yKINE_final_ivg    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-char     yKINE_final_fvi    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-
 char     yKINE_angles       (double a_leg, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi);
 
 
