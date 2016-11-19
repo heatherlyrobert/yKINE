@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6m"
-#define     YKINE_VER_TXT   "added a forgiveness to IK servo limits for rounding"
+#define     YKINE_VER_NUM   "0.6n"
+#define     YKINE_VER_TXT   "updated accessors to provide complete unit testing data"
 
 
 
@@ -306,8 +306,11 @@ double   yKINE_segmin       (int a_seg);
 double   yKINE_segmax       (int a_seg);
 
 /*---(dynamic datae accessors)--------*/
-char     yKINE_final        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-char     yKINE_diff         (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_endpoint     (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_segment      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_angle        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_v, double *a_h);
+char     yKINE_enddiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
+char     yKINE_segdiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
 
 char     yKINE_final_fk     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
 char     yKINE_final_ik     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);

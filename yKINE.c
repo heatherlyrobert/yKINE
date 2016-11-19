@@ -1369,7 +1369,7 @@ yKINE_inverse      (int a_num, double a_x, double a_z, double a_y)
 static void      o___DYNAMIC_________________o (void) {;};
 
 char
-yKINE_final        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+yKINE_endpoint     (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -1390,7 +1390,48 @@ yKINE_final        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_l
 }
 
 char
-yKINE_diff         (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+yKINE_segment      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+{
+   /*---(locals)-----------+-----------+-*/
+   tSEG       *x_leg       = NULL;
+   /*---(set the leg)--------------------*/
+   switch (a_type) {
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   }
+   /*---(return actuals)-----------------*/
+   if (a_deg  != NULL)  *a_deg  = x_leg [a_seg].d;
+   if (a_len  != NULL)  *a_len  = x_leg [a_seg].l;
+   if (a_x    != NULL)  *a_x    = x_leg [a_seg].x;
+   if (a_z    != NULL)  *a_z    = x_leg [a_seg].z;
+   if (a_y    != NULL)  *a_y    = x_leg [a_seg].y;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINE_angle        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_v, double *a_h)
+{
+   /*---(locals)-----------+-----------+-*/
+   tSEG       *x_leg       = NULL;
+   /*---(set the leg)--------------------*/
+   switch (a_type) {
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   }
+   /*---(return actuals)-----------------*/
+   if (a_deg  != NULL)  *a_deg  = x_leg [a_seg].d;
+   if (a_len  != NULL)  *a_len  = x_leg [a_seg].l;
+   if (a_v    != NULL)  *a_v    = x_leg [a_seg].cv;
+   if (a_h    != NULL)  *a_h    = x_leg [a_seg].ch;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINE_enddiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -1412,68 +1453,24 @@ yKINE_diff         (int a_leg, int a_seg, int a_type, double *a_deg, double *a_l
 }
 
 char
-yKINE_final_fk     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+yKINE_segdiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
 {
-   if (a_deg  != NULL)  *a_deg  = fk [(int) a_leg][a_seg].d;
-   if (a_len  != NULL)  *a_len  = fk [(int) a_leg][a_seg].fl;
-   if (a_x    != NULL)  *a_x    = fk [(int) a_leg][a_seg].cx;
-   if (a_z    != NULL)  *a_z    = fk [(int) a_leg][a_seg].cz;
-   if (a_y    != NULL)  *a_y    = fk [(int) a_leg][a_seg].cy;
-   return 0;
-}
-
-char
-yKINE_final_ik     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
-{
-   if (a_deg  != NULL)  *a_deg  = ik [(int) a_leg][a_seg].d;
-   if (a_len  != NULL)  *a_len  = ik [(int) a_leg][a_seg].fl;
-   if (a_x    != NULL)  *a_x    = ik [(int) a_leg][a_seg].cx;
-   if (a_z    != NULL)  *a_z    = ik [(int) a_leg][a_seg].cz;
-   if (a_y    != NULL)  *a_y    = ik [(int) a_leg][a_seg].cy;
-   return 0;
-}
-
-char
-yKINE_final_gk     (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
-{
-   if (a_deg  != NULL)  *a_deg  = fk [(int) a_leg][a_seg].d;
-   if (a_len  != NULL)  *a_len  = gk [(int) a_leg][a_seg].fl;
-   if (a_x    != NULL)  *a_x    = gk [(int) a_leg][a_seg].cx;
-   if (a_z    != NULL)  *a_z    = gk [(int) a_leg][a_seg].cz;
-   if (a_y    != NULL)  *a_y    = gk [(int) a_leg][a_seg].cy;
-   return 0;
-}
-
-char
-yKINE_final_fvg    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
-{
-   if (a_deg  != NULL)  *a_deg  = fk [(int) a_leg][a_seg].d  - gk [(int) a_leg][a_seg].d;
-   if (a_len  != NULL)  *a_len  = fk [(int) a_leg][a_seg].fl - gk [(int) a_leg][a_seg].fl;
-   if (a_x    != NULL)  *a_x    = fk [(int) a_leg][a_seg].cx - gk [(int) a_leg][a_seg].cx;
-   if (a_z    != NULL)  *a_z    = fk [(int) a_leg][a_seg].cz - gk [(int) a_leg][a_seg].cz;
-   if (a_y    != NULL)  *a_y    = fk [(int) a_leg][a_seg].cy - gk [(int) a_leg][a_seg].cy;
-   return 0;
-}
-
-char
-yKINE_final_ivg    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
-{
-   if (a_deg  != NULL)  *a_deg  = ik [(int) a_leg][a_seg].d  - gk [(int) a_leg][a_seg].d;
-   if (a_len  != NULL)  *a_len  = ik [(int) a_leg][a_seg].fl - gk [(int) a_leg][a_seg].fl;
-   if (a_x    != NULL)  *a_x    = ik [(int) a_leg][a_seg].cx - gk [(int) a_leg][a_seg].cx;
-   if (a_z    != NULL)  *a_z    = ik [(int) a_leg][a_seg].cz - gk [(int) a_leg][a_seg].cz;
-   if (a_y    != NULL)  *a_y    = ik [(int) a_leg][a_seg].cy - gk [(int) a_leg][a_seg].cy;
-   return 0;
-}
-
-char
-yKINE_final_fvi    (double a_leg, int a_seg, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
-{
-   if (a_deg  != NULL)  *a_deg  = fk [(int) a_leg][a_seg].d  - ik [(int) a_leg][a_seg].d;
-   if (a_len  != NULL)  *a_len  = fk [(int) a_leg][a_seg].fl - ik [(int) a_leg][a_seg].fl;
-   if (a_x    != NULL)  *a_x    = fk [(int) a_leg][a_seg].cx - ik [(int) a_leg][a_seg].cx;
-   if (a_z    != NULL)  *a_z    = fk [(int) a_leg][a_seg].cz - ik [(int) a_leg][a_seg].cz;
-   if (a_y    != NULL)  *a_y    = fk [(int) a_leg][a_seg].cy - ik [(int) a_leg][a_seg].cy;
+   /*---(locals)-----------+-----------+-*/
+   tSEG       *x_leg       = NULL;
+   /*---(set the leg)--------------------*/
+   switch (a_type) {
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   default        : return -1;
+   }
+   /*---(return actuals)-----------------*/
+   if (a_deg  != NULL)  *a_deg  = x_leg [a_seg].d  - gk [(int) a_leg][a_seg].d;
+   if (a_len  != NULL)  *a_len  = x_leg [a_seg].l  - gk [(int) a_leg][a_seg].l;
+   if (a_x    != NULL)  *a_x    = x_leg [a_seg].x  - gk [(int) a_leg][a_seg].x;
+   if (a_z    != NULL)  *a_z    = x_leg [a_seg].z  - gk [(int) a_leg][a_seg].z;
+   if (a_y    != NULL)  *a_y    = x_leg [a_seg].y  - gk [(int) a_leg][a_seg].y;
+   /*---(complete)-----------------------*/
    return 0;
 }
 
@@ -1603,7 +1600,7 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
             fk[a_leg][a_seg].d , fk[a_leg][a_seg].cv, fk[a_leg][a_seg].ch);
    }
    else if (strcmp(a_question, "FK_seg_size"      ) == 0) {
-      sprintf(unit_answer, "FM-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+      sprintf(unit_answer, "FM-%-7.7s seg :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
             fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
             fk[a_leg][a_seg].x , fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
    }
@@ -1618,7 +1615,7 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
             ik[a_leg][a_seg].d , ik[a_leg][a_seg].cv, ik[a_leg][a_seg].ch);
    }
    else if (strcmp(a_question, "IK_seg_size"      ) == 0) {
-      sprintf(unit_answer, "IM-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+      sprintf(unit_answer, "IM-%-7.7s seg :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
             ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
             ik[a_leg][a_seg].x , ik[a_leg][a_seg].z, ik[a_leg][a_seg].y);
    }
