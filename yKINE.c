@@ -490,7 +490,12 @@ static void      o___DRIVERS_________________o (void) {;}
 
 char
 yKINE__femu        (int  a_num, double a_deg, int a_meth)
-{
+{  /*---(design notes)-------------------*/
+   /*
+    *   expand degree range by +/-1 degree to accomodate IK appoximations
+    *
+    *
+    */
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
    double      x,  y,  z;              /* coordintates                        */
@@ -499,26 +504,29 @@ yKINE__femu        (int  a_num, double a_deg, int a_meth)
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
    double      xz, sl, fl;             /* lengths in xz, seg, and full        */
+   double      x_forgive   = 0.0;
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_KINE   yLOG_enter   (__FUNCTION__);
    DEBUG_KINE   yLOG_value   ("a_leg"     , a_num);
    DEBUG_KINE   yLOG_double  ("a_deg"     , a_deg);
-   DEBUG_KINE   yLOG_value   ("a_meth"    , a_meth);
+   DEBUG_KINE   yLOG_info    ("a_meth"    , (a_meth == YKINE_FK) ? "FK" : "IK");
    /*---(defense)------------------------*/
    --rce;  if (a_num < 0 || a_num > YKINE_MAX_LEGS) {
       DEBUG_KINE   yLOG_note    ("leg number is out of range");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
+   if (a_meth == YKINE_IK)   x_forgive = 0.5;
+   DEBUG_KINE   yLOG_double  ("IK forgive", x_forgive);
    DEBUG_KINE   yLOG_double  ("min deg"   , seg_data [YKINE_FEMU].min);
-   --rce;  if (a_deg < seg_data [YKINE_FEMU].min) {
+   --rce;  if (a_deg <= seg_data [YKINE_FEMU].min - x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is less than minimum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    DEBUG_KINE   yLOG_double  ("max deg"   , seg_data [YKINE_FEMU].max);
-   --rce;  if (a_deg > seg_data [YKINE_FEMU].max) {
+   --rce;  if (a_deg >= seg_data [YKINE_FEMU].max + x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is greater than maximum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -564,7 +572,12 @@ yKINE__femu        (int  a_num, double a_deg, int a_meth)
 
 char
 yKINE__pate        (int  a_num, double a_deg, int a_meth)
-{
+{  /*---(design notes)-------------------*/
+   /*
+    *   expand degree range by +/-1 degree to accomodate IK appoximations
+    *
+    *
+    */
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
    double      x,  y,  z;              /* coordintates                        */
@@ -573,6 +586,7 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
    double      xz, sl, fl;             /* lengths in xz, seg, and full        */
+   double      x_forgive   = 0.0;
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_KINE   yLOG_enter   (__FUNCTION__);
@@ -585,14 +599,16 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
+   if (a_meth == YKINE_IK)   x_forgive = 0.5;
+   DEBUG_KINE   yLOG_double  ("IK forgive", x_forgive);
    DEBUG_KINE   yLOG_double  ("min deg"   , seg_data [YKINE_PATE].min);
-   --rce;  if (a_deg < seg_data [YKINE_PATE].min) {
+   --rce;  if (a_deg <= seg_data [YKINE_PATE].min - x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is less than minimum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    DEBUG_KINE   yLOG_double  ("max deg"   , seg_data [YKINE_PATE].max);
-   --rce;  if (a_deg > seg_data [YKINE_PATE].max) {
+   --rce;  if (a_deg >= seg_data [YKINE_PATE].max + x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is greater than maximum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -638,7 +654,12 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
 
 char
 yKINE__tibi        (int  a_num, double a_deg, int a_meth)
-{
+{  /*---(design notes)-------------------*/
+   /*
+    *   expand degree range by +/-1 degree to accomodate IK appoximations
+    *
+    *
+    */
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
    double      x,  y,  z;              /* coordintates                        */
@@ -647,6 +668,7 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
    double      xz, sl, fl;             /* lengths in xz, seg, and full        */
+   double      x_forgive   = 0.0;
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_KINE   yLOG_enter   (__FUNCTION__);
@@ -659,14 +681,16 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
+   if (a_meth == YKINE_IK)   x_forgive = 0.5;
+   DEBUG_KINE   yLOG_double  ("IK forgive", x_forgive);
    DEBUG_KINE   yLOG_double  ("min deg"   , seg_data [YKINE_TIBI].min);
-   --rce;  if (a_deg < seg_data [YKINE_TIBI].min) {
+   --rce;  if (a_deg <= seg_data [YKINE_TIBI].min - x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is less than minimum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    DEBUG_KINE   yLOG_double  ("max deg"   , seg_data [YKINE_TIBI].max);
-   --rce;  if (a_deg > seg_data [YKINE_TIBI].max) {
+   --rce;  if (a_deg >= seg_data [YKINE_TIBI].max + x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is greater than maximum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -1275,8 +1299,8 @@ yKINE_opengl       (int a_leg, int a_seg, double a_deg, double a_x, double a_z, 
    x_leg [a_seg].xz  = sqrt ((a_len * a_len) - (x_y * x_y));
    /*---(target)-------------------------*/
    if (a_seg == YKINE_TIBI) {
-      yKINE__FK_targ (a_leg, YKINE_GK);
-      yKINE__lower   (a_leg, YKINE_GK);
+      yKINE__FK_targ  (a_leg, YKINE_GK);
+      yKINE__lower    (a_leg, YKINE_GK);
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -1299,9 +1323,9 @@ yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
    yKINE__coxa     (a_num);
    yKINE__troc     (a_num);
    /*---(movable)------------------------*/
-   yKINE__FK_femu  (a_num, a_femu);
-   yKINE__FK_pate  (a_num, a_pate);
-   yKINE__FK_tibi  (a_num, a_tibi);
+   yKINE__femu     (a_num, a_femu, YKINE_FK);
+   yKINE__pate     (a_num, a_pate, YKINE_FK);
+   yKINE__tibi     (a_num, a_tibi, YKINE_FK);
    /*---(target setting)-----------------*/
    yKINE__FK_targ  (a_num, YKINE_FK);
    yKINE__lower    (a_num, YKINE_FK);
@@ -1573,6 +1597,40 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
             fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
             fk[a_leg][a_seg].cx, fk[a_leg][a_seg].cz, fk[a_leg][a_seg].cy);
    }
+   else if (strcmp(a_question, "FK_seg_angle"     ) == 0) {
+      sprintf(unit_answer, "FK-%-7.7s ang :%8.1fm,%8.1fd,%8.3fv,%8.3fh", 
+            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
+            fk[a_leg][a_seg].d , fk[a_leg][a_seg].cv, fk[a_leg][a_seg].ch);
+   }
+   else if (strcmp(a_question, "FK_seg_size"      ) == 0) {
+      sprintf(unit_answer, "FM-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
+            fk[a_leg][a_seg].x , fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
+   }
+   else if (strcmp(a_question, "FK_seg_end"       ) == 0) {
+      sprintf(unit_answer, "FK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
+            fk[a_leg][a_seg].cx, fk[a_leg][a_seg].cz, fk[a_leg][a_seg].cy);
+   }
+   else if (strcmp(a_question, "IK_seg_angle"     ) == 0) {
+      sprintf(unit_answer, "IK-%-7.7s ang :%8.1fm,%8.1fd,%8.3fv,%8.3fh", 
+            ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
+            ik[a_leg][a_seg].d , ik[a_leg][a_seg].cv, ik[a_leg][a_seg].ch);
+   }
+   else if (strcmp(a_question, "IK_seg_size"      ) == 0) {
+      sprintf(unit_answer, "IM-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+            ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
+            ik[a_leg][a_seg].x , ik[a_leg][a_seg].z, ik[a_leg][a_seg].y);
+   }
+   else if (strcmp(a_question, "IK_seg_end"       ) == 0) {
+      sprintf(unit_answer, "IK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+            ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
+            ik[a_leg][a_seg].cx, ik[a_leg][a_seg].cz, ik[a_leg][a_seg].cy);
+   }
+
+
+
+
    else if (strcmp(a_question, "FK_angles"     ) == 0) {
       sprintf(unit_answer, "%-10.10s deg :%8.1fm,%8.1fd,%8.3fv,%8.3fh", 
             fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,

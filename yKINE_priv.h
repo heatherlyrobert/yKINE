@@ -78,6 +78,7 @@ char        yKINE__lower       (int  a_num, int    a_meth);
 char        yKINE__FK_femu     (int  a_num, double a_deg);
 char        yKINE__FK_pate     (int  a_num, double a_deg);
 char        yKINE__FK_tibi     (int  a_num, double a_deg);
+char        yKINE__FK_lower    (int  a_num, int    a_meth);
 char        yKINE__FK_targ     (int  a_num, int    a_meth);
 /*---(inverse kinematics)----------------*/
 char        yKINE__IK_targ     (int  a_num, double a_x, double a_z, double a_y);
