@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6q"
-#define     YKINE_VER_TXT   "got the DEBUG_TOPS playing nice on unit testing"
+#define     YKINE_VER_NUM   "0.6r"
+#define     YKINE_VER_TXT   "totally fixed the femur IK problem in all positions"
 
 
 

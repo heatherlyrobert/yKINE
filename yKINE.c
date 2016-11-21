@@ -1032,21 +1032,32 @@ yKINE__IK_femu     (int a_leg)
    x    =  x_leg [YKINE_TARG].cx          - x_leg [YKINE_TROC].cx;
    z    =  x_leg [YKINE_TARG].cz          - x_leg [YKINE_TROC].cz;
    xz   =  sqrt  ((x * x) + (z * z));
-   if (fabs (xz) <= 5.0) {
-      x_saved = 'Y';
-      d    =  s_femu_prev [a_leg];
-   } else {
+   /*> if (fabs (xz) <= 10.0) {                                                       <* 
+    *>    x_saved = 'Y';                                                              <* 
+    *>    d    =  s_femu_prev [a_leg];                                                <* 
+    *> } else {                                                                       <*/
       x_saved = '-';
       d    = (atan2 (-z, x) * RAD2DEG) - x_leg [YKINE_TROC].cd;
       s_femu_prev [a_leg] = d;
-   }
-   DEBUG_KINE   yLOG_complex ("femu"     , "%6.1fx , %6.1fz , %6.1fxz, saved=%c, %6.1fd ", x, z, xz, x_saved, d);
+   /*> }                                                                              <*/
+   DEBUG_KINE   yLOG_complex ("femu"     , "%6.1fx , %6.1fz , %6.1fxz, saved=%c, %8.3fd ", x, z, xz, x_saved, d);
    /*----(adjust direction)--------------*/
-   if      (d >  180.0) { d =  d - 360.0;  x_leg [YKINE_FEMU].u     = '-'; }
-   else if (d >   90.0) { d =  d - 180.0;  x_leg [YKINE_FEMU].u     = 'y'; }
-   else if (d < -180.0) { d =  360.0 + d;  x_leg [YKINE_FEMU].u     = '-'; }
-   else if (d <  -90.0) { d =  180.0 + d;  x_leg [YKINE_FEMU].u     = 'y'; }
-   else                                    x_leg [YKINE_FEMU].u     = '-';
+   while (d  <=  -360.0) d += 360.0;
+   while (d  >=   360.0) d -= 360.0;
+   DEBUG_KINE   yLOG_double  ("fixed d"   , d);
+   /*----(adjust direction)--------------*/
+   /*> if      (d >  180.0) { d =  d - 360.0;  x_leg [YKINE_FEMU].u     = '-'; }      <* 
+    *> else if (d >   90.0) { d =  d - 180.0;  x_leg [YKINE_FEMU].u     = 'y'; }      <* 
+    *> else if (d < -180.0) { d =  360.0 + d;  x_leg [YKINE_FEMU].u     = '-'; }      <* 
+    *> else if (d <  -90.0) { d =  180.0 + d;  x_leg [YKINE_FEMU].u     = 'y'; }      <* 
+    *> else                                    x_leg [YKINE_FEMU].u     = '-';        <*/
+   /*----(adjust direction)--------------*/
+   if      (d >  270.0) { d = d - 360.0;  x_leg [YKINE_FEMU].u     = '-'; }
+   if      (d >   90.0) { d = d - 180.0;  x_leg [YKINE_FEMU].u     = 'y'; }
+   else if (d >    0.0) { d = d        ;  x_leg [YKINE_FEMU].u     = '-'; }
+   else if (d >  -90.0) { d = d        ;  x_leg [YKINE_FEMU].u     = '-'; }
+   else if (d > -270.0) { d = 180.0 + d;  x_leg [YKINE_FEMU].u     = 'y'; }
+   else                 { d = 360.0 + d;  x_leg [YKINE_FEMU].u     = '-'; }     
    DEBUG_KINE   yLOG_double  ("new d"     , d);
    DEBUG_KINE   yLOG_char    ("femu u"    , x_leg [YKINE_FEMU].u);
    /*----(save)--------------------------*/

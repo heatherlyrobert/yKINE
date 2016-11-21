@@ -32,7 +32,7 @@ tLOCAL yKINE_its;
 
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS
-#define DEBUG_TOPS   if (yKINEyKINE__its.unit  == 'y')
+#define     DEBUG_TOPS     if (yKINE_its.unit  == 'y')
 #endif
 
 
