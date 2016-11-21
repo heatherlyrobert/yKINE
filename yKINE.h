@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6o"
-#define     YKINE_VER_TXT   "fix lower leg function to be both IK and FK"
+#define     YKINE_VER_NUM   "0.6p"
+#define     YKINE_VER_TXT   "added femur save and update tests to trunc millimeters"
 
 
 
@@ -270,9 +270,8 @@
 #define     YKINE_HOOK      13
 #define     YKINE_ORIG      14
 #define     YKINE_TARG      15
-#define     YKINE_LEGN      16
-#define     YKINE_LOWR      17
-#define     YKINE_CALC      18
+#define     YKINE_LOWR      16
+#define     YKINE_CALC      17
 
 
 

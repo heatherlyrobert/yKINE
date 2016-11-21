@@ -73,12 +73,13 @@ char        yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg
 char        yKINE__thor        (int  a_num);
 char        yKINE__coxa        (int  a_num);
 char        yKINE__troc        (int  a_num);
-char        yKINE__lower       (int  a_num, int    a_meth);
 /*---(forward kinematics)----------------*/
-char        yKINE__FK_femu     (int  a_num, double a_deg);
-char        yKINE__FK_pate     (int  a_num, double a_deg);
-char        yKINE__FK_tibi     (int  a_num, double a_deg);
-char        yKINE__FK_targ     (int  a_num, int    a_meth);
+double      yKINE__femu_path   (int  a_leg, double a_deg, int a_meth);
+char        yKINE__femu        (int  a_num, double a_deg, int a_meth);
+char        yKINE__pate        (int  a_num, double a_deg, int a_meth);
+char        yKINE__tibi        (int  a_num, double a_deg, int a_meth);
+char        yKINE__lowr        (int  a_num, int    a_meth);
+char        yKINE__targ        (int  a_num, int    a_meth);
 /*---(inverse kinematics)----------------*/
 char        yKINE__IK_targ     (int  a_num, double a_x, double a_z, double a_y);
 char        yKINE__IK_femu     (int  a_num);
