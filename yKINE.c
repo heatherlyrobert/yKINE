@@ -6,14 +6,7 @@
 
 
 
-typedef struct cLOCAL tLOCAL;
-struct cLOCAL {
-   /*---(overall)-----------*/
-   char        debug;
-   int         logger;
-};
-static tLOCAL its;
-#define     DEBUG_KINE     if (its.debug == 'y')
+
 
 char        yKINE_ver     [500];
 
@@ -121,8 +114,19 @@ char         /*--> set debugging mode --------------------[ ------ [ ------ ]-*/
 yKINE_debug        (char a_flag)
 {
    /*---(set debug flag)-----------------*/
-   if   (a_flag == 'y')  its.debug   = 'y';
-   else                  its.debug   = '-';
+   if        (a_flag == 'A') {
+      yKINE_its.debug   = 'y';
+      yKINE_its.unit    = 'y';
+   } else if (a_flag == 'y')  {
+      yKINE_its.debug   = 'y';
+      yKINE_its.unit    = '-';
+   } else if (a_flag == 'u')  {
+      yKINE_its.debug   = '-';
+      yKINE_its.unit    = 'y';
+   } else {
+      yKINE_its.debug   = '-';
+      yKINE_its.unit    = '-';
+   }
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -164,8 +168,6 @@ yKINE_init         (char a_type)
 char       /*----: set segment kimematics to defaults ------------------------*/
 yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type)
 {
-   /*---(header)-------------------------*/
-   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
    /*---(defenses)-----------------------*/
    if (strlen(a_name) != 2)                   return -1;
    if (a_curr  == NULL)                       return -2;
@@ -203,8 +205,6 @@ yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_typ
    a_curr->p      =   'n';
    a_curr->m      =   'i';
    a_curr->c      =   'n';
-   /*---(complete)-----------------------*/
-   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -1604,16 +1604,16 @@ char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__testquiet   (void)
 {
    yKINE_debug ('-');
-   its.logger = yLOG_begin    ("yKINE" , yLOG_SYSTEM, yLOG_QUIET);
+   yKINE_its.logger = yLOG_begin    ("yKINE" , yLOG_SYSTEM, yLOG_QUIET);
    return 0;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__testloud    (void)
 {
-   yKINE_debug ('y');
-   its.logger = yLOG_begin    ("yKINE" , yLOG_SYSTEM, yLOG_NOISE);
-   DEBUG_KINE   yLOG_info     ("yKINE" , yKINE_version   ());
+   yKINE_debug ('A');
+   yKINE_its.logger = yLOG_begin    ("yKINE" , yLOG_SYSTEM, yLOG_NOISE);
+   DEBUG_TOPS   yLOG_info     ("yKINE" , yKINE_version   ());
    return 0;
 }
 

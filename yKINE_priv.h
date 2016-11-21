@@ -16,15 +16,25 @@
 
 
 /*===[[ HEADER GUARD ]]===================================*/
-#ifndef yKINE_PRIV
-#define yKINE_PRIV yes
+/*> #ifndef yKINE_PRIV                                                                <*/
+/*> #define yKINE_PRIV yes                                                            <*/
 
 
+typedef struct cLOCAL tLOCAL;
+struct cLOCAL {
+   /*---(overall)-----------*/
+   char        unit;
+   char        debug;
+   int         logger;
+};
+tLOCAL yKINE_its;
+#define     DEBUG_KINE     if (yKINE_its.debug == 'y')
 
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS
-#define DEBUG_TOPS   if (1 == 0)
+#define DEBUG_TOPS   if (yKINEyKINE__its.unit  == 'y')
 #endif
+
 
 
 
@@ -98,5 +108,5 @@ char        yKINE__testend     (void);
 
 
 
-#endif
+/*> #endif                                                                            <*/
 /*============================[[    end-code    ]]============================*/
