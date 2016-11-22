@@ -21,7 +21,6 @@ tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinematics        
 tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinematics        */
 tSEG      gk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* opengl kinematics         */
 
-double    s_femu_prev [YKINE_MAX_LEGS];     /* to help smooth/predict femur IK  */
 
 
 
@@ -158,7 +157,6 @@ yKINE_init         (char a_type)
          yKINE__clear ( &(ik [x_leg][x_seg]), "ik", x_leg, x_seg, a_type);
          yKINE__clear ( &(gk [x_leg][x_seg]), "gk", x_leg, x_seg, a_type);
       }
-      s_femu_prev [x_leg] = 0.0;
    }
    /*---(complete)-----------------------*/
    yLOG_exit    (__FUNCTION__);
@@ -507,7 +505,7 @@ yKINE__femu        (int  a_num, double a_deg, int a_meth)
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
    double      xz, sl, fl;             /* lengths in xz, seg, and full        */
-   double      x_forgive   = 0.1;
+   double      x_forgive   = 0.0;
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_KINE   yLOG_enter   (__FUNCTION__);
@@ -523,13 +521,13 @@ yKINE__femu        (int  a_num, double a_deg, int a_meth)
    if (a_meth == YKINE_IK)   x_forgive = 0.5;
    DEBUG_KINE   yLOG_double  ("IK forgive", x_forgive);
    DEBUG_KINE   yLOG_double  ("min deg"   , seg_data [YKINE_FEMU].min);
-   --rce;  if (a_deg <= seg_data [YKINE_FEMU].min - x_forgive) {
+   --rce;  if (a_deg <  seg_data [YKINE_FEMU].min - x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is less than minimum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    DEBUG_KINE   yLOG_double  ("max deg"   , seg_data [YKINE_FEMU].max);
-   --rce;  if (a_deg >= seg_data [YKINE_FEMU].max + x_forgive) {
+   --rce;  if (a_deg >  seg_data [YKINE_FEMU].max + x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is greater than maximum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -623,15 +621,18 @@ yKINE__lowr        (int  a_num, int a_meth)
    /*---(check tibia orientation)--------*/
    d    = (atan2 (-z, x) * RAD2DEG) - x_leg [YKINE_COXA].d;
    /*----(adjust direction)--------------*/
-   while (round (d) <    0.0) d += 360.0;
-   while (round (d) >= 360.0) d -= 360.0;
+   while (d  <=  -360.0) d += 360.0;
+   while (d  >=   360.0) d -= 360.0;
+   DEBUG_KINE   yLOG_double  ("fixed d"   , d);
+   /*----(adjust direction)--------------*/
+   if      (d >  270.0) { d = d - 360.0;  x_leg [YKINE_PATE].u     = '-'; }
+   if      (d >   90.0) { d = d - 180.0;  x_leg [YKINE_PATE].u     = 'y'; }
+   else if (d >    0.0) { d = d        ;  x_leg [YKINE_PATE].u     = '-'; }
+   else if (d >  -90.0) { d = d        ;  x_leg [YKINE_PATE].u     = '-'; }
+   else if (d > -270.0) { d = 180.0 + d;  x_leg [YKINE_PATE].u     = 'y'; }
+   else                 { d = 360.0 + d;  x_leg [YKINE_PATE].u     = '-'; }     
    DEBUG_KINE   yLOG_double  ("another d" , d);
-   if      (d >  180.0) x_leg [YKINE_TIBI].u     = '-';
-   else if (d >   90.0) x_leg [YKINE_TIBI].u     = 'y';
-   else if (d < -180.0) x_leg [YKINE_TIBI].u     = '-';
-   else if (d <  -90.0) x_leg [YKINE_TIBI].u     = 'y';
-   else                 x_leg [YKINE_TIBI].u     = '-';
-   DEBUG_KINE   yLOG_char    ("tibia u"   , x_leg [YKINE_TIBI].u);
+   DEBUG_KINE   yLOG_char    ("under pate", x_leg [YKINE_PATE].u);
    /*---(complete)-----------------------*/
    DEBUG_KINE   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -669,13 +670,13 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
    if (a_meth == YKINE_IK)   x_forgive = 0.5;
    DEBUG_KINE   yLOG_double  ("IK forgive", x_forgive);
    DEBUG_KINE   yLOG_double  ("min deg"   , seg_data [YKINE_PATE].min);
-   --rce;  if (a_deg <= seg_data [YKINE_PATE].min - x_forgive) {
+   --rce;  if (a_deg <  seg_data [YKINE_PATE].min - x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is less than minimum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    DEBUG_KINE   yLOG_double  ("max deg"   , seg_data [YKINE_PATE].max);
-   --rce;  if (a_deg >= seg_data [YKINE_PATE].max + x_forgive) {
+   --rce;  if (a_deg >  seg_data [YKINE_PATE].max + x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is greater than maximum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -751,13 +752,13 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
    if (a_meth == YKINE_IK)   x_forgive = 0.5;
    DEBUG_KINE   yLOG_double  ("IK forgive", x_forgive);
    DEBUG_KINE   yLOG_double  ("min deg"   , seg_data [YKINE_TIBI].min);
-   --rce;  if (a_deg <= seg_data [YKINE_TIBI].min - x_forgive) {
+   --rce;  if (a_deg <  seg_data [YKINE_TIBI].min - x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is less than minimum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    DEBUG_KINE   yLOG_double  ("max deg"   , seg_data [YKINE_TIBI].max);
-   --rce;  if (a_deg >= seg_data [YKINE_TIBI].max + x_forgive) {
+   --rce;  if (a_deg >  seg_data [YKINE_TIBI].max + x_forgive) {
       DEBUG_KINE   yLOG_note    ("degree is greater than maximum");
       DEBUG_KINE   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -993,11 +994,6 @@ yKINE__IK_targ     (int a_num, double a_x, double a_z, double a_y)
    xz   =  x_leg [YKINE_TARG].xz  =  x_leg [YKINE_TARG].cxz = sqrt  ((x * x) + (z * z));
    DEBUG_KINE   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(calc basics)--------------------*/
-   /*> ch   =  x_leg [YKINE_TARG].h    =  x_leg [YKINE_TARG].ch   = atan2 (-z, x);           <* 
-    *> if (ch < 0.0) {                                                                       <* 
-    *>    ch   =  x_leg [YKINE_TARG].h    =  x_leg [YKINE_TARG].ch   =  (M_PI * 2.0) + ch;   <* 
-    *> }                                                                                     <* 
-    *> cv   =  x_leg [YKINE_TARG].v    =  x_leg [YKINE_TARG].cv   = atan2 (-y, xz);          <*/
    fl   =  x_leg [YKINE_TARG].sl   =  x_leg [YKINE_TARG].fl   = sqrt  ((x * x) + (z * z) + (y * y));
    DEBUG_KINE   yLOG_complex ("basics"   , "%6.3fcv, %6.3fch, %6.1ffl",  cv, ch, fl);
    /*---(complete)-----------------------*/
@@ -1015,7 +1011,6 @@ yKINE__IK_femu     (int a_leg)
    double      x,  y,  z;              /* coordintates                        */
    double      xz;                     /* xz plane length                     */
    tSEG       *x_leg       = NULL;
-   char        x_saved     = '-';
    /*---(header)-------------------------*/
    DEBUG_KINE   yLOG_enter   (__FUNCTION__);
    DEBUG_KINE   yLOG_value   ("a_leg"     , a_leg);
@@ -1032,25 +1027,12 @@ yKINE__IK_femu     (int a_leg)
    x    =  x_leg [YKINE_TARG].cx          - x_leg [YKINE_TROC].cx;
    z    =  x_leg [YKINE_TARG].cz          - x_leg [YKINE_TROC].cz;
    xz   =  sqrt  ((x * x) + (z * z));
-   /*> if (fabs (xz) <= 10.0) {                                                       <* 
-    *>    x_saved = 'Y';                                                              <* 
-    *>    d    =  s_femu_prev [a_leg];                                                <* 
-    *> } else {                                                                       <*/
-      x_saved = '-';
-      d    = (atan2 (-z, x) * RAD2DEG) - x_leg [YKINE_TROC].cd;
-      s_femu_prev [a_leg] = d;
-   /*> }                                                                              <*/
-   DEBUG_KINE   yLOG_complex ("femu"     , "%6.1fx , %6.1fz , %6.1fxz, saved=%c, %8.3fd ", x, z, xz, x_saved, d);
+   d    = (atan2 (-z, x) * RAD2DEG) - x_leg [YKINE_TROC].cd;
+   DEBUG_KINE   yLOG_complex ("femu"     , "%6.1fx , %6.1fz , %6.1fxz, %8.3fd ", x, z, xz, d);
    /*----(adjust direction)--------------*/
    while (d  <=  -360.0) d += 360.0;
    while (d  >=   360.0) d -= 360.0;
    DEBUG_KINE   yLOG_double  ("fixed d"   , d);
-   /*----(adjust direction)--------------*/
-   /*> if      (d >  180.0) { d =  d - 360.0;  x_leg [YKINE_FEMU].u     = '-'; }      <* 
-    *> else if (d >   90.0) { d =  d - 180.0;  x_leg [YKINE_FEMU].u     = 'y'; }      <* 
-    *> else if (d < -180.0) { d =  360.0 + d;  x_leg [YKINE_FEMU].u     = '-'; }      <* 
-    *> else if (d <  -90.0) { d =  180.0 + d;  x_leg [YKINE_FEMU].u     = 'y'; }      <* 
-    *> else                                    x_leg [YKINE_FEMU].u     = '-';        <*/
    /*----(adjust direction)--------------*/
    if      (d >  270.0) { d = d - 360.0;  x_leg [YKINE_FEMU].u     = '-'; }
    if      (d >   90.0) { d = d - 180.0;  x_leg [YKINE_FEMU].u     = 'y'; }
@@ -1059,7 +1041,7 @@ yKINE__IK_femu     (int a_leg)
    else if (d > -270.0) { d = 180.0 + d;  x_leg [YKINE_FEMU].u     = 'y'; }
    else                 { d = 360.0 + d;  x_leg [YKINE_FEMU].u     = '-'; }     
    DEBUG_KINE   yLOG_double  ("new d"     , d);
-   DEBUG_KINE   yLOG_char    ("femu u"    , x_leg [YKINE_FEMU].u);
+   DEBUG_KINE   yLOG_char    ("under femu", x_leg [YKINE_FEMU].u);
    /*----(save)--------------------------*/
    rc   = yKINE__femu     (a_leg, d, YKINE_IK);
    DEBUG_KINE   yLOG_value   ("rc"        , rc);
@@ -1106,27 +1088,21 @@ yKINE__IK_pate     (int a_num)
    DEBUG_KINE   yLOG_double  ("dv"        , dv);
    DEBUG_KINE   yLOG_complex ("lengths"  , "%6.1fsl, %6.1fpl, %6.1ftl",  sl, pl, tl);
    a    =  acos (((sl * sl) + (pl * pl) - (tl * tl)) / (2.0 * sl * pl));
-   d    =  (double) round (a * RAD2DEG);
+   d    =  a * RAD2DEG;
    if (isnan (a))    d = 0.0;
    DEBUG_KINE   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*---(reorient as needed)-------------*/
-   DEBUG_KINE   yLOG_char    ("femu u"    , x_leg [YKINE_FEMU].u);
-   DEBUG_KINE   yLOG_char    ("tibi u"    , x_leg [YKINE_TIBI].u);
+   DEBUG_KINE   yLOG_char    ("under femu", x_leg [YKINE_FEMU].u);
+   DEBUG_KINE   yLOG_char    ("under pate", x_leg [YKINE_PATE].u);
    DEBUG_KINE   yLOG_double  ("lowr y"    , x_leg [YKINE_LOWR].y);
-   if (x_leg [YKINE_FEMU].u == 'y') {
-      if (x_leg [YKINE_TIBI].u == 'y')         d = (d  - dv) - 180.0;
-      else                                     d =  d  - dv;
+   if         (x_leg [YKINE_FEMU].u == 'y') {
+      if      (x_leg [YKINE_PATE].u == 'y')   d = 180.0 - (d  + dv); /* 8.6000 */
+      else                                    d =  d  - dv;
    } else {
-      if (x_leg [YKINE_LOWR].y > 0.0)          d =  dv + d;
-      else if (x_leg [YKINE_TIBI].u == 'y')    d =  fabs (dv) - fabs (d);
-      else                                     d =  fabs (d)  - fabs (dv);
+      if      (x_leg [YKINE_LOWR].y >  0.0)   d =  dv - d;  /* fix 0.3750 */
+      else if (x_leg [YKINE_PATE].u == 'y')   d =  180.0 - (dv + d); /* 7.2750 */
+      else                                    d =  dv - d;  /* fix 0.0250 */
    }
-   DEBUG_KINE   yLOG_double  ("if yy"     , (d - dv) - 180.0);
-   DEBUG_KINE   yLOG_double  ("if y-"     , d  - dv);
-   DEBUG_KINE   yLOG_double  ("if pos y"  , dv + d);
-   DEBUG_KINE   yLOG_double  ("if -y"     , dv - d);
-   DEBUG_KINE   yLOG_double  ("if -y fabs", (double) fabs (dv) - fabs (d) );
-   DEBUG_KINE   yLOG_double  ("if --"     , (double) fabs (d)  - fabs (dv));
    DEBUG_KINE   yLOG_double  ("new d"     , d);
    /*----(save)--------------------------*/
    rc   = yKINE__pate     (a_num, d, YKINE_IK);

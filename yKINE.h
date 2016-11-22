@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6r"
-#define     YKINE_VER_TXT   "totally fixed the femur IK problem in all positions"
+#define     YKINE_VER_NUM   "0.6s"
+#define     YKINE_VER_TXT   "totally fixed the pate/tibia IK problems in all positions"
 
 
 
