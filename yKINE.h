@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6s"
-#define     YKINE_VER_TXT   "totally fixed the pate/tibia IK problems in all positions"
+#define     YKINE_VER_NUM   "0.6t"
+#define     YKINE_VER_TXT   "updated angles function to take method (not assume FK)"
 
 
 
@@ -310,7 +310,7 @@ char     yKINE_segment      (int a_leg, int a_seg, int a_type, double *a_deg, do
 char     yKINE_angle        (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_v, double *a_h);
 char     yKINE_enddiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
 char     yKINE_segdiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
-char     yKINE_angles       (double a_leg, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi);
+char     yKINE_angles       (int a_leg, int a_type, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi);
 
 
 #endif

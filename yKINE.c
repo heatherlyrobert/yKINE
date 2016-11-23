@@ -1399,12 +1399,21 @@ yKINE_segdiff      (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_l
 }
 
 char
-yKINE_angles       (double a_leg, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi)
+yKINE_angles       (int a_leg, int a_meth, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi)
 {
-   if (a_coxa != NULL)  *a_coxa = fk [(int) a_leg][YKINE_COXA].d;
-   if (a_femu != NULL)  *a_femu = fk [(int) a_leg][YKINE_FEMU].d;
-   if (a_pate != NULL)  *a_pate = fk [(int) a_leg][YKINE_PATE].d;
-   if (a_tibi != NULL)  *a_tibi = fk [(int) a_leg][YKINE_TIBI].d;
+   /*---(locals)-----------+-----------+-*/
+   tSEG       *x_leg       = NULL;
+   /*---(set the leg)--------------------*/
+   switch (a_meth) {
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   default        : return -1;
+   }
+   if (a_coxa != NULL)  *a_coxa = x_leg [YKINE_COXA].d;
+   if (a_femu != NULL)  *a_femu = x_leg [YKINE_FEMU].d;
+   if (a_pate != NULL)  *a_pate = x_leg [YKINE_PATE].d;
+   if (a_tibi != NULL)  *a_tibi = x_leg [YKINE_TIBI].d;
    return 0;
 }
 
