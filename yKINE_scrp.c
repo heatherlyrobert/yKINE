@@ -314,8 +314,8 @@ yKINE__scrp_move   (void)
    int         j           = 0;
    int         x_len       = 0;
    int         x_servo     = -1;
-   float       x_degs      = -1;
-   float       x_secs      = -1;
+   double      x_degs      = -1;
+   double      x_secs      = -1;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(read fields)--------------------*/
@@ -377,7 +377,7 @@ yKINE__scrp_ik     (void)
    char        x_request   [LEN_LABEL];
    int         x_len       = 0;
    int         x_servo     = -1;
-   float       x_secs      = -1;
+   double      x_secs      = -1;
    double      x_xpos      = 0.0;
    double      x_zpos      = 0.0;
    double      x_ypos      = 0.0;

@@ -133,8 +133,8 @@ yKINE_move_create  (
       tSERVO     *a_servo     ,   /* servo                                    */
       char       *a_label     ,   /* step label                               */
       int         a_line      ,   /* source line                              */
-      float       a_deg       ,   /* end position                             */
-      float       a_sec       )   /* duration                                 */
+      double      a_deg       ,   /* end position                             */
+      double      a_sec       )   /* duration                                 */
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
@@ -192,15 +192,15 @@ yKINE_move_create  (
    /*---(display stats)------------------*/
    DEBUG_YKINE_SCRP   yLOG_value   ("count"     , a_servo->count);
    DEBUG_YKINE_SCRP   yLOG_value   ("seq"       , x_move->seq);
-   DEBUG_YKINE_SCRP   yLOG_value   ("sec_beg"   , x_move->sec_beg);
-   DEBUG_YKINE_SCRP   yLOG_value   ("sec_end"   , x_move->sec_end);
-   DEBUG_YKINE_SCRP   yLOG_value   ("deg_beg"   , x_move->deg_beg);
+   DEBUG_YKINE_SCRP   yLOG_double  ("sec_beg"   , x_move->sec_beg);
+   DEBUG_YKINE_SCRP   yLOG_double  ("sec_end"   , x_move->sec_end);
+   DEBUG_YKINE_SCRP   yLOG_double  ("deg_beg"   , x_move->deg_beg);
    /*---(update globals)-----------------*/
    DEBUG_YKINE_SCRP   yLOG_double  ("scrp_len"  , yKINE_its.scrp_len);
    if (x_move->sec_end > yKINE_its.scrp_len) {
       yKINE_its.scrp_len = x_move->sec_end;
       DEBUG_YKINE_SCRP   yLOG_note    ("end time greater than current length");
-      DEBUG_YKINE_SCRP   yLOG_double  ("my.p_len"  , yKINE_its.scrp_len);
+      DEBUG_YKINE_SCRP   yLOG_double  ("scrp_len"  , yKINE_its.scrp_len);
    }
    /*---(check segno)--------------------*/
    if (a_servo->segno_flag == 'y') {
@@ -653,9 +653,9 @@ yKINE_servo_line         (int a_leg, int a_seg, double *a_x1, double *a_z1, doub
    if (a_x1 != NULL)  *a_x1 = g_servos [x_servo].curr->s_prev->x_pos;
    if (a_z1 != NULL)  *a_z1 = g_servos [x_servo].curr->s_prev->z_pos;
    if (a_y1 != NULL)  *a_y1 = g_servos [x_servo].curr->s_prev->y_pos;
-   if (a_x2 != NULL)  *a_x1 = g_servos [x_servo].curr->x_pos;
-   if (a_z2 != NULL)  *a_z1 = g_servos [x_servo].curr->z_pos;
-   if (a_y2 != NULL)  *a_y1 = g_servos [x_servo].curr->y_pos;
+   if (a_x2 != NULL)  *a_x2 = g_servos [x_servo].curr->x_pos;
+   if (a_z2 != NULL)  *a_z2 = g_servos [x_servo].curr->z_pos;
+   if (a_y2 != NULL)  *a_y2 = g_servos [x_servo].curr->y_pos;
    return 0;
 }
 

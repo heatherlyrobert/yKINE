@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7e"
-#define     YKINE_VER_TXT   "sorted all of scrp and move functions to compile"
+#define     YKINE_VER_NUM   "0.7f"
+#define     YKINE_VER_TXT   "arachne works using MOVE and SCRP functions ;))"
 
 
 
