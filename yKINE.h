@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7a"
-#define     YKINE_VER_TXT   "break into base, data, calc, and scrp files"
+#define     YKINE_VER_NUM   "0.7b"
+#define     YKINE_VER_TXT   "successfully moved calc formulas to yKINE_calc"
 
 
 
