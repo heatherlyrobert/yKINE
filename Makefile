@@ -26,8 +26,8 @@ LIBU    = ${LIBDIR}         -lm               -lySTR            -lyLOG          
 #===(file lists)============================================================================================================================================================================#
 #------   (0)-------------- (1)-------------- (2)-------------- (3)-------------- (4)-------------- (5)-------------- (6)-------------- (7)-------------- (8)-------------- (9)-------------- (A)-------------- (B)-------------- (C)-------------- (D)-------------- (5)--------------
 HEADS   = ${BASE}.h         ${BASE}_priv.h
-OBJS    = ${BASE}_base.os   ${BASE}_data.os   ${BASE}_calc.os   ${BASE}_scrp.os
-OBJD    = ${BASE}_base.o    ${BASE}_data.o    ${BASE}_calc.o    ${BASE}_scrp.o 
+OBJS    = ${BASE}_base.os   ${BASE}_data.os   ${BASE}_calc.os   ${BASE}_scrp.os   ${BASE}_move.os
+OBJD    = ${BASE}_base.o    ${BASE}_data.o    ${BASE}_calc.o    ${BASE}_scrp.o    ${BASE}_move.o
 OBJU    = ${OBJD}.o         ${UNIT}.o
 
 #*---(make variables)-----------------*#
@@ -74,6 +74,11 @@ ${BASE}_scrp.o     : ${HEADS}       ${BASE}_scrp.c
 	${COMP}  -fPIC  ${BASE}_scrp.c                           ${INC}
 	${STRIP}        ${BASE}_scrp.c      > ${BASE}_scrp.cs
 	${COMP}  -fPIC  ${BASE}_scrp.cs    -o ${BASE}_scrp.os    ${INC}
+
+${BASE}_move.o     : ${HEADS}       ${BASE}_move.c
+	${COMP}  -fPIC  ${BASE}_move.c                           ${INC}
+	${STRIP}        ${BASE}_move.c      > ${BASE}_move.cs
+	${COMP}  -fPIC  ${BASE}_move.cs    -o ${BASE}_move.os    ${INC}
 
 ${UNIT}.o          : ${HEADS} ${BASE}.unit
 	koios    ${BASE}

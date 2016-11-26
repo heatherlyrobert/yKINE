@@ -69,7 +69,7 @@ static char     s_recd  [LEN_RECD];
 
 
 char         /*--> prepare for use ---------s-------------[ leaf   [ ------ ]-*/
-SCRP_init          (void)
+yKINE__scrp_init   (void)
 {
    int         i           = 0;
    g_nservo = 0;
@@ -77,82 +77,7 @@ SCRP_init          (void)
       if (g_servos [i].label [0] == 'e')   break;
       ++g_nservo;
    }
-   return 0;
-}
-
-char         /*--> open file for reading -----------------[ leaf   [ ------ ]-*/
-SCRP_open          (void)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
-   /*> DEBUG_YKINE_SCRP  yLOG_info    ("filename"  , my.f_name);                      <*/
-   /*---(defense)------------------------*/
-   /*> --rce;  if (strcmp (my.f_name, "") == 0) {                                     <* 
-    *>    DEBUG_YKINE_SCRP  yLOG_note    ("no file to open");                         <* 
-    *>    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                              <* 
-    *>    return rce;                                                                 <* 
-    *> }                                                                              <*/
-   /*---(open stdin)---------------------*/
-   /*> if (strcmp ("stdin", my.f_name) == 0) {                                        <* 
-    *>    DEBUG_YKINE_SCRP  yLOG_note    ("data being provided on stdin");            <* 
-    *>    s_file = stdin;                                                             <* 
-    *> }                                                                              <*/
-   /*---(open file)----------------------*/
-   /*> else {                                                                         <* 
-    *>    DEBUG_YKINE_SCRP  yLOG_note    ("data being provided in a file");           <* 
-    *>    s_file = fopen (my.f_name, "r");                                            <* 
-    *> }                                                                              <*/
-   /*---(check success)------------------*/
-   s_file = stdin;
-
-   DEBUG_YKINE_SCRP  yLOG_point   ("s_file"    , s_file);
-   --rce;  if (s_file == NULL) {
-      DEBUG_YKINE_SCRP  yLOG_note    ("file could not be openned");
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   DEBUG_YKINE_SCRP  yLOG_note    ("file successfully opened");
-   /*---(init values)--------------*/
-   SCRP_init ();
-   /*---(complete)-----------------*/
-   DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char         /*--> close file after reading --------------[ flower [ ------ ]-*/
-SCRP_close         (void)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;
-   char        rc          = 0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
-   /*---(stdin)--------------------------*/
-   /*> if (strcmp (my.f_name, "") == 0) {                                             <* 
-    *>    DEBUG_YKINE_SCRP  yLOG_note    ("stdin should not be closed");              <* 
-    *>    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                              <* 
-    *>    s_file == NULL;                                                             <* 
-    *>    return 0;                                                                   <* 
-    *> }                                                                              <*/
-
-   s_file == NULL;
-
-   /*---(close file)---------------------*/
-   DEBUG_YKINE_SCRP  yLOG_point   ("s_file"    , s_file);
-   rc = fclose  (s_file);
-   DEBUG_YKINE_SCRP  yLOG_value   ("rc"        , rc);
-   /*---(check success)------------------*/
-   --rce;  if (rc != 0) {
-      DEBUG_YKINE_SCRP  yLOG_note    ("file could not be closed");
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   DEBUG_YKINE_SCRP  yLOG_note    ("file successfully closed");
-   s_file == NULL;
-   /*---(complete)-----------------*/
-   DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+   yKINE_its.scrp_len = 0;
    return 0;
 }
 
@@ -164,7 +89,7 @@ SCRP_close         (void)
 static void      o___SUPPORT_________________o (void) {;}
 
 char         /*--> identify the leg number ---------------[ ------ [ ------ ]-*/
-SCRP_legnum        (char *a_source)
+yKINE__scrp_legno  (char *a_source)
 {
    /*---(locals)-----------+-----------+-*/
    int         i           = 0;
@@ -177,7 +102,7 @@ SCRP_legnum        (char *a_source)
 }
 
 char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
-SCRP_servo         (char *a_source)
+yKINE__scrp_servo  (char *a_source)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -186,13 +111,13 @@ SCRP_servo         (char *a_source)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(cycle)--------------------------*/
-   /*> printf ("SCRP_servo         looking for %s\n", a_source);                       <*/
+   /*> printf ("yKINE__scrp_servo  looking for %s\n", a_source);                       <*/
    for (i = 0; i < g_nservo; ++i) {
       if (a_source [0] != g_servos [i].label [0])       continue;
       if (strcmp (a_source, g_servos [i].label) != 0)   continue;
       DEBUG_YKINE_SCRP   yLOG_snote   ("servo label found");
       g_servos [i].scrp = 'y';
-      /*> printf ("SCRP_servo                        found\n");                        <*/
+      /*> printf ("yKINE__scrp_servo                 found\n");                        <*/
       x_index = i;
       break;
    }
@@ -207,7 +132,7 @@ SCRP_servo         (char *a_source)
 }
 
 char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
-SCRP_servos        (char *a_source)
+yKINE__scrp_servos (char *a_source)
 {  /*---(design notes)-------------------*/
    /*
     *  L=left  , R=right
@@ -295,7 +220,7 @@ SCRP_servos        (char *a_source)
       for (j = 0; j < x_nrank; ++j) {
          sprintf (x_label, "%c%c.%s", x_side [i], x_rank [j], a_source + 3);
          /*> printf ("SCRP_servos     x_label %s\n", x_label);                         <*/
-         x_index = SCRP_servo (x_label);
+         x_index = yKINE__scrp_servo (x_label);
       }
    }
    /*---(complete)-----------------------*/
@@ -304,7 +229,7 @@ SCRP_servos        (char *a_source)
 }
 
 char         /*--> reture an argument value --------------[ ------ [ ------ ]-*/
-SCRP_argvalue      (char *a_name)
+yKINE__scrp_argval (char *a_name)
 {
    /*---(locals)-----------+-----------+-*/
    int         i           = 0;
@@ -318,7 +243,7 @@ SCRP_argvalue      (char *a_name)
 }
 
 char         /*--> parse an argument list ----------------[ ------ [ ------ ]-*/
-SCRP_argparse      (char *a_source)
+yKINE__scrp_args   (char *a_source)
 {
    /*---(locals)-----------+-----------+-*/
    char       *p           = NULL;
@@ -378,8 +303,8 @@ char       *s_context   = NULL;               /* strtok context variable   */
 /*---(suffix)-------------------------*/
 #define     FIELD_ARGS     6
 
-char         /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
-SCRP_move          (void)
+static char  /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
+yKINE__scrp_move   (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -409,7 +334,7 @@ SCRP_move          (void)
       /*---(handle)----------------------*/
       switch (i) {
       case  FIELD_SVO   :  /*---(servo)----*/
-         x_servo = SCRP_servos (p);
+         x_servo = yKINE__scrp_servos (p);
          --rce;  if (x_servo < 0) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
@@ -429,7 +354,7 @@ SCRP_move          (void)
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
-         SCRP_argparse   (p);
+         yKINE__scrp_args(p);
          break;
       }
       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
@@ -440,8 +365,8 @@ SCRP_move          (void)
    return 0;
 }
 
-char         /*--> parse a IK based move -----------------[ ------ [ ------ ]-*/
-SCRP_ik            (void)
+static char  /*--> parse a IK based move -----------------[ ------ [ ------ ]-*/
+yKINE__scrp_ik     (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -482,7 +407,7 @@ SCRP_ik            (void)
       switch (i) {
       case  FIELD_SVO   :  /*---(servo)----*/
          sprintf (x_request, "%s.femu", p);
-         x_servo = SCRP_servos (x_request);
+         x_servo = yKINE__scrp_servos (x_request);
          --rce;  if (x_servo < 0) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
@@ -532,7 +457,7 @@ SCRP_ik            (void)
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
-         SCRP_argparse   (p);
+         yKINE__scrp_args(p);
          break;
       }
       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
@@ -543,8 +468,8 @@ SCRP_ik            (void)
    return 0;
 }
 
-char         /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
-SCRP_fullleg       (void)
+static char  /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
+yKINE__scrp_fk     (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -582,7 +507,7 @@ SCRP_fullleg       (void)
       switch (i) {
       case  FIELD_SVO   :  /*---(servo)----*/
          sprintf (x_request, "%s.femu", p);
-         x_servo = SCRP_servos (x_request);
+         x_servo = yKINE__scrp_servos (x_request);
          --rce;  if (x_servo < 0) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
@@ -616,7 +541,7 @@ SCRP_fullleg       (void)
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
-         SCRP_argparse   (p);
+         yKINE__scrp_args(p);
          break;
       }
       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
@@ -634,8 +559,8 @@ SCRP_fullleg       (void)
 /*====================------------------------------------====================*/
 static void      o___REPEATS_________________o (void) {;}
 
-char         /*--> parse a segno marker ------------------[ ------ [ ------ ]-*/
-SCRP_segno         (void)
+static char  /*--> parse a segno marker ------------------[ ------ [ ------ ]-*/
+yKINE__scrp_segno  (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -665,7 +590,7 @@ SCRP_segno         (void)
       /*---(handle)----------------------*/
       switch (i) {
       case  FIELD_SVO   :  /*---(servo to repeat)----*/
-         x_servo = SCRP_servos (p);
+         x_servo = yKINE__scrp_servos (p);
          --rce;  if (x_servo < 0) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
@@ -678,7 +603,7 @@ SCRP_segno         (void)
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
-         SCRP_argparse   (p);
+         yKINE__scrp_args(p);
          break;
       }
       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
@@ -689,8 +614,8 @@ SCRP_segno         (void)
    return 0;
 }
 
-char         /*--> parse a low level repeat --------------[ ------ [ ------ ]-*/
-SCRP_repeat        (void)
+static char  /*--> parse a low level repeat --------------[ ------ [ ------ ]-*/
+yKINE__scrp_repeat (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -720,7 +645,7 @@ SCRP_repeat        (void)
       /*---(handle)----------------------*/
       switch (i) {
       case  FIELD_SVO   :  /*---(servo to repeat)----*/
-         x_servo = SCRP_servos (p);
+         x_servo = yKINE__scrp_servos (p);
          --rce;  if (x_servo < 0) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
@@ -750,7 +675,7 @@ SCRP_repeat        (void)
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
-         SCRP_argparse   (p);
+         yKINE__scrp_args(p);
          break;
       }
       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
@@ -761,8 +686,8 @@ SCRP_repeat        (void)
    return 0;
 }
 
-char         /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
-SCRP_dalsegno      (void)
+static char  /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
+yKINE__scrp_dsegno (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -791,7 +716,7 @@ SCRP_dalsegno      (void)
       /*---(handle)----------------------*/
       switch (i) {
       case  FIELD_SVO   :  /*---(servo to repeat)----*/
-         x_servo = SCRP_servos (p);
+         x_servo = yKINE__scrp_servos (p);
          --rce;  if (x_servo < 0) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
@@ -814,7 +739,7 @@ SCRP_dalsegno      (void)
       case  FIELD_COUNT :  /*---(moves to repeat)----*/
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
-         SCRP_argparse   (p);
+         yKINE__scrp_args(p);
          break;
       }
       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
@@ -832,8 +757,8 @@ SCRP_dalsegno      (void)
 /*====================------------------------------------====================*/
 static void      o___DRIVER__________________o (void) {;}
 
-char         /* file reading driver ----------------------[--------[--------]-*/
-SCRP_prep          (void)
+static char  /* file reading driver ----------------------[--------[--------]-*/
+yKINE__scrp_prep   (void)
 {
    int         i           = 0;
    for (i = 0; i < g_nservo; ++i) {
@@ -847,7 +772,7 @@ SCRP_prep          (void)
 }
 
 char         /* file reading driver ----------------------[--------[--------]-*/
-SCRP_main          (void)
+yKINE_script       (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -857,22 +782,18 @@ SCRP_main          (void)
    char        x_ver       = '-';
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
-   /*---(open file)----------------------*/
-   rc = SCRP_open   ();
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
+   /*---(prepare)------------------------*/
+   yKINE__scrp_init ();
    /*---(read lines)---------------------*/
    DEBUG_YKINE_SCRP  yLOG_note    ("read lines");
    while (1) {
       /*---(prepare)---------------------*/
-      SCRP_prep      ();
+      yKINE__scrp_prep     ();
       /*---(read and clean)--------------*/
       ++s_lines;
       DEBUG_YKINE_SCRP  yLOG_value   ("line"      , s_lines);
-      fgets (s_recd, LEN_RECD, s_file);
-      if (feof (s_file))  {
+      fgets (s_recd, LEN_RECD, stdin);
+      if (feof (stdin))  {
          DEBUG_YKINE_SCRP  yLOG_note    ("end of file reached");
          break;
       }
@@ -918,22 +839,22 @@ SCRP_main          (void)
       /*---(handle types)----------------*/
       switch (x_type [0]) {
       case 'R' : /* repeat             */
-         SCRP_repeat    ();
+         yKINE__scrp_repeat    ();
          break;
       case 'S' : /* segno              */
-         SCRP_segno     ();
+         yKINE__scrp_segno     ();
          break;
       case 'D' : /* dal segno          */
-         SCRP_dalsegno  ();
+         yKINE__scrp_dsegno    ();
          break;
       case 's' : /* servo, start       */
-         SCRP_move      ();
+         yKINE__scrp_move      ();
          break;
       case 'f' : /* servo, start       */
-         SCRP_fullleg   ();
+         yKINE__scrp_fk        ();
          break;
       case 'i' : /* IK based position  */
-         SCRP_ik        ();
+         yKINE__scrp_ik        ();
          break;
       default  :
          DEBUG_YKINE_SCRP  yLOG_note    ("verb not recognized and skipped");
@@ -941,8 +862,6 @@ SCRP_main          (void)
       }
 
    }
-   /*---(close file)---------------------*/
-   SCRP_close ();
    /*---(complete)-------------------------*/
    DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
    return 0;

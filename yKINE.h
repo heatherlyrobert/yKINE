@@ -5,12 +5,12 @@
 /*   focus         : (RO) robotics
  *   niche         : (sp) spiders
  *   application   : yKINE
- *   purpose       : shared, consistent, and reliable spider kinematics
+ *   purpose       : shared, consistent, and reliable spider kinematics/scipting
  *
  *   base_system   : gnu/linux   (powerful, ubiquitous, technical, and hackable)
  *   lang_name     : ansi-c      (wicked, limitless, universal, and everlasting)
  *   dependencies  : none
- *   size          : small       (less than 500 slocL)
+ *   size          : small       (less than 2000 slocL)
  * 
  *   author        : rsheatherly
  *   created       : 2009-07     (about when i bought eva and igor)
@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7c"
-#define     YKINE_VER_TXT   "brought arachne SCRP into yKINE, but untested"
+#define     YKINE_VER_NUM   "0.7d"
+#define     YKINE_VER_TXT   "reworked names in SCRP and moved MOVE to yKINE"
 
 
 
@@ -276,6 +276,10 @@
 /*---(servos)-------------------------*/
 #define     YKINE_MAX_SERVO   32
 
+#define     YKINE_MOVE_NULL   '-'
+#define     YKINE_MOVE_PAUSE  'p'
+#define     YKINE_MOVE_SERVO  's'
+
 
 
 char*       yKINE_version      (void);
@@ -313,6 +317,11 @@ char     yKINE_angle        (int a_leg, int a_seg, int a_type, double *a_deg, do
 char     yKINE_enddiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
 char     yKINE_segdiff      (int a_leg, int a_seg, int a_type, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y);
 char     yKINE_angles       (int a_leg, int a_type, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi);
+
+
+char         /* file reading driver ----------------------[--------[--------]-*/
+yKINE_script       (void);
+
 
 
 #endif

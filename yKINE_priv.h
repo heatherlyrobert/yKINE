@@ -35,6 +35,7 @@ struct cLOCAL {
    char        debug_data;
    char        debug_scrp;
    int         logger;
+   int         scrp_len;
 };
 tLOCAL      yKINE_its;
 #define     DEBUG_YKINE_CALC if (yKINE_its.debug == 'y')
