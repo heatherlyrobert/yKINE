@@ -35,12 +35,12 @@ struct cLOCAL {
    char        debug_data;
    char        debug_scrp;
    int         logger;
-   int         scrp_len;
+   double      scrp_len;
 };
 tLOCAL      yKINE_its;
-#define     DEBUG_YKINE_CALC if (yKINE_its.debug == 'y')
-#define     DEBUG_YKINE_DATA if (yKINE_its.debug == 'y')
-#define     DEBUG_YKINE_SCRP if (yKINE_its.debug == 'y')
+#define     DEBUG_YKINE_CALC if (yKINE_its.debug_calc == 'y')
+#define     DEBUG_YKINE_DATA if (yKINE_its.debug_data == 'y')
+#define     DEBUG_YKINE_SCRP if (yKINE_its.debug_scrp == 'y')
 
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS
@@ -132,6 +132,7 @@ struct cSEGDATA {
    char        full        [25];            /* descriptive name               */
    char        four        [ 5];            /* abbreviated name               */
    char        caps        [ 5];            /* capitalized name for titles    */
+   char        move;                        /* have a servo/moveable (y/n)    */
    double      len;                         /* length                         */
    double      min;                         /* min degrees for joint          */
    double      max;                         /* max degrees for joint          */

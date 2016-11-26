@@ -16,8 +16,8 @@ int         m_count;
 /*====================------------------------------------====================*/
 static void      o___MALLOC__________________o (void) {;}
 
-tMOVE*       /*--> create a new, blank move --------------[ leaf   [ ------ ]-*/
-MOVE__new          (void)
+static tMOVE*  /*--> create a new, blank move --------------[ leaf   [ ------ ]-*/
+yKINE__move_new    (void)
 {  /*---(design notes)--------------------------------------------------------*/
    /*
     *  creates a new move object which is completely blank except for being
@@ -83,8 +83,8 @@ MOVE__new          (void)
    return x_new;
 }
 
-tMOVE*       /*--> destroy a single move -----------------[ leaf   [ ------ ]-*/
-MOVE__free         (
+static tMOVE*  /*--> destroy a single move -----------------[ leaf   [ ------ ]-*/
+yKINE__move_free   (
       /*----------+-----------+-----------------------------------------------*/
       tMOVE      *a_move)
 {  /*---(design notes)--------------------------------------------------------*/
@@ -127,7 +127,7 @@ MOVE__free         (
 static void      o___OBJECTS_________________o (void) {;}
 
 char         /*--> create a new move ---------------------[ ------ [ ------ ]-*/
-MOVE_create        (
+yKINE_move_create  (
       /*----------+-----------+-----------------------------------------------*/
       char        a_type      ,   /* type of move (pause, servo, ...)         */
       tSERVO     *a_servo     ,   /* servo                                    */
@@ -154,7 +154,7 @@ MOVE_create        (
    DEBUG_YKINE_SCRP   yLOG_info    ("name"      , a_servo->label);
    /*---(create a new requires)-------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("add a new move object");
-   x_move          = MOVE__new ();
+   x_move          = yKINE__move_new ();
    --rce;  if (x_move == NULL)   {
       DEBUG_YKINE_SCRP yLOG_exit      (__FUNCTION__);
       return rce; 
@@ -214,7 +214,7 @@ MOVE_create        (
 }
 
 char         /*--> add a location to a move object -------[ ------ [ ------ ]-*/
-MOVE_addloc        (
+yKINE_move_addloc        (
       /*----------+-----------+-----------------------------------------------*/
       tSERVO     *a_servo     ,   /* servo                                    */
       double      a_xpos      ,   /* end location                             */
@@ -247,7 +247,7 @@ MOVE_addloc        (
 }
 
 char         /*--> repeat the last moves -----------------[ ------ [ ------ ]-*/
-MOVE_repeat        (
+yKINE_move_repeat        (
       /*----------+-----------+-----------------------------------------------*/
       tSERVO     *a_servo     ,   /* servo                                    */
       int         a_count     ,   /* how many steps to copy (off end)         */
@@ -299,8 +299,8 @@ MOVE_repeat        (
    for (i = 0; i < a_times; ++i) {
       for (j = 0; j < a_count; ++j) {
          sprintf (x_label, "repeat %d.%d", i,j);
-         MOVE_create (YKINE_MOVE_SERVO, a_servo, x_label, x_moves [j]->line, x_moves [j]->deg_end, x_moves [j]->sec_dur);
-         MOVE_addloc (a_servo, x_moves [j]->x_pos, x_moves [j]->z_pos, x_moves [j]->y_pos);
+         yKINE_move_create (YKINE_MOVE_SERVO, a_servo, x_label, x_moves [j]->line, x_moves [j]->deg_end, x_moves [j]->sec_dur);
+         yKINE_move_addloc (a_servo, x_moves [j]->x_pos, x_moves [j]->z_pos, x_moves [j]->y_pos);
       }
    }
    /*---(complete)-----------------------*/
@@ -309,7 +309,7 @@ MOVE_repeat        (
 }
 
 char         /*--> repeat from the last segno ------------[ ------ [ ------ ]-*/
-MOVE_dalsegno      (
+yKINE_move_dsegno      (
       /*----------+-----------+-----------------------------------------------*/
       tSERVO     *a_servo     ,   /* servo                                    */
       int         a_times     )   /* how many times to copy                   */
@@ -350,7 +350,7 @@ MOVE_dalsegno      (
       j = 0;
       while (x_curr != NULL) {
          sprintf (x_label, "segno %d.%d", i,j);
-         MOVE_create (YKINE_MOVE_SERVO, a_servo, x_label, x_curr->line, x_curr->deg_end, x_curr->sec_dur);
+         yKINE_move_create (YKINE_MOVE_SERVO, a_servo, x_label, x_curr->line, x_curr->deg_end, x_curr->sec_dur);
          if (x_curr == x_end)  break;
          x_curr = x_curr->s_next;
          ++j;
@@ -372,7 +372,7 @@ MOVE_dalsegno      (
 static void      o___POSITION________________o (void) {;}
 
 char         /*--> set the current move for a servo ------[ ------ [ ------ ]-*/
-MOVE_curset        (int a_servo, float a_time)
+yKINE_move_curset        (int a_servo, float a_time)
 {
    /*---(locals)-----------+-----------+-*/
    tMOVE      *x_next      = NULL;
@@ -409,7 +409,7 @@ MOVE_curset        (int a_servo, float a_time)
 }
 
 char         /*--> calc the current deg for a servo ------[ ------ [ ------ ]-*/
-MOVE_curone        (int a_servo, double a_time)
+yKINE_move_curone        (int a_servo, double a_time)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
@@ -426,7 +426,7 @@ MOVE_curone        (int a_servo, double a_time)
    /*---(check for correct current)------*/
    if        (g_servos [a_servo].curr == NULL) {
       DEBUG_YKINE_SCRP   yLOG_note    ("servo current is not set");
-      rc = MOVE_curset (a_servo, a_time);
+      rc = yKINE_move_curset (a_servo, a_time);
       DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
    }
    /*---(check return code)--------------*/
@@ -438,11 +438,11 @@ MOVE_curone        (int a_servo, double a_time)
    x_curr  = g_servos [a_servo].curr;
    if        (a_time < x_curr->sec_beg) {
       DEBUG_YKINE_SCRP   yLOG_note    ("time is before current move beg");
-      rc = MOVE_curset (a_servo, a_time);
+      rc = yKINE_move_curset (a_servo, a_time);
       DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
    } else if (a_time > x_curr->sec_end) {
       DEBUG_YKINE_SCRP   yLOG_note    ("time is after current move end");
-      rc = MOVE_curset (a_servo, a_time);
+      rc = yKINE_move_curset (a_servo, a_time);
       DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
    }
    /*---(check return code)--------------*/
@@ -488,20 +488,20 @@ MOVE_curone        (int a_servo, double a_time)
 }
 
 char         /*--> calc current move/deg for a leg -------[ ------ [ ------ ]-*/
-MOVE_curleg        (double a_secs, int a_leg)
+yKINE_move_curleg        (double a_secs, int a_leg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
    char        rc          =   0;
    /*---(header)-------------------------*/
-   rc = MOVE_curone  (a_leg * 3 + 0, a_secs);
-   rc = MOVE_curone  (a_leg * 3 + 1, a_secs);
-   rc = MOVE_curone  (a_leg * 3 + 2, a_secs);
+   rc = yKINE_move_curone  (a_leg * 3 + 0, a_secs);
+   rc = yKINE_move_curone  (a_leg * 3 + 1, a_secs);
+   rc = yKINE_move_curone  (a_leg * 3 + 2, a_secs);
    return 0;
 }
 
 char         /*--> calc current move/deg for all servos --[ ------ [ ------ ]-*/
-MOVE_curall        (double a_time)
+yKINE_move_curall        (double a_time)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
@@ -511,7 +511,7 @@ MOVE_curall        (double a_time)
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    for (i = 0; i < YKINE_MAX_SERVO; ++i) {
       if (strcmp (g_servos [i].label, "end-of-list") == 0)  break;
-      rc = MOVE_curone  (i, a_time);
+      rc = yKINE_move_curone  (i, a_time);
    }
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -520,7 +520,7 @@ MOVE_curall        (double a_time)
 static tMOVE   *s_curr = NULL;
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-MOVE_first         (int a_servo, float *a_sec, float *a_deg)
+yKINE_move_first         (int a_servo, double *a_sec, double *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
    tMOVE      *x_next      = NULL;
@@ -547,7 +547,7 @@ MOVE_first         (int a_servo, float *a_sec, float *a_deg)
 }
 
 char         /*--> retrieve the next move ----------------[ ------ [ ------ ]-*/
-MOVE_next          (float *a_sec, float *a_deg)
+yKINE_move_next          (double *a_sec, double *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
    tMOVE      *x_next      = NULL;
@@ -584,7 +584,7 @@ MOVE_next          (float *a_sec, float *a_deg)
 }
 
 char         /*--> retrieve an exact place in time -------[ ------ [ ------ ]-*/
-MOVE_exact         (double a_sec, int a_leg, double *a_diffx, double *a_diffz, double *a_diffy, double *a_y)
+yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_diffz, double *a_diffy, double *a_y)
 {
    char        rc1         = 0;
    char        rc2         = 0;
@@ -599,7 +599,7 @@ MOVE_exact         (double a_sec, int a_leg, double *a_diffx, double *a_diffz, d
    if (a_sec < 0.0     )  return -1;
    if (a_sec > yKINE_its.scrp_len)  return -2;
    x_leg = a_leg * 3;
-   rc1 = MOVE_curleg    (a_sec, a_leg);
+   rc1 = yKINE_move_curleg    (a_sec, a_leg);
    rc2 = yKINE_forward  (a_leg, g_servos [x_leg + 0].deg, g_servos [x_leg + 1].deg, g_servos [x_leg + 2].deg);
    rc3 = yKINE_endpoint (a_leg, YKINE_TIBI, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
    if (a_diffx != NULL)  *a_diffx = g_servos [x_leg + 2].xexp - x_xpos;
@@ -618,6 +618,44 @@ MOVE_exact         (double a_sec, int a_leg, double *a_diffx, double *a_diffz, d
     *>    printf ("%8.1lf", sqrt ((x_xdif * x_xdif) + (x_zdif * x_zdif) + (x_ydif * x_ydif)));                                                                              <* 
     *>    printf ("\n");                                                                                                                                                    <* 
     *> }                                                                                                                                                                    <*/
+   return 0;
+}
+
+char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
+yKINE_servo_deg          (int a_leg, int a_seg, double *a_deg)
+{
+   int         x_servo     = 0;
+   double      x_deg       = 0.0;
+   if (a_leg < YKINE_RR   || a_leg > YKINE_LR  )  return -1;
+   if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;
+   x_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
+   if (g_servos [x_servo].curr == NULL) {
+      if (a_seg == YKINE_FEMU)  x_deg  =  0.0;
+      if (a_seg == YKINE_PATE)  x_deg  =  0.0;
+      if (a_seg == YKINE_TIBI)  x_deg  = 90.0;
+      if (a_deg       != NULL)  *a_deg = x_deg;
+      return -1;
+   }
+   if (a_deg       != NULL)  *a_deg = g_servos [x_servo].deg;
+   return 0;
+}
+
+char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
+yKINE_servo_line         (int a_leg, int a_seg, double *a_x1, double *a_z1, double *a_y1, double *a_x2, double *a_z2, double *a_y2)
+{
+   int         x_servo     = 0;
+   double      x_deg       = 0.0;
+   if (a_leg <  YKINE_RR   || a_leg > YKINE_LR  )    return -1;
+   if (a_seg != YKINE_TIBI)                          return -2;
+   x_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
+   if (g_servos [x_servo].curr         == NULL)     return -3;
+   if (g_servos [x_servo].curr->s_prev == NULL)     return -4;
+   if (a_x1 != NULL)  *a_x1 = g_servos [x_servo].curr->s_prev->x_pos;
+   if (a_z1 != NULL)  *a_z1 = g_servos [x_servo].curr->s_prev->z_pos;
+   if (a_y1 != NULL)  *a_y1 = g_servos [x_servo].curr->s_prev->y_pos;
+   if (a_x2 != NULL)  *a_x1 = g_servos [x_servo].curr->x_pos;
+   if (a_z2 != NULL)  *a_z1 = g_servos [x_servo].curr->z_pos;
+   if (a_y2 != NULL)  *a_y1 = g_servos [x_servo].curr->y_pos;
    return 0;
 }
 

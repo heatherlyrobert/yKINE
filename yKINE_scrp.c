@@ -68,7 +68,7 @@ static int      s_lines = 0;
 static char     s_recd  [LEN_RECD];
 
 
-char         /*--> prepare for use ---------s-------------[ leaf   [ ------ ]-*/
+static char  /*--> prepare for use ---------s-------------[ leaf   [ ------ ]-*/
 yKINE__scrp_init   (void)
 {
    int         i           = 0;
@@ -77,7 +77,7 @@ yKINE__scrp_init   (void)
       if (g_servos [i].label [0] == 'e')   break;
       ++g_nservo;
    }
-   yKINE_its.scrp_len = 0;
+   yKINE_its.scrp_len = 0.0;
    return 0;
 }
 
@@ -88,7 +88,7 @@ yKINE__scrp_init   (void)
 /*====================------------------------------------====================*/
 static void      o___SUPPORT_________________o (void) {;}
 
-char         /*--> identify the leg number ---------------[ ------ [ ------ ]-*/
+static char  /*--> identify the leg number ---------------[ ------ [ ------ ]-*/
 yKINE__scrp_legno  (char *a_source)
 {
    /*---(locals)-----------+-----------+-*/
@@ -101,7 +101,7 @@ yKINE__scrp_legno  (char *a_source)
    return -1;
 }
 
-char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
+static char  /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
 yKINE__scrp_servo  (char *a_source)
 {
    /*---(locals)-----------+-----------+-*/
@@ -131,7 +131,7 @@ yKINE__scrp_servo  (char *a_source)
    return x_index;
 }
 
-char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
+static char  /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
 yKINE__scrp_servos (char *a_source)
 {  /*---(design notes)-------------------*/
    /*
@@ -228,7 +228,7 @@ yKINE__scrp_servos (char *a_source)
    return 0;
 }
 
-char         /*--> reture an argument value --------------[ ------ [ ------ ]-*/
+static char  /*--> reture an argument value --------------[ ------ [ ------ ]-*/
 yKINE__scrp_argval (char *a_name)
 {
    /*---(locals)-----------+-----------+-*/
@@ -242,7 +242,7 @@ yKINE__scrp_argval (char *a_name)
    return -1;
 }
 
-char         /*--> parse an argument list ----------------[ ------ [ ------ ]-*/
+static char  /*--> parse an argument list ----------------[ ------ [ ------ ]-*/
 yKINE__scrp_args   (char *a_source)
 {
    /*---(locals)-----------+-----------+-*/
@@ -350,7 +350,7 @@ yKINE__scrp_move   (void)
          DEBUG_YKINE_SCRP  yLOG_double  ("degrees"   , x_degs);
          for (j = 0; j < g_nservo; ++j) {
             if (g_servos [j].scrp != 'y') continue;
-            MOVE_create (MOVE_SERVO, g_servos + j, "", 0, x_degs, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j, "", 0, x_degs, x_secs);
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
@@ -446,14 +446,14 @@ yKINE__scrp_ik     (void)
             DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , x_femu);
             DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , x_pate);
             DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
-            MOVE_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
-            MOVE_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
-            MOVE_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
             /*> if (strcmp (g_servos [j + 2].label, "RR.tibi") == 0) {                           <* 
              *>    printf ("   base  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xbase, x_zbase, x_ybase);   <* 
              *>    printf ("   incr  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xpos , x_zpos , x_ypos );   <* 
              *> }                                                                                <*/
-            MOVE_addloc (g_servos + j + 2, x_xbase + x_xpos, x_zbase + x_zpos, x_ybase + x_ypos);
+            yKINE_move_addloc (g_servos + j + 2, x_xbase + x_xpos, x_zbase + x_zpos, x_ybase + x_ypos);
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
@@ -531,13 +531,13 @@ yKINE__scrp_fk     (void)
          DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
          for (j = 0; j < g_nservo; ++j) {
             if (g_servos [j].scrp != 'y') continue;
-            MOVE_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
-            MOVE_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
-            MOVE_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
             x_leg = j / 3.0;
-            yKINE_forward  (x_leg, x_femu, x_pate, x_tibi);
-            yKINE_endpoint (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
-            MOVE_addloc (g_servos + j + 2, x_xpos, x_zpos, x_ypos);
+            yKINE_forward     (x_leg, x_femu, x_pate, x_tibi);
+            yKINE_endpoint    (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
+            yKINE_move_addloc (g_servos + j + 2, x_xpos, x_zpos, x_ypos);
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
@@ -671,7 +671,7 @@ yKINE__scrp_repeat (void)
          }
          for (j = 0; j < g_nservo; ++j) {
             if (g_servos [j].scrp != 'y') continue;
-            MOVE_repeat     (g_servos + j, x_count, x_times);
+            yKINE_move_repeat     (g_servos + j, x_count, x_times);
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
@@ -733,7 +733,7 @@ yKINE__scrp_dsegno (void)
          }
          for (j = 0; j < g_nservo; ++j) {
             if (g_servos [j].scrp != 'y') continue;
-            MOVE_dalsegno   (g_servos + j, x_times);
+            yKINE_move_dsegno   (g_servos + j, x_times);
          }
          break;
       case  FIELD_COUNT :  /*---(moves to repeat)----*/
@@ -772,7 +772,7 @@ yKINE__scrp_prep   (void)
 }
 
 char         /* file reading driver ----------------------[--------[--------]-*/
-yKINE_script       (void)
+yKINE_script       (double *a_len)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -862,6 +862,7 @@ yKINE_script       (void)
       }
 
    }
+   if (a_len != NULL)  *a_len = yKINE_its.scrp_len;
    /*---(complete)-------------------------*/
    DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
    return 0;
