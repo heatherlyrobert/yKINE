@@ -1,6 +1,6 @@
 #*============================----beg-of-source---============================*#
 
-#*---(current variables)--------------*#
+#===(current variables)=================================================================================================================================================#
 BASE    = yKINE
 DEBUG   = ${BASE}_debug
 UNIT    = ${BASE}_unit
@@ -9,20 +9,27 @@ IDIR    =
 MNUM    = 3
 MDIR    = /usr/share/man/man${MNUM}
 MBASE   = ${BASE}.${MNUM}
-#*---(compilier variables)------------*#
+
+#===(compilier variables)===============================================================================================================================================#
 # must have "-x c" on gcc line so stripped files work with alternate extensions
 COMP    = gcc -c -std=gnu89 -x c -g -pg -Wall -Wextra
 INCS    = -I/usr/local/include 
+
+#===(linker options)====================================================================================================================================================================================================================================================================================#
+#------   (0)-------------- (1)-------------- (2)-------------- (3)-------------- (4)-------------- (5)-------------- (6)-------------- (7)-------------- (8)-------------- (9)-------------- (A)-------------- (B)-------------- (C)-------------- (D)-------------- (E)-------------- (F)--------------
 LINK    = gcc
 LIBDIR  = -L/usr/local/lib
-LIBS    = ${LIBDIR}    -lm
-LIBD    = ${LIBDIR}    -lm      -lyLOG
-LIBU    = ${LIBDIR}    -lm      -lyLOG     -lyUNIT    -lyVAR
-#*---(file lists)---------------------*#
-HEADS   = ${BASE}.h   ${BASE}_priv.h
-OBJS    = ${BASE}.os  
-OBJD    = ${BASE}.o   
-OBJU    = ${BASE}.o   ${UNIT}.o
+LIBS    = ${LIBDIR}         -lm
+LIBD    = ${LIBDIR}         -lm               -lyLOG
+LIBU    = ${LIBDIR}         -lm               -lyLOG            -lyUNIT           -lyVAR
+
+#===(file lists)============================================================================================================================================================================#
+#------   (0)-------------- (1)-------------- (2)-------------- (3)-------------- (4)-------------- (5)-------------- (6)-------------- (7)-------------- (8)-------------- (9)-------------- (A)-------------- (B)-------------- (C)-------------- (D)-------------- (5)--------------
+HEADS   = ${BASE}.h         ${BASE}_priv.h
+OBJS    = ${BASE}_base.os   ${BASE}_data.os   ${BASE}_calc.os   ${BASE}_scrp.os
+OBJD    = ${BASE}_base.o    ${BASE}_data.o    ${BASE}_calc.o    ${BASE}_scrp.o 
+OBJU    = ${OBJD}.o         ${UNIT}.o
+
 #*---(make variables)-----------------*#
 COPY    = cp -f
 CLEAN   = rm -f
@@ -34,7 +41,7 @@ STRIP   = @grep -v -e " DEBUG_" -e " yLOG_"
 #*---(executables)--------------------*#
 all                : ${DEBUG} ${BASE} ${UNIT}
 
-${BASE}            : ${OBJS}
+${BASE}            : ${OBJD}
 	${LINK}  -shared -Wl,-soname,lib${BASE}.so.1   ${LIBS}  -o lib${BASE}.so.1.0   ${OBJS}
 	ar       rcs  lib${BASE}.a   ${OBJS}
 
@@ -48,10 +55,25 @@ ${UNIT}            : ${OBJU}
 
 
 #*---(components)---------------------*#
-${BASE}.o          : ${HEADS}       ${BASE}.c
-	${COMP}  -fPIC  ${BASE}.c                                ${INC}
-	${STRIP}        ${BASE}.c           > ${BASE}.cs
-	${COMP}  -fPIC  ${BASE}.cs         -o ${BASE}.os         ${INC}
+${BASE}_base.o     : ${HEADS}       ${BASE}_base.c
+	${COMP}  -fPIC  ${BASE}_base.c                           ${INC}
+	${STRIP}        ${BASE}_base.c      > ${BASE}_base.cs
+	${COMP}  -fPIC  ${BASE}_base.cs    -o ${BASE}_base.os    ${INC}
+
+${BASE}_data.o     : ${HEADS}       ${BASE}_data.c
+	${COMP}  -fPIC  ${BASE}_data.c                           ${INC}
+	${STRIP}        ${BASE}_data.c      > ${BASE}_data.cs
+	${COMP}  -fPIC  ${BASE}_data.cs    -o ${BASE}_data.os    ${INC}
+
+${BASE}_calc.o     : ${HEADS}       ${BASE}_calc.c
+	${COMP}  -fPIC  ${BASE}_calc.c                           ${INC}
+	${STRIP}        ${BASE}_calc.c      > ${BASE}_calc.cs
+	${COMP}  -fPIC  ${BASE}_calc.cs    -o ${BASE}_calc.os    ${INC}
+
+${BASE}_scrp.o     : ${HEADS}       ${BASE}_scrp.c
+	${COMP}  -fPIC  ${BASE}_scrp.c                           ${INC}
+	${STRIP}        ${BASE}_scrp.c      > ${BASE}_scrp.cs
+	${COMP}  -fPIC  ${BASE}_scrp.cs    -o ${BASE}_scrp.os    ${INC}
 
 ${UNIT}.o          : ${HEADS} ${BASE}.unit
 	koios    ${BASE}

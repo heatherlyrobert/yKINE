@@ -16,8 +16,13 @@
 
 
 /*===[[ HEADER GUARD ]]===================================*/
-/*> #ifndef yKINE_PRIV                                                                <*/
-/*> #define yKINE_PRIV yes                                                            <*/
+#ifndef yKINE_PRIV
+#define yKINE_PRIV yes
+
+
+extern const    double   DEG2RAD;
+extern const    double   RAD2DEG;
+
 
 
 typedef struct cLOCAL tLOCAL;
@@ -27,7 +32,7 @@ struct cLOCAL {
    char        debug;
    int         logger;
 };
-tLOCAL yKINE_its;
+tLOCAL      yKINE_its;
 #define     DEBUG_KINE     if (yKINE_its.debug == 'y')
 
 /*===[[ UNIT TEST ]]======================================*/
@@ -36,6 +41,31 @@ tLOCAL yKINE_its;
 #endif
 
 
+
+typedef struct cLEGDATA tLEGDATA;
+struct cLEGDATA
+{
+   char        full        [25];
+   char        two         [ 5];
+   char        caps        [ 5];
+   double      deg;
+};
+extern tLEGDATA    leg_data [YKINE_MAX_LEGS];
+
+
+typedef struct cSEGDATA tSEGDATA;
+struct cSEGDATA {
+   char        full        [25];            /* descriptive name               */
+   char        four        [ 5];            /* abbreviated name               */
+   char        caps        [ 5];            /* capitalized name for titles    */
+   double      len;                         /* length                         */
+   double      min;                         /* min degrees for joint          */
+   double      max;                         /* max degrees for joint          */
+   double      test1;                       /* test length (1) original       */
+   double      test2;                       /* test length (2) newer          */
+   double      test3;                       /* test length (3)                */
+};
+extern tSEGDATA    seg_data [YKINE_MAX_SEGS];
 
 
 /*---(hexapod leg)-----------------------*/
@@ -108,5 +138,5 @@ char        yKINE__testend     (void);
 
 
 
-/*> #endif                                                                            <*/
+#endif
 /*============================[[    end-code    ]]============================*/

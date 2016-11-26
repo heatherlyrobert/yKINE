@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.6t"
-#define     YKINE_VER_TXT   "updated angles function to take method (not assume FK)"
+#define     YKINE_VER_NUM   "0.7a"
+#define     YKINE_VER_TXT   "break into base, data, calc, and scrp files"
 
 
 
@@ -245,7 +245,7 @@
 #define     YKINE_RP         6
 #define     YKINE_RA         7
 #define     YKINE_LA         8
-#define     YKINE_LA         9
+#define     YKINE_LP         9
 
 /*---(body)---------------------------*/
 #define     YKINE_YAW        0
