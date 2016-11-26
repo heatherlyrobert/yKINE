@@ -58,17 +58,23 @@ yKINE_debug        (char a_flag)
 {
    /*---(set debug flag)-----------------*/
    if        (a_flag == 'A') {
-      yKINE_its.debug   = 'y';
-      yKINE_its.unit    = 'y';
-   } else if (a_flag == 'y')  {
-      yKINE_its.debug   = 'y';
-      yKINE_its.unit    = '-';
+      yKINE_its.debug_data   = 'y';
+      yKINE_its.debug_calc   = 'y';
+      yKINE_its.debug_scrp   = 'y';
+      yKINE_its.unit         = 'y';
+   } else if (a_flag == 'd') {
+      yKINE_its.debug_data   = 'y';
+   } else if (a_flag == 'c')  {
+      yKINE_its.debug_calc   = 'y';
+   } else if (a_flag == 's')  {
+      yKINE_its.debug_scrp   = 'y';
    } else if (a_flag == 'u')  {
-      yKINE_its.debug   = '-';
-      yKINE_its.unit    = 'y';
+      yKINE_its.unit         = 'y';
    } else {
-      yKINE_its.debug   = '-';
-      yKINE_its.unit    = '-';
+      yKINE_its.debug_data   = '-';
+      yKINE_its.debug_calc   = '-';
+      yKINE_its.debug_scrp   = '-';
+      yKINE_its.unit         = '-';
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -158,10 +164,10 @@ yKINE_center       (double a_x, double a_z, double a_y)
    tSEG       *x_leg       = NULL;
    int         i           =   0;
    /*---(header)-------------------------*/
-   DEBUG_KINE   yLOG_enter   (__FUNCTION__);
-   DEBUG_KINE   yLOG_double  ("a_x"       , a_x);
-   DEBUG_KINE   yLOG_double  ("a_z"       , a_z);
-   DEBUG_KINE   yLOG_double  ("a_y"       , a_y);
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_CALC   yLOG_double  ("a_x"       , a_x);
+   DEBUG_YKINE_CALC   yLOG_double  ("a_z"       , a_z);
+   DEBUG_YKINE_CALC   yLOG_double  ("a_y"       , a_y);
    /*---(kinematics)---------------------*/
    for (x_legnum = 0; x_legnum < YKINE_MAX_LEGS; ++x_legnum) {
       /*---(test and set)----------------*/
@@ -174,7 +180,7 @@ yKINE_center       (double a_x, double a_z, double a_y)
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/
-   DEBUG_KINE   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

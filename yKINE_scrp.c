@@ -5,6 +5,949 @@
 #include    "yKINE_priv.h"
 
 
+#define     MOVE_NULL   '-'
+#define     MOVE_PAUSE  'p'
+#define     MOVE_SERVO  's'
+
+tMOVE      *m_head;
+tMOVE      *m_tail;
+int         m_count;
+
+
+
+
+tSERVO     g_servos  [YKINE_MAX_SERVO] = {
+   /* label--------   cnt   curr  degs  xpos  zpos  ypos --segno--  --coda--- scrp  prev  next */
+   { "RR.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RR.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RR.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RM.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RM.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RM.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RF.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RF.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RF.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LF.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LF.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LF.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LM.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LM.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LM.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LR.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LR.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LR.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "end-of-list"  ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   /* label--------   cnt   curr  degs  xpos  zpos  ypos --segno--  --coda--- scrp  prev  next */
+};
+int         g_nservo;
+
+
+#define    MAX_SCRPARG      100
+typedef    struct  cSCRPARG   tSCRPARG;
+struct cSCRPARG {
+   char        name        [LEN_LABEL];
+   char        flag;
+   char        desc        [LEN_STR  ];
+};
+tSCRPARG   s_scrparg [MAX_SCRPARG] = {
+   /* label--------   cnt   description ------------------------------------- */
+   { "attn"         , '-',  "IK position calculations relative to attention"  },
+   { "F2R"          , '-',  "reflect movements of front legs to get rear"     },
+   { "R2L"          , '-',  "reflect movements of right legs to get left"     },
+   { "end-of-list"  , '-',  ""                                                },
+};
+
+
+/*====================------------------------------------====================*/
+/*===----                         file access                          ----===*/
+/*====================------------------------------------====================*/
+static void      o___ACCESS__________________o (void) {;}
+
+static FILE    *s_file  = NULL;
+static int      s_lines = 0;
+static char     s_recd  [LEN_RECD];
+
+
+char         /*--> prepare for use ---------s-------------[ leaf   [ ------ ]-*/
+SCRP_init          (void)
+{
+   int         i           = 0;
+   g_nservo = 0;
+   for (i = 0; i < YKINE_MAX_SERVO; ++i) {
+      if (g_servos [i].label [0] == 'e')   break;
+      ++g_nservo;
+   }
+   return 0;
+}
+
+char         /*--> open file for reading -----------------[ leaf   [ ------ ]-*/
+SCRP_open          (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
+   /*> DEBUG_YKINE_SCRP  yLOG_info    ("filename"  , my.f_name);                      <*/
+   /*---(defense)------------------------*/
+   /*> --rce;  if (strcmp (my.f_name, "") == 0) {                                     <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_note    ("no file to open");                         <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
+   /*---(open stdin)---------------------*/
+   /*> if (strcmp ("stdin", my.f_name) == 0) {                                        <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_note    ("data being provided on stdin");            <* 
+    *>    s_file = stdin;                                                             <* 
+    *> }                                                                              <*/
+   /*---(open file)----------------------*/
+   /*> else {                                                                         <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_note    ("data being provided in a file");           <* 
+    *>    s_file = fopen (my.f_name, "r");                                            <* 
+    *> }                                                                              <*/
+   /*---(check success)------------------*/
+   s_file = stdin;
+
+   DEBUG_YKINE_SCRP  yLOG_point   ("s_file"    , s_file);
+   --rce;  if (s_file == NULL) {
+      DEBUG_YKINE_SCRP  yLOG_note    ("file could not be openned");
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP  yLOG_note    ("file successfully opened");
+   /*---(init values)--------------*/
+   SCRP_init ();
+   /*---(complete)-----------------*/
+   DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> close file after reading --------------[ flower [ ------ ]-*/
+SCRP_close         (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;
+   char        rc          = 0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
+   /*---(stdin)--------------------------*/
+   /*> if (strcmp (my.f_name, "") == 0) {                                             <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_note    ("stdin should not be closed");              <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                              <* 
+    *>    s_file == NULL;                                                             <* 
+    *>    return 0;                                                                   <* 
+    *> }                                                                              <*/
+
+   s_file == NULL;
+
+   /*---(close file)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_point   ("s_file"    , s_file);
+   rc = fclose  (s_file);
+   DEBUG_YKINE_SCRP  yLOG_value   ("rc"        , rc);
+   /*---(check success)------------------*/
+   --rce;  if (rc != 0) {
+      DEBUG_YKINE_SCRP  yLOG_note    ("file could not be closed");
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP  yLOG_note    ("file successfully closed");
+   s_file == NULL;
+   /*---(complete)-----------------*/
+   DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        support functions                     ----===*/
+/*====================------------------------------------====================*/
+static void      o___SUPPORT_________________o (void) {;}
+
+char         /*--> identify the leg number ---------------[ ------ [ ------ ]-*/
+SCRP_legnum        (char *a_source)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         i           = 0;
+   for (i = 0; i < YKINE_MAX_LEGS; ++i) {
+      if (leg_data [i].caps[0] != a_source[0])   continue;
+      if (leg_data [i].caps[1] != a_source[1])   continue;
+      return i;
+   }
+   return -1;
+}
+
+char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
+SCRP_servo         (char *a_source)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   int         i           = 0;
+   int         x_index     = -1;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(cycle)--------------------------*/
+   /*> printf ("SCRP_servo         looking for %s\n", a_source);                       <*/
+   for (i = 0; i < g_nservo; ++i) {
+      if (a_source [0] != g_servos [i].label [0])       continue;
+      if (strcmp (a_source, g_servos [i].label) != 0)   continue;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("servo label found");
+      g_servos [i].scrp = 'y';
+      /*> printf ("SCRP_servo                        found\n");                        <*/
+      x_index = i;
+      break;
+   }
+   DEBUG_YKINE_SCRP   yLOG_svalue  ("index"     , x_index);
+   --rce;  if (x_index < 0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("servo label not found");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return x_index;
+}
+
+char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
+SCRP_servos        (char *a_source)
+{  /*---(design notes)-------------------*/
+   /*
+    *  L=left  , R=right
+    *  F=front , M=middle, R=rear
+    *  a=all   , +=large , -=small
+    *
+    *  troc = trocanter
+    *  femu = femur
+    *  pate = patella
+    *  tibi = tibia
+    *  meta = metatarsus
+    *  tars = tarsus
+    *  foot = foot
+    *  claw = claw
+    *  magn = magnet
+    *  hook = hook
+    *
+    *  servo labels start with two-char leg, '.', and four-char segment
+    *     LF.femu    = left-front leg's femur
+    *     aF.femu    = femur on both front legs
+    *     La.femu    = femurs on the left side
+    *     aa.femu    = all femurs
+    *     -F.femu    = femurs on the front small legs
+    *     +F.femu    = femurs on the front large legs
+    *     L-.femu    = femurs on the left small legs
+    *     L+.femu    = femurs on the left large legs
+    *     ++.femu    = femurs on all large legs
+    *     --.femu    = femurs on all small legs
+    *
+    *   need to add front to back, side to side, and other mirroring
+    *
+    *
+    */
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   int         i           = 0;
+   int         j           = 0;
+   int         x_index     = -1;
+   char        x_side      [LEN_LABEL] = "";
+   int         x_nside     = 0;
+   char        x_rank      [LEN_LABEL] = "";
+   int         x_nrank     = 0;
+   char        x_label     [LEN_LABEL] = "";
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(interpret side-to-side)---------*/
+   switch (a_source [0]) {
+   case 'L' : strlcpy (x_side  , "L"         , LEN_LABEL);   break;
+   case 'R' : strlcpy (x_side  , "R"         , LEN_LABEL);   break;
+   case 'l' : strlcpy (x_side  , "l"         , LEN_LABEL);   break;
+   case 'r' : strlcpy (x_side  , "r"         , LEN_LABEL);   break;
+   case '<' : strlcpy (x_side  , "Ll"        , LEN_LABEL);   break;
+   case '>' : strlcpy (x_side  , "Rr"        , LEN_LABEL);   break;
+   case '+' : strlcpy (x_side  , "LR"        , LEN_LABEL);   break;
+   case '-' : strlcpy (x_side  , "lr"        , LEN_LABEL);   break;
+   case 'a' : strlcpy (x_side  , "LRlr"      , LEN_LABEL);   break;
+   default  : strlcpy (x_side  , ""          , LEN_LABEL);   break;
+   }
+   x_nside = strlen (x_side);
+   /*> printf ("SCRP_servos  x_side (%d) %s\n", x_nside, x_side);                     <*/
+   --rce;  if (x_nside == 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(interpret front-to-back)--------*/
+   switch (a_source [1]) {
+   case 'R' : strlcpy (x_rank  , "R"         , LEN_LABEL);   break;
+   case 'M' : strlcpy (x_rank  , "M"         , LEN_LABEL);   break;
+   case 'F' : strlcpy (x_rank  , "F"         , LEN_LABEL);   break;
+   case 'r' : strlcpy (x_rank  , "r"         , LEN_LABEL);   break;
+   case 'f' : strlcpy (x_rank  , "f"         , LEN_LABEL);   break;
+   case '^' : strlcpy (x_rank  , "Ff"        , LEN_LABEL);   break;
+   case '_' : strlcpy (x_rank  , "Rr"        , LEN_LABEL);   break;
+   case '+' : strlcpy (x_rank  , "RMF"       , LEN_LABEL);   break;
+   case '-' : strlcpy (x_rank  , "rf"        , LEN_LABEL);   break;
+   case 'a' : strlcpy (x_rank  , "RMFrf"     , LEN_LABEL);   break;
+   default  : strlcpy (x_rank  , ""          , LEN_LABEL);   break;
+   }
+   x_nrank = strlen (x_rank);
+   /*> printf ("SCRP_servos  x_rank (%d) %s\n", x_nrank, x_rank);                     <*/
+   if (x_nrank == 0)  return -1;
+   /*---(cycle)--------------------------*/
+   for (i = 0; i < x_nside; ++i) {
+      for (j = 0; j < x_nrank; ++j) {
+         sprintf (x_label, "%c%c.%s", x_side [i], x_rank [j], a_source + 3);
+         /*> printf ("SCRP_servos     x_label %s\n", x_label);                         <*/
+         x_index = SCRP_servo (x_label);
+      }
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> reture an argument value --------------[ ------ [ ------ ]-*/
+SCRP_argvalue      (char *a_name)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         i           = 0;
+   for (i = 0; i < MAX_SCRPARG; ++i) {
+      if (strcmp (s_scrparg [i].name, "end-of-list") == 0)  break;
+      if (a_name[0] != s_scrparg [i].name [0])                   continue;
+      if (strcmp (s_scrparg [i].name, a_name) != 0)              continue;
+      return s_scrparg [i].flag;
+   }
+   return -1;
+}
+
+char         /*--> parse an argument list ----------------[ ------ [ ------ ]-*/
+SCRP_argparse      (char *a_source)
+{
+   /*---(locals)-----------+-----------+-*/
+   char       *p           = NULL;
+   char       *q           = ", ";               /* strtok delimeters         */
+   char       *s           = NULL;               /* strtok context variable   */
+   int         i           = 0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(start the parse)-------------*/
+   /*> printf ("a_source %s\n", a_source);                                            <*/
+   p = strtok_r (a_source, q, &s);
+   while (p != NULL) {
+      /*> printf ("  search for %s\n", p);                                            <*/
+      for (i = 0; i < MAX_SCRPARG; ++i) {
+         /*> printf ("    checking %s\n", s_scrparg [i].name);                        <*/
+         if (strcmp (s_scrparg [i].name, "end-of-list") == 0)  break;
+         if (p[0] != s_scrparg [i].name [0])                   continue;
+         if (strcmp (s_scrparg [i].name, p) != 0)              continue;
+         s_scrparg [i].flag = 'y';
+         /*> printf ("    found    %s\n", s_scrparg [i].name);                        <*/
+         break;
+      }
+      p = strtok_r (NULL    , q, &s);
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        leg movements                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___MOVES___________________o (void) {;}
+
+int         s_len       = 0;
+char       *s_q         = "";               /* strtok delimeters         */
+char       *s_context   = NULL;               /* strtok context variable   */
+
+/*---(prefix)-------------------------*/
+#define     FIELD_SVO      1
+#define     FIELD_SEC      2
+/*---(servo related)------------------*/
+#define     FIELD_DEG      3
+/*---(leg related)--------------------*/
+#define     FIELD_FEMU     3
+#define     FIELD_PATE     4
+#define     FIELD_TIBI     5
+/*---(position related)---------------*/
+#define     FIELD_XPOS     3
+#define     FIELD_ZPOS     4
+#define     FIELD_YPOS     5
+/*---(repeat related)-----------------*/
+#define     FIELD_TIMES    2
+#define     FIELD_COUNT    3
+/*---(suffix)-------------------------*/
+#define     FIELD_ARGS     6
+
+char         /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
+SCRP_move          (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   char       *p           = NULL;
+   int         i           = 0;
+   int         j           = 0;
+   int         x_len       = 0;
+   int         x_servo     = -1;
+   float       x_degs      = -1;
+   float       x_secs      = -1;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(read fields)--------------------*/
+   for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {
+      /*---(parse field)-----------------*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         break;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      x_len = strlen (p);
+      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+      /*---(handle)----------------------*/
+      switch (i) {
+      case  FIELD_SVO   :  /*---(servo)----*/
+         x_servo = SCRP_servos (p);
+         --rce;  if (x_servo < 0) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         break;
+      case  FIELD_SEC   :  /*---(seconds)--*/
+         x_secs = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("seconds"   , x_secs);
+         break;
+      case  FIELD_DEG   :  /*---(degrees)--*/
+         x_degs = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("degrees"   , x_degs);
+         for (j = 0; j < g_nservo; ++j) {
+            if (g_servos [j].scrp != 'y') continue;
+            MOVE_create (MOVE_SERVO, g_servos + j, "", 0, x_degs, x_secs);
+         }
+         break;
+      case  FIELD_ARGS  :  /*---(args)-----*/
+         SCRP_argparse   (p);
+         break;
+      }
+      DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
+   } 
+   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> parse a IK based move -----------------[ ------ [ ------ ]-*/
+SCRP_ik            (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   char       *p           = NULL;
+   int         i           = 0;
+   int         j           = 0;
+   char        x_request   [LEN_LABEL];
+   int         x_len       = 0;
+   int         x_servo     = -1;
+   float       x_secs      = -1;
+   double      x_xpos      = 0.0;
+   double      x_zpos      = 0.0;
+   double      x_ypos      = 0.0;
+   int         x_leg       = 0.0;
+   double      x_xbase     = 0.0;
+   double      x_zbase     = 0.0;
+   double      x_ybase     = 0.0;
+   double      x_femu      = 0.0;
+   double      x_pate      = 0.0;
+   double      x_tibi      = 0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(read fields)--------------------*/
+   for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {
+      /*---(parse field)-----------------*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         break;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      x_len = strlen (p);
+      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+      /*---(handle)----------------------*/
+      switch (i) {
+      case  FIELD_SVO   :  /*---(servo)----*/
+         sprintf (x_request, "%s.femu", p);
+         x_servo = SCRP_servos (x_request);
+         --rce;  if (x_servo < 0) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         break;
+      case  FIELD_SEC   :  /*---(seconds)--*/
+         x_secs = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("seconds"   , x_secs);
+         break;
+      case  FIELD_XPOS  :  /*---(coords)---*/
+         x_xpos = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("xpos"      , x_xpos);
+         break;
+      case  FIELD_ZPOS  :  /*---(coords)---*/
+         x_zpos = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("zpos"      , x_zpos);
+         break;
+      case  FIELD_YPOS  :  /*---(coords)---*/
+         x_ypos = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("ypos"      , x_ypos);
+         for (j = 0; j < g_nservo; ++j) {
+            if (g_servos [j].scrp != 'y') continue;
+            x_leg = j / 3.0;
+            DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
+            yKINE_forward  (x_leg, 0.0, 0.0, 90.0);
+            yKINE_endpoint (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &x_xbase, &x_zbase, &x_ybase);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_xbase"   , x_xbase);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_zbase"   , x_zbase);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_ybase"   , x_ybase);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_xnew"    , x_xbase + x_xpos);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_znew"    , x_zbase + x_zpos);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_ynew"    , x_ybase + x_ypos);
+            yKINE_inverse  (x_leg, x_xbase + x_xpos, x_zbase + x_zpos, x_ybase + x_ypos);
+            yKINE_angles   (x_leg, YKINE_IK, NULL, &x_femu, &x_pate, &x_tibi);
+            DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , x_femu);
+            DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , x_pate);
+            DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
+            MOVE_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
+            MOVE_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
+            MOVE_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
+            /*> if (strcmp (g_servos [j + 2].label, "RR.tibi") == 0) {                           <* 
+             *>    printf ("   base  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xbase, x_zbase, x_ybase);   <* 
+             *>    printf ("   incr  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xpos , x_zpos , x_ypos );   <* 
+             *> }                                                                                <*/
+            MOVE_addloc (g_servos + j + 2, x_xbase + x_xpos, x_zbase + x_zpos, x_ybase + x_ypos);
+         }
+         break;
+      case  FIELD_ARGS  :  /*---(args)-----*/
+         SCRP_argparse   (p);
+         break;
+      }
+      DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
+   } 
+   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
+SCRP_fullleg       (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   char       *p           = NULL;
+   int         i           = 0;
+   int         j           = 0;
+   char        x_request   [LEN_LABEL];
+   int         x_len       = 0;
+   int         x_servo     = -1;
+   int         x_leg       =  0;
+   float       x_secs      = -1;
+   double      x_femu      = 0.0;
+   double      x_pate      = 0.0;
+   double      x_tibi      = 0.0;
+   double      x_xpos      = 0.0;
+   double      x_zpos      = 0.0;
+   double      x_ypos      = 0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(read fields)--------------------*/
+   for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {
+      /*---(parse field)-----------------*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         break;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      x_len = strlen (p);
+      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+      /*---(handle)----------------------*/
+      switch (i) {
+      case  FIELD_SVO   :  /*---(servo)----*/
+         sprintf (x_request, "%s.femu", p);
+         x_servo = SCRP_servos (x_request);
+         --rce;  if (x_servo < 0) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         break;
+      case  FIELD_SEC   :  /*---(seconds)--*/
+         x_secs = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("seconds"   , x_secs);
+         break;
+      case  FIELD_FEMU  :  /*---(degrees)--*/
+         x_femu = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , x_femu);
+         break;
+      case  FIELD_PATE  :  /*---(degrees)--*/
+         x_pate = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , x_pate);
+         break;
+      case  FIELD_TIBI  :  /*---(degrees)--*/
+         x_tibi = atof (p);
+         DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
+         for (j = 0; j < g_nservo; ++j) {
+            if (g_servos [j].scrp != 'y') continue;
+            MOVE_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
+            MOVE_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
+            MOVE_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
+            x_leg = j / 3.0;
+            yKINE_forward  (x_leg, x_femu, x_pate, x_tibi);
+            yKINE_endpoint (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
+            MOVE_addloc (g_servos + j + 2, x_xpos, x_zpos, x_ypos);
+         }
+         break;
+      case  FIELD_ARGS  :  /*---(args)-----*/
+         SCRP_argparse   (p);
+         break;
+      }
+      DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
+   } 
+   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                          repeating                           ----===*/
+/*====================------------------------------------====================*/
+static void      o___REPEATS_________________o (void) {;}
+
+char         /*--> parse a segno marker ------------------[ ------ [ ------ ]-*/
+SCRP_segno         (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   char       *p           = NULL;
+   int         i           = 0;
+   int         j           = 0;
+   int         x_len       = 0;
+   int         x_servo     = -1;
+   int         x_count     = -1;
+   int         x_times     = -1;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(read fields)--------------------*/
+   for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {
+      /*---(parse field)-----------------*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         break;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      x_len = strlen (p);
+      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+      /*---(handle)----------------------*/
+      switch (i) {
+      case  FIELD_SVO   :  /*---(servo to repeat)----*/
+         x_servo = SCRP_servos (p);
+         --rce;  if (x_servo < 0) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         for (j = 0; j < g_nservo; ++j) {
+            if (g_servos [j].scrp != 'y') continue;
+            g_servos [j].segno_flag = 'y';
+            g_servos [j].segno      = NULL;
+         }
+         break;
+      case  FIELD_ARGS  :  /*---(args)-----*/
+         SCRP_argparse   (p);
+         break;
+      }
+      DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
+   } 
+   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> parse a low level repeat --------------[ ------ [ ------ ]-*/
+SCRP_repeat        (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   char       *p           = NULL;
+   int         i           = 0;
+   int         j           = 0;
+   int         x_len       = 0;
+   int         x_servo     = -1;
+   int         x_count     = -1;
+   int         x_times     = -1;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(read fields)--------------------*/
+   for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {
+      /*---(parse field)-----------------*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         break;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      x_len = strlen (p);
+      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+      /*---(handle)----------------------*/
+      switch (i) {
+      case  FIELD_SVO   :  /*---(servo to repeat)----*/
+         x_servo = SCRP_servos (p);
+         --rce;  if (x_servo < 0) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         break;
+      case  FIELD_TIMES :  /*---(times to repeat)----*/
+         x_times = atoi (p);
+         DEBUG_YKINE_SCRP  yLOG_value   ("x_times"   , x_times);
+         --rce;  if (x_times < 1 || x_times > 100) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("times"     , "out of range (1 - 100)");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         break;
+      case  FIELD_COUNT :  /*---(moves to repeat)----*/
+         x_count = atoi (p);
+         DEBUG_YKINE_SCRP  yLOG_value   ("x_count"   , x_count);
+         --rce;  if (x_count < 1 || x_count > 100) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("moves"     , "out of range (1 - 100)");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         for (j = 0; j < g_nservo; ++j) {
+            if (g_servos [j].scrp != 'y') continue;
+            MOVE_repeat     (g_servos + j, x_count, x_times);
+         }
+         break;
+      case  FIELD_ARGS  :  /*---(args)-----*/
+         SCRP_argparse   (p);
+         break;
+      }
+      DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
+   } 
+   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
+SCRP_dalsegno      (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   char       *p           = NULL;
+   int         i           = 0;
+   int         j           = 0;
+   int         x_len       = 0;
+   int         x_servo     = -1;
+   int         x_times     = -1;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(read fields)--------------------*/
+   for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {
+      /*---(parse field)-----------------*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         break;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      x_len = strlen (p);
+      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+      /*---(handle)----------------------*/
+      switch (i) {
+      case  FIELD_SVO   :  /*---(servo to repeat)----*/
+         x_servo = SCRP_servos (p);
+         --rce;  if (x_servo < 0) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         break;
+      case  FIELD_TIMES :  /*---(times to repeat)----*/
+         x_times = atoi (p);
+         DEBUG_YKINE_SCRP  yLOG_value   ("x_times"   , x_times);
+         --rce;  if (x_times < 1 || x_times > 100) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("times"     , "out of range (1 - 100)");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         for (j = 0; j < g_nservo; ++j) {
+            if (g_servos [j].scrp != 'y') continue;
+            MOVE_dalsegno   (g_servos + j, x_times);
+         }
+         break;
+      case  FIELD_COUNT :  /*---(moves to repeat)----*/
+         break;
+      case  FIELD_ARGS  :  /*---(args)-----*/
+         SCRP_argparse   (p);
+         break;
+      }
+      DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
+   } 
+   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        script driver                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___DRIVER__________________o (void) {;}
+
+char         /* file reading driver ----------------------[--------[--------]-*/
+SCRP_prep          (void)
+{
+   int         i           = 0;
+   for (i = 0; i < g_nservo; ++i) {
+      g_servos [i].scrp  = '-';
+   }
+   for (i = 0; i < MAX_SCRPARG; ++i) {
+      if (strcmp (s_scrparg [i].name, "end-of-list") == 0)  break;
+      s_scrparg [i].flag = '-';
+   }
+   return 0;
+}
+
+char         /* file reading driver ----------------------[--------[--------]-*/
+SCRP_main          (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;
+   int         rc          = 0;
+   char       *p;
+   char        x_type      [20]        = "";;
+   char        x_ver       = '-';
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
+   /*---(open file)----------------------*/
+   rc = SCRP_open   ();
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(read lines)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("read lines");
+   while (1) {
+      /*---(prepare)---------------------*/
+      SCRP_prep      ();
+      /*---(read and clean)--------------*/
+      ++s_lines;
+      DEBUG_YKINE_SCRP  yLOG_value   ("line"      , s_lines);
+      fgets (s_recd, LEN_RECD, s_file);
+      if (feof (s_file))  {
+         DEBUG_YKINE_SCRP  yLOG_note    ("end of file reached");
+         break;
+      }
+      s_len = strlen (s_recd);
+      if (s_len <= 0)  {
+         DEBUG_YKINE_SCRP  yLOG_note    ("record empty");
+         continue;
+      }
+      s_recd [--s_len] = '\0';
+      DEBUG_YKINE_SCRP  yLOG_value   ("length"    , s_len);
+      DEBUG_YKINE_SCRP  yLOG_info    ("fixed"     , s_recd);
+      if (s_recd [0] == '#') {
+         DEBUG_YKINE_SCRP  yLOG_note    ("comment line, skipping");
+         continue;
+      }
+
+      /*---(get recd type)---------------*/
+      p = strtok_r (s_recd, s_q, &s_context);
+      if (p == NULL) {
+         DEBUG_YKINE_SCRP  yLOG_note    ("can not parse type field");
+         continue;
+      }
+      strltrim  (p, ySTR_BOTH, LEN_RECD);
+      strncpy   (x_type, p,  10);
+      DEBUG_YKINE_SCRP  yLOG_info    ("type"      , x_type);
+      /*---(get version)-----------------*/
+      p = strtok_r (NULL     , s_q, &s_context);
+      if (p == NULL) {
+         DEBUG_YKINE_SCRP  yLOG_note    ("can not parse version field");
+         continue;
+      }
+      strltrim  (p, ySTR_BOTH, LEN_RECD);
+      if (strlen (p) != 3) {
+         DEBUG_YKINE_SCRP  yLOG_note    ("invalid length version field (3)");
+         continue;
+      }
+      if (p[0] != '-' || p[2] != '-') {
+         DEBUG_YKINE_SCRP  yLOG_note    ("invalid format version field (-x-)");
+         continue;
+      }
+      x_ver = p[1];
+      DEBUG_YKINE_SCRP  yLOG_char    ("version"   , x_ver);
+      /*---(handle types)----------------*/
+      switch (x_type [0]) {
+      case 'R' : /* repeat             */
+         SCRP_repeat    ();
+         break;
+      case 'S' : /* segno              */
+         SCRP_segno     ();
+         break;
+      case 'D' : /* dal segno          */
+         SCRP_dalsegno  ();
+         break;
+      case 's' : /* servo, start       */
+         SCRP_move      ();
+         break;
+      case 'f' : /* servo, start       */
+         SCRP_fullleg   ();
+         break;
+      case 'i' : /* IK based position  */
+         SCRP_ik        ();
+         break;
+      default  :
+         DEBUG_YKINE_SCRP  yLOG_note    ("verb not recognized and skipped");
+         break;
+      }
+
+   }
+   /*---(close file)---------------------*/
+   SCRP_close ();
+   /*---(complete)-------------------------*/
+   DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*============================----end-of-source---============================*/

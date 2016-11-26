@@ -1,17 +1,18 @@
 /*============================----beg-of-source---============================*/
 
-/*---(headers)---------------------------*/
-#include    "yKINE.h"
-#include    <yLOG.h>                    /* heatherly program logger            */
-
-
 /*===[[ HEADERS ]]========================================*/
-/*---(ansi-c standard)-------------------*/
-#include    <stdio.h>             /* clibc  standard input/output             */
-#include    <stdlib.h>            /* clibc  standard general purpose          */
-#include    <string.h>            /* clibc  standard string handling          */
-#include    <math.h>              /* clibc  standard math functions           */
+/*---(program)---------------------------*/
+#include    "yKINE.h"
 
+/*---(ansi-c standard)-------------------*/
+#include    <stdio.h>             /* CLIBC  standard input/output             */
+#include    <stdlib.h>            /* CLIBC  standard general purpose          */
+#include    <string.h>            /* CLIBC  standard string handling          */
+#include    <math.h>              /* CLIBC  standard math functions           */
+
+/*---(heatherly made)--------------------*/
+#include    <ySTR.h>              /* CUSTOM heatherly string handling         */
+#include    <yLOG.h>              /* CUSTOM heatherly program logging         */
 
 
 
@@ -30,16 +31,88 @@ struct cLOCAL {
    /*---(overall)-----------*/
    char        unit;
    char        debug;
+   char        debug_calc;
+   char        debug_data;
+   char        debug_scrp;
    int         logger;
 };
 tLOCAL      yKINE_its;
-#define     DEBUG_KINE     if (yKINE_its.debug == 'y')
+#define     DEBUG_YKINE_CALC if (yKINE_its.debug == 'y')
+#define     DEBUG_YKINE_DATA if (yKINE_its.debug == 'y')
+#define     DEBUG_YKINE_SCRP if (yKINE_its.debug == 'y')
 
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS
 #define     DEBUG_TOPS     if (yKINE_its.unit  == 'y')
 #endif
 
+
+/*===[[ RATIONAL LIMITS ]]====================================================*/
+/*   LEN_ is a length or size of something
+ *   MIN_ is a minimum count
+ *   DEF_ is a default count
+ *   MAX_ is a maximum count
+ *
+ */
+/*---(string length)------------------*/
+#define     LEN_LABEL   20
+#define     LEN_STR     200
+#define     LEN_RECD    2000
+
+
+
+
+/*===[[ TYPEDEFS ]]===========================================================*/
+typedef     struct      cMOVE       tMOVE;
+typedef     struct      cSERVO      tSERVO;
+
+
+
+struct      cMOVE {
+   int         seq;
+   char        type;
+   tSERVO     *servo;
+   char        label       [LEN_LABEL];
+   int         line;
+   double      sec_dur;
+   double      deg_beg;
+   double      deg_end;
+   double      sec_beg;
+   double      sec_end;
+   double      x_pos;
+   double      y_pos;
+   double      z_pos;
+   tMOVE      *m_prev;
+   tMOVE      *m_next;
+   tMOVE      *s_prev;
+   tMOVE      *s_next;
+};
+extern      tMOVE      *m_head;
+extern      tMOVE      *m_tail;
+extern      int         m_count;
+
+struct cSERVO {
+   /*---(overall)------------------------*/
+   char        label       [20];
+   int         count;
+   /*---(current)------------------------*/
+   tMOVE      *curr;
+   double      deg;
+   double      xexp;
+   double      zexp;
+   double      yexp;
+   char        segno_flag;
+   tMOVE      *segno;
+   char        coda_flag;
+   tMOVE      *coda;
+   char        scrp;
+   /*---(list)---------------------------*/
+   tMOVE      *head;
+   tMOVE      *tail;
+   /*---(done)---------------------------*/
+};
+extern      tSERVO      g_servos    [YKINE_MAX_SERVO];
+extern      int         g_nservo;
 
 
 typedef struct cLEGDATA tLEGDATA;

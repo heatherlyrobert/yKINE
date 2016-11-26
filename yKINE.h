@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7b"
-#define     YKINE_VER_TXT   "successfully moved calc formulas to yKINE_calc"
+#define     YKINE_VER_NUM   "0.7c"
+#define     YKINE_VER_TXT   "brought arachne SCRP into yKINE, but untested"
 
 
 
@@ -273,6 +273,8 @@
 #define     YKINE_LOWR      16
 #define     YKINE_CALC      17
 
+/*---(servos)-------------------------*/
+#define     YKINE_MAX_SERVO   32
 
 
 
