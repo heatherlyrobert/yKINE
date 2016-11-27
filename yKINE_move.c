@@ -161,8 +161,12 @@ yKINE_move_create  (
    }
    /*---(assign basics)---------------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("assign basic values");
-   x_move->type     = a_type;
+   if      (a_type == YKINE_MOVE_NOTE)  x_move->type     = a_type;
+   else if (a_sec  == 0.0            )  x_move->type     = YKINE_MOVE_INIT;
+   else                                 x_move->type     = a_type;
    x_move->servo    = a_servo;
+   strlcpy (x_move->label, a_label, LEN_LABEL);
+   x_move->line     = a_line;
    x_move->deg_end  = a_deg;
    x_move->sec_dur  = a_sec;
    /*---(hook it up to servo)---------*/
@@ -189,6 +193,7 @@ yKINE_move_create  (
       x_move->sec_end       = x_move->sec_beg + a_sec;
       x_move->deg_beg       = x_move->s_prev->deg_end;
    }
+   if (a_type == YKINE_MOVE_NOTE)  x_move->deg_end  = x_move->deg_beg;
    /*---(display stats)------------------*/
    DEBUG_YKINE_SCRP   yLOG_value   ("count"     , a_servo->count);
    DEBUG_YKINE_SCRP   yLOG_value   ("seq"       , x_move->seq);
@@ -364,6 +369,44 @@ yKINE_move_dsegno      (
    return 0;
 }
 
+char         /*--> remove a move -------------------------[ ------ [ ------ ]-*/
+yKINE_move_delete  (tMOVE *a_move)
+{
+   tMOVE      *x_next      = NULL;
+   /*---(defense)------------------------*/
+   if (a_move        == NULL)  return -1;
+   /*---(update timings)-----------------*/
+   x_next = a_move->s_next;
+   while (x_next != NULL) {
+      x_next->sec_beg -= a_move->sec_dur;
+      x_next->sec_end -= a_move->sec_dur;
+      x_next = x_next->s_next;
+   }
+   /*---(update next deg_beg)------------*/
+   if (a_move->s_prev != NULL && a_move->s_next != NULL) {
+      a_move->s_next->deg_beg = a_move->s_prev->deg_end;
+   }
+   /*---(mark deleted)-------------------*/
+   a_move->type     = YKINE_MOVE_DEL;
+   a_move->sec_dur  = 0.0;
+   a_move->sec_beg  = 0.0;
+   a_move->sec_end  = 0.0;
+   a_move->deg_beg  = a_move->s_prev->deg_end;
+   a_move->deg_end  = a_move->s_prev->deg_end;
+   /*> /+---(remove from servo list)---------+/                                       <* 
+    *> DEBUG_YKINE_SCRP   yLOG_note    ("remove from backwards/prev direction");      <* 
+    *> if (a_move->s_next != NULL) a_move->s_next->s_prev = a_move->s_prev;           <* 
+    *> else                        a_move->servo->tail    = a_move->s_prev;           <* 
+    *> DEBUG_YKINE_SCRP   yLOG_note    ("remove from forewards/next direction");      <* 
+    *> if (a_move->s_prev != NULL) a_move->s_prev->s_next = a_move->s_next;           <* 
+    *> else                        a_move->servo->head    = a_move->s_next;           <* 
+    *> DEBUG_YKINE_SCRP   yLOG_note    ("decrement count");                           <* 
+    *> --a_move->servo->count;                                                        <* 
+    *> yKINE__move_free (a_move);                                                     <*/
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -526,8 +569,15 @@ yKINE_move_first         (int a_servo, double *a_sec, double *a_deg)
    tMOVE      *x_next      = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(get current)--------------------*/
+   /*---(skip non-moves)-----------------*/
    x_next = g_servos [a_servo].head;
+   while (x_next != NULL) {
+      if (x_next->type == YKINE_MOVE_INIT )  break;
+      if (x_next->type == YKINE_MOVE_SERVO)  break;
+      if (x_next->type == YKINE_MOVE_WAIT )  break;
+      x_next = x_next->s_next;
+   }
+   /*---(refuse null)--------------------*/
    if (x_next == NULL) {
       s_curr  = NULL;
       *a_sec  = 0.0;
@@ -563,8 +613,15 @@ yKINE_move_next          (double *a_sec, double *a_deg)
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       return -10;
    }
-   /*---(get next)-----------------------*/
+   /*---(skip non-moves)-----------------*/
    x_next = x_next->s_next;
+   while (x_next != NULL) {
+      if (x_next->type == YKINE_MOVE_INIT )  break;
+      if (x_next->type == YKINE_MOVE_SERVO)  break;
+      if (x_next->type == YKINE_MOVE_WAIT )  break;
+      x_next = x_next->s_next;
+   }
+   /*---(get next)-----------------------*/
    if (x_next == NULL) {
       s_curr  = NULL;
       *a_sec  = 0.0;
@@ -659,6 +716,47 @@ yKINE_servo_line         (int a_leg, int a_seg, double *a_x1, double *a_z1, doub
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                       reporting                              ----===*/
+/*====================------------------------------------====================*/
+static void      o___REPORTS_________________o (void) {;}
+
+char
+yKINE_moves_rpt    (void)
+{
+   int         i           = 0;
+   tSERVO     *x_servo     = NULL;
+   tMOVE      *x_move      = NULL;
+   int         x_count     = 0;
+   printf ("yKINE scripting report of all servo moves\n");
+   printf ("\n");
+   for (i = 0; i < g_nservo; ++i) {
+      x_servo = g_servos + i;
+      printf ("%2d) %s\n", i, x_servo->label);
+      x_move  = x_servo->head;
+      x_count = 0;
+      while (x_move != NULL) {
+         if (x_count % 45 == 0)  printf ("\n   seq  t  ---label-------  line  --secb--  --sece--  --secs--  --degb--  --dege--  --xpos--  --zpos--  --ypos--\n");
+         if (x_count %  5 == 0)  printf ("\n");
+         printf ("   %3d  %c  %-15.15s  %4d  ",
+               x_move->seq    , x_move->type   , x_move->label  , x_move->line);
+         if (x_move->sec_dur == 0.0)  printf ("     - -       - -       - -  ");
+         else                         printf ("%8.3lf  %8.3lf  %8.3lf  ", x_move->sec_beg, x_move->sec_end, x_move->sec_dur);
+         printf ("%8.1lf  %8.1lf  ", x_move->deg_beg, x_move->deg_end);
+         if (x_move->x_pos + x_move->z_pos + x_move->y_pos == 0.0) {
+            printf ("     - -       - -       - -\n");
+         } else {
+            printf ("%8.2lf  %8.2lf  %8.2lf\n", x_move->x_pos  , x_move->z_pos  , x_move->y_pos  );
+         }
+         x_move  = x_move->s_next;
+         ++x_count;
+      }
+      printf ("\n");
+   }
+   return 0;
+}
 
 
 

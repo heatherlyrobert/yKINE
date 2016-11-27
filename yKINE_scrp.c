@@ -9,10 +9,6 @@
 #define     MOVE_PAUSE  'p'
 #define     MOVE_SERVO  's'
 
-tMOVE      *m_head;
-tMOVE      *m_tail;
-int         m_count;
-
 
 
 
@@ -56,6 +52,7 @@ tSCRPARG   s_scrparg [MAX_SCRPARG] = {
    { "R2L"          , '-',  "reflect movements of right legs to get left"     },
    { "end-of-list"  , '-',  ""                                                },
 };
+
 
 
 /*====================------------------------------------====================*/
@@ -350,7 +347,7 @@ yKINE__scrp_move   (void)
          DEBUG_YKINE_SCRP  yLOG_double  ("degrees"   , x_degs);
          for (j = 0; j < g_nservo; ++j) {
             if (g_servos [j].scrp != 'y') continue;
-            yKINE_move_create (MOVE_SERVO, g_servos + j, "", 0, x_degs, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j, "single", s_lines, x_degs, x_secs);
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
@@ -446,9 +443,9 @@ yKINE__scrp_ik     (void)
             DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , x_femu);
             DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , x_pate);
             DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "inverse", s_lines, x_femu, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "inverse", s_lines, x_pate, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "inverse", s_lines, x_tibi, x_secs);
             /*> if (strcmp (g_servos [j + 2].label, "RR.tibi") == 0) {                           <* 
              *>    printf ("   base  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xbase, x_zbase, x_ybase);   <* 
              *>    printf ("   incr  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xpos , x_zpos , x_ypos );   <* 
@@ -531,9 +528,9 @@ yKINE__scrp_fk     (void)
          DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
          for (j = 0; j < g_nservo; ++j) {
             if (g_servos [j].scrp != 'y') continue;
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "", 0, x_femu, x_secs);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "", 0, x_pate, x_secs);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "", 0, x_tibi, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "forward", s_lines, x_femu, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "forward", s_lines, x_pate, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "forward", s_lines, x_tibi, x_secs);
             x_leg = j / 3.0;
             yKINE_forward     (x_leg, x_femu, x_pate, x_tibi);
             yKINE_endpoint    (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
@@ -753,6 +750,122 @@ yKINE__scrp_dsegno (void)
 
 
 /*====================------------------------------------====================*/
+/*===----                        gait verbs                            ----===*/
+/*====================------------------------------------====================*/
+static void      o___GAITS___________________o (void) {;}
+
+tMOVE      *s_gait_begin  [YKINE_MAX_SERVO];
+
+static char  /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
+yKINE__scrp_bgait  (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;
+   int         i           = 0;
+   char       *p           = NULL;
+   int         x_len       = 0;
+   int         x_servo     = 0;
+   char        x_request   [LEN_LABEL];
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(parse field)-----------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+   p = strtok_r (NULL  , s_q, &s_context);
+   --rce;  if (p == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   strltrim (p, ySTR_BOTH, LEN_RECD);
+   x_len = strlen (p);
+   DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+   /*---(handle)----------------------*/
+   sprintf (x_request, "%s.femu", p);
+   x_servo = yKINE__scrp_servos (x_request);
+   sprintf (x_request, "%s.pate", p);
+   x_servo = yKINE__scrp_servos (x_request);
+   sprintf (x_request, "%s.tibi", p);
+   x_servo = yKINE__scrp_servos (x_request);
+   --rce;  if (x_servo < 0) {
+      DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(mark servos)--------------------*/
+   for (i = 0; i < g_nservo; ++i) {
+      s_gait_begin [i] = NULL;
+      if (g_servos [i].scrp != 'y') continue;
+      yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "GAIT_BEG", s_lines, 0.0, 0.0);
+      DEBUG_YKINE_SCRP   yLOG_value    ("servo"     , i);
+      DEBUG_YKINE_SCRP   yLOG_point    ("saved"     , g_servos [i].tail);
+      s_gait_begin [i] = g_servos [i].tail;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char  /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
+yKINE__scrp_egait  (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;
+   int         i           = 0;
+   int         j           = 0;
+   int         k           = 0;
+   char       *p           = NULL;
+   int         x_len       = 0;
+   char        x_order     [LEN_LABEL];
+   int         x_leg       = 0;
+   int         x_snum      = 0;
+   tSERVO     *x_servo     = NULL;
+   tMOVE      *x_start     = NULL;
+   tMOVE      *x_next      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(parse leg order)-------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("parse leg order field");
+   p = strtok_r (NULL  , s_q, &s_context);
+   --rce;  if (p == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   }
+   strltrim (p, ySTR_BOTH, LEN_RECD);
+   x_len = strlen (p);
+   strlcpy (x_order, p, LEN_LABEL);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_order"   , x_order);
+   DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
+   /*---(handle)----------------------*/
+   for (i = 0; i < x_len; ++i) {
+      x_leg = (int) (x_order [i] - '0');
+      DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
+      for (j = 0; j < 3; ++j) {
+         x_snum  = (x_leg * 3) + j;
+         DEBUG_YKINE_SCRP  yLOG_value   ("x_snum"    , x_snum);
+         x_servo = g_servos + x_snum;
+         DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
+         x_start = s_gait_begin [x_snum]->s_next;
+         DEBUG_YKINE_SCRP  yLOG_point   ("x_start"   , x_start);
+         yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "gait_end", x_start->line, x_start->deg_end, x_start->sec_dur);
+         yKINE_move_addloc (x_servo, x_start->x_pos, x_start->z_pos, x_start->y_pos);
+         x_start = x_start->s_next;
+         DEBUG_YKINE_SCRP  yLOG_point   ("x_start"   , x_start);
+         for (k = 0; k < i; ++k) {
+            x_next  = x_start->s_next;
+            DEBUG_YKINE_SCRP  yLOG_point   ("x_next"    , x_next);
+            yKINE_move_delete (x_start);
+            x_start = x_next;
+         }
+      }
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                        script driver                         ----===*/
 /*====================------------------------------------====================*/
 static void      o___DRIVER__________________o (void) {;}
@@ -838,6 +951,14 @@ yKINE_script       (double *a_len)
       DEBUG_YKINE_SCRP  yLOG_char    ("version"   , x_ver);
       /*---(handle types)----------------*/
       switch (x_type [0]) {
+      case 'G' : /* gait               */
+         if        (strcmp ("GAIT_BEG"   , x_type) == 0) {
+            yKINE__scrp_bgait  ();
+         } else if (strcmp ("GAIT_END"   , x_type) == 0) {
+            yKINE__scrp_egait  ();
+         }
+         /*> yKINE__scrp_gate      ();                                                <*/
+         break;
       case 'R' : /* repeat             */
          yKINE__scrp_repeat    ();
          break;

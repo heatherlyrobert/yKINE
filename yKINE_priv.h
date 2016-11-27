@@ -81,8 +81,8 @@ struct      cMOVE {
    double      sec_beg;
    double      sec_end;
    double      x_pos;
-   double      y_pos;
    double      z_pos;
+   double      y_pos;
    tMOVE      *m_prev;
    tMOVE      *m_next;
    tMOVE      *s_prev;

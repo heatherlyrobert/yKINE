@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7f"
-#define     YKINE_VER_TXT   "arachne works using MOVE and SCRP functions ;))"
+#define     YKINE_VER_NUM   "0.7g"
+#define     YKINE_VER_TXT   "GAIT verb is nearly working and move report is started"
 
 
 
@@ -277,8 +277,11 @@
 #define     YKINE_MAX_SERVO   32
 
 #define     YKINE_MOVE_NULL   '-'
-#define     YKINE_MOVE_PAUSE  'p'
 #define     YKINE_MOVE_SERVO  's'
+#define     YKINE_MOVE_WAIT   'w'
+#define     YKINE_MOVE_INIT   'i'
+#define     YKINE_MOVE_NOTE   'n'
+#define     YKINE_MOVE_DEL    'x'
 
 
 
@@ -321,6 +324,7 @@ char        yKINE_move_next    (double *a_sec, double *a_deg);
 char        yKINE_move_exact   (double a_sec, int a_leg, double *a_diffx, double *a_diffz, double *a_diffy, double *a_y);
 char        yKINE_servo_deg    (int a_leg, int a_seg, double *a_deg);
 char        yKINE_servo_line   (int a_leg, int a_seg, double *a_x1, double *a_z1, double *a_y1, double *a_x2, double *a_z2, double *a_y2);
+char        yKINE_moves_rpt    (void);
 
 
 
