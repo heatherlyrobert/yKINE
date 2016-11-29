@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7i"
-#define     YKINE_VER_TXT   "fixed gait issue with leg starting in neutral too long"
+#define     YKINE_VER_NUM   "0.7j"
+#define     YKINE_VER_TXT   "added final script adjustment to length after changes"
 
 
 

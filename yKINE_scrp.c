@@ -13,7 +13,7 @@
 
 
 tSERVO     g_servos  [YKINE_MAX_SERVO] = {
-   /* label--------   cnt   curr  degs  xpos  zpos  ypos --segno--  --coda--- scrp  prev  next */
+   /* label--------   cnt   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  prev  next */
    { "RR.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
    { "RR.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
    { "RR.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
@@ -33,7 +33,7 @@ tSERVO     g_servos  [YKINE_MAX_SERVO] = {
    { "LR.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
    { "LR.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
    { "end-of-list"  ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   /* label--------   cnt   curr  degs  xpos  zpos  ypos --segno--  --coda--- scrp  prev  next */
+   /* label--------   cnt   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  prev  next */
 };
 int         g_nservo;
 
@@ -979,6 +979,9 @@ yKINE_script       (double *a_len)
    char       *p;
    char        x_type      [20]        = "";;
    char        x_ver       = '-';
+   int         i           = 0;
+   double      x_len       = 0.0;
+   double      x_sec       = 0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
@@ -1069,8 +1072,15 @@ yKINE_script       (double *a_len)
       }
 
    }
-   if (a_len != NULL)  *a_len = yKINE_its.scrp_len;
-   /*---(complete)-------------------------*/
+   /*---(fix length)---------------------*/
+   x_len = 0.0;
+   for (i = 0; i < g_nservo; ++i) {
+      yKINE_move_last (i, &x_sec, NULL);
+      if (x_sec > x_len)  x_len = x_sec;
+   }
+   yKINE_its.scrp_len = x_len;
+   if (a_len != NULL)  *a_len = x_len;
+   /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
    return 0;
 }
