@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7h"
-#define     YKINE_VER_TXT   "GAIT verb is smoking now.  it begins and ends automatically ;))"
+#define     YKINE_VER_NUM   "0.7i"
+#define     YKINE_VER_TXT   "fixed gait issue with leg starting in neutral too long"
 
 
 

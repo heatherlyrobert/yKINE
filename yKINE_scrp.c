@@ -897,7 +897,7 @@ yKINE__scrp_e6gait  (void)
          x_start->deg_beg = x_start->deg_end;
          /*---(fix first wait)-----------*/
          x_start = s_gait_begin [x_snum]->s_prev->s_prev->s_prev;
-         x_start->sec_dur = (double) i * 0.500;
+         x_start->sec_dur = (double) (5 - i) * 0.500;
          x_inix  = x_start->x_pos;
          x_iniz  = x_start->z_pos;
          x_iniy  = x_start->y_pos;
@@ -922,7 +922,7 @@ yKINE__scrp_e6gait  (void)
          x_start->y_pos           = x_1sty;
          x_start->deg_beg         = x_1std;
          x_start->deg_end         = x_1std;
-         x_start->sec_dur = (double) (5 - i) * 0.500;
+         x_start->sec_dur = (double) i * 0.500;
          /*---(fix waiting)--------------*/
          x_start = s_gait_begin [x_snum]->s_prev->s_prev->s_prev;
          while (x_start != NULL) {
@@ -932,13 +932,13 @@ yKINE__scrp_e6gait  (void)
          }
          /*---(add to end)---------------*/
          x_start = x_servo->tail;
-         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_start->deg_end  , i * 0.500);
+         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_start->deg_end  , (5 - i) * 0.500);
          yKINE_move_addloc (x_servo, x_start->x_pos, x_start->z_pos, x_start->y_pos);
          yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "neutral"  , -1           , x_neud          , 0.500           );
          yKINE_move_addloc (x_servo, x_neux, x_neuz, x_neuy);
          yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "back down", -1           , x_inid          , 0.500           );
          yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);
-         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , x_inid          , (5 - i) * 0.500);
+         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , x_inid          , i * 0.500);
          yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);
          yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "6_GAIT_END", s_lines, 0.0, 0.0);
          yKINE_move_addloc (x_servo, 0.0, 0.0, 0.0);
