@@ -48,8 +48,10 @@ struct cSCRPARG {
 tSCRPARG   s_scrparg [MAX_SCRPARG] = {
    /* label--------   cnt   description ------------------------------------- */
    { "attn"         , '-',  "IK position calculations relative to attention"  },
+   { "crab"         , '-',  "IK position calculations relative to crab pose"  },
    { "F2R"          , '-',  "reflect movements of front legs to get rear"     },
-   { "R2L"          , '-',  "reflect movements of right legs to get left"     },
+   { "xR2L"         , '-',  "reflect x increments from right to left"         },
+   { "zR2L"         , '-',  "reflect z increments from right to left"         },
    { "end-of-list"  , '-',  ""                                                },
 };
 
@@ -382,6 +384,9 @@ yKINE__scrp_ik     (void)
    double      x_xbase     = 0.0;
    double      x_zbase     = 0.0;
    double      x_ybase     = 0.0;
+   double      x_xnew      = 0.0;
+   double      x_znew      = 0.0;
+   double      x_ynew      = 0.0;
    double      x_femu      = 0.0;
    double      x_pate      = 0.0;
    double      x_tibi      = 0.0;
@@ -426,32 +431,6 @@ yKINE__scrp_ik     (void)
       case  FIELD_YPOS  :  /*---(coords)---*/
          x_ypos = atof (p);
          DEBUG_YKINE_SCRP  yLOG_double  ("ypos"      , x_ypos);
-         for (j = 0; j < g_nservo; ++j) {
-            if (g_servos [j].scrp != 'y') continue;
-            x_leg = j / 3.0;
-            DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
-            yKINE_forward  (x_leg, 0.0, 0.0, 90.0);
-            yKINE_endpoint (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &x_xbase, &x_zbase, &x_ybase);
-            DEBUG_YKINE_SCRP  yLOG_double  ("x_xbase"   , x_xbase);
-            DEBUG_YKINE_SCRP  yLOG_double  ("x_zbase"   , x_zbase);
-            DEBUG_YKINE_SCRP  yLOG_double  ("x_ybase"   , x_ybase);
-            DEBUG_YKINE_SCRP  yLOG_double  ("x_xnew"    , x_xbase + x_xpos);
-            DEBUG_YKINE_SCRP  yLOG_double  ("x_znew"    , x_zbase + x_zpos);
-            DEBUG_YKINE_SCRP  yLOG_double  ("x_ynew"    , x_ybase + x_ypos);
-            yKINE_inverse  (x_leg, x_xbase + x_xpos, x_zbase + x_zpos, x_ybase + x_ypos);
-            yKINE_angles   (x_leg, YKINE_IK, NULL, &x_femu, &x_pate, &x_tibi);
-            DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , x_femu);
-            DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , x_pate);
-            DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "inverse", s_lines, x_femu, x_secs);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "inverse", s_lines, x_pate, x_secs);
-            yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "inverse", s_lines, x_tibi, x_secs);
-            /*> if (strcmp (g_servos [j + 2].label, "RR.tibi") == 0) {                           <* 
-             *>    printf ("   base  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xbase, x_zbase, x_ybase);   <* 
-             *>    printf ("   incr  %8.1lfx, %8.1lfz, %8.1lfy\n", x_xpos , x_zpos , x_ypos );   <* 
-             *> }                                                                                <*/
-            yKINE_move_addloc (g_servos + j + 2, x_xbase + x_xpos, x_zbase + x_zpos, x_ybase + x_ypos);
-         }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
          yKINE__scrp_args(p);
@@ -460,6 +439,44 @@ yKINE__scrp_ik     (void)
       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
    } 
    DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
+   /*---(process)------------------------*/
+   for (j = 0; j < g_nservo; ++j) {
+      if (g_servos [j].scrp != 'y') continue;
+      x_leg = j / 3.0;
+      DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
+      if      (yKINE__scrp_argval ("attn") == 'y')  yKINE_forward  (x_leg, 0.0, 0.0, 90.0);
+      else if (yKINE__scrp_argval ("crab") == 'y') {
+         switch (x_leg) {
+         case 0 : yKINE_forward  (x_leg,  55.0, -45.0, 100.0);  break;
+         case 1 : yKINE_forward  (x_leg,   0.0, -45.0, 100.0);  break;
+         case 2 : yKINE_forward  (x_leg, -55.0, -45.0, 100.0);  break;
+         case 3 : yKINE_forward  (x_leg,  55.0, -45.0, 100.0);  break;
+         case 4 : yKINE_forward  (x_leg,   0.0, -45.0, 100.0);  break;
+         case 5 : yKINE_forward  (x_leg, -55.0, -45.0, 100.0);  break;
+         }
+      }
+      yKINE_endpoint (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &x_xbase, &x_zbase, &x_ybase);
+      DEBUG_YKINE_SCRP  yLOG_double  ("x_xbase"   , x_xbase);
+      DEBUG_YKINE_SCRP  yLOG_double  ("x_zbase"   , x_zbase);
+      DEBUG_YKINE_SCRP  yLOG_double  ("x_ybase"   , x_ybase);
+      x_xnew  = x_xbase + x_xpos;
+      x_znew  = x_zbase + x_zpos;
+      x_ynew  = x_ybase + x_ypos;
+      if (x_leg <= 2 && yKINE__scrp_argval ("xR2L") == 'y')  x_xnew = x_xbase - x_xpos;
+      if (x_leg <= 2 && yKINE__scrp_argval ("zR2L") == 'y')  x_znew = x_zbase - x_zpos;
+      DEBUG_YKINE_SCRP  yLOG_double  ("x_xnew"    , x_xnew);
+      DEBUG_YKINE_SCRP  yLOG_double  ("x_znew"    , x_znew);
+      DEBUG_YKINE_SCRP  yLOG_double  ("x_ynew"    , x_ynew);
+      yKINE_inverse  (x_leg, x_xnew, x_znew, x_ynew);
+      yKINE_angles   (x_leg, YKINE_IK, NULL, &x_femu, &x_pate, &x_tibi);
+      DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , x_femu);
+      DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , x_pate);
+      DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , x_tibi);
+      yKINE_move_create (MOVE_SERVO, g_servos + j + 0, "inverse", s_lines, x_femu, x_secs);
+      yKINE_move_create (MOVE_SERVO, g_servos + j + 1, "inverse", s_lines, x_pate, x_secs);
+      yKINE_move_create (MOVE_SERVO, g_servos + j + 2, "inverse", s_lines, x_tibi, x_secs);
+      yKINE_move_addloc (g_servos + j + 2, x_xnew, x_znew, x_ynew);
+   }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -932,13 +949,13 @@ yKINE__scrp_e6gait  (void)
          }
          /*---(add to end)---------------*/
          x_start = x_servo->tail;
-         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_start->deg_end  , (5 - i) * 0.500);
+         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_start->deg_end  , i * 0.500);
          yKINE_move_addloc (x_servo, x_start->x_pos, x_start->z_pos, x_start->y_pos);
          yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "neutral"  , -1           , x_neud          , 0.500           );
          yKINE_move_addloc (x_servo, x_neux, x_neuz, x_neuy);
          yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "back down", -1           , x_inid          , 0.500           );
          yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);
-         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , x_inid          , i * 0.500);
+         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , x_inid          , (5 - i) * 0.500);
          yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);
          yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "6_GAIT_END", s_lines, 0.0, 0.0);
          yKINE_move_addloc (x_servo, 0.0, 0.0, 0.0);

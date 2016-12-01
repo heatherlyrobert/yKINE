@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7j"
-#define     YKINE_VER_TXT   "added final script adjustment to length after changes"
+#define     YKINE_VER_NUM   "0.7k"
+#define     YKINE_VER_TXT   "created a phys_flat to determine how high the spider sits"
 
 
 
@@ -329,6 +329,7 @@ char        yKINE_servo_deg    (int     a_leg  , int     a_seg, double *a_deg);
 char        yKINE_servo_line   (int     a_leg  , int     a_seg, double *a_x1   , double *a_z1   , double *a_y1   , double *a_x2, double *a_z2, double *a_y2);
 char        yKINE_moves_rpt    (void);
 
+char        yKINE_phys_flat    (char a_meth, double a_sec, double *a_lowest, int *a_count);
 
 
 
