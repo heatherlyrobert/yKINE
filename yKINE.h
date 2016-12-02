@@ -220,12 +220,13 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7k"
-#define     YKINE_VER_TXT   "created a phys_flat to determine how high the spider sits"
+#define     YKINE_VER_NUM   "0.7l"
+#define     YKINE_VER_TXT   "added degrees for attention pose to servo table (golem)"
 
 
 
 /*===[[ CONSTANTS ]]======================================*/
+
 
 /*---(methods)------------------------*/
 #define     YKINE_MAX_METH   5

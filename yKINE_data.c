@@ -21,25 +21,25 @@ tLEGDATA    leg_data [YKINE_MAX_LEGS] = {
 };
 
 tSEGDATA    seg_data [YKINE_MAX_SEGS] = {
-   /* ---full------------ --four--- --caps--- move ----len ----min ----max --test1 --test2 --test3 */
-   { "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,  360.0,   75.0,   75.0,    0.0 },
-   { "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,   25.0,   30.0,    0.0 },
-   { "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,   85.0,   25.0,   30.0,    0.0 },
-   { "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -90.0,   45.0,   50.0,   57.0,    0.0 },
-   { "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,   10.0,  130.0,  100.0,  130.0,    0.0 },
-   { "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "original"          , "orig"  , "ORIG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "target"            , "targ"  , "TARG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "lower_leg"         , "lowr"  , "LOWR"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "calculation"       , "calc"  , "CALC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   /* ---full------------ --four--- --caps--- move ----len ----min ---attn ----max --test1 --test2 --test3 */
+   { "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0 },
+   { "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0 },
+   { "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0 },
+   { "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -90.0,    0.0,   45.0,   50.0,   57.0,    0.0 },
+   { "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,   10.0,   90.0,  130.0,  100.0,  130.0,    0.0 },
+   { "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "original"          , "orig"  , "ORIG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "target"            , "targ"  , "TARG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "lower_leg"         , "lowr"  , "LOWR"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+   { "calculation"       , "calc"  , "CALC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "-----"             , "----"  , "----"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
 };
 
@@ -53,14 +53,15 @@ static void      o___STATIC__________________o (void) {;};
 char*    yKINE_legtwo       (int a_leg)    { return leg_data [a_leg].two;  }
 char*    yKINE_legcaps      (int a_leg)    { return leg_data [a_leg].caps; }
 char*    yKINE_legfull      (int a_leg)    { return leg_data [a_leg].full; }
-double   yKINE_legdeg       (int a_leg)    { return leg_data [a_leg].deg; }
+double   yKINE_legdeg       (int a_leg)    { return leg_data [a_leg].deg;  }
 
 char*    yKINE_segfour      (int a_seg)    { return seg_data [a_seg].four; }
 char*    yKINE_segcaps      (int a_seg)    { return seg_data [a_seg].caps; }
 char*    yKINE_segfull      (int a_seg)    { return seg_data [a_seg].full; }
-double   yKINE_seglen       (int a_seg)    { return seg_data [a_seg].len; }
-double   yKINE_segmin       (int a_seg)    { return seg_data [a_seg].min; }
-double   yKINE_segmax       (int a_seg)    { return seg_data [a_seg].max; }
+double   yKINE_seglen       (int a_seg)    { return seg_data [a_seg].len;  }
+double   yKINE_segmin       (int a_seg)    { return seg_data [a_seg].min;  }
+double   yKINE_segattn      (int a_seg)    { return seg_data [a_seg].attn; }
+double   yKINE_segmax       (int a_seg)    { return seg_data [a_seg].max;  }
 
 
 

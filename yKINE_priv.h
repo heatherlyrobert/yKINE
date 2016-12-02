@@ -134,8 +134,9 @@ struct cSEGDATA {
    char        caps        [ 5];            /* capitalized name for titles    */
    char        move;                        /* have a servo/moveable (y/n)    */
    double      len;                         /* length                         */
-   double      min;                         /* min degrees for joint          */
-   double      max;                         /* max degrees for joint          */
+   double      min;                         /* min degrees for segment        */
+   double      attn;                        /* attn degress for segment       */
+   double      max;                         /* max degrees for segment        */
    double      test1;                       /* test length (1) original       */
    double      test2;                       /* test length (2) newer          */
    double      test3;                       /* test length (3)                */
