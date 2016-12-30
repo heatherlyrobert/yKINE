@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7m"
-#define     YKINE_VER_TXT   "added a servo_move function to get move details"
+#define     YKINE_VER_NUM   "0.7n"
+#define     YKINE_VER_TXT   "fixed move time issue with inaccuracies in doubles"
 
 
 
