@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7l"
-#define     YKINE_VER_TXT   "added degrees for attention pose to servo table (golem)"
+#define     YKINE_VER_NUM   "0.7m"
+#define     YKINE_VER_TXT   "added a servo_move function to get move details"
 
 
 
@@ -305,6 +305,7 @@ char*       yKINE_segcaps      (int a_seg);
 char*       yKINE_segfull      (int a_seg);
 double      yKINE_seglen       (int a_seg);
 double      yKINE_segmin       (int a_seg);
+double      yKINE_segattn      (int a_seg);
 double      yKINE_segmax       (int a_seg);
 
 /*---(dynamic datae accessors)--------*/
@@ -327,6 +328,7 @@ char        yKINE_move_last    (int     a_servo, double *a_sec, double *a_deg);
 char        yKINE_move_exact   (double  a_sec  , int     a_leg, double *a_diffx, double *a_diffz, double *a_diffy, double *a_y);
 char        yKINE_move_curdata (double *a_x, double *a_z, double *a_y);
 char        yKINE_servo_deg    (int     a_leg  , int     a_seg, double *a_deg);
+char        yKINE_servo_move   (int a_leg, int a_seg, char *a_label, double *a_secb, double *a_sece, double *a_dur , double *a_degb, double *a_dege, int *a_seq , int *a_line);
 char        yKINE_servo_line   (int     a_leg  , int     a_seg, double *a_x1   , double *a_z1   , double *a_y1   , double *a_x2, double *a_z2, double *a_y2);
 char        yKINE_moves_rpt    (void);
 

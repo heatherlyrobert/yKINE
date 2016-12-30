@@ -423,6 +423,7 @@ yKINE_move_curset        (int a_servo, float a_time)
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
    x_next = g_servos [a_servo].head;
+   g_servos [a_servo].exact = '-';
    if (x_next == NULL) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("no moves for servo");
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
@@ -436,12 +437,14 @@ yKINE_move_curset        (int a_servo, float a_time)
          DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
          return -11;
       }
-      if (x_next->sec_end <  a_time) {
+      if (x_next->sec_end <=  a_time) {
          x_next = x_next->s_next;
          continue;
       }
       DEBUG_YKINE_SCRP   yLOG_snote   ("found it");
       g_servos [a_servo].curr = x_next;
+      g_servos [a_servo].exact = 'y';
+      /*> if (x_next->sec_beg == a_time)  g_servos [a_servo].exact = 'y';             <*/
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
@@ -466,6 +469,7 @@ yKINE_move_curone        (int a_servo, double a_time)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_SCRP   yLOG_info    ("label"     , g_servos [a_servo].label);
+   g_servos [a_servo].exact = '-';
    /*---(check for correct current)------*/
    if        (g_servos [a_servo].curr == NULL) {
       DEBUG_YKINE_SCRP   yLOG_note    ("servo current is not set");
@@ -483,8 +487,8 @@ yKINE_move_curone        (int a_servo, double a_time)
       DEBUG_YKINE_SCRP   yLOG_note    ("time is before current move beg");
       rc = yKINE_move_curset (a_servo, a_time);
       DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
-   } else if (a_time > x_curr->sec_end) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("time is after current move end");
+   } else if (a_time >= x_curr->sec_end) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("time is on or after current move end");
       rc = yKINE_move_curset (a_servo, a_time);
       DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
    }
@@ -501,6 +505,7 @@ yKINE_move_curone        (int a_servo, double a_time)
    x_end   = x_curr->sec_end;
    DEBUG_YKINE_SCRP   yLOG_double  ("deg_beg"   , x_curr->deg_beg);
    DEBUG_YKINE_SCRP   yLOG_double  ("deg_end"   , x_curr->deg_end);
+   /*> if (x_curr->deg_beg == x_curr->deg_end)  g_servos [a_servo].exact = '-';       <*/
    x_pct   = (a_time - x_beg) / (x_end - x_beg);
    if (x_end == 0.0)  x_pct = 0.0;
    DEBUG_YKINE_SCRP   yLOG_double  ("x_pct"     , x_pct);
@@ -790,6 +795,28 @@ yKINE_servo_deg          (int a_leg, int a_seg, double *a_deg)
       return -1;
    }
    if (a_deg       != NULL)  *a_deg = g_servos [x_servo].deg;
+   if (g_servos [x_servo].exact == 'y')  return 1;
+   return 0;
+}
+
+char         /*--> get the current details for servo -----[ ------ [ ------ ]-*/
+yKINE_servo_move         (int a_leg, int a_seg, char *a_label, double *a_secb, double *a_sece, double *a_dur , double *a_degb, double *a_dege, int *a_seq , int *a_line)
+{
+   int         x_servo     = 0;
+   double      x_deg       = 0.0;
+   if (a_leg < YKINE_RR   || a_leg > YKINE_LR  )  return -1;
+   if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;
+   x_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
+   if (g_servos [x_servo].curr == NULL)  return -1;
+   if (a_label     != NULL)  strlcpy (a_label, g_servos [x_servo].curr->label, LEN_LABEL);
+   if (a_secb      != NULL)  *a_secb = g_servos [x_servo].curr->sec_beg;
+   if (a_sece      != NULL)  *a_sece = g_servos [x_servo].curr->sec_end;
+   if (a_dur       != NULL)  *a_dur  = g_servos [x_servo].curr->sec_dur;
+   if (a_degb      != NULL)  *a_degb = g_servos [x_servo].curr->deg_beg;
+   if (a_dege      != NULL)  *a_dege = g_servos [x_servo].curr->deg_end;
+   if (a_seq       != NULL)  *a_seq  = g_servos [x_servo].curr->seq;
+   if (a_line      != NULL)  *a_line = g_servos [x_servo].curr->line;
+   if (g_servos [x_servo].exact == 'y')  return 1;
    return 0;
 }
 

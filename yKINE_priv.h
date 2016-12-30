@@ -97,11 +97,13 @@ struct cSERVO {
    char        label       [20];
    int         count;
    /*---(current)------------------------*/
-   tMOVE      *curr;
-   double      deg;
-   double      xexp;
-   double      zexp;
-   double      yexp;
+   char        exact;                  /* servo move starts                   */
+   tMOVE      *curr;                   /* current move pointer                */
+   double      deg;                    /* servo degree                        */
+   double      xexp;                   /* expected x-pos                      */
+   double      zexp;                   /* expected z-pos                      */
+   double      yexp;                   /* expected y-pos                      */
+   /*---(reapeats)-----------------------*/
    char        segno_flag;
    tMOVE      *segno;
    char        coda_flag;

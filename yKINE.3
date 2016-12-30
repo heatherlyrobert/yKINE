@@ -10,3 +10,51 @@ is a consistent, shared, full-featured, and reliable spider
 kinematics and scripting library designed around the lynxmotion CH3-R hexapod
 which will free all other applications from this detailed work.
 
+
+.SH SCRIPTING
+the purpose of scripting is to provide condensed, human maintainable input
+that can translate into detailed actions in the system.
+
+.B file formatting
+   -- pure ascii text file, 7-bit safe
+   -- eight fields per record
+
+.B record formatting
+   -- eight fields
+   -- separated by standard ascii field separator character
+   -- fields are standard width to make editing easier
+   1) verb
+   2) version
+   3) servos
+   8) arguments
+
+.B servo references
+    FORMAT     sp.segn
+    s (side)   L=left  , R=right ,           a=all   , +=large , -=small
+    p (pos)    F=front , M=middle, R=rear  , a=all   , +=large , -=small
+    segment    thor = thorax     , coxa = coxa       , troc = trocanter  
+               femu = femur      , pate = patella    , tibi = tibia
+               meta = metatarsus , tars = tarsus     , foot = foot
+               claw = claw       , magn = magnet     , hook = hook
+    examples   LF.femu    = left-front leg's femur
+               aF.femu    = femur on both front legs
+               La.femu    = femurs on the left side
+               aa.femu    = all femurs
+               -F.femu    = femurs on the front small legs
+               +F.femu    = femurs on the front large legs
+               L-.femu    = femurs on the left small legs
+               L+.femu    = femurs on the left large legs
+               ++.femu    = femurs on all large legs
+               --.femu    = femurs on all small legs
+
+.B absolute servo position setting
+   servo      -b-  aa.femu    0.50  -85.0      -      -  -    
+
+.B relative servo position setting
+   forward    -a-  aa         0.00    0.0    0.0   90.0  -    
+   inverse    -a-  La         0.50  -20.0    0.0   30.0  -    
+
+.B repeats
+   SEGNO      -a-  aa.pate       -      -      -      -  -    
+   DAL SEGNO  -b-  aa.pate       7      -      -      -  -    
+   REPEAT     -b-  aa.tibi       7     10      -      -  -    

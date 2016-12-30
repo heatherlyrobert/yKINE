@@ -13,27 +13,27 @@
 
 
 tSERVO     g_servos  [YKINE_MAX_SERVO] = {
-   /* label--------   cnt   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  prev  next */
-   { "RR.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RR.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RR.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RM.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RM.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RM.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RF.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RF.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "RF.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LF.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LF.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LF.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LM.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LM.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LM.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LR.femu"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LR.pate"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "LR.tibi"      ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   { "end-of-list"  ,   0,  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
-   /* label--------   cnt   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  prev  next */
+   /* label--------   cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  prev  next */
+   { "RR.femu"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RR.pate"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RR.tibi"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RM.femu"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RM.pate"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RM.tibi"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RF.femu"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RF.pate"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "RF.tibi"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LF.femu"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LF.pate"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LF.tibi"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LM.femu"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LM.pate"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LM.tibi"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LR.femu"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LR.pate"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "LR.tibi"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   { "end-of-list"  ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', NULL, NULL },
+   /* label--------   cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  prev  next */
 };
 int         g_nservo;
 
@@ -303,7 +303,7 @@ char       *s_context   = NULL;               /* strtok context variable   */
 #define     FIELD_ARGS     6
 
 static char  /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
-yKINE__scrp_move   (void)
+yKINE__scrp_move   (char *a_type)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -349,7 +349,7 @@ yKINE__scrp_move   (void)
          DEBUG_YKINE_SCRP  yLOG_double  ("degrees"   , x_degs);
          for (j = 0; j < g_nservo; ++j) {
             if (g_servos [j].scrp != 'y') continue;
-            yKINE_move_create (MOVE_SERVO, g_servos + j, "single", s_lines, x_degs, x_secs);
+            yKINE_move_create (MOVE_SERVO, g_servos + j, a_type, s_lines, x_degs, x_secs);
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/
@@ -1075,7 +1075,7 @@ yKINE_script       (double *a_len)
          yKINE__scrp_dsegno    ();
          break;
       case 's' : /* servo, start       */
-         yKINE__scrp_move      ();
+         yKINE__scrp_move      (x_type);
          break;
       case 'f' : /* servo, start       */
          yKINE__scrp_fk        ();
