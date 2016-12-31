@@ -66,6 +66,23 @@ static FILE    *s_file  = NULL;
 static int      s_lines = 0;
 static char     s_recd  [LEN_RECD];
 
+char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
+yKINE_servo        (char *a_source)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         i           = 0;
+   /*---(cycle)--------------------------*/
+   /*> printf ("start check\n");                                                      <*/
+   for (i = 0; i < YKINE_MAX_SERVO; ++i) {
+      if (g_servos [i].label [0] == 'e')   break;
+      /*> printf ("checking %s\n", g_servos[i].label);                                <*/
+      if (a_source [0] != g_servos [i].label [0])       continue;
+      if (strcmp (a_source, g_servos [i].label) != 0)   continue;
+      return i;
+   }
+   return -1;
+}
+
 
 static char  /*--> prepare for use ---------s-------------[ leaf   [ ------ ]-*/
 yKINE__scrp_init   (void)

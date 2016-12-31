@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7n"
-#define     YKINE_VER_TXT   "fixed move time issue with inaccuracies in doubles"
+#define     YKINE_VER_NUM   "0.7o"
+#define     YKINE_VER_TXT   "bridged difference in servo numbers with golem"
 
 
 
@@ -317,6 +317,7 @@ char        yKINE_segdiff      (int a_leg, int a_seg, int a_type, double *a_deg,
 char        yKINE_angles       (int a_leg, int a_type, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi);
 
 
+char        yKINE_servo        (char *a_source);
 char        yKINE_script       (double *a_len);
 
 
