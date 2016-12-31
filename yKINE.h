@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7o"
-#define     YKINE_VER_TXT   "bridged difference in servo numbers with golem"
+#define     YKINE_VER_NUM   "0.7p"
+#define     YKINE_VER_TXT   "updated sequence in move_rpt to handle thousands"
 
 
 

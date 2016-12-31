@@ -890,9 +890,9 @@ yKINE_moves_rpt    (void)
       x_move  = x_servo->head;
       x_count = 0;
       while (x_move != NULL) {
-         if (x_count % 45 == 0)  printf ("\n   seq  t  ---label-------  line  --secb--  --sece--  --secs--  --degb--  --dege--  --xpos--  --zpos--  --ypos--\n");
+         if (x_count % 45 == 0)  printf ("\n   seq-  t  ---label-------  line  --secb--  --sece--  --secs--  --degb--  --dege--  --xpos--  --zpos--  --ypos--\n");
          if (x_count %  5 == 0)  printf ("\n");
-         printf ("   %3d  %c  %-15.15s  %4d  ",
+         printf ("   %4d  %c  %-15.15s  %4d  ",
                x_move->seq    , x_move->type   , x_move->label  , x_move->line);
          if (x_move->sec_dur == 0.0)  printf ("     - -       - -       - -  ");
          else                         printf ("%8.3lf  %8.3lf  %8.3lf  ", x_move->sec_beg, x_move->sec_end, x_move->sec_dur);
