@@ -109,6 +109,11 @@ struct cSERVO {
    char        coda_flag;
    tMOVE      *coda;
    char        scrp;
+   /*---(saved)--------------------------*/
+   char        saved;                  /* saved flag (y/n)                    */
+   double      xsave;                  /* saved x-pos                         */
+   double      zsave;                  /* saved z-pos                         */
+   double      ysave;                  /* saved y-pos                         */
    /*---(list)---------------------------*/
    tMOVE      *head;
    tMOVE      *tail;
