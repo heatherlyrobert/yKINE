@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.7r"
-#define     YKINE_VER_TXT   "debug ik_pure and ik_from"
+#define     YKINE_VER_NUM   "0.8a"
+#define     YKINE_VER_TXT   "added scripted zero-point adjustments"
 
 
 

@@ -53,12 +53,19 @@ that can translate into detailed actions in the system.
 
 .B relative servo position setting
    forward    -a-  aa         0.00    0.0    0.0   90.0  -    
-   inverse    -a-  La         0.50  -20.0    0.0   30.0  -    
+
+.B inverse kinematics
+   ik_pure    -a-  LF.full    0.50  -20.0    0.0   30.0  -    
 
 .B repeats
    SEGNO      -a-  aa.pate       -      -      -      -  -    
    DAL SEGNO  -b-  aa.pate       7      -      -      -  -    
    REPEAT     -b-  aa.tibi       7     10      -      -  -    
+
+.B zero-point (center) adjustments
+   ze_pure    -a-  aa         0.00    0.0    0.0   90.0  -    
+   ze_from    -a-  aa         0.00    0.0    0.0   90.0  -    
+
 
 .B inverse kinematics
    inverse     same as ik_pure (simple for automated scripting)
