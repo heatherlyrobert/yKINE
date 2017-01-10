@@ -605,8 +605,7 @@ yKINE__parse_adjust     (void)
    double      x_rads      = 0.0;
    double      x_dist      = 0.0;
    double      x_orig      = 0.0;
-   double      x_yadd      = 0.0;
-   double      x_more      = 0.0;
+   double      x_vert      = 0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(center changes)-----------------*/
@@ -633,19 +632,38 @@ yKINE__parse_adjust     (void)
    s_zpos  = -(x_dist * sin (x_rads));
    DEBUG_YKINE_SCRP  yLOG_double  ("new s_xpos", s_xpos);
    DEBUG_YKINE_SCRP  yLOG_double  ("new s_zpos", s_zpos);
+   /*---(rotate)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("rotate calcs");
+   x_dist  = s_xpos;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
+   x_rads  =  s_rotate * DEG2RAD;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
+   x_vert  = x_dist * sin (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);
+   x_vert  = s_ypos + x_vert;
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);
+   s_xpos  = s_xpos - (s_ypos * sin (x_rads));
+   s_ypos  = x_vert * cos (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_xpos", s_xpos);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_ypos", s_ypos);
    /*---(pitch)--------------------------*/
    DEBUG_YKINE_SCRP  yLOG_note    ("pitch calcs");
    x_dist  = s_zpos;
    DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
-   if (s_zpos >= 0.0)  x_rads  =  s_pitch;
-   else                x_rads  = -s_pitch;
+   x_rads  =  s_pitch * DEG2RAD;
    DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
    x_degs  = x_rads * RAD2DEG;
    DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
-   x_more  = -(x_dist * sin (x_rads));
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_more"    , x_more);
-   x_dist += x_more;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist new", x_dist);
+   x_vert  = x_dist * sin (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);
+   x_vert  = s_ypos + x_vert;
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);
+   s_zpos  = s_zpos - (s_ypos * sin (x_rads));
+   s_ypos  = x_vert * cos (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_zpos", s_zpos);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_ypos", s_ypos);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;

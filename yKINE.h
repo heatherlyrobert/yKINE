@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8b"
-#define     YKINE_VER_TXT   "handle body yaw scripts input ;)"
+#define     YKINE_VER_NUM   "0.8c"
+#define     YKINE_VER_TXT   "pitch and rotate are now working"
 
 
 
