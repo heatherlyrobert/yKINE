@@ -59,6 +59,9 @@ tSCRPARG   s_scrparg [MAX_SCRPARG] = {
 static float    s_xcenter   = 0.0;
 static float    s_zcenter   = 0.0;
 static float    s_ycenter   = 0.0;
+static float    s_yaw       = 0.0;
+static float    s_rotate    = 0.0;
+static float    s_pitch     = 0.0;
 
 
 /*====================------------------------------------====================*/
@@ -598,13 +601,52 @@ static char  /*--> adjust coordinates based on body ------[ ------ [ ------ ]-*/
 yKINE__parse_adjust     (void)
 {
    char        rce         = -10;                /* return code for errors    */
+   double      x_degs      = 0.0;
+   double      x_rads      = 0.0;
+   double      x_dist      = 0.0;
+   double      x_orig      = 0.0;
+   double      x_yadd      = 0.0;
+   double      x_more      = 0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(update)-------------------------*/
+   /*---(center changes)-----------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("shift adjustments");
    s_xpos -= s_xcenter;
    s_zpos -= s_zcenter;
    s_ypos -= s_ycenter;
-   /*---(done)---------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_xpos", s_xpos);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_zpos", s_zpos);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_ypos", s_ypos);
+   /*---(yaw)----------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("yaw calcs");
+   x_dist  = sqrt  ((s_xpos * s_xpos) + (s_zpos * s_zpos));
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
+   x_rads  = - atan2 (s_zpos , s_xpos);
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
+   x_rads += (s_yaw * DEG2RAD);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_rads", x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_degs", x_degs);
+   s_xpos  =   x_dist * cos (x_rads);
+   s_zpos  = -(x_dist * sin (x_rads));
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_xpos", s_xpos);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new s_zpos", s_zpos);
+   /*---(pitch)--------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("pitch calcs");
+   x_dist  = s_zpos;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
+   if (s_zpos >= 0.0)  x_rads  =  s_pitch;
+   else                x_rads  = -s_pitch;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
+   x_more  = -(x_dist * sin (x_rads));
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_more"    , x_more);
+   x_dist += x_more;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist new", x_dist);
+   /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -624,6 +666,9 @@ yKINE__scrp_ik_pure     (char *a_verb)
    char        rc          =   0;
    int         i           = 0;
    int         x_leg       = 0.0;
+   double      x_xsave     = 0.0;
+   double      x_zsave     = 0.0;
+   double      x_ysave     = 0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(defenses)-----------------------*/
@@ -638,13 +683,19 @@ yKINE__scrp_ik_pure     (char *a_verb)
       return rce;
    }
    /*---(process)------------------------*/
-   rc = yKINE__parse_adjust ();
    for (i = 0; i < g_nservo; ++i) {
       /*---(filter)----------------------*/
       if (g_servos [i].scrp != 'y') continue;
-      /*---(calc angles)-----------------*/
+      /*---(identify len)----------------*/
       x_leg = i / 3.0;
       DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
+      /*---(clean values)----------------*/
+      s_xpos = x_xsave;
+      s_zpos = x_zsave;
+      s_ypos = x_ysave;
+      /*---(adjust)----------------------*/
+      rc = yKINE__parse_adjust ();
+      /*---(calc angles)-----------------*/
       rc = yKINE_inverse  (x_leg, s_xpos, s_zpos, s_ypos);
       rc = yKINE_angles   (x_leg, YKINE_IK, NULL, &s_femu, &s_pate, &s_tibi);
       DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , s_femu);
@@ -677,29 +728,41 @@ yKINE__scrp_ik_from     (char *a_verb)
    int         j           = 0;
    int         x_len       = 0;
    int         x_leg       = 0.0;
-   double      x_xnew      = 0.0;
-   double      x_znew      = 0.0;
-   double      x_ynew      = 0.0;
+   double      x_xsave     = 0.0;
+   double      x_zsave     = 0.0;
+   double      x_ysave     = 0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(process)------------------------*/
-   rc = yKINE__parse_adjust ();
+   x_xsave = s_xpos;
+   x_zsave = s_zpos;
+   x_ysave = s_ypos;
    for (j = 0; j < g_nservo; ++j) {
       if (g_servos [j].scrp != 'y') continue;
+      /*---(identify len)----------------*/
       x_leg = j / 3.0;
-      x_xnew = g_servos [j + 2].xsave + s_xpos;
-      x_znew = g_servos [j + 2].zsave + s_zpos;
-      x_ynew = g_servos [j + 2].ysave + s_ypos;
-      DEBUG_YKINE_SCRP  yLOG_double  ("xsave"     , g_servos [j + 2].xsave );
+      DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
+      /*---(clean values)----------------*/
+      s_xpos = x_xsave;
+      s_zpos = x_zsave;
+      s_ypos = x_ysave;
       DEBUG_YKINE_SCRP  yLOG_double  ("s_xpos"    , s_xpos);
-      DEBUG_YKINE_SCRP  yLOG_double  ("x_xnew"    , x_xnew);
-      DEBUG_YKINE_SCRP  yLOG_double  ("zsave"     , g_servos [j + 2].zsave );
       DEBUG_YKINE_SCRP  yLOG_double  ("s_zpos"    , s_zpos);
-      DEBUG_YKINE_SCRP  yLOG_double  ("x_znew"    , x_znew);
-      DEBUG_YKINE_SCRP  yLOG_double  ("ysave"     , g_servos [j + 2].ysave );
       DEBUG_YKINE_SCRP  yLOG_double  ("s_ypos"    , s_ypos);
-      DEBUG_YKINE_SCRP  yLOG_double  ("x_ynew"    , x_ynew);
-      rc = yKINE_inverse  (x_leg, x_xnew, x_znew, x_ynew);
+      /*---(calc new)--------------------*/
+      DEBUG_YKINE_SCRP  yLOG_double  ("xsave"     , g_servos [j + 2].xsave );
+      DEBUG_YKINE_SCRP  yLOG_double  ("zsave"     , g_servos [j + 2].zsave );
+      DEBUG_YKINE_SCRP  yLOG_double  ("ysave"     , g_servos [j + 2].ysave );
+      s_xpos += g_servos [j + 2].xsave;
+      s_zpos += g_servos [j + 2].zsave;
+      s_ypos += g_servos [j + 2].ysave;
+      DEBUG_YKINE_SCRP  yLOG_double  ("s_xpos new", s_xpos);
+      DEBUG_YKINE_SCRP  yLOG_double  ("s_zpos new", s_zpos);
+      DEBUG_YKINE_SCRP  yLOG_double  ("s_ypos new", s_ypos);
+      /*---(adjust)----------------------*/
+      rc = yKINE__parse_adjust ();
+      /*---(get angles)------------------*/
+      rc = yKINE_inverse  (x_leg, s_xpos, s_zpos, s_ypos);
       rc = yKINE_angles   (x_leg, YKINE_IK, NULL, &s_femu, &s_pate, &s_tibi);
       DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , s_femu);
       DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , s_pate);
@@ -707,7 +770,7 @@ yKINE__scrp_ik_from     (char *a_verb)
       rc = yKINE_move_create (MOVE_SERVO, g_servos + j + 0, a_verb, s_lines, s_femu, s_secs);
       rc = yKINE_move_create (MOVE_SERVO, g_servos + j + 1, a_verb, s_lines, s_pate, s_secs);
       rc = yKINE_move_create (MOVE_SERVO, g_servos + j + 2, a_verb, s_lines, s_tibi, s_secs);
-      rc = yKINE_move_addloc (g_servos + j + 2, x_xnew, x_znew, x_ynew);
+      rc = yKINE_move_addloc (g_servos + j + 2, s_xpos, s_zpos, s_ypos);
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -803,6 +866,60 @@ yKINE__scrp_kine   (char *a_verb)
          return rce;
       }
    }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char  /*--> make changes to body cente ------------[ ------ [ ------ ]-*/
+yKINE__scrp_orient (char *a_verb)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   int         x_len       = 0;
+   char        x_type      = 'f';
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   rc = yKINE__parse_prep     (a_verb);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(parse)--------------------------*/
+   rc = yKINE__parse_fields  (x_type);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(check)--------------------------*/
+   rc = yKINE__parse_check   (x_type);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(handle)-------------------------*/
+   --rce;  switch (a_verb [3]) {
+   case 'p' :
+      s_yaw      = s_femu;
+      s_rotate   = s_pate;
+      s_pitch    = s_tibi;
+      /*> rc = yKINE__scrp_ik_pure   (a_verb);                                        <*/
+      break;
+   case 'f' :
+      s_yaw     += s_femu;
+      s_rotate  += s_pate;
+      s_pitch   += s_tibi;
+      break;
+   default  :
+      DEBUG_YKINE_SCRP  yLOG_warn    ("a_verb"    , "verb not understood");
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_yaw"     , s_yaw);
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_rotate"  , s_rotate);
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_pitch"   , s_pitch);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1526,6 +1643,9 @@ yKINE_script       (double *a_len)
          break;
       case 'z' : /* zero/center adjustments */
          yKINE__scrp_zero      (x_verb);
+         break;
+      case 'o' : /* orient body             */
+         yKINE__scrp_orient    (x_verb);
          break;
       case 's' : /* servo, start       */
          yKINE__scrp_move      (x_verb);

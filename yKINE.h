@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8a"
-#define     YKINE_VER_TXT   "added scripted zero-point adjustments"
+#define     YKINE_VER_NUM   "0.8b"
+#define     YKINE_VER_TXT   "handle body yaw scripts input ;)"
 
 
 
