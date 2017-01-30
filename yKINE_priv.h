@@ -5,14 +5,15 @@
 #include    "yKINE.h"
 
 /*---(ansi-c standard)-------------------*/
-#include    <stdio.h>             /* CLIBC  standard input/output             */
-#include    <stdlib.h>            /* CLIBC  standard general purpose          */
-#include    <string.h>            /* CLIBC  standard string handling          */
-#include    <math.h>              /* CLIBC  standard math functions           */
+#include    <stdio.h>        /* CLIBC   standard input/output                 */
+#include    <stdlib.h>       /* CLIBC   standard general purpose              */
+#include    <string.h>       /* CLIBC   standard string handling              */
+#include    <math.h>         /* CLIBC   standard math functions               */
 
 /*---(heatherly made)--------------------*/
-#include    <ySTR.h>              /* CUSTOM heatherly string handling         */
-#include    <yLOG.h>              /* CUSTOM heatherly program logging         */
+#include    <yURG.h>         /* CUSTOM  heatherly urgent processing           */
+#include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
+#include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 
 
 
@@ -30,17 +31,10 @@ typedef struct cLOCAL tLOCAL;
 struct cLOCAL {
    /*---(overall)-----------*/
    char        unit;
-   char        debug;
-   char        debug_calc;
-   char        debug_data;
-   char        debug_scrp;
    int         logger;
    double      scrp_len;
 };
 tLOCAL      yKINE_its;
-#define     DEBUG_YKINE_CALC if (yKINE_its.debug_calc == 'y')
-#define     DEBUG_YKINE_DATA if (yKINE_its.debug_data == 'y')
-#define     DEBUG_YKINE_SCRP if (yKINE_its.debug_scrp == 'y')
 
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS

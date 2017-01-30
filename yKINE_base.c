@@ -53,33 +53,6 @@ yKINE_version      (void)
    return yKINE_ver;
 }
 
-char         /*--> set debugging mode --------------------[ ------ [ ------ ]-*/
-yKINE_debug        (char a_flag)
-{
-   /*---(set debug flag)-----------------*/
-   if        (a_flag == 'A') {
-      yKINE_its.debug_data   = 'y';
-      yKINE_its.debug_calc   = 'y';
-      yKINE_its.debug_scrp   = 'y';
-      yKINE_its.unit         = 'y';
-   } else if (a_flag == 'd') {
-      yKINE_its.debug_data   = 'y';
-   } else if (a_flag == 'c')  {
-      yKINE_its.debug_calc   = 'y';
-   } else if (a_flag == 's')  {
-      yKINE_its.debug_scrp   = 'y';
-   } else if (a_flag == 'u')  {
-      yKINE_its.unit         = 'y';
-   } else {
-      yKINE_its.debug_data   = '-';
-      yKINE_its.debug_calc   = '-';
-      yKINE_its.debug_scrp   = '-';
-      yKINE_its.unit         = '-';
-   }
-   /*---(complete)-----------------------*/
-   return 0;
-}
-
 
 
 /*====================------------------------------------====================*/
@@ -170,14 +143,18 @@ yKINE_center       (double a_x, double a_z, double a_y)
    DEBUG_YKINE_CALC   yLOG_double  ("a_y"       , a_y);
    /*---(kinematics)---------------------*/
    for (x_legnum = 0; x_legnum < YKINE_MAX_LEGS; ++x_legnum) {
-      /*---(test and set)----------------*/
-      if (i == 0)  x_leg = ((tSEG *) fk) + (x_legnum * YKINE_MAX_SEGS);
-      if (i == 1)  x_leg = ((tSEG *) ik) + (x_legnum * YKINE_MAX_SEGS);
-      /*---(save basics)-----------------*/
-      x_leg [YKINE_CORE].cx   =  x_leg [YKINE_CORE].x   = a_x;
-      x_leg [YKINE_CORE].cz   =  x_leg [YKINE_CORE].z   = a_z;
-      x_leg [YKINE_CORE].cy   =  x_leg [YKINE_CORE].y   = a_y;
-      /*---(done)------------------------*/
+      DEBUG_YKINE_CALC   yLOG_value   ("legnum"    , x_legnum);
+      for (i = 0; i < 2; ++i) {
+         DEBUG_YKINE_CALC   yLOG_value   ("fk/ik"     , i);
+         /*---(test and set)----------------*/
+         if (i == 0)  x_leg = ((tSEG *) fk) + (x_legnum * YKINE_MAX_SEGS);
+         if (i == 1)  x_leg = ((tSEG *) ik) + (x_legnum * YKINE_MAX_SEGS);
+         /*---(save basics)-----------------*/
+         x_leg [YKINE_CORE].cx   =  x_leg [YKINE_CORE].x   = a_x;
+         x_leg [YKINE_CORE].cz   =  x_leg [YKINE_CORE].z   = a_z;
+         x_leg [YKINE_CORE].cy   =  x_leg [YKINE_CORE].y   = a_y;
+         /*---(done)------------------------*/
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
@@ -323,16 +300,18 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__testquiet   (void)
 {
-   yKINE_debug ('-');
-   yKINE_its.logger = yLOG_begin    ("yKINE" , yLOG_SYSTEM, yLOG_QUIET);
+   char       *x_args [2]  = { "yKINE_debug", "@@quiet" };
+   yURG_logger (2, x_args);
+   yURG_urgs   (2, x_args);
    return 0;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__testloud    (void)
 {
-   yKINE_debug ('A');
-   yKINE_its.logger = yLOG_begin    ("yKINE" , yLOG_SYSTEM, yLOG_NOISE);
+   char       *x_args [4]  = { "yKINE_debug", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp" };
+   yURG_logger (4, x_args);
+   yURG_urgs   (4, x_args);
    DEBUG_TOPS   yLOG_info     ("yKINE" , yKINE_version   ());
    return 0;
 }
@@ -340,7 +319,6 @@ yKINE__testloud    (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__testend     (void)
 {
-   yKINE_debug ('-');
    yLOG_end      ();
    return 0;
 }

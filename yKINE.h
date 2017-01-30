@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8c"
-#define     YKINE_VER_TXT   "pitch and rotate are now working"
+#define     YKINE_VER_NUM   "0.8d"
+#define     YKINE_VER_TXT   "expanded gait to handle 6 and 12, and modularized"
 
 
 
@@ -287,7 +287,6 @@
 
 
 char*       yKINE_version      (void);
-char        yKINE_debug        (char a_flag);
 char        yKINE_init         (char a_type);
 
 char        yKINE_center       (double a_x, double a_z, double a_y);

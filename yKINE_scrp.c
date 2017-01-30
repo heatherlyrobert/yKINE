@@ -1359,7 +1359,7 @@ static void      o___GAITS___________________o (void) {;}
 tMOVE      *s_gait_begin  [YKINE_MAX_SERVO];
 
 static char  /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
-yKINE__scrp_b6gait  (void)
+yKINE__gait_begin    (char a_count)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -1374,7 +1374,8 @@ yKINE__scrp_b6gait  (void)
    double      x_ypos      = 0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(parse field)-----------------*/
+   DEBUG_YKINE_SCRP   yLOG_value   ("a_count"   , a_count);
+   /*---(parse leg field)----------------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
    p = strtok_r (NULL  , s_q, &s_context);
    --rce;  if (p == NULL) {
@@ -1385,35 +1386,410 @@ yKINE__scrp_b6gait  (void)
    strltrim (p, ySTR_BOTH, LEN_RECD);
    x_len = strlen (p);
    DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
-   /*---(handle)----------------------*/
+   /*---(mark femu)----------------------*/
    sprintf (x_request, "%s.femu", p);
    x_servo = yKINE__scrp_servos (x_request);
-   sprintf (x_request, "%s.pate", p);
-   x_servo = yKINE__scrp_servos (x_request);
-   sprintf (x_request, "%s.tibi", p);
-   x_servo = yKINE__scrp_servos (x_request);
+   /*---(check for bad references)-------*/
    --rce;  if (x_servo < 0) {
       DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
       DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   /*---(mark servos)--------------------*/
+   /*---(mark pate and tibi)-------------*/
+   sprintf (x_request, "%s.pate", p);
+   x_servo = yKINE__scrp_servos (x_request);
+   sprintf (x_request, "%s.tibi", p);
+   x_servo = yKINE__scrp_servos (x_request);
+   /*---(create servo headers)-----------*/
    for (i = 0; i < g_nservo; ++i) {
+      /*---(filter uninvolved servos)----*/
       s_gait_begin [i] = NULL;
       if (g_servos [i].scrp != 'y') continue;
+      /*---(get last position)-----------*/
       DEBUG_YKINE_SCRP   yLOG_value    ("servo"     , i);
       DEBUG_YKINE_SCRP   yLOG_info     ("name"      , g_servos [i].label);
       yKINE_move_last   (i, NULL, &x_deg);
       yKINE_move_curdata(&x_xpos, &x_zpos, &x_ypos);
       DEBUG_YKINE_SCRP   yLOG_double   ("last deg"  , x_deg);
-      yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "6_GAIT_BEG"   , s_lines, 0.0  , 0.0);
+      /*---(write header note)-----------*/
+      switch (a_count) {
+      case  6 :
+         DEBUG_YKINE_SCRP   yLOG_note     ("starting a 6 gait");
+         yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "6_GAIT_BEG"   , s_lines, 0.0  , 0.0);
+         break;
+      case 12 :
+         DEBUG_YKINE_SCRP   yLOG_note     ("starting a 12 gait");
+         yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "12_GAIT_BEG"  , s_lines, 0.0  , 0.0);
+         break;
+      }
+      /*---(write header placeholders)---*/
       yKINE_move_create (YKINE_MOVE_WAIT , g_servos + i, "wait for turn", s_lines, x_deg, 3.0);
       yKINE_move_addloc (g_servos + i, x_xpos, x_zpos, x_ypos);
       yKINE_move_create (YKINE_MOVE_SERVO, g_servos + i, "up to neutral", s_lines, 0.0  , 0.5);
       yKINE_move_create (YKINE_MOVE_SERVO, g_servos + i, "step to first", s_lines, 0.0  , 0.5);
       yKINE_move_create (YKINE_MOVE_WAIT , g_servos + i, "wait for legs", s_lines, 0.0  , 3.0);
+      /*---(save end of header)----------*/
       DEBUG_YKINE_SCRP   yLOG_point    ("saved"     , g_servos [i].tail);
       s_gait_begin [i] = g_servos [i].tail;
+      /*---(done)------------------------*/
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static double  s_neux  = 0.0;
+static double  s_neuz  = 0.0;
+static double  s_neuy  = 0.0;
+static double  s_neud  = 0.0;
+
+static char
+yKINE__gait_save_neutral  (int a_servo)
+{  /*---(design notes)-------------------*/
+   /*  the very first move in the gait is to the neutral position.  this
+    *  means it is one (next) after the header.
+    */
+   /*---(locals)-----------+-----------+-*/
+   tMOVE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get to neutral move)------------*/
+   x_curr = s_gait_begin [a_servo]->s_next;  /* right after header   */
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   /*---(save neutral data)--------------*/
+   s_neux  = x_curr->x_pos;
+   s_neuz  = x_curr->z_pos;
+   s_neuy  = x_curr->y_pos;
+   s_neud  = x_curr->deg_end;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static double  s_1stx  = 0.0;
+static double  s_1stz  = 0.0;
+static double  s_1sty  = 0.0;
+static double  s_1std  = 0.0;
+
+static char
+yKINE__gait_roll     (int a_servo, int a_order, int a_count)
+{  /*---(design notes)-------------------*/
+   /*  gait order determines how many moves to roll.  first leg rolls none
+    *  and starts in neutral position.
+    */
+   /*---(locals)-----------+-----------+-*/
+   int         i           = 0;
+   int         x_times     = 0;
+   tMOVE      *x_curr      = NULL;
+   tMOVE      *x_next      = NULL;
+   tSERVO     *x_servo     = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prep)---------------------*/
+   switch (a_count) {
+   case  6 : x_times = a_order    ;  break;
+   case 12 : x_times = a_order * 2;  break;
+   default : return -1;              break;
+   }
+   /*---(roll moves to end)--------*/
+   x_servo = s_gait_begin [a_servo]->servo;;
+   x_curr  = s_gait_begin [a_servo]->s_next;
+   for (i = 0; i < x_times; ++i) {
+      /*---(prepare for delete)----*/
+      x_next  = x_curr->s_next;
+      /*---(add dup to end)--------*/
+      yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "extended", x_curr->line, x_curr->deg_end, x_curr->sec_dur);
+      yKINE_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
+      /*---(delete current)--------*/
+      yKINE_move_delete (x_curr);
+      /*---(go to next)------------*/
+      x_curr = x_next;
+      DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+      /*---(done)------------------*/
+   }
+   /*---(save first pos data)------------*/
+   s_1stx  = x_curr->x_pos;
+   s_1stz  = x_curr->z_pos;
+   s_1sty  = x_curr->y_pos;
+   s_1std  = x_curr->deg_end;
+   /*---(update begin degrees)-----------*/
+   x_curr->deg_beg = x_curr->deg_end;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static double  s_inix  = 0.0;
+static double  s_iniz  = 0.0;
+static double  s_iniy  = 0.0;
+static double  s_inid  = 0.0;
+
+static char
+yKINE__gait_1st_wait      (int a_servo, int a_order)
+{  /*---(design notes)-------------------*/
+   /*  the first wait is three places before the header end.  the wait is the
+    *  same for both 6 and 12 step gaits.
+    */
+   /*---(locals)-----------+-----------+-*/
+   tMOVE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get to neutral move)------------*/
+   x_curr = s_gait_begin [a_servo]->s_prev->s_prev->s_prev;
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   /*---(save values)--------------------*/
+   s_inix  = x_curr->x_pos;
+   s_iniz  = x_curr->z_pos;
+   s_iniy  = x_curr->y_pos;
+   s_inid  = x_curr->deg_end;
+   /*---(update values)------------------*/
+   x_curr->sec_dur = (double) (5 - a_order) * 0.500;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char
+yKINE__gait_fix_neutral   (int a_servo)
+{  /*---(design notes)-------------------*/
+   /*  update the headers neutral entry which is two places back in the header.
+   */
+   /*---(locals)-----------+-----------+-*/
+   tMOVE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get to neutral move)------------*/
+   x_curr = s_gait_begin [a_servo]->s_prev->s_prev;
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   /*---(update values)------------------*/
+   x_curr->x_pos           = s_neux;
+   x_curr->z_pos           = s_neuz;
+   x_curr->y_pos           = s_neuy;
+   x_curr->deg_end         = s_neud;
+   x_curr->s_next->deg_beg = s_neud;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char
+yKINE__gait_fix_first     (int a_servo)
+{  /*---(design notes)-------------------*/
+   /*  update the headers neutral entry which is two places back in the header.
+   */
+   /*---(locals)-----------+-----------+-*/
+   tMOVE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get to neutral move)------------*/
+   x_curr = s_gait_begin [a_servo]->s_prev;
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   /*---(update values)------------------*/
+   x_curr->x_pos           = s_1stx;
+   x_curr->z_pos           = s_1stz;
+   x_curr->y_pos           = s_1sty;
+   x_curr->deg_end         = s_1std;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char
+yKINE__gait_2nd_wait      (int a_servo, int a_order)
+{  /*---(design notes)-------------------*/
+   /*  the first wait is three places before the header end.  the wait is the
+    *  same for both 6 and 12 step gaits.
+    */
+   /*---(locals)-----------+-----------+-*/
+   tMOVE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get to neutral move)------------*/
+   x_curr = s_gait_begin [a_servo];
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   /*---(update values)------------------*/
+   x_curr->x_pos           = s_1stx;
+   x_curr->z_pos           = s_1stz;
+   x_curr->y_pos           = s_1sty;
+   x_curr->deg_beg         = s_1std;
+   x_curr->deg_end         = s_1std;
+   x_curr->sec_dur = (double) a_order * 0.500;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char
+yKINE__gait_fix_timings   (int a_servo)
+{  /*---(design notes)-------------------*/
+   /*  all the timings are off after rolling forward and updating
+   */
+   /*---(locals)-----------+-----------+-*/
+   tMOVE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get to neutral move)------------*/
+   x_curr = s_gait_begin [a_servo]->s_prev->s_prev->s_prev;
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   /*---(fix waiting)--------------*/
+   while (x_curr != NULL) {
+      x_curr->sec_beg = x_curr->s_prev->sec_end;
+      x_curr->sec_end = x_curr->sec_beg + x_curr->sec_dur;
+      x_curr = x_curr->s_next;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char
+yKINE__gait_add_tail      (int a_servo, int a_order)
+{  /*---(design notes)-------------------*/
+   /*  all the timings are off after rolling forward and updating
+   */
+   /*---(locals)-----------+-----------+-*/
+   tSERVO     *x_servo     = NULL;
+   tMOVE      *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get to neutral move)------------*/
+   x_curr  = s_gait_begin [a_servo]->servo->tail;
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   x_servo = s_gait_begin [a_servo]->servo;;
+   /*---(add tail)-----------------------*/
+   yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_curr->deg_end  , a_order * 0.500);
+   yKINE_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
+   yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "neutral"  , -1           , s_neud          , 0.500           );
+   yKINE_move_addloc (x_servo, s_neux, s_neuz, s_neuy);
+   yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "back down", -1           , s_inid          , 0.500           );
+   yKINE_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
+   yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , s_inid          , (5 - a_order) * 0.500);
+   yKINE_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
+   yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "6_GAIT_END", s_lines, 0.0, 0.0);
+   yKINE_move_addloc (x_servo, 0.0, 0.0, 0.0);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char  /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
+yKINE__gait_update   (char a_count)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;
+   int         i           = 0;
+   int         j           = 0;
+   char       *p           = NULL;
+   int         x_len       = 0;
+   char        x_order     [LEN_LABEL];
+   int         x_leg       = 0;
+   int         x_snum      = 0;
+   tSERVO     *x_servo     = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_value   ("a_count"   , a_count);
+   /*---(parse leg order)----------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("parse leg order field");
+   p = strtok_r (NULL  , s_q, &s_context);
+   --rce;  if (p == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   }
+   strltrim (p, ySTR_BOTH, LEN_RECD);
+   x_len = strlen (p);
+   strlcpy (x_order, p, LEN_LABEL);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_order"   , x_order);
+   DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
+   /*---(walk through leg order)---------*/
+   for (i = 0; i < x_len; ++i) {
+      x_leg = (int) (x_order [i] - '0');
+      DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
+      /*---(handle three servos each)----*/
+      for (j = 0; j < 3; ++j) {
+         /*---(figure starting move)-----*/
+         x_snum  = (x_leg * 3) + j;
+         DEBUG_YKINE_SCRP  yLOG_value   ("x_snum"    , x_snum);
+         x_servo = g_servos + x_snum;
+         DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
+         /*---(get neutral data)---------*/
+         yKINE__gait_save_neutral (x_snum);
+         /*> x_start = s_gait_begin [x_snum]->s_next;                                 <* 
+          *> DEBUG_YKINE_SCRP  yLOG_point   ("x_start"   , x_start);                  <* 
+          *> x_neux  = x_start->x_pos;                                                <* 
+          *> x_neuz  = x_start->z_pos;                                                <* 
+          *> x_neuy  = x_start->y_pos;                                                <* 
+          *> x_neud  = x_start->deg_end;                                              <*/
+         /*---(delete/copy to first)-----*/
+         yKINE__gait_roll         (x_snum, i, a_count);
+         /*> for (k = 0; k < i; ++k) {                                                                                           <* 
+          *>    x_next  = x_start->s_next;                                                                                       <* 
+          *>    yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "extended", x_start->line, x_start->deg_end, x_start->sec_dur);   <* 
+          *>    yKINE_move_addloc (x_servo, x_start->x_pos, x_start->z_pos, x_start->y_pos);                                     <* 
+          *>    yKINE_move_delete (x_start);                                                                                     <* 
+          *>    x_start = x_next;                                                                                                <* 
+          *>    DEBUG_YKINE_SCRP  yLOG_point   ("x_start"   , x_start);                                                          <* 
+          *> }                                                                                                                   <* 
+          *> /+---(get first data)-----------+/                                                                                  <* 
+          *> x_1stx  = x_start->x_pos;                                                                                           <* 
+          *> x_1stz  = x_start->z_pos;                                                                                           <* 
+          *> x_1sty  = x_start->y_pos;                                                                                           <* 
+          *> x_1std  = x_start->deg_end;                                                                                         <* 
+          *> /+---(update first)-------------+/                                                                                  <* 
+          *> x_start->deg_beg = x_start->deg_end;                                                                                <*/
+         /*---(fix first wait)-----------*/
+         yKINE__gait_1st_wait     (x_snum, i);
+         /*> x_start = s_gait_begin [x_snum]->s_prev->s_prev->s_prev;                 <* 
+          *> x_start->sec_dur = (double) (5 - i) * 0.500;                             <* 
+          *> x_inix  = x_start->x_pos;                                                <* 
+          *> x_iniz  = x_start->z_pos;                                                <* 
+          *> x_iniy  = x_start->y_pos;                                                <* 
+          *> x_inid  = x_start->deg_end;                                              <*/
+         /*---(fix neutral)--------------*/
+         yKINE__gait_fix_neutral  (x_snum);
+         /*> x_start = s_gait_begin [x_snum]->s_prev->s_prev;                         <* 
+          *> x_start->x_pos           = x_neux;                                       <* 
+          *> x_start->z_pos           = x_neuz;                                       <* 
+          *> x_start->y_pos           = x_neuy;                                       <* 
+          *> x_start->deg_end         = x_neud;                                       <* 
+          *> x_start->s_next->deg_beg = x_neud;                                       <*/
+         /*---(fix first)----------------*/
+         yKINE__gait_fix_first    (x_snum);
+         /*> x_start = s_gait_begin [x_snum]->s_prev;                                 <* 
+          *> x_start->x_pos           = x_1stx;                                       <* 
+          *> x_start->z_pos           = x_1stz;                                       <* 
+          *> x_start->y_pos           = x_1sty;                                       <* 
+          *> x_start->deg_end         = x_1std;                                       <*/
+         /*---(fix second wait)----------*/
+         yKINE__gait_2nd_wait     (x_snum, i);
+         /*> x_start = s_gait_begin [x_snum];                                         <* 
+          *> x_start->x_pos           = x_1stx;                                       <* 
+          *> x_start->z_pos           = x_1stz;                                       <* 
+          *> x_start->y_pos           = x_1sty;                                       <* 
+          *> x_start->deg_beg         = x_1std;                                       <* 
+          *> x_start->deg_end         = x_1std;                                       <* 
+          *> x_start->sec_dur = (double) i * 0.500;                                   <*/
+         /*---(fix waiting)--------------*/
+         yKINE__gait_fix_timings  (x_snum);
+         /*> x_start = s_gait_begin [x_snum]->s_prev->s_prev->s_prev;                 <* 
+          *> while (x_start != NULL) {                                                <* 
+          *>    x_start->sec_beg = x_start->s_prev->sec_end;                          <* 
+          *>    x_start->sec_end = x_start->sec_beg + x_start->sec_dur;               <* 
+          *>    x_start = x_start->s_next;                                            <* 
+          *> }                                                                        <*/
+         /*---(add to end)---------------*/
+         yKINE__gait_add_tail     (x_snum, i);
+         /*> x_start = x_servo->tail;                                                                                          <* 
+          *> yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_start->deg_end  , i * 0.500);          <* 
+          *> yKINE_move_addloc (x_servo, x_start->x_pos, x_start->z_pos, x_start->y_pos);                                      <* 
+          *> yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "neutral"  , -1           , x_neud          , 0.500           );   <* 
+          *> yKINE_move_addloc (x_servo, x_neux, x_neuz, x_neuy);                                                              <* 
+          *> yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "back down", -1           , x_inid          , 0.500           );   <* 
+          *> yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);                                                              <* 
+          *> yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , x_inid          , (5 - i) * 0.500);    <* 
+          *> yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);                                                              <* 
+          *> yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "6_GAIT_END", s_lines, 0.0, 0.0);                                  <* 
+          *> yKINE_move_addloc (x_servo, 0.0, 0.0, 0.0);                                                                       <*/
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -1421,7 +1797,7 @@ yKINE__scrp_b6gait  (void)
 }
 
 static char  /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
-yKINE__scrp_e6gait  (void)
+yKINE__scrp_6gait    (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -1621,7 +1997,7 @@ yKINE_script       (double *a_len)
          continue;
       }
       strltrim  (p, ySTR_BOTH, LEN_RECD);
-      strncpy   (x_verb, p,  10);
+      strncpy   (x_verb, p,  14);
       DEBUG_YKINE_SCRP  yLOG_info    ("type"      , x_verb);
       /*---(get version)-----------------*/
       p = strtok_r (NULL     , s_q, &s_context);
@@ -1642,11 +2018,19 @@ yKINE_script       (double *a_len)
       DEBUG_YKINE_SCRP  yLOG_char    ("version"   , x_ver);
       /*---(handle types)----------------*/
       switch (x_verb [0]) {
+      case '1' : /* gait               */
+         if        (strcmp ("12_GAIT_BEG"   , x_verb) == 0) {
+            yKINE__gait_begin    (12);
+         } else if (strcmp ("12_GAIT_END"   , x_verb) == 0) {
+            yKINE__gait_update   (12);
+         }
+         /*> yKINE__scrp_gate      ();                                                <*/
+         break;
       case '6' : /* gait               */
          if        (strcmp ("6_GAIT_BEG"   , x_verb) == 0) {
-            yKINE__scrp_b6gait  ();
+            yKINE__gait_begin    (6);
          } else if (strcmp ("6_GAIT_END"   , x_verb) == 0) {
-            yKINE__scrp_e6gait  ();
+            yKINE__gait_update   (6);
          }
          /*> yKINE__scrp_gate      ();                                                <*/
          break;
