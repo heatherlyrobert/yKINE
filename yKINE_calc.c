@@ -933,49 +933,53 @@ static void      o___MAIN____________________o (void) {;};
 char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
 yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
 {
+   /*---(locals)-----------+-----------+-*/
+   char        rc          =   0;      /* generic return code                 */
    /*---(clear)--------------------------*/
    yKINE__wipe     (a_num, YKINE_FK);
    /*---(fixed body)---------------------*/
-   yKINE__thor     (a_num);
-   yKINE__coxa     (a_num);
-   yKINE__troc     (a_num);
+   if (rc >= 0)  rc = yKINE__thor     (a_num);
+   if (rc >= 0)  rc = yKINE__coxa     (a_num);
+   if (rc >= 0)  rc = yKINE__troc     (a_num);
    /*---(movable)------------------------*/
-   yKINE__femu     (a_num, a_femu, YKINE_FK);
-   yKINE__pate     (a_num, a_pate, YKINE_FK);
-   yKINE__tibi     (a_num, a_tibi, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__femu     (a_num, a_femu, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__pate     (a_num, a_pate, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__tibi     (a_num, a_tibi, YKINE_FK);
    /*---(target setting)-----------------*/
-   yKINE__targ     (a_num, YKINE_FK);
-   yKINE__lowr     (a_num, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__targ     (a_num, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__lowr     (a_num, YKINE_FK);
    /*---(future)-------------------------*/
-   yKINE__meta     (a_num);
-   yKINE__tars     (a_num);
-   yKINE__foot     (a_num);
+   if (rc >= 0)  rc = yKINE__meta     (a_num);
+   if (rc >= 0)  rc = yKINE__tars     (a_num);
+   if (rc >= 0)  rc = yKINE__foot     (a_num);
    /*---(complete)-----------------------*/
-   return 0;
+   return rc;
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
 yKINE_inverse      (int a_num, double a_x, double a_z, double a_y)
 {
+   /*---(locals)-----------+-----------+-*/
+   char        rc          =   0;      /* generic return code                 */
    /*---(clear)--------------------------*/
    yKINE__wipe     (a_num, YKINE_IK);
    /*---(target setting)-----------------*/
-   yKINE__IK_targ  (a_num, a_x, a_z, a_y);
+   if (rc >= 0)  rc = yKINE__IK_targ  (a_num, a_x, a_z, a_y);
    /*---(fixed body)---------------------*/
-   yKINE__thor     (a_num);
-   yKINE__coxa     (a_num);
-   yKINE__troc     (a_num);
+   if (rc >= 0)  rc = yKINE__thor     (a_num);
+   if (rc >= 0)  rc = yKINE__coxa     (a_num);
+   if (rc >= 0)  rc = yKINE__troc     (a_num);
    /*---(movable)------------------------*/
-   yKINE__IK_femu  (a_num);
-   yKINE__lowr     (a_num, YKINE_IK);
-   yKINE__IK_pate  (a_num);
-   yKINE__IK_tibi  (a_num);
+   if (rc >= 0)  rc = yKINE__IK_femu  (a_num);
+   if (rc >= 0)  rc = yKINE__lowr     (a_num, YKINE_IK);
+   if (rc >= 0)  rc = yKINE__IK_pate  (a_num);
+   if (rc >= 0)  rc = yKINE__IK_tibi  (a_num);
    /*---(future)-------------------------*/
-   yKINE__meta     (a_num);
-   yKINE__tars     (a_num);
-   yKINE__foot     (a_num);
+   if (rc >= 0)  rc = yKINE__meta     (a_num);
+   if (rc >= 0)  rc = yKINE__tars     (a_num);
+   if (rc >= 0)  rc = yKINE__foot     (a_num);
    /*---(complete)-----------------------*/
-   return 0;
+   return rc;
 }
 
 

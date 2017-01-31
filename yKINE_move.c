@@ -61,6 +61,9 @@ yKINE__move_new    (void)
    x_new->x_pos   =  0.0f;
    x_new->y_pos   =  0.0f;
    x_new->z_pos   =  0.0f;
+   /*---(status)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("default locations");
+   x_new->status  =   -1;
    /*---(master linked list)-------------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("tie into master doubly-linked move list");
    x_new->m_prev  = NULL;
@@ -795,7 +798,7 @@ yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_di
     *>    printf ("%8.1lf", sqrt ((x_xdif * x_xdif) + (x_zdif * x_zdif) + (x_ydif * x_ydif)));                                                                              <* 
     *>    printf ("\n");                                                                                                                                                    <* 
     *> }                                                                                                                                                                    <*/
-   return 0;
+   return rc2;
 }
 
 char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/

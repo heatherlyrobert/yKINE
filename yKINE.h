@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8d"
-#define     YKINE_VER_TXT   "expanded gait to handle 6 and 12, and modularized"
+#define     YKINE_VER_NUM   "0.8e"
+#define     YKINE_VER_TXT   "added rc gathering to yKINE_forward and yKINE_inverse"
 
 
 

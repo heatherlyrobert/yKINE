@@ -177,7 +177,7 @@ struct cSEG {
    char      c;                   /* changed/updated flag                     */
    char      m;                   /* mode (i=IK, f=FK)                        */
    char      p;                   /* planted y/n?                             */
-   char      rc;                  /* kinematics status : 0 = no, 1 = yes      */
+   char      rc;                  /* kinematics status : r = no, 1 = yes      */
 };
 extern    tSEG      gk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* opengl kinematics check   */
 extern    tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinematics        */
