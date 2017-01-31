@@ -220,8 +220,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8e"
-#define     YKINE_VER_TXT   "added rc gathering to yKINE_forward and yKINE_inverse"
+#define     YKINE_VER_NUM   "0.8f"
+#define     YKINE_VER_TXT   "added more yLOG logging statements to move"
 
 
 

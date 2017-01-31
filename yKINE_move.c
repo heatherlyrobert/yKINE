@@ -776,11 +776,24 @@ yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_di
    double      x_zdif      = 0.0;
    double      x_ydif      = 0.0;
    int         x_leg       = 0;
-   if (a_sec < 0.0     )  return -1;
-   if (a_sec > yKINE_its.scrp_len)  return -2;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_double  ("a_sec"     , a_sec);
+   if (a_sec < 0.0     )  {
+      DEBUG_YKINE_SCRP   yLOG_warn    ("a_sec"     , "less than zero");
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      return -1;
+   }
+   if (a_sec > yKINE_its.scrp_len) {
+      DEBUG_YKINE_SCRP   yLOG_warn    ("a_sec"     , "greater than yKINE_its.scrp_len");
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      return -2;
+   }
    x_leg = a_leg * 3;
+   DEBUG_YKINE_SCRP   yLOG_value   ("x_leg"     , x_leg);
    rc1 = yKINE_move_curleg    (a_sec, a_leg);
    rc2 = yKINE_forward  (a_leg, g_servos [x_leg + 0].deg, g_servos [x_leg + 1].deg, g_servos [x_leg + 2].deg);
+   DEBUG_YKINE_SCRP   yLOG_value   ("rc2"       , rc2);
    rc3 = yKINE_endpoint (a_leg, YKINE_TIBI, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
    if (a_diffx != NULL)  *a_diffx = g_servos [x_leg + 2].xexp - x_xpos;
    if (a_diffz != NULL)  *a_diffz = g_servos [x_leg + 2].zexp - x_zpos;
@@ -798,6 +811,7 @@ yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_di
     *>    printf ("%8.1lf", sqrt ((x_xdif * x_xdif) + (x_zdif * x_zdif) + (x_ydif * x_ydif)));                                                                              <* 
     *>    printf ("\n");                                                                                                                                                    <* 
     *> }                                                                                                                                                                    <*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return rc2;
 }
 

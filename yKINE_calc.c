@@ -935,6 +935,8 @@ yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
    yKINE__wipe     (a_num, YKINE_FK);
    /*---(fixed body)---------------------*/
@@ -953,6 +955,7 @@ yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
    if (rc >= 0)  rc = yKINE__tars     (a_num);
    if (rc >= 0)  rc = yKINE__foot     (a_num);
    /*---(complete)-----------------------*/
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -961,6 +964,8 @@ yKINE_inverse      (int a_num, double a_x, double a_z, double a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
    yKINE__wipe     (a_num, YKINE_IK);
    /*---(target setting)-----------------*/
@@ -979,6 +984,7 @@ yKINE_inverse      (int a_num, double a_x, double a_z, double a_y)
    if (rc >= 0)  rc = yKINE__tars     (a_num);
    if (rc >= 0)  rc = yKINE__foot     (a_num);
    /*---(complete)-----------------------*/
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
