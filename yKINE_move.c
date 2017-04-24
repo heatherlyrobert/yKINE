@@ -729,9 +729,11 @@ yKINE_move_last          (int a_servo, double *a_sec, double *a_deg)
    /*---(skip non-moves)-----------------*/
    x_prev = g_servos [a_servo].tail;
    while (x_prev != NULL) {
+       DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
       if (x_prev->type == YKINE_MOVE_INIT )  break;
       if (x_prev->type == YKINE_MOVE_SERVO)  break;
       if (x_prev->type == YKINE_MOVE_WAIT )  break;
+      if (x_prev->type == YKINE_MOVE_NOTE )  break;
       x_prev = x_prev->s_prev;
    }
    /*---(refuse null)--------------------*/

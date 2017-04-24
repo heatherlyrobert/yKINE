@@ -56,12 +56,32 @@ tSCRPARG   s_scrparg [MAX_SCRPARG] = {
 };
 
 
+#define     MAX_GAITS       100
+typedef     struct cGAIT    tGAIT;
+struct cGAIT {
+   char        name        [LEN_LABEL];
+   float       xpos        [12];
+   float       zpos        [12];
+   float       ypos        [12];
+};
+tGAIT       s_gaits [MAX_GAITS] = {
+   /* label--------------- , */
+   {  "crab_left"          , /* x */   0.0, -45.0, -40.0, -30.0, -20.0, -10.0,   0.0,  10.0,  20.0,  30.0,  40.0,  45.0,
+      /*------------------*/ /* z */   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      /*------------------*/ /* y */  10.0,   5.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   5.0},
+   {  "end-of-list"        , /* x */   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      /*------------------*/ /* z */   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      /*------------------*/ /* y */   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0},
+};
+
+
 static float    s_xcenter   = 0.0;
 static float    s_zcenter   = 0.0;
 static float    s_ycenter   = 0.0;
 static float    s_yaw       = 0.0;
 static float    s_rotate    = 0.0;
 static float    s_pitch     = 0.0;
+
 
 
 /*====================------------------------------------====================*/
@@ -112,6 +132,20 @@ yKINE__scrp_init   (void)
 /*====================------------------------------------====================*/
 static void      o___SUPPORT_________________o (void) {;}
 
+static char  /* file reading driver ----------------------[--------[--------]-*/
+yKINE__scrp_prep   (void)
+{
+   int         i           = 0;
+   for (i = 0; i < g_nservo; ++i) {
+      g_servos [i].scrp  = '-';
+   }
+   for (i = 0; i < MAX_SCRPARG; ++i) {
+      if (strcmp (s_scrparg [i].name, "end-of-list") == 0)  break;
+      s_scrparg [i].flag = '-';
+   }
+   return 0;
+}
+
 static char  /*--> identify the leg number ---------------[ ------ [ ------ ]-*/
 yKINE__scrp_legno  (char *a_source)
 {
@@ -134,6 +168,7 @@ yKINE__scrp_servo  (char *a_source)
    int         x_count     =   0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_snote   (a_source);
    /*---(cycle)--------------------------*/
    /*> printf ("yKINE__scrp_servo  looking for %s\n", a_source);                       <*/
    for (i = 0; i < g_nservo; ++i) {
@@ -142,24 +177,25 @@ yKINE__scrp_servo  (char *a_source)
       if (a_source [1] != g_servos [i].label [1])       continue;
       /*---(check for all segments)------*/
       if (strcmp ("full", a_source + 3) == 0) {
-         DEBUG_YKINE_SCRP   yLOG_snote   ("servo label found");
+         DEBUG_YKINE_SCRP   yLOG_snote   ("found (LEG)");
          g_servos [i].scrp = 'y';
          ++x_count;
          continue;
       }
       /*---(check for one segment)-------*/
       if (strcmp (a_source, g_servos [i].label) != 0)   continue;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("servo label found");
+      DEBUG_YKINE_SCRP   yLOG_snote   ("found");
+      DEBUG_YKINE_SCRP   yLOG_sint    (i);
       g_servos [i].scrp = 'y';
       ++x_count;
       break;
    }
-   DEBUG_YKINE_SCRP   yLOG_svalue  ("count"     , x_count);
    --rce;  if (x_count == 0) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("servo label not found");
+      DEBUG_YKINE_SCRP   yLOG_snote   ("NONE");
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       return rce;
    }
+   DEBUG_YKINE_SCRP   yLOG_svalue  ("count"     , x_count);
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return x_count;
 }
@@ -221,7 +257,9 @@ yKINE__scrp_servos (char *a_source)
    case 'r' : strlcpy (x_side  , "r"         , LEN_LABEL);   break;
    case '<' : strlcpy (x_side  , "Ll"        , LEN_LABEL);   break;
    case '>' : strlcpy (x_side  , "Rr"        , LEN_LABEL);   break;
+   case 'B' :
    case '+' : strlcpy (x_side  , "LR"        , LEN_LABEL);   break;
+   case 's' :
    case '-' : strlcpy (x_side  , "lr"        , LEN_LABEL);   break;
    case 'a' : strlcpy (x_side  , "LRlr"      , LEN_LABEL);   break;
    default  : strlcpy (x_side  , ""          , LEN_LABEL);   break;
@@ -241,7 +279,9 @@ yKINE__scrp_servos (char *a_source)
    case 'f' : strlcpy (x_rank  , "f"         , LEN_LABEL);   break;
    case '^' : strlcpy (x_rank  , "Ff"        , LEN_LABEL);   break;
    case '_' : strlcpy (x_rank  , "Rr"        , LEN_LABEL);   break;
+   case 'B' :
    case '+' : strlcpy (x_rank  , "RMF"       , LEN_LABEL);   break;
+   case 's' :
    case '-' : strlcpy (x_rank  , "rf"        , LEN_LABEL);   break;
    case 'a' : strlcpy (x_rank  , "RMFrf"     , LEN_LABEL);   break;
    default  : strlcpy (x_rank  , ""          , LEN_LABEL);   break;
@@ -257,6 +297,7 @@ yKINE__scrp_servos (char *a_source)
       for (j = 0; j < x_nrank; ++j) {
          sprintf (x_label, "%c%c.%s", x_side [i], x_rank [j], a_source + 3);
          /*> printf ("SCRP_servos     x_label %s\n", x_label);                         <*/
+         /*> DEBUG_YKINE_SCRP  yLOG_info    ("x_label"   , x_label);                  <*/
          x_index = yKINE__scrp_servo (x_label);
          if (x_index >= 0)  ++c;
       }
@@ -741,11 +782,8 @@ static char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
 yKINE__scrp_ik_from     (char *a_verb)
 {
    /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;                /* return code for errors    */
    char        rc          = 0;
-   int         i           = 0;
    int         j           = 0;
-   int         x_len       = 0;
    int         x_leg       = 0.0;
    double      x_xsave     = 0.0;
    double      x_zsave     = 0.0;
@@ -1374,22 +1412,29 @@ yKINE__gait_begin    (char a_count)
    double      x_xpos      = 0.0;
    double      x_zpos      = 0.0;
    double      x_ypos      = 0.0;
+   char        x_p         [5]   = "++";  /* all large legs */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_SCRP   yLOG_value   ("a_count"   , a_count);
    /*---(parse leg field)----------------*/
-   DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
-   p = strtok_r (NULL  , s_q, &s_context);
-   --rce;  if (p == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
-      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-      return rce;
+   if (a_count == 0) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("complex movement mode");
+      p = x_p;
+   } else {
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         return rce;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
    }
-   strltrim (p, ySTR_BOTH, LEN_RECD);
    x_len = strlen (p);
    DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
    /*---(mark femu)----------------------*/
    sprintf (x_request, "%s.femu", p);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
    x_servo = yKINE__scrp_servos (x_request);
    /*---(check for bad references)-------*/
    --rce;  if (x_servo < 0) {
@@ -1399,8 +1444,10 @@ yKINE__gait_begin    (char a_count)
    }
    /*---(mark pate and tibi)-------------*/
    sprintf (x_request, "%s.pate", p);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
    x_servo = yKINE__scrp_servos (x_request);
    sprintf (x_request, "%s.tibi", p);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
    x_servo = yKINE__scrp_servos (x_request);
    /*---(create servo headers)-----------*/
    for (i = 0; i < g_nservo; ++i) {
@@ -1419,12 +1466,21 @@ yKINE__gait_begin    (char a_count)
          DEBUG_YKINE_SCRP   yLOG_note     ("starting a 6 gait");
          yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "6_GAIT_BEG"   , s_lines, 0.0  , 0.0);
          break;
+      case  0 :
+         DEBUG_YKINE_SCRP   yLOG_note     ("starting a walking gait");
+         yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "WA_GAIT_BEG"  , s_lines, 0.0  , 0.0);
+         break;
       case 12 :
          DEBUG_YKINE_SCRP   yLOG_note     ("starting a 12 gait");
          yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "12_GAIT_BEG"  , s_lines, 0.0  , 0.0);
          break;
+      case 18 :
+         DEBUG_YKINE_SCRP   yLOG_note     ("starting a 18 gait");
+         yKINE_move_create (YKINE_MOVE_NOTE , g_servos + i, "18_GAIT_BEG"  , s_lines, 0.0  , 0.0);
+         break;
       }
       /*---(write header placeholders)---*/
+      yKINE_move_addloc (g_servos + i, x_xpos, x_zpos, x_ypos);
       yKINE_move_create (YKINE_MOVE_WAIT , g_servos + i, "wait for turn", s_lines, x_deg, 3.0);
       yKINE_move_addloc (g_servos + i, x_xpos, x_zpos, x_ypos);
       yKINE_move_create (YKINE_MOVE_SERVO, g_servos + i, "up to neutral", s_lines, 0.0  , 0.5);
@@ -1491,6 +1547,7 @@ yKINE__gait_roll     (int a_servo, int a_order, int a_count)
    switch (a_count) {
    case  6 : x_times = a_order    ;  break;
    case 12 : x_times = a_order * 2;  break;
+   case 18 : x_times = a_order * 3;  break;
    default : return -1;              break;
    }
    /*---(roll moves to end)--------*/
@@ -1667,7 +1724,7 @@ yKINE__gait_add_tail      (int a_servo, int a_order)
    yKINE_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
    yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , s_inid          , (5 - a_order) * 0.500);
    yKINE_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
-   yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "6_GAIT_END", s_lines, 0.0, 0.0);
+   yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "GAIT_END", s_lines, 0.0, 0.0);
    yKINE_move_addloc (x_servo, 0.0, 0.0, 0.0);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -1687,19 +1744,26 @@ yKINE__gait_update   (char a_count)
    int         x_leg       = 0;
    int         x_snum      = 0;
    tSERVO     *x_servo     = NULL;
+   int         x_count     = 0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_SCRP   yLOG_value   ("a_count"   , a_count);
    /*---(parse leg order)----------------*/
-   DEBUG_YKINE_SCRP   yLOG_note    ("parse leg order field");
-   p = strtok_r (NULL  , s_q, &s_context);
-   --rce;  if (p == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
-      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   x_count = a_count;
+   if (a_count == 0) {
+      strlcpy (x_order, "315240", LEN_LABEL);
+      x_count = 12;
+   } else {
+      DEBUG_YKINE_SCRP   yLOG_note    ("parse leg order field");
+      p = strtok_r (NULL  , s_q, &s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      strlcpy  (x_order, p, LEN_LABEL);
    }
-   strltrim (p, ySTR_BOTH, LEN_RECD);
-   x_len = strlen (p);
-   strlcpy (x_order, p, LEN_LABEL);
+   x_len = strlen (x_order);
    DEBUG_YKINE_SCRP  yLOG_info    ("x_order"   , x_order);
    DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
    /*---(walk through leg order)---------*/
@@ -1716,7 +1780,7 @@ yKINE__gait_update   (char a_count)
          /*---(get neutral data)---------*/
          yKINE__gait_save_neutral (x_snum);
          /*---(delete/copy to first)-----*/
-         yKINE__gait_roll         (x_snum, i, a_count);
+         yKINE__gait_roll         (x_snum, i, x_count);
          /*---(fix first wait)-----------*/
          yKINE__gait_1st_wait     (x_snum, i);
          /*---(fix neutral)--------------*/
@@ -1736,157 +1800,96 @@ yKINE__gait_update   (char a_count)
    return 0;
 }
 
-static char  /*--> parse a high level repeat -------------[ ------ [ ------ ]-*/
-yKINE__scrp_6gait    (void)
+
+
+/*====================------------------------------------====================*/
+/*===----                       complex movements                      ----===*/
+/*====================------------------------------------====================*/
+static void      o___COMPLEX_________________o (void) {;}
+
+static char      /*--> walking ---------------------------[--------[--------]-*/
+yKINE__scrp_walk        (int a_repeats)
 {
    /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;
-   int         i           = 0;
-   int         j           = 0;
-   int         k           = 0;
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
    char       *p           = NULL;
    int         x_len       = 0;
-   char        x_order     [LEN_LABEL];
-   int         x_leg       = 0;
-   int         x_snum      = 0;
-   tSERVO     *x_servo     = NULL;
-   tMOVE      *x_start     = NULL;
-   tMOVE      *x_next      = NULL;
-   tMOVE      *x_prev      = NULL;
-   double      x_inix      = 0.0;
-   double      x_iniz      = 0.0;
-   double      x_iniy      = 0.0;
-   double      x_inid      = 0.0;
-   double      x_neux      = 0.0;
-   double      x_neuz      = 0.0;
-   double      x_neuy      = 0.0;
-   double      x_neud      = 0.0;
-   double      x_1stx      = 0.0;
-   double      x_1stz      = 0.0;
-   double      x_1sty      = 0.0;
-   double      x_1std      = 0.0;
+   int         x_cycle     = 0;
+   int         x_step      = 0;
+   char        x_request   [LEN_LABEL];
+   char        x_verb      [LEN_LABEL] = "ik_from";
+   char        x_style     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(parse leg order)----------------*/
-   DEBUG_YKINE_SCRP   yLOG_note    ("parse leg order field");
+   /*---(parse style)--------------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("walking style field");
    p = strtok_r (NULL  , s_q, &s_context);
    --rce;  if (p == NULL) {
       DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    }
    strltrim (p, ySTR_BOTH, LEN_RECD);
-   x_len = strlen (p);
-   strlcpy (x_order, p, LEN_LABEL);
-   DEBUG_YKINE_SCRP  yLOG_info    ("x_order"   , x_order);
+   strlcpy  (x_style, p, LEN_LABEL);
+   x_len = strlen (x_style);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_style"   , x_style);
    DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
-   /*---(walk through leg order)---------*/
-   for (i = 0; i < x_len; ++i) {
-      x_leg = (int) (x_order [i] - '0');
-      DEBUG_YKINE_SCRP  yLOG_value   ("x_leg"     , x_leg);
-      /*---(handle three servos each)----*/
-      for (j = 0; j < 3; ++j) {
-         /*---(figure starting move)-----*/
-         x_snum  = (x_leg * 3) + j;
-         DEBUG_YKINE_SCRP  yLOG_value   ("x_snum"    , x_snum);
-         x_servo = g_servos + x_snum;
-         DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
-         /*---(get neutral data)---------*/
-         x_start = s_gait_begin [x_snum]->s_next;
-         DEBUG_YKINE_SCRP  yLOG_point   ("x_start"   , x_start);
-         x_neux  = x_start->x_pos;
-         x_neuz  = x_start->z_pos;
-         x_neuy  = x_start->y_pos;
-         x_neud  = x_start->deg_end;
-         /*---(delete/copy to first)-----*/
-         for (k = 0; k < i; ++k) {
-            x_next  = x_start->s_next;
-            yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "extended", x_start->line, x_start->deg_end, x_start->sec_dur);
-            yKINE_move_addloc (x_servo, x_start->x_pos, x_start->z_pos, x_start->y_pos);
-            yKINE_move_delete (x_start);
-            x_start = x_next;
-            DEBUG_YKINE_SCRP  yLOG_point   ("x_start"   , x_start);
+   /*---(prepare)------------------------*/
+   rc = yKINE__scrp_prep      ();
+   yKINE__gait_begin    (0);
+   /*---(loop repeats)-------------------*/
+   for (x_cycle = 0; x_cycle < a_repeats; ++x_cycle) {
+      for (x_step = 0; x_step < 12; ++x_step) {
+         /*---(prepare)------------------------*/
+         rc = yKINE__scrp_prep      ();
+         rc = yKINE__parse_prep     (x_verb);
+         if (rc < 0) {
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rc;
          }
-         /*---(get first data)-----------*/
-         x_1stx  = x_start->x_pos;
-         x_1stz  = x_start->z_pos;
-         x_1sty  = x_start->y_pos;
-         x_1std  = x_start->deg_end;
-         /*---(update first)-------------*/
-         x_start->deg_beg = x_start->deg_end;
-         /*---(fix first wait)-----------*/
-         x_start = s_gait_begin [x_snum]->s_prev->s_prev->s_prev;
-         x_start->sec_dur = (double) (5 - i) * 0.500;
-         x_inix  = x_start->x_pos;
-         x_iniz  = x_start->z_pos;
-         x_iniy  = x_start->y_pos;
-         x_inid  = x_start->deg_end;
-         /*---(fix neutral)--------------*/
-         x_start = s_gait_begin [x_snum]->s_prev->s_prev;
-         x_start->x_pos           = x_neux;
-         x_start->z_pos           = x_neuz;
-         x_start->y_pos           = x_neuy;
-         x_start->deg_end         = x_neud;
-         x_start->s_next->deg_beg = x_neud;
-         /*---(fix first)----------------*/
-         x_start = s_gait_begin [x_snum]->s_prev;
-         x_start->x_pos           = x_1stx;
-         x_start->z_pos           = x_1stz;
-         x_start->y_pos           = x_1sty;
-         x_start->deg_end         = x_1std;
-         /*---(fix second wait)----------*/
-         x_start = s_gait_begin [x_snum];
-         x_start->x_pos           = x_1stx;
-         x_start->z_pos           = x_1stz;
-         x_start->y_pos           = x_1sty;
-         x_start->deg_beg         = x_1std;
-         x_start->deg_end         = x_1std;
-         x_start->sec_dur = (double) i * 0.500;
-         /*---(fix waiting)--------------*/
-         x_start = s_gait_begin [x_snum]->s_prev->s_prev->s_prev;
-         while (x_start != NULL) {
-            x_start->sec_beg = x_start->s_prev->sec_end;
-            x_start->sec_end = x_start->sec_beg + x_start->sec_dur;
-            x_start = x_start->s_next;
+         /*---(identify servos)----------------*/
+         strlcpy   (x_request, "++.femu", LEN_LABEL);
+         s_count = yKINE__scrp_servos (x_request);
+         DEBUG_YKINE_SCRP  yLOG_value   ("count"     , s_count);
+         /*---(fill common fields)-------------*/
+         s_secs = 0.250;
+         s_zpos = 0.00;
+         switch (x_step) {
+         case  0 :  s_xpos =   0.00;  s_ypos =   10.00; break;
+         case  1 :  s_xpos = -45.00;  s_ypos =    5.00; break;
+         case  2 :  s_xpos = -40.00;  s_ypos =    0.00; break;
+         case  3 :  s_xpos = -30.00;  s_ypos =    0.00; break;
+         case  4 :  s_xpos = -20.00;  s_ypos =    0.00; break;
+         case  5 :  s_xpos = -10.00;  s_ypos =    0.00; break;
+         case  6 :  s_xpos =   0.00;  s_ypos =    0.00; break;
+         case  7 :  s_xpos =  10.00;  s_ypos =    0.00; break;
+         case  8 :  s_xpos =  20.00;  s_ypos =    0.00; break;
+         case  9 :  s_xpos =  30.00;  s_ypos =    0.00; break;
+         case 10 :  s_xpos =  40.00;  s_ypos =    0.00; break;
+         case 11 :  s_xpos =  45.00;  s_ypos =    5.00; break;
          }
-         /*---(add to end)---------------*/
-         x_start = x_servo->tail;
-         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_start->deg_end  , i * 0.500);
-         yKINE_move_addloc (x_servo, x_start->x_pos, x_start->z_pos, x_start->y_pos);
-         yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "neutral"  , -1           , x_neud          , 0.500           );
-         yKINE_move_addloc (x_servo, x_neux, x_neuz, x_neuy);
-         yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "back down", -1           , x_inid          , 0.500           );
-         yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);
-         yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , x_inid          , (5 - i) * 0.500);
-         yKINE_move_addloc (x_servo, x_inix, x_iniz, x_iniy);
-         yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "6_GAIT_END", s_lines, 0.0, 0.0);
-         yKINE_move_addloc (x_servo, 0.0, 0.0, 0.0);
+         /*---(check)--------------------------*/
+         rc = yKINE__parse_check   (x_verb [0]);
+         if (rc < 0) {
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rc;
+         }
+         /*---(handle IK)----------------------*/
+         rc = yKINE__scrp_ik_from   (x_verb);
       }
    }
+   rc = yKINE__scrp_prep      ();
+   yKINE__gait_update   (0);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 
-
 /*====================------------------------------------====================*/
 /*===----                        script driver                         ----===*/
 /*====================------------------------------------====================*/
 static void      o___DRIVER__________________o (void) {;}
-
-static char  /* file reading driver ----------------------[--------[--------]-*/
-yKINE__scrp_prep   (void)
-{
-   int         i           = 0;
-   for (i = 0; i < g_nservo; ++i) {
-      g_servos [i].scrp  = '-';
-   }
-   for (i = 0; i < MAX_SCRPARG; ++i) {
-      if (strcmp (s_scrparg [i].name, "end-of-list") == 0)  break;
-      s_scrparg [i].flag = '-';
-   }
-   return 0;
-}
 
 char         /* file reading driver ----------------------[--------[--------]-*/
 yKINE_script       (double *a_len)
@@ -1958,6 +1961,11 @@ yKINE_script       (double *a_len)
       DEBUG_YKINE_SCRP  yLOG_char    ("version"   , x_ver);
       /*---(handle types)----------------*/
       switch (x_verb [0]) {
+      case 'w' : /* walking            */
+         yKINE__scrp_walk        (10);
+         break;
+      case 'C' : /* circle             */
+         break;
       case '1' : /* gait               */
          if        (strcmp ("12_GAIT_BEG"   , x_verb) == 0) {
             yKINE__gait_begin    (12);
