@@ -218,12 +218,6 @@
 
 
 
-/*===[[ VERSION ]]========================================*/
-/* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8g"
-#define     YKINE_VER_TXT   "added and tested walking verb"
-
-
 
 /*===[[ CONSTANTS ]]======================================*/
 

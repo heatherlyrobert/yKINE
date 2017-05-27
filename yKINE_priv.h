@@ -22,6 +22,14 @@
 #define yKINE_PRIV yes
 
 
+
+/*===[[ VERSION ]]========================================*/
+/* rapidly evolving version number to aid with visual change confirmation     */
+#define     YKINE_VER_NUM   "0.8h"
+#define     YKINE_VER_TXT   "moved to make_program makefile enhancement"
+
+
+
 extern const    double   DEG2RAD;
 extern const    double   RAD2DEG;
 

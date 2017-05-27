@@ -10,6 +10,7 @@
 #define     MOVE_SERVO  's'
 
 
+static char  yKINE__scrp_fk_pure     (char *a_verb);
 
 
 tSERVO     g_servos  [YKINE_MAX_SERVO] = {
@@ -834,42 +835,6 @@ yKINE__scrp_ik_from     (char *a_verb)
    return 0;
 }
 
-static char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
-yKINE__scrp_fk_pure     (char *a_verb)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;                /* return code for errors    */
-   char        rc          = 0;
-   int         i           = 0;
-   int         j           = 0;
-   int         x_len       = 0;
-   int         x_leg       = 0.0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(process)------------------------*/
-   for (j = 0; j < g_nservo; ++j) {
-      if (g_servos [j].scrp != 'y') continue;
-      /*---(save forward)----------------*/
-      yKINE_move_create (MOVE_SERVO, g_servos + j + 0, a_verb, s_lines, s_femu, s_secs);
-      yKINE_move_create (MOVE_SERVO, g_servos + j + 1, a_verb, s_lines, s_pate, s_secs);
-      yKINE_move_create (MOVE_SERVO, g_servos + j + 2, a_verb, s_lines, s_tibi, s_secs);
-      /*---(calc inverse)----------------*/
-      x_leg = j / 3.0;
-      rc = yKINE_forward     (x_leg, s_femu, s_pate, s_tibi);
-      DEBUG_YKINE_SCRP  yLOG_value   ("fk pure rc", rc);
-      rc = yKINE_endpoint    (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &s_xpos, &s_zpos, &s_ypos);
-      rc = yKINE_move_addloc (g_servos + j + 2, s_xpos, s_zpos, s_ypos);
-      /*---(update servo)----------------*/
-      g_servos [j + 2].saved  = 'y';
-      g_servos [j + 2].xsave  = s_xpos;
-      g_servos [j + 2].zsave  = s_zpos;
-      g_servos [j + 2].ysave  = s_ypos;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
 static char  /*--> drive a IK/FK parse -------------------[ ------ [ ------ ]-*/
 yKINE__scrp_kine   (char *a_verb)
 {
@@ -1098,9 +1063,41 @@ yKINE__scrp_tilt   (char *a_verb)
 /*====================------------------------------------====================*/
 static void      o___FK_MOVES________________o (void) {;}
 
-
-
-
+static char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
+yKINE__scrp_fk_pure     (char *a_verb)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   int         i           = 0;
+   int         j           = 0;
+   int         x_len       = 0;
+   int         x_leg       = 0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(process)------------------------*/
+   for (j = 0; j < g_nservo; ++j) {
+      if (g_servos [j].scrp != 'y') continue;
+      /*---(save forward)----------------*/
+      yKINE_move_create (MOVE_SERVO, g_servos + j + 0, a_verb, s_lines, s_femu, s_secs);
+      yKINE_move_create (MOVE_SERVO, g_servos + j + 1, a_verb, s_lines, s_pate, s_secs);
+      yKINE_move_create (MOVE_SERVO, g_servos + j + 2, a_verb, s_lines, s_tibi, s_secs);
+      /*---(calc inverse)----------------*/
+      x_leg = j / 3.0;
+      rc = yKINE_forward     (x_leg, s_femu, s_pate, s_tibi);
+      DEBUG_YKINE_SCRP  yLOG_value   ("fk pure rc", rc);
+      rc = yKINE_endpoint    (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &s_xpos, &s_zpos, &s_ypos);
+      rc = yKINE_move_addloc (g_servos + j + 2, s_xpos, s_zpos, s_ypos);
+      /*---(update servo)----------------*/
+      g_servos [j + 2].saved  = 'y';
+      g_servos [j + 2].xsave  = s_xpos;
+      g_servos [j + 2].zsave  = s_zpos;
+      g_servos [j + 2].ysave  = s_ypos;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 static char  /*--> parse a move entry --------------------[ ------ [ ------ ]-*/
 yKINE__scrp_fk_OLD (void)
@@ -1852,21 +1849,35 @@ yKINE__scrp_walk        (int a_repeats)
          s_count = yKINE__scrp_servos (x_request);
          DEBUG_YKINE_SCRP  yLOG_value   ("count"     , s_count);
          /*---(fill common fields)-------------*/
-         s_secs = 0.250;
+         s_secs = 0.150;
          s_zpos = 0.00;
+         /*> switch (x_step) {                                                        <* 
+          *> case  0 :  s_xpos =   0.00;  s_ypos =   25.00; break;                    <* 
+          *> case  1 :  s_xpos = -45.00;  s_ypos =   10.00; break;                    <* 
+          *> case  2 :  s_xpos = -40.00;  s_ypos =    0.00; break;                    <* 
+          *> case  3 :  s_xpos = -30.00;  s_ypos =    0.00; break;                    <* 
+          *> case  4 :  s_xpos = -20.00;  s_ypos =    0.00; break;                    <* 
+          *> case  5 :  s_xpos = -10.00;  s_ypos =    0.00; break;                    <* 
+          *> case  6 :  s_xpos =   0.00;  s_ypos =    0.00; break;                    <* 
+          *> case  7 :  s_xpos =  10.00;  s_ypos =    0.00; break;                    <* 
+          *> case  8 :  s_xpos =  20.00;  s_ypos =    0.00; break;                    <* 
+          *> case  9 :  s_xpos =  30.00;  s_ypos =    0.00; break;                    <* 
+          *> case 10 :  s_xpos =  40.00;  s_ypos =    0.00; break;                    <* 
+          *> case 11 :  s_xpos =  45.00;  s_ypos =   10.00; break;                    <* 
+          *> }                                                                        <*/
          switch (x_step) {
-         case  0 :  s_xpos =   0.00;  s_ypos =   10.00; break;
-         case  1 :  s_xpos = -45.00;  s_ypos =    5.00; break;
-         case  2 :  s_xpos = -40.00;  s_ypos =    0.00; break;
-         case  3 :  s_xpos = -30.00;  s_ypos =    0.00; break;
-         case  4 :  s_xpos = -20.00;  s_ypos =    0.00; break;
-         case  5 :  s_xpos = -10.00;  s_ypos =    0.00; break;
+         case  0 :  s_xpos =   0.00;  s_ypos =   25.00; break;
+         case  1 :  s_xpos = -32.00;  s_ypos =   10.00; break;
+         case  2 :  s_xpos = -28.00;  s_ypos =    0.00; break;
+         case  3 :  s_xpos = -21.00;  s_ypos =    0.00; break;
+         case  4 :  s_xpos = -14.00;  s_ypos =    0.00; break;
+         case  5 :  s_xpos =  -7.00;  s_ypos =    0.00; break;
          case  6 :  s_xpos =   0.00;  s_ypos =    0.00; break;
-         case  7 :  s_xpos =  10.00;  s_ypos =    0.00; break;
-         case  8 :  s_xpos =  20.00;  s_ypos =    0.00; break;
-         case  9 :  s_xpos =  30.00;  s_ypos =    0.00; break;
-         case 10 :  s_xpos =  40.00;  s_ypos =    0.00; break;
-         case 11 :  s_xpos =  45.00;  s_ypos =    5.00; break;
+         case  7 :  s_xpos =   7.00;  s_ypos =    0.00; break;
+         case  8 :  s_xpos =  14.00;  s_ypos =    0.00; break;
+         case  9 :  s_xpos =  21.00;  s_ypos =    0.00; break;
+         case 10 :  s_xpos =  28.00;  s_ypos =    0.00; break;
+         case 11 :  s_xpos =  32.00;  s_ypos =   10.00; break;
          }
          /*---(check)--------------------------*/
          rc = yKINE__parse_check   (x_verb [0]);
@@ -1876,6 +1887,127 @@ yKINE__scrp_walk        (int a_repeats)
          }
          /*---(handle IK)----------------------*/
          rc = yKINE__scrp_ik_from   (x_verb);
+      }
+   }
+   rc = yKINE__scrp_prep      ();
+   yKINE__gait_update   (0);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+static char      /*--> turning ---------------------------[--------[--------]-*/
+yKINE__scrp_turn        (int a_repeats)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;                /* return code for errors    */
+   char        rc          = 0;
+   char       *p           = NULL;
+   int         x_len       = 0;
+   int         x_cycle     = 0;
+   int         x_step      = 0;
+   int         x_leg       = 0;
+   char        x_request   [LEN_LABEL];
+   char        x_verb      [LEN_LABEL] = "ik_from";
+   char        x_style     [LEN_LABEL];
+   double      x_xcur      = 0.0;      /* base x position                     */
+   double      x_zcur      = 0.0;      /* base z position                     */
+   double      x_deg       = 0.0;      /* relative degrees around circle      */
+   double      x_acur      = 0.0;      /* current leg angle                   */
+   double      x_rcur      = 0.0;      /* current leg radius from turn center */
+   double      x_xorig     =   0.0;
+   double      x_zorig     =   0.0;
+   double      x_xnew      = 0.0;      /* new  x position                     */
+   double      x_znew      = 0.0;      /* new  z position                     */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   rc = yKINE__scrp_prep      ();
+   yKINE__gait_begin    (0);
+   /*---(loop repeats)-------------------*/
+   for (x_cycle = 0; x_cycle < a_repeats; ++x_cycle) {
+      for (x_step = 0; x_step < 12; ++x_step) {
+         for (x_leg = 0; x_leg < 6; ++x_leg) {
+            /*---(prepare)---------------*/
+            rc = yKINE__scrp_prep      ();
+            rc = yKINE__parse_prep     (x_verb);
+            if (rc < 0) {
+               DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+               return rc;
+            }
+            /*---(identify servos)-------*/
+            switch (x_leg) {
+            case 0 : strlcpy   (x_request, "RR.femu", LEN_LABEL);  break;
+            case 1 : strlcpy   (x_request, "RM.femu", LEN_LABEL);  break;
+            case 2 : strlcpy   (x_request, "RF.femu", LEN_LABEL);  break;
+            case 3 : strlcpy   (x_request, "LF.femu", LEN_LABEL);  break;
+            case 4 : strlcpy   (x_request, "LM.femu", LEN_LABEL);  break;
+            case 5 : strlcpy   (x_request, "LR.femu", LEN_LABEL);  break;
+            }
+            s_count = yKINE__scrp_servos (x_request);
+            DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
+            DEBUG_YKINE_SCRP  yLOG_value   ("count"     , s_count);
+            /*---(set degree)---------------*/
+            switch (x_step) {
+            case  0 :  x_deg  =   0.00;  s_ypos = 25.0;  break;
+            case  1 :  x_deg  =  -4.25;  s_ypos = 15.0;  break;
+            case  2 :  x_deg  =  -4.00;  s_ypos =  0.0;  break;
+            case  3 :  x_deg  =  -3.00;  s_ypos =  0.0;  break;
+            case  4 :  x_deg  =  -2.00;  s_ypos =  0.0;  break;
+            case  5 :  x_deg  =  -1.00;  s_ypos =  0.0;  break;
+            case  6 :  x_deg  =   0.00;  s_ypos =  0.0;  break;
+            case  7 :  x_deg  =   1.00;  s_ypos =  0.0;  break;
+            case  8 :  x_deg  =   2.00;  s_ypos =  0.0;  break;
+            case  9 :  x_deg  =   3.00;  s_ypos =  0.0;  break;
+            case 10 :  x_deg  =   4.00;  s_ypos =  0.0;  break;
+            case 11 :  x_deg  =   4.25;  s_ypos = 15.0;  break;
+            }
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_deg"     , x_deg);
+            /*> x_deg /= 1.5;                                                         <*/
+            x_deg *= -1.5;
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_deg"     , x_deg);
+            /*---(get current)--------------------*/
+            x_xcur  = g_servos [(x_leg * 3) + 2].xsave;
+            x_zcur  = g_servos [(x_leg * 3) + 2].zsave;
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_xcur"    , x_xcur);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_zcur"    , x_zcur);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_xorig"   , x_xorig);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_zorig"   , x_zorig);
+            x_xcur += x_xorig;
+            x_zcur += x_zorig;
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_xcur"    , x_xcur);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_zcur"    , x_zcur);
+            /*---(calc new)-----------------------*/
+            x_rcur  = sqrt ((x_xcur * x_xcur) + (x_zcur * x_zcur));
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_rcur"    , x_rcur);
+            x_acur  = atan2 (x_xcur , x_zcur);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_acur"    , x_acur);
+            /*> x_acur  = asin  (x_xcur / x_rcur);                                    <*/
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_acur"    , x_acur);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_acur (d)", x_acur * RAD2DEG);
+            x_deg  += x_acur * RAD2DEG;
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_deg"     , x_deg);
+            x_xnew  = x_rcur * sin (x_deg * DEG2RAD);
+            x_znew  = x_rcur * cos (x_deg * DEG2RAD);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_xnew"    , x_xnew);
+            DEBUG_YKINE_SCRP  yLOG_double  ("x_znew"    , x_znew);
+            s_xpos  = x_xcur - x_xnew;
+            s_zpos  = x_zcur - x_znew;
+            DEBUG_YKINE_SCRP  yLOG_double  ("s_xpos"    , s_xpos);
+            DEBUG_YKINE_SCRP  yLOG_double  ("s_zpos"    , s_zpos);
+            DEBUG_YKINE_SCRP  yLOG_double  ("s_ypos"    , s_ypos);
+            /*---(fill common fields)-------------*/
+            s_secs = 0.100;
+            DEBUG_YKINE_SCRP  yLOG_double  ("s_secs"    , s_secs);
+            /*---(check)--------------------------*/
+            rc = yKINE__parse_check   (x_verb [0]);
+            if (rc < 0) {
+               DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+               return rc;
+            }
+            /*---(handle IK)----------------------*/
+            rc = yKINE__scrp_ik_from   (x_verb);
+         }
       }
    }
    rc = yKINE__scrp_prep      ();
@@ -1962,9 +2094,10 @@ yKINE_script       (double *a_len)
       /*---(handle types)----------------*/
       switch (x_verb [0]) {
       case 'w' : /* walking            */
-         yKINE__scrp_walk        (10);
+         yKINE__scrp_walk        ( 5);
          break;
-      case 'C' : /* circle             */
+      case 'c' : /* circle             */
+         yKINE__scrp_turn        (20);
          break;
       case '1' : /* gait               */
          if        (strcmp ("12_GAIT_BEG"   , x_verb) == 0) {
