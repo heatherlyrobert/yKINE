@@ -452,7 +452,8 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
    h    =  x_leg [YKINE_PATE].ch   =  x_leg [YKINE_FEMU].ch;
    DEBUG_YKINE_CALC   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fcv, %6.3fch", l, d, v, h);
    /*---(calc end coords)----------------*/
-   y    =  x_leg [YKINE_PATE].y    = -l * sin (v);
+   /*> y    =  x_leg [YKINE_PATE].y    = -l * sin (v);                                <*/
+   y    =  x_leg [YKINE_PATE].y    =  l * sin (v);
    xz   =  x_leg [YKINE_PATE].xz   =  sqrt (( l *  l) - ( y *  y));
    x    =  x_leg [YKINE_PATE].x    =  xz * cos (h);
    z    =  x_leg [YKINE_PATE].z    = -xz * sin (h);
@@ -526,7 +527,8 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
    /*---(save basics)--------------------*/
    l    =  x_leg [YKINE_TIBI].l;
    x_leg [YKINE_TIBI].d    =  a_deg;
-   x_leg [YKINE_TIBI].v    =  a_deg * DEG2RAD; 
+   /*> x_leg [YKINE_TIBI].v    =  a_deg * DEG2RAD;                                    <*/
+   x_leg [YKINE_TIBI].v    =  (a_deg + 90.0) * DEG2RAD; 
    x_leg [YKINE_TIBI].h    =  0.0f;
    /*---(calc basics)--------------------*/
    d    =  x_leg [YKINE_TIBI].cd   =  a_deg;

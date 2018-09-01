@@ -13,6 +13,31 @@
 static char  yKINE__scrp_fk_pure     (char *a_verb);
 
 
+#define    MAX_VERBS       100
+typedef    struct  cVERBS  tVERBS;
+struct cVERBS {
+   char        type;
+   char        name        [LEN_LABEL];
+   char        desc        [LEN_STR  ];
+};
+tVERBS   s_verbs    [MAX_VERBS] = {
+   /* ===[[ inverse kinematics ]]================================================*/
+   /* type-- verb----------- description---------------------------------------- */
+   { 'i'  , "ik_pure"      , "set an exact endpoint in 3d space"                 },
+   { 'i'  , "ik_from"      , "set a relative endpoint based on last position"    },
+   /* ===[[ forward kinematics ]]================================================*/
+   /* type-- verb----------- description---------------------------------------- */
+   { 'f'  , "fk_pure"      , "set absolute joint angles on all three joints"     },
+   { 'f'  , "fk_from"      , "set relative joint angles based on last angle"     },
+   /* ===[[ body pos/orient ]]===================================================*/
+   /* type-- verb----------- description---------------------------------------- */
+   { 'b'  , "or_pure"      , "set absolute body orientation angles"              },
+   { 'b'  , "or_from"      , "set relative body orientation from last position"  },
+   { 'b'  , "ze_pure"      , "set absolute body position in 3d space"            },
+   { 'b'  , "ze_from"      , "set relative body position based on last position" },
+   /* done-------------------*/
+};
+
 tSERVO     g_servos  [YKINE_MAX_SERVO] = {
    /* label--------   cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos  head  tail */
    { "RR.femu"      ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
@@ -543,7 +568,7 @@ yKINE__parse_fields     (char a_type)
       case  FIELD_SEC   :  /*---(secs)---*/
          s_secs = atof (p);
          DEBUG_YKINE_SCRP  yLOG_double  ("seconds"   , s_secs);
-         --rce;  if (s_secs <= 0.0) {
+         --rce;  if (s_secs < 0.0) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("s_secs"    , "can not be negative");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
             return rce;

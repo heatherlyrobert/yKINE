@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8h"
-#define     YKINE_VER_TXT   "moved to make_program makefile enhancement"
+#define     YKINE_VER_NUM   "0.8i"
+#define     YKINE_VER_TXT   "added table for script verb description and tracking"
 
 
 
