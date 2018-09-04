@@ -25,14 +25,15 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.8i"
-#define     YKINE_VER_TXT   "added table for script verb description and tracking"
+#define     YKINE_VER_NUM   "0.9a"
+#define     YKINE_VER_TXT   "tighened and unit tested script servo identification"
 
 
 
 extern const    double   DEG2RAD;
 extern const    double   RAD2DEG;
 
+extern char ykine__unit_answer [ LEN_STR  ];
 
 
 typedef struct cLOCAL tLOCAL;
@@ -218,10 +219,19 @@ char        yKINE__foot        (int  a_num);
 /*---(unit testing)----------------------*/
 char        yKINE__setter      (char *a_request , int a_leg, int a_seg, double a_value);
 char*       yKINE__getter      (char *a_question, int a_leg, int a_seg);
-char        yKINE__testquiet   (void);
-char        yKINE__testloud    (void);
-char        yKINE__testend     (void);
+char        yKINE__unit_quiet  (void);
+char        yKINE__unit_loud   (void);
+char        yKINE__unit_end    (void);
 
+
+
+char        ykine_scrp_init         (void);
+char        ykine__scrp_prep        (void);
+char        ykine__scrp_side        (char  a_char);
+char        ykine__scrp_rank        (char  a_char);
+char        ykine__scrp_seg         (char *a_char);
+char        ykine__scrp_servos      (char *a_source);
+char*       ykine__unit_scrp        (char *a_question, int a_num);
 
 
 #endif

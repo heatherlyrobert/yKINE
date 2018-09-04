@@ -1,0 +1,180 @@
+#!/usr/local/bin/koios
+
+
+
+#23456789012  123  123456789-123456789-123456789-12345  123456789-123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789- 
+#==(verb)===  ver  ===========(description)===========  =====(function)=====  ============================================(arguments)=============================================  ==(test)==  ==========================(results)=================================== 
+PREP          v21  include the prototype headers                               
+   incl       v21  include public header                yKINE.h              
+   incl       v21  include private header               yKINE_priv.h         
+
+
+
+#23456789012  123  123456789-123456789-123456789-12345  123456789-123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789- 
+#==(verb)===  ver  ===========(description)===========  =====(function)=====  ============================================(arguments)=============================================  ==(test)==  ==========================(results)=================================== 
+SCRP          v21  (SCRP  ) verify servo targeting                                                                                                                                    ----------  ---------------------------------------------------------------------- 
+
+   COND       v21  initialize the global data                                   ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     set      v21  start testing                        yKINE__unit_quiet                                                                                                           i_equal     0                                                                      
+     exec     v21  run init                             yKINE_init            '0'                                                                                                   i_equal     0                                                                      
+
+   GROUP      v21  start with sides and ranks                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  check simple success                                         ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      'L'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'F'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 1 sides=L    , 1 ranks=F                                  
+
+   COND       v21  check opposites                                              ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      'R'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'R'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 1 sides=R    , 1 ranks=R                                  
+
+   COND       v21  check alls                                                   ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      'a'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'a'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 4 sides=LRlr , 5 ranks=RMFrf                              
+
+   COND       v21  check all one side                                           ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      '<'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      '^'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 2 sides=Ll   , 2 ranks=Ff                                 
+
+   COND       v21  check all other side                                         ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      '>'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'v'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 2 sides=Rr   , 2 ranks=Rr                                 
+
+   COND       v21  check one side of smalls                                     ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      'l'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'f'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 1 sides=l    , 1 ranks=f                                  
+
+   COND       v21  check the other side                                         ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      'r'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'r'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 1 sides=r    , 1 ranks=r                                  
+
+   COND       v21  check all bigs                                               ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      '+'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      '+'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 2 sides=LR   , 3 ranks=RMF                                
+
+   COND       v21  check all smalls                                             ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      '-'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      '-'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 2 sides=lr   , 2 ranks=rf                                 
+
+   COND       v21  use a blank side                                             ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      ' '                                                                                                   i_lesser    0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      ' '                                                                                                   i_lesser    0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 0 sides=     , 0 ranks=                                   
+
+   COND       v21  use a null side                                              ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      0                                                                                                     i_lesser    0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      0                                                                                                     i_lesser    0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 0 sides=     , 0 ranks=                                   
+
+   COND       v21  use unknowns                                                 ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      'x'                                                                                                   i_lesser    0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'Z'                                                                                                   i_lesser    0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 0 sides=     , 0 ranks=                                   
+
+   COND       v21  success again                                                ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify side                        ykine__scrp_side      'L'                                                                                                   i_equal     0                                                                      
+     exec     v21  identify rank                        ykine__scrp_rank      'F'                                                                                                   i_equal     0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 1 sides=L    , 1 ranks=F                                  
+
+   GROUP      v21  then check segments                                                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  check success                                                ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       "femu"                                                                                                i_equal     0                                                                      
+
+   COND       v21  check another success                                        ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       "pate"                                                                                                i_equal     0                                                                      
+
+   COND       v21  check another success                                        ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       "tibi"                                                                                                i_equal     0                                                                      
+
+   COND       v21  try full name                                                ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       "tibia"                                                                                               i_lesser    0                                                                      
+
+   COND       v21  try null                                                     ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       NULL                                                                                                  i_lesser    0                                                                      
+
+   COND       v21  try empty                                                    ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       ""                                                                                                    i_lesser    0                                                                      
+
+   COND       v21  try too short                                                ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       "tib"                                                                                                 i_lesser    0                                                                      
+
+   COND       v21  try empty                                                    ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       " "                                                                                                   i_lesser    0                                                                      
+
+   COND       v21  check success again                                          ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       "femu"                                                                                                i_equal     0                                                                      
+
+   COND       v21  check full entry                                             ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  identify segment                     ykine__scrp_seg       "full"                                                                                                i_equal     0                                                                      
+
+   GROUP      v21  and the full check                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  initial success                                              ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "LF.femu"                                                                                             i_greater   0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 1 sides=L    , 1 ranks=F                              
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : ___ ___ ___ f__ ___ ___ ___ ___ ___ ___               
+
+   COND       v21  check another single (small leg)                             ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "lf.pate"                                                                                             i_greater   0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 1 sides=l    , 1 ranks=f                              
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : ___ ___ ___ ___ ___ ___ ___ ___ _p_ ___               
+
+   COND       v21  now try a multiple                                           ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "aF.tibi"                                                                                             i_greater   0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 4 sides=LRlr , 1 ranks=F                              
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : ___ ___ __t __t ___ ___ ___ ___ ___ ___               
+
+   COND       v21  now try a multiple (with more)                               ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "a^.tibi"                                                                                             i_greater   0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 4 sides=LRlr , 2 ranks=Ff                             
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : ___ ___ __t __t ___ ___ ___ __t __t ___               
+
+   COND       v21  now try all all                                              ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "aa.femu"                                                                                             i_greater   0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 4 sides=LRlr , 5 ranks=RMFrf                          
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : f__ f__ f__ f__ f__ f__ f__ f__ f__ f__               
+
+   COND       v21  use a bad side                                               ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "xa.femu"                                                                                             i_lesser    0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 0 sides=     , 0 ranks=                               
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : ___ ___ ___ ___ ___ ___ ___ ___ ___ ___               
+
+   COND       v21  use a bad rank                                               ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "aW.femu"                                                                                             i_lesser    0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 4 sides=LRlr , 0 ranks=                               
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : ___ ___ ___ ___ ___ ___ ___ ___ ___ ___               
+
+   COND       v21  use a bad segment                                            ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "aa.gobo"                                                                                             i_lesser    0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 4 sides=LRlr , 5 ranks=RMFrf                          
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : ___ ___ ___ ___ ___ ___ ___ ___ ___ ___               
+
+   COND       v21  now try all all again                                        ----------------------------------------------------------------------------------------------------  ----------  ---------------------------------------------------------------------- 
+     exec     v21  clear marks                          ykine__scrp_prep                                                                                                            i_equal     0                                                                      
+     exec     v21  identify servos                      ykine__scrp_servos    "aa.femu"                                                                                             i_greater   0                                                                      
+     get      v21  check sides                          ykine__unit_scrp      "sides"        , 0                                                                                    s_equal     SCRP sides     : 4 sides=LRlr , 5 ranks=RMFrf                          
+     get      v21  check servos                         ykine__unit_scrp      "servos"       , 0                                                                                    s_equal     SCRP servos    : f__ f__ f__ f__ f__ f__ f__ f__ f__ f__               
+
+   GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((03.017))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  stop testing                         yKINE__unit_end                                                                                     i_equal     0                                                                                                    
+

@@ -269,7 +269,7 @@
 #define     YKINE_CALC      17
 
 /*---(servos)-------------------------*/
-#define     YKINE_MAX_SERVO   32
+#define     YKINE_MAX_SERVO   64
 
 #define     YKINE_MOVE_NULL   '-'
 #define     YKINE_MOVE_SERVO  's'
@@ -315,10 +315,11 @@ char        yKINE_script       (double *a_len);
 
 
 char        yKINE_move_curall  (double  a_time);
-char        yKINE_move_first   (int     a_servo, double *a_sec, double *a_deg);
-char        yKINE_move_next    (double *a_sec  , double *a_deg);
-char        yKINE_move_prev    (double *a_sec  , double *a_deg);
-char        yKINE_move_last    (int     a_servo, double *a_sec, double *a_deg);
+char        yKINE_move_first         (int a_leg, int a_seg, double *a_sec, double *a_deg);
+char        yKINE_move_next          (double *a_sec  , double *a_deg);
+char        yKINE_move_prev          (double *a_sec  , double *a_deg);
+char        yKINE_move_last          (int a_leg, int a_seg, double *a_sec, double *a_deg);
+char        yKINE_move_last_servo    (int a_servo, double *a_sec, double *a_deg);
 char        yKINE_move_exact   (double  a_sec  , int     a_leg, double *a_diffx, double *a_diffz, double *a_diffy, double *a_y);
 char        yKINE_move_curdata (double *a_x, double *a_z, double *a_y);
 char        yKINE_servo_deg    (int     a_leg  , int     a_seg, double *a_deg);
