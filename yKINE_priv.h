@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9a"
-#define     YKINE_VER_TXT   "tighened and unit tested script servo identification"
+#define     YKINE_VER_NUM   "0.9b"
+#define     YKINE_VER_TXT   "separated gait (complex) from scrp (basic)"
 
 
 
@@ -42,12 +42,23 @@ struct cLOCAL {
    char        unit;
    int         logger;
    double      scrp_len;
+   /*---(scripts)-----------*/
+   int         s_lines;
+   int         s_count;
+   double      s_secs;
+   double      s_femu;
+   double      s_pate;
+   double      s_tibi;
+   double      s_xpos;
+   double      s_zpos;
+   double      s_ypos;
+   /*---(done)--------------*/
 };
-tLOCAL      yKINE_its;
+tLOCAL      myKINE;
 
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS
-#define     DEBUG_TOPS     if (yKINE_its.unit  == 'y')
+#define     DEBUG_TOPS     if (myKINE.unit  == 'y')
 #endif
 
 
@@ -123,7 +134,7 @@ struct cSERVO {
    tMOVE      *tail;
    /*---(done)---------------------------*/
 };
-extern      tSERVO      g_servos    [YKINE_MAX_SERVO];
+extern      tSERVO      g_servo_info    [YKINE_MAX_SERVO];
 extern      int         g_nservo;
 
 
@@ -232,6 +243,18 @@ char        ykine__scrp_rank        (char  a_char);
 char        ykine__scrp_seg         (char *a_char);
 char        ykine__scrp_servos      (char *a_source);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
+
+char        ykine_scrp_ik_from      (char *a_verb);
+
+char        ykine_parse_prep        (char *a_verb);
+char        ykine_parse_fields      (char  a_type);
+char        ykine_parse_check       (char  a_type);
+
+char        ykine_gait_begin        (char  a_count);
+char        ykine_gait_update       (char  a_count);
+char        ykine_scrp_walk         (int   a_repeats);
+char        ykine_scrp_turn         (int   a_repeats);
+
 
 
 #endif

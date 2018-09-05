@@ -204,11 +204,11 @@ yKINE_move_create  (
    DEBUG_YKINE_SCRP   yLOG_double  ("sec_end"   , x_move->sec_end);
    DEBUG_YKINE_SCRP   yLOG_double  ("deg_beg"   , x_move->deg_beg);
    /*---(update globals)-----------------*/
-   DEBUG_YKINE_SCRP   yLOG_double  ("scrp_len"  , yKINE_its.scrp_len);
-   if (x_move->sec_end > yKINE_its.scrp_len) {
-      yKINE_its.scrp_len = x_move->sec_end;
+   DEBUG_YKINE_SCRP   yLOG_double  ("scrp_len"  , myKINE.scrp_len);
+   if (x_move->sec_end > myKINE.scrp_len) {
+      myKINE.scrp_len = x_move->sec_end;
       DEBUG_YKINE_SCRP   yLOG_note    ("end time greater than current length");
-      DEBUG_YKINE_SCRP   yLOG_double  ("scrp_len"  , yKINE_its.scrp_len);
+      DEBUG_YKINE_SCRP   yLOG_double  ("scrp_len"  , myKINE.scrp_len);
    }
    /*---(check segno)--------------------*/
    if (a_servo->segno_flag == 'y') {
@@ -428,8 +428,8 @@ yKINE_move_curset        (int a_servo, double a_time)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   x_next = g_servos [a_servo].head;
-   g_servos [a_servo].exact = '-';
+   x_next = g_servo_info [a_servo].head;
+   g_servo_info [a_servo].exact = '-';
    if (x_next == NULL) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("no moves for servo");
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
@@ -451,8 +451,8 @@ yKINE_move_curset        (int a_servo, double a_time)
          continue;
       }
       DEBUG_YKINE_SCRP   yLOG_snote   ("found it");
-      g_servos [a_servo].curr = x_next;
-      g_servos [a_servo].exact = 'y';
+      g_servo_info [a_servo].curr = x_next;
+      g_servo_info [a_servo].exact = 'y';
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
@@ -479,10 +479,10 @@ yKINE_move_curone        (int a_servo, double a_time)
    int         x_endlong   = 0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_info    ("label"     , g_servos [a_servo].label);
-   g_servos [a_servo].exact = '-';
+   DEBUG_YKINE_SCRP   yLOG_info    ("label"     , g_servo_info [a_servo].label);
+   g_servo_info [a_servo].exact = '-';
    /*---(check for correct current)------*/
-   if        (g_servos [a_servo].curr == NULL) {
+   if        (g_servo_info [a_servo].curr == NULL) {
       DEBUG_YKINE_SCRP   yLOG_note    ("servo current is not set");
       rc = yKINE_move_curset (a_servo, a_time);
       DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
@@ -493,7 +493,7 @@ yKINE_move_curone        (int a_servo, double a_time)
       return rc;
    }
    /*---(check for right times)----------*/
-   x_curr  = g_servos [a_servo].curr;
+   x_curr  = g_servo_info [a_servo].curr;
    x_curlong = round (a_time          * 1000.0);
    x_beglong = round (x_curr->sec_beg * 1000.0);
    x_endlong = round (x_curr->sec_end * 1000.0);
@@ -515,7 +515,7 @@ yKINE_move_curone        (int a_servo, double a_time)
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
       return rc;
    }
-   x_curr  = g_servos [a_servo].curr;
+   x_curr  = g_servo_info [a_servo].curr;
    x_curlong = round (a_time          * 1000.0);
    x_beglong = round (x_curr->sec_beg * 1000.0);
    x_endlong = round (x_curr->sec_end * 1000.0);
@@ -535,23 +535,23 @@ yKINE_move_curone        (int a_servo, double a_time)
    DEBUG_YKINE_SCRP   yLOG_double  ("x_range"   , x_range);
    x_pos   = x_curr->deg_beg + (x_range * x_pct);
    DEBUG_YKINE_SCRP   yLOG_double  ("x_pos"     , x_pos);
-   g_servos [a_servo].deg = x_pos;
+   g_servo_info [a_servo].deg = x_pos;
    /*---(calc position)------------------*/
    if (x_curr->s_prev == NULL) {
-      g_servos [a_servo].xexp  = x_curr->x_pos;
-      g_servos [a_servo].zexp  = x_curr->z_pos;
-      g_servos [a_servo].yexp  = x_curr->y_pos;
+      g_servo_info [a_servo].xexp  = x_curr->x_pos;
+      g_servo_info [a_servo].zexp  = x_curr->z_pos;
+      g_servo_info [a_servo].yexp  = x_curr->y_pos;
    } else {
       x_range = x_curr->x_pos - x_curr->s_prev->x_pos;
-      g_servos [a_servo].xexp = x_curr->s_prev->x_pos + (x_range * x_pct);
+      g_servo_info [a_servo].xexp = x_curr->s_prev->x_pos + (x_range * x_pct);
       x_range = x_curr->z_pos - x_curr->s_prev->z_pos;
-      g_servos [a_servo].zexp = x_curr->s_prev->z_pos + (x_range * x_pct);
+      g_servo_info [a_servo].zexp = x_curr->s_prev->z_pos + (x_range * x_pct);
       x_range = x_curr->y_pos - x_curr->s_prev->y_pos;
-      g_servos [a_servo].yexp = x_curr->s_prev->y_pos + (x_range * x_pct);
+      g_servo_info [a_servo].yexp = x_curr->s_prev->y_pos + (x_range * x_pct);
    }
    /*> printf ("%8.3lf  %2d  %-10s  %8.2lf  %8.2lf  %8.2lf\n", a_time, a_servo,         <* 
     *>       x_curr->label,                                                             <* 
-    *>    g_servos [a_servo].xexp, g_servos [a_servo].zexp, g_servos [a_servo].yexp);   <*/
+    *>    g_servo_info [a_servo].xexp, g_servo_info [a_servo].zexp, g_servo_info [a_servo].yexp);   <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -580,7 +580,7 @@ yKINE_move_curall        (double a_time)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    for (i = 0; i < YKINE_MAX_SERVO; ++i) {
-      if (strcmp (g_servos [i].label, "end-of-list") == 0)  break;
+      if (strcmp (g_servo_info [i].label, "end-of-list") == 0)  break;
       rc = yKINE_move_curone  (i, a_time);
    }
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -619,7 +619,7 @@ yKINE_move_first         (int a_leg, int a_seg, double *a_sec, double *a_deg)
    s_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
    DEBUG_YKINE_SCRP   yLOG_sint    (s_servo);
    /*---(skip non-moves)-----------------*/
-   x_next = g_servos [s_servo].head;
+   x_next = g_servo_info [s_servo].head;
    while (x_next != NULL) {
       if (x_next->type == YKINE_MOVE_INIT )  break;
       if (x_next->type == YKINE_MOVE_SERVO)  break;
@@ -756,7 +756,7 @@ yKINE_move_last          (int a_leg, int a_seg, double *a_sec, double *a_deg)
    s_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
    DEBUG_YKINE_SCRP   yLOG_sint    (s_servo);
    /*---(skip non-moves)-----------------*/
-   x_prev = g_servos [s_servo].tail;
+   x_prev = g_servo_info [s_servo].tail;
    while (x_prev != NULL) {
        DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
       if (x_prev->type == YKINE_MOVE_INIT )  break;
@@ -796,7 +796,7 @@ yKINE_move_last_servo    (int a_servo, double *a_sec, double *a_deg)
    s_servo = a_servo;
    DEBUG_YKINE_SCRP   yLOG_sint    (s_servo);
    /*---(skip non-moves)-----------------*/
-   x_prev = g_servos [s_servo].tail;
+   x_prev = g_servo_info [s_servo].tail;
    while (x_prev != NULL) {
        DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
       if (x_prev->type == YKINE_MOVE_INIT )  break;
@@ -855,30 +855,30 @@ yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_di
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
       return -1;
    }
-   if (a_sec > yKINE_its.scrp_len) {
-      DEBUG_YKINE_SCRP   yLOG_warn    ("a_sec"     , "greater than yKINE_its.scrp_len");
+   if (a_sec > myKINE.scrp_len) {
+      DEBUG_YKINE_SCRP   yLOG_warn    ("a_sec"     , "greater than myKINE.scrp_len");
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
       return -2;
    }
    x_leg = a_leg * 3;
    DEBUG_YKINE_SCRP   yLOG_value   ("x_leg"     , x_leg);
    rc1 = yKINE_move_curleg    (a_sec, a_leg);
-   rc2 = yKINE_forward  (a_leg, g_servos [x_leg + 0].deg, g_servos [x_leg + 1].deg, g_servos [x_leg + 2].deg);
+   rc2 = yKINE_forward  (a_leg, g_servo_info [x_leg + 0].deg, g_servo_info [x_leg + 1].deg, g_servo_info [x_leg + 2].deg);
    DEBUG_YKINE_SCRP   yLOG_value   ("rc2"       , rc2);
    rc3 = yKINE_endpoint (a_leg, YKINE_TIBI, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
-   if (a_diffx != NULL)  *a_diffx = g_servos [x_leg + 2].xexp - x_xpos;
-   if (a_diffz != NULL)  *a_diffz = g_servos [x_leg + 2].zexp - x_zpos;
-   if (a_diffy != NULL)  *a_diffy = g_servos [x_leg + 2].yexp - x_ypos;
+   if (a_diffx != NULL)  *a_diffx = g_servo_info [x_leg + 2].xexp - x_xpos;
+   if (a_diffz != NULL)  *a_diffz = g_servo_info [x_leg + 2].zexp - x_zpos;
+   if (a_diffy != NULL)  *a_diffy = g_servo_info [x_leg + 2].yexp - x_ypos;
    if (a_y     != NULL)  *a_y     = x_ypos;
-   x_xdif = g_servos [x_leg + 2].xexp - x_xpos;
-   x_zdif = g_servos [x_leg + 2].zexp - x_zpos;
-   x_ydif = g_servos [x_leg + 2].yexp - x_ypos;
+   x_xdif = g_servo_info [x_leg + 2].xexp - x_xpos;
+   x_zdif = g_servo_info [x_leg + 2].zexp - x_zpos;
+   x_ydif = g_servo_info [x_leg + 2].yexp - x_ypos;
    /*> if (a_sec < 40.0) {                                                                                                                                                  <* 
     *>    if (a_leg == 0)  printf ("--secs--  leg  rc1  rc2  rc3  --xpos--  --xexp--  --xdif--  --zpos--  --zexp--  --zdif--  --ypos--  --yexp--  --ydif--  --full--\n");   <* 
     *>    printf ("%8.3f   %d   %3d  %3d  %3d  ", a_sec, a_leg, rc1, rc2, rc3);                                                                                             <* 
-    *>    printf ("%8.1lf  %8.1lf  %8.1lf  ", x_xpos, g_servos [x_leg + 2].xexp, x_xdif);                                                                                   <* 
-    *>    printf ("%8.1lf  %8.1lf  %8.1lf  ", x_zpos, g_servos [x_leg + 2].zexp, x_zdif);                                                                                   <* 
-    *>    printf ("%8.1lf  %8.1lf  %8.1lf  ", x_ypos, g_servos [x_leg + 2].yexp, x_ydif);                                                                                   <* 
+    *>    printf ("%8.1lf  %8.1lf  %8.1lf  ", x_xpos, g_servo_info [x_leg + 2].xexp, x_xdif);                                                                                   <* 
+    *>    printf ("%8.1lf  %8.1lf  %8.1lf  ", x_zpos, g_servo_info [x_leg + 2].zexp, x_zdif);                                                                                   <* 
+    *>    printf ("%8.1lf  %8.1lf  %8.1lf  ", x_ypos, g_servo_info [x_leg + 2].yexp, x_ydif);                                                                                   <* 
     *>    printf ("%8.1lf", sqrt ((x_xdif * x_xdif) + (x_zdif * x_zdif) + (x_ydif * x_ydif)));                                                                              <* 
     *>    printf ("\n");                                                                                                                                                    <* 
     *> }                                                                                                                                                                    <*/
@@ -894,15 +894,15 @@ yKINE_servo_deg          (int a_leg, int a_seg, double *a_deg)
    if (a_leg < YKINE_RR   || a_leg > YKINE_LR  )  return -1;
    if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;
    x_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
-   if (g_servos [x_servo].curr == NULL) {
+   if (g_servo_info [x_servo].curr == NULL) {
       if (a_seg == YKINE_FEMU)  x_deg  =  0.0;
       if (a_seg == YKINE_PATE)  x_deg  =  0.0;
       if (a_seg == YKINE_TIBI)  x_deg  = 90.0;
       if (a_deg       != NULL)  *a_deg = x_deg;
       return -1;
    }
-   if (a_deg       != NULL)  *a_deg = g_servos [x_servo].deg;
-   if (g_servos [x_servo].exact == 'y')  return 1;
+   if (a_deg       != NULL)  *a_deg = g_servo_info [x_servo].deg;
+   if (g_servo_info [x_servo].exact == 'y')  return 1;
    return 0;
 }
 
@@ -914,16 +914,16 @@ yKINE_servo_move         (int a_leg, int a_seg, char *a_label, double *a_secb, d
    if (a_leg < YKINE_RR   || a_leg > YKINE_LR  )  return -1;
    if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;
    x_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
-   if (g_servos [x_servo].curr == NULL)  return -1;
-   if (a_label     != NULL)  strlcpy (a_label, g_servos [x_servo].curr->label, LEN_LABEL);
-   if (a_secb      != NULL)  *a_secb = g_servos [x_servo].curr->sec_beg;
-   if (a_sece      != NULL)  *a_sece = g_servos [x_servo].curr->sec_end;
-   if (a_dur       != NULL)  *a_dur  = g_servos [x_servo].curr->sec_dur;
-   if (a_degb      != NULL)  *a_degb = g_servos [x_servo].curr->deg_beg;
-   if (a_dege      != NULL)  *a_dege = g_servos [x_servo].curr->deg_end;
-   if (a_seq       != NULL)  *a_seq  = g_servos [x_servo].curr->seq;
-   if (a_line      != NULL)  *a_line = g_servos [x_servo].curr->line;
-   if (g_servos [x_servo].exact == 'y')  return 1;
+   if (g_servo_info [x_servo].curr == NULL)  return -1;
+   if (a_label     != NULL)  strlcpy (a_label, g_servo_info [x_servo].curr->label, LEN_LABEL);
+   if (a_secb      != NULL)  *a_secb = g_servo_info [x_servo].curr->sec_beg;
+   if (a_sece      != NULL)  *a_sece = g_servo_info [x_servo].curr->sec_end;
+   if (a_dur       != NULL)  *a_dur  = g_servo_info [x_servo].curr->sec_dur;
+   if (a_degb      != NULL)  *a_degb = g_servo_info [x_servo].curr->deg_beg;
+   if (a_dege      != NULL)  *a_dege = g_servo_info [x_servo].curr->deg_end;
+   if (a_seq       != NULL)  *a_seq  = g_servo_info [x_servo].curr->seq;
+   if (a_line      != NULL)  *a_line = g_servo_info [x_servo].curr->line;
+   if (g_servo_info [x_servo].exact == 'y')  return 1;
    return 0;
 }
 
@@ -937,9 +937,9 @@ yKINE_servo_line         (int a_leg, int a_seg, double *a_x1, double *a_z1, doub
    if (a_leg <  YKINE_RR   || a_leg > YKINE_LR  )    return -1;
    if (a_seg != YKINE_TIBI)                          return -2;
    x_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
-   x_curr = g_servos [x_servo].curr;
+   x_curr = g_servo_info [x_servo].curr;
    if (x_curr        == NULL)      return -3;
-   x_prev = g_servos [x_servo].curr->s_prev;
+   x_prev = g_servo_info [x_servo].curr->s_prev;
    while  (x_prev != NULL) {
       if (x_prev->type == YKINE_MOVE_INIT )  break;
       if (x_prev->type == YKINE_MOVE_SERVO)  break;
@@ -973,7 +973,7 @@ yKINE_moves_rpt    (void)
    printf ("yKINE scripting report of all servo moves\n");
    printf ("\n");
    for (i = 0; i < g_nservo; ++i) {
-      x_servo = g_servos + i;
+      x_servo = g_servo_info + i;
       printf ("%2d) %s\n", i, x_servo->label);
       x_move  = x_servo->head;
       x_count = 0;

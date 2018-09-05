@@ -17,7 +17,7 @@ yKINE_phys_flat    (char a_meth, double a_sec, double *a_lowest, int *a_count)
    tSEG       *x_leg       = NULL;
    /*---(defense)------------------------*/
    if (a_sec < 0.0     )            return -1;
-   if (a_sec > yKINE_its.scrp_len)  return -2;
+   if (a_sec > myKINE.scrp_len)  return -2;
    /*---(head through legs)--------------*/
    for (i = 0; i < YKINE_MAX_LEGS; ++i) {
       /*---(test and set)----------------*/
@@ -29,7 +29,7 @@ yKINE_phys_flat    (char a_meth, double a_sec, double *a_lowest, int *a_count)
       if (x_legnum + 2 >= g_nservo) break;
       /*> printf ("   leg = %d, servo = %d\n", i, x_legnum);                          <*/
       yKINE_move_curleg (a_sec, i);
-      yKINE_forward     (i, g_servos [x_legnum + 0].deg, g_servos [x_legnum + 1].deg, g_servos [x_legnum + 2].deg);
+      yKINE_forward     (i, g_servo_info [x_legnum + 0].deg, g_servo_info [x_legnum + 1].deg, g_servo_info [x_legnum + 2].deg);
       /*---(check for new lowest)--------*/
       /*> printf ("   TIBI.y  = %8.1lf, x_lowest = %8.1lf, x_count = %2d, x_forgive = %8.1lf\n", x_leg [YKINE_TIBI].y, x_lowest, x_count, x_forgive);   <*/
       if (x_leg [YKINE_TIBI].cy  < x_lowest - x_forgive) {
