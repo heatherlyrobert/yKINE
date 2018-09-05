@@ -25,41 +25,16 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9b"
-#define     YKINE_VER_TXT   "separated gait (complex) from scrp (basic)"
+#define     YKINE_VER_NUM   "0.9c"
+#define     YKINE_VER_TXT   "tightened, improved, and unit tested script parsing functions"
 
 
-
-extern const    double   DEG2RAD;
-extern const    double   RAD2DEG;
-
-extern char ykine__unit_answer [ LEN_STR  ];
-
-
-typedef struct cLOCAL tLOCAL;
-struct cLOCAL {
-   /*---(overall)-----------*/
-   char        unit;
-   int         logger;
-   double      scrp_len;
-   /*---(scripts)-----------*/
-   int         s_lines;
-   int         s_count;
-   double      s_secs;
-   double      s_femu;
-   double      s_pate;
-   double      s_tibi;
-   double      s_xpos;
-   double      s_zpos;
-   double      s_ypos;
-   /*---(done)--------------*/
-};
-tLOCAL      myKINE;
 
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS
 #define     DEBUG_TOPS     if (myKINE.unit  == 'y')
 #endif
+
 
 
 /*===[[ RATIONAL LIMITS ]]====================================================*/
@@ -74,6 +49,48 @@ tLOCAL      myKINE;
 #define     LEN_STR     200
 #define     LEN_RECD    2000
 
+
+extern const    double   DEG2RAD;
+extern const    double   RAD2DEG;
+
+extern char ykine__unit_answer [ LEN_STR  ];
+
+
+typedef struct cLOCAL tLOCAL;
+struct cLOCAL {
+   /*---(overall)-----------*/
+   char        unit;
+   int         logger;
+   double      scrp_len;
+   /*---(script)------------*/
+   char        s_name      [LEN_RECD];      /* script file name               */
+   FILE       *s_file;                      /* script file handle             */
+   char        s_recd      [LEN_RECD];      /* record                         */
+   int         s_len;                       /* original record length         */
+   char        s_q         [LEN_LABEL];     /* record parsing delimiter       */
+   char       *s_context;                   /* record parsing context         */
+   int         s_lines;                     /* source file line               */
+   char        s_verb      [LEN_LABEL];     /* script line verb               */
+   char        s_type;                      /* value intrepretation           */
+   char        s_vers;                      /* script line version            */
+   int         s_count;
+   double      s_secs;
+   double      s_femu;
+   double      s_pate;
+   double      s_tibi;
+   double      s_xpos;
+   double      s_zpos;
+   double      s_ypos;
+   /*---(body)--------------*/
+   float       s_xcenter;
+   float       s_zcenter;
+   float       s_ycenter;
+   float       s_yaw;
+   float       s_rotate;
+   float       s_pitch;
+   /*---(done)--------------*/
+};
+tLOCAL      myKINE;
 
 
 
@@ -246,9 +263,10 @@ char*       ykine__unit_scrp        (char *a_question, int a_num);
 
 char        ykine_scrp_ik_from      (char *a_verb);
 
+char        ykine_parse_read        (void);
 char        ykine_parse_prep        (char *a_verb);
-char        ykine_parse_fields      (char  a_type);
-char        ykine_parse_check       (char  a_type);
+char        ykine_parse_fields      (void);
+char        ykine_parse_check       (void);
 
 char        ykine_gait_begin        (char  a_count);
 char        ykine_gait_update       (char  a_count);

@@ -4,8 +4,6 @@
 #include    "yKINE.h"
 #include    "yKINE_priv.h"
 
-static char       *s_q         = "";               /* strtok delimeters         */
-static char       *s_context   = NULL;               /* strtok context variable   */
 
 
 /*====================------------------------------------====================*/
@@ -39,7 +37,7 @@ ykine_gait_begin    (char a_count)
       p = x_p;
    } else {
       DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
-      p = strtok_r (NULL  , s_q, &s_context);
+      p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);
       --rce;  if (p == NULL) {
          DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
          DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -372,7 +370,7 @@ ykine_gait_update   (char a_count)
       x_count = 12;
    } else {
       DEBUG_YKINE_SCRP   yLOG_note    ("parse leg order field");
-      p = strtok_r (NULL  , s_q, &s_context);
+      p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);
       --rce;  if (p == NULL) {
          DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
          DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -441,7 +439,7 @@ ykine_scrp_walk        (int a_repeats)
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(parse style)--------------------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("walking style field");
-   p = strtok_r (NULL  , s_q, &s_context);
+   p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);
    --rce;  if (p == NULL) {
       DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -459,7 +457,7 @@ ykine_scrp_walk        (int a_repeats)
       for (x_step = 0; x_step < 12; ++x_step) {
          /*---(prepare)------------------------*/
          rc = ykine__scrp_prep      ();
-         rc = ykine_parse_prep     (x_verb);
+         rc = ykine_parse_prep      (x_verb);
          if (rc < 0) {
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
             return rc;
@@ -500,7 +498,7 @@ ykine_scrp_walk        (int a_repeats)
          case 11 :  myKINE.s_xpos =  32.00;  myKINE.s_ypos =   10.00; break;
          }
          /*---(check)--------------------------*/
-         rc = ykine_parse_check   (x_verb [0]);
+         rc = ykine_parse_check   ();
          if (rc < 0) {
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
             return rc;
@@ -620,7 +618,7 @@ ykine_scrp_turn        (int a_repeats)
             myKINE.s_secs = 0.100;
             DEBUG_YKINE_SCRP  yLOG_double  ("myKINE.s_secs"    , myKINE.s_secs);
             /*---(check)--------------------------*/
-            rc = ykine_parse_check   (x_verb [0]);
+            rc = ykine_parse_check   ();
             if (rc < 0) {
                DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
                return rc;
