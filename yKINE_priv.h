@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9c"
-#define     YKINE_VER_TXT   "tightened, improved, and unit tested script parsing functions"
+#define     YKINE_VER_NUM   "0.9d"
+#define     YKINE_VER_TXT   "broke out servos logic into a separate source file for clarity"
 
 
 
@@ -71,6 +71,7 @@ struct cLOCAL {
    char       *s_context;                   /* record parsing context         */
    int         s_lines;                     /* source file line               */
    char        s_verb      [LEN_LABEL];     /* script line verb               */
+   int         s_iverb;                     /* index of verb                  */
    char        s_type;                      /* value intrepretation           */
    char        s_vers;                      /* script line version            */
    int         s_count;
@@ -127,6 +128,8 @@ extern      int         m_count;
 struct cSERVO {
    /*---(overall)------------------------*/
    char        label       [20];
+   int         leg;
+   int         seg;
    int         count;
    /*---(current)------------------------*/
    char        exact;                  /* servo move starts                   */
@@ -255,13 +258,26 @@ char        yKINE__unit_end    (void);
 
 char        ykine_scrp_init         (void);
 char        ykine__scrp_prep        (void);
-char        ykine__scrp_side        (char  a_char);
-char        ykine__scrp_rank        (char  a_char);
-char        ykine__scrp_seg         (char *a_char);
-char        ykine__scrp_servos      (char *a_source);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
 
-char        ykine_scrp_ik_from      (char *a_verb);
+char        ykine_scrp_zero         (void);
+char        ykine_scrp_orient       (void);
+char        ykine_scrp_ik_pure      (void);
+char        ykine_scrp_ik_from      (void);
+char        ykine_scrp_fk_pure      (void);
+char        ykine_scrp_repeat       (void);
+
+
+char        ykine_servo_init        (void);
+char        ykine_servo_prep        (void);
+char        ykine_servo_find        (int   a_leg, int a_seg);
+char        ykine_servo_side        (char  a_char);
+char        ykine_servo_rank        (char  a_char);
+char        ykine_servo_segment     (char *a_char);
+char        ykine_servo_one         (char *a_source);
+char        ykine_servos            (char *a_source);
+char*       ykine__unit_servo       (char *a_question);
+
 
 char        ykine_parse_read        (void);
 char        ykine_parse_prep        (char *a_verb);
@@ -270,6 +286,12 @@ char        ykine_parse_check       (void);
 
 char        ykine_gait_begin        (char  a_count);
 char        ykine_gait_update       (char  a_count);
+
+char        ykine_gait_06_beg       (void);
+char        ykine_gait_06_end       (void);
+char        ykine_gait_12_beg       (void);
+char        ykine_gait_12_end       (void);
+
 char        ykine_scrp_walk         (int   a_repeats);
 char        ykine_scrp_turn         (int   a_repeats);
 

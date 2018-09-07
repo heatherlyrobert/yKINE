@@ -81,7 +81,8 @@ yKINE_init         (char a_type)
          yKINE__clear ( &(gk [x_leg][x_seg]), "gk", x_leg, x_seg, a_type);
       }
    }
-   ykine_scrp_init ();
+   ykine_servo_init ();
+   ykine_scrp_init  ();
    /*---(complete)-----------------------*/
    yLOG_exit    (__FUNCTION__);
    return 0;

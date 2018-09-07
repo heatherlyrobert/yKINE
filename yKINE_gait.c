@@ -50,7 +50,7 @@ ykine_gait_begin    (char a_count)
    /*---(mark femu)----------------------*/
    sprintf (x_request, "%s.femu", p);
    DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
-   x_servo = ykine__scrp_servos (x_request);
+   x_servo = ykine_servos (x_request);
    /*---(check for bad references)-------*/
    --rce;  if (x_servo < 0) {
       DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
@@ -60,10 +60,10 @@ ykine_gait_begin    (char a_count)
    /*---(mark pate and tibi)-------------*/
    sprintf (x_request, "%s.pate", p);
    DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
-   x_servo = ykine__scrp_servos (x_request);
+   x_servo = ykine_servos (x_request);
    sprintf (x_request, "%s.tibi", p);
    DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
-   x_servo = ykine__scrp_servos (x_request);
+   x_servo = ykine_servos (x_request);
    /*---(create servo headers)-----------*/
    for (i = 0; i < g_nservo; ++i) {
       /*---(filter uninvolved servos)----*/
@@ -125,17 +125,17 @@ yKINE__gait_save_neutral  (int a_servo)
    /*---(locals)-----------+-----------+-*/
    tMOVE      *x_curr      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(get to neutral move)------------*/
    x_curr = s_gait_begin [a_servo]->s_next;  /* right after header   */
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
+   DEBUG_YKINE_SCRP  yLOG_spoint  (x_curr);
    /*---(save neutral data)--------------*/
    s_neux  = x_curr->x_pos;
    s_neuz  = x_curr->z_pos;
    s_neuy  = x_curr->y_pos;
    s_neud  = x_curr->deg_end;
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -422,6 +422,12 @@ ykine_gait_update   (char a_count)
 /*====================------------------------------------====================*/
 static void      o___COMPLEX_________________o (void) {;}
 
+char ykine_gait_06_beg      (void) { ykine_gait_begin    ( 6); }
+char ykine_gait_06_end      (void) { ykine_gait_update   ( 6); }
+
+char ykine_gait_12_beg      (void) { ykine_gait_begin    (12); }
+char ykine_gait_12_end      (void) { ykine_gait_update   (12); }
+
 char      /*--> walking ---------------------------[--------[--------]-*/
 ykine_scrp_walk        (int a_repeats)
 {
@@ -464,7 +470,7 @@ ykine_scrp_walk        (int a_repeats)
          }
          /*---(identify servos)----------------*/
          strlcpy   (x_request, "++.femu", LEN_LABEL);
-         myKINE.s_count = ykine__scrp_servos (x_request);
+         myKINE.s_count = ykine_servos (x_request);
          DEBUG_YKINE_SCRP  yLOG_value   ("count"     , myKINE.s_count);
          /*---(fill common fields)-------------*/
          myKINE.s_secs = 0.150;
@@ -504,7 +510,7 @@ ykine_scrp_walk        (int a_repeats)
             return rc;
          }
          /*---(handle IK)----------------------*/
-         rc = ykine_scrp_ik_from   (x_verb);
+         rc = ykine_scrp_ik_from   ();
       }
    }
    rc = ykine__scrp_prep      ();
@@ -562,7 +568,7 @@ ykine_scrp_turn        (int a_repeats)
             case 4 : strlcpy   (x_request, "LM.femu", LEN_LABEL);  break;
             case 5 : strlcpy   (x_request, "LR.femu", LEN_LABEL);  break;
             }
-            myKINE.s_count = ykine__scrp_servos (x_request);
+            myKINE.s_count = ykine_servos (x_request);
             DEBUG_YKINE_SCRP  yLOG_info    ("x_request" , x_request);
             DEBUG_YKINE_SCRP  yLOG_value   ("count"     , myKINE.s_count);
             /*---(set degree)---------------*/
@@ -624,7 +630,7 @@ ykine_scrp_turn        (int a_repeats)
                return rc;
             }
             /*---(handle IK)----------------------*/
-            rc = ykine_scrp_ik_from   (x_verb);
+            rc = ykine_scrp_ik_from   ();
          }
       }
    }
