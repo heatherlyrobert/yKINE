@@ -1000,4 +1000,52 @@ yKINE_moves_rpt    (void)
 
 
 
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___UNITTEST________________o (void) {;};
+
+char*      /*----: unit testing accessor for clean validation interface ------*/
+ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   int         x_pos       =    0;
+   char        x_msg       [LEN_STR];
+   tSERVO     *x_servo     = NULL;
+   tMOVE      *x_move      = NULL;
+   int         c           =    0;
+   /*---(preprare)-----------------------*/
+   strlcpy  (ykine__unit_answer, "MOVE unit        : question not understood", LEN_STR);
+   /*---(get servo)----------------------*/
+   x_servo = ykine_servo_pointer (a_leg, a_seg);
+   if (x_servo == NULL) {
+      sprintf  (ykine__unit_answer, "MOVE unit        : could not locate leg %d/seq %d", a_leg, a_seg);
+      return ykine__unit_answer;
+   }
+   /*---(get move)-----------------------*/
+   x_move  = x_servo->head;
+   if (x_move  == NULL) {
+      sprintf  (ykine__unit_answer, "MOVE unit        : no moves for servo %d/seq %d", a_leg, a_seg);
+      return ykine__unit_answer;
+   }
+   while (x_move != NULL) {
+      if (c >= a_cnt)  break;
+      x_move = x_move->s_next;
+      ++c;
+   }
+   if (x_move  == NULL) {
+      sprintf  (ykine__unit_answer, "MOVE unit        : there is no move %d for %d/seq %d", a_cnt, a_leg, a_seg);
+      return ykine__unit_answer;
+   }
+   /*---(answer)-------------------------*/
+   if (strcmp (a_question, "header"  ) == 0) {
+      sprintf (ykine__unit_answer, "MOVE header    : %2d/%2d %c %-10.10s %8.3lf %8.3lf %8.3lf", x_move->seq, x_servo->count, x_move->type, x_move->label, x_move->sec_beg, x_move->sec_end, x_move->sec_dur);
+   }
+   /*---(complete)-----------------------*/
+   return ykine__unit_answer;
+}
+
+
+
 /*============================----end-of-source---============================*/

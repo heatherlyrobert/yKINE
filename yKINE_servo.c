@@ -35,14 +35,17 @@ tSERVO     g_servo_info  [YKINE_MAX_SERVO] = {
    { "rf.femu"      , YKINE_RA, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
    { "rf.pate"      , YKINE_RA, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
    { "rf.tibi"      , YKINE_RA, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lf.femu"      , YKINE_RA, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lf.pate"      , YKINE_RA, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lf.tibi"      , YKINE_RA, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lr.femu"      , YKINE_RP, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lr.pate"      , YKINE_RP, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lr.tibi"      , YKINE_RP, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "lf.femu"      , YKINE_LA, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "lf.pate"      , YKINE_LA, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "lf.tibi"      , YKINE_LA, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "lr.femu"      , YKINE_LP, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "lr.pate"      , YKINE_LP, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "lr.tibi"      , YKINE_LP, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
    /*---(body)------------------------*/
    /* label---------- leg------ seg-------- cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos  head  tail */
+   { "--.pitch"     , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "--.yaw"       , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "--.roll"      , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
    { "--.center"    , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
    /*---(done)------------------------*/
    { "end-of-list"  , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
@@ -100,8 +103,29 @@ ykine_servo_prep   (void)
    return 0;
 }
 
-char
+int
 ykine_servo_find        (int a_leg, int a_seg)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         i           =    0;          /* loop iterator                  */
+   int         c           =    0;
+   int         rc          =   -1;
+   /*---(prepare)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(cycle)--------------------------*/
+   for (i = 0; i < g_nservo; ++i) {
+      if (g_servo_info [i].leg != a_leg)  continue;
+      if (g_servo_info [i].seg != a_seg)  continue;
+      rc = i;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return rc;
+}
+
+char
+ykine_servo_unfocused   (int a_leg, int a_seg)
 {
    /*---(locals)-----------+-----------+-*/
    int         i           =    0;          /* loop iterator                  */
@@ -116,9 +140,48 @@ ykine_servo_find        (int a_leg, int a_seg)
       rc = i;
    }
    DEBUG_YKINE_SCRP   yLOG_sint    (rc);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_YKINE_SCRP   yLOG_schar   (g_servo_info [rc].scrp);
+   if (g_servo_info [rc].scrp == 'y')  {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("NOT selected");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_YKINE_SCRP   yLOG_snote   ("selected");
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return rc;
+   return 0;
+}
+
+tSERVO*
+ykine_servo_pointer     (int a_leg, int a_seg)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         i           =    0;          /* loop iterator                  */
+   int         c           =    0;
+   char        rc          =   -1;
+   tSERVO     *x_servo     = NULL;
+   /*---(prepare)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(cycle)--------------------------*/
+   for (i = 0; i < g_nservo; ++i) {
+      if (g_servo_info [i].leg != a_leg)  continue;
+      if (g_servo_info [i].seg != a_seg)  continue;
+      rc = i;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return NULL;
+   }
+   x_servo = &(g_servo_info [rc]);
+   DEBUG_YKINE_SCRP   yLOG_spoint  (x_servo);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return x_servo;
 }
 
 
@@ -206,7 +269,7 @@ ykine_servo_segment     (char *a_char)
     *  ---- = center
     *
     */
-   char       *x_valid     = " femu pate tibi full center ";
+   char       *x_valid     = " femu pate tibi full center pitch yaw roll ";
    char        x_check     [LEN_LABEL];
    char       *p           = NULL;
    if (a_char == NULL)         return -11;
@@ -272,12 +335,14 @@ ykine_servos            (char *a_source)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;                /* return code for errors   */
    char        rc          =    0;                /* generic return code      */
-   int         i           = 0;
-   int         j           = 0;
-   int         c           = 0;
-   int         x_index     = -1;
-   int         x_nside     = 0;
-   int         x_nrank     = 0;
+   int         i           =    0;
+   int         j           =    0;
+   int         c           =    0;
+   int         x_len       =    0;
+   int         x_index     =   -1;
+   int         x_nside     =    0;
+   int         x_nrank     =    0;
+   char        x_seg       [LEN_LABEL] = "";
    char        x_label     [LEN_LABEL] = "";
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -288,11 +353,13 @@ ykine_servos            (char *a_source)
       return rce;
    }
    DEBUG_YKINE_SCRP   yLOG_info    ("a_source"  , a_source);
-   --rce;  if (strlen (a_source) <  7) {
+   x_len = strlen (a_source);
+   DEBUG_YKINE_SCRP   yLOG_value   ("x_len"     , x_len);
+   --rce;  if (strlen (a_source) <  2) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   --rce;  if (strlen (a_source) > 13) {
+   --rce;  if (strlen (a_source) > 10) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -311,15 +378,26 @@ ykine_servos            (char *a_source)
    }
    DEBUG_YKINE_SCRP  yLOG_info    ("s_ranks"   , s_ranks);
    /*---(interpret segment)--------------*/
-   rc = ykine_servo_segment (a_source + 3);
-   --rce;  if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   if (x_len > 2) {
+      strlcpy (x_seg, a_source + 3, LEN_LABEL);
+      rc = ykine_servo_segment (x_seg);
+      --rce;  if (rc < 0) {
+         DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   } else {
+      strlcpy (x_seg, "femu"        , LEN_LABEL);
+   }
+   switch (myKINE.s_targ) {
+   case 'f' : strlcpy (x_seg, "femu"  , LEN_LABEL);  break;
+   case 'i' : strlcpy (x_seg, "tibi"  , LEN_LABEL);  break;
+   case 'z' : strlcpy (x_seg, "center", LEN_LABEL);  break;
+   case 'o' : strlcpy (x_seg, "pitch" , LEN_LABEL);  break;
    }
    /*---(cycle)--------------------------*/
    for (i = 0; i < s_nside; ++i) {
       for (j = 0; j < s_nrank; ++j) {
-         sprintf (x_label, "%c%c.%s", s_sides [i], s_ranks [j], a_source + 3);
+         sprintf (x_label, "%c%c.%s", s_sides [i], s_ranks [j], x_seg);
          DEBUG_YKINE_SCRP  yLOG_info    ("x_label"   , x_label);
          x_index = ykine_servo_one (x_label);
          if (x_index > 0)  ++c;

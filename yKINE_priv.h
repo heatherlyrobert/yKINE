@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9d"
-#define     YKINE_VER_TXT   "broke out servos logic into a separate source file for clarity"
+#define     YKINE_VER_NUM   "0.9e"
+#define     YKINE_VER_TXT   "updated servo logic to simply scripts and updated unit testing"
 
 
 
@@ -72,6 +72,7 @@ struct cLOCAL {
    int         s_lines;                     /* source file line               */
    char        s_verb      [LEN_LABEL];     /* script line verb               */
    int         s_iverb;                     /* index of verb                  */
+   char        s_targ;                      /* leg/seg targeting override     */
    char        s_type;                      /* value intrepretation           */
    char        s_vers;                      /* script line version            */
    int         s_count;
@@ -128,8 +129,8 @@ extern      int         m_count;
 struct cSERVO {
    /*---(overall)------------------------*/
    char        label       [20];
-   int         leg;
-   int         seg;
+   int         leg;                    /* specific identifier of leg          */
+   int         seg;                    /* specific identifier of segment      */
    int         count;
    /*---(current)------------------------*/
    char        exact;                  /* servo move starts                   */
@@ -270,13 +271,18 @@ char        ykine_scrp_repeat       (void);
 
 char        ykine_servo_init        (void);
 char        ykine_servo_prep        (void);
-char        ykine_servo_find        (int   a_leg, int a_seg);
+int         ykine_servo_find        (int   a_leg, int a_seg);
+tSERVO*     ykine_servo_pointer     (int   a_leg, int a_seg);
+char        ykine_servo_unfocused   (int   a_leg, int a_seg);
 char        ykine_servo_side        (char  a_char);
 char        ykine_servo_rank        (char  a_char);
 char        ykine_servo_segment     (char *a_char);
 char        ykine_servo_one         (char *a_source);
 char        ykine_servos            (char *a_source);
 char*       ykine__unit_servo       (char *a_question);
+
+
+char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
 
 char        ykine_parse_read        (void);
