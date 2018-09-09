@@ -153,7 +153,7 @@ ykine_servo_unfocused   (int a_leg, int a_seg)
    DEBUG_YKINE_SCRP   yLOG_snote   ("selected");
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
+   return 1;
 }
 
 tSERVO*

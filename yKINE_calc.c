@@ -527,11 +527,10 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
    /*---(save basics)--------------------*/
    l    =  x_leg [YKINE_TIBI].l;
    x_leg [YKINE_TIBI].d    =  a_deg;
-   /*> x_leg [YKINE_TIBI].v    =  a_deg * DEG2RAD;                                    <*/
-   x_leg [YKINE_TIBI].v    =  (a_deg + 90.0) * DEG2RAD; 
+   x_leg [YKINE_TIBI].v    = (90.0 - a_deg) * DEG2RAD; 
    x_leg [YKINE_TIBI].h    =  0.0f;
    /*---(calc basics)--------------------*/
-   d    =  x_leg [YKINE_TIBI].cd   =  a_deg;
+   d    =  x_leg [YKINE_TIBI].cd   =  x_leg [YKINE_TIBI].d;
    v    =  x_leg [YKINE_TIBI].cv   =  x_leg [YKINE_PATE].cv + x_leg [YKINE_TIBI].v;
    h    =  x_leg [YKINE_TIBI].ch   =  x_leg [YKINE_PATE].ch;
    DEBUG_YKINE_CALC   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fcv, %6.3fch", l, d, v, h);
@@ -553,10 +552,10 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
    fl   =  x_leg [YKINE_TIBI].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
    DEBUG_YKINE_CALC   yLOG_complex ("lengths"  , "%6.1fsl, %6.1ffl", sl, fl);
    /*---(add to leg values)--------------*/
+   DEBUG_YKINE_CALC   yLOG_note    ("add values to YKINE_CALC segment");
    x_leg [YKINE_CALC].x   += x;
    x_leg [YKINE_CALC].z   += z;
    x_leg [YKINE_CALC].y   += y;
-   DEBUG_YKINE_CALC   yLOG_note    ("add values to YKINE_CALC segment");
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -913,7 +912,7 @@ yKINE__IK_tibi     (int a_num)
    if (isnan (a))    d = 0.0;
    DEBUG_YKINE_CALC   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*----(save)--------------------------*/
-   rc   = yKINE__tibi     (a_num, d, YKINE_IK);
+   rc   = yKINE__tibi     (a_num, 90.0 - d, YKINE_IK);
    DEBUG_YKINE_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YKINE_CALC   yLOG_note    ("calc function failed");

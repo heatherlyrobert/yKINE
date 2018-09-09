@@ -758,7 +758,7 @@ yKINE_move_last          (int a_leg, int a_seg, double *a_sec, double *a_deg)
    /*---(skip non-moves)-----------------*/
    x_prev = g_servo_info [s_servo].tail;
    while (x_prev != NULL) {
-       DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
+      DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
       if (x_prev->type == YKINE_MOVE_INIT )  break;
       if (x_prev->type == YKINE_MOVE_SERVO)  break;
       if (x_prev->type == YKINE_MOVE_WAIT )  break;
@@ -798,7 +798,7 @@ yKINE_move_last_servo    (int a_servo, double *a_sec, double *a_deg)
    /*---(skip non-moves)-----------------*/
    x_prev = g_servo_info [s_servo].tail;
    while (x_prev != NULL) {
-       DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
+      DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
       if (x_prev->type == YKINE_MOVE_INIT )  break;
       if (x_prev->type == YKINE_MOVE_SERVO)  break;
       if (x_prev->type == YKINE_MOVE_WAIT )  break;
@@ -1011,36 +1011,53 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
    int         x_pos       =    0;
-   char        x_msg       [LEN_STR];
+   char        x_msg       [LEN_STR  ];
    tSERVO     *x_servo     = NULL;
    tMOVE      *x_move      = NULL;
-   int         c           =    0;
+   tMOVE      *x_next      = NULL;
+   int         c           =   -1;
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "MOVE unit        : question not understood", LEN_STR);
-   /*---(get servo)----------------------*/
-   x_servo = ykine_servo_pointer (a_leg, a_seg);
-   if (x_servo == NULL) {
-      sprintf  (ykine__unit_answer, "MOVE unit        : could not locate leg %d/seq %d", a_leg, a_seg);
-      return ykine__unit_answer;
-   }
-   /*---(get move)-----------------------*/
-   x_move  = x_servo->head;
-   if (x_move  == NULL) {
-      sprintf  (ykine__unit_answer, "MOVE unit        : no moves for servo %d/seq %d", a_leg, a_seg);
-      return ykine__unit_answer;
-   }
-   while (x_move != NULL) {
-      if (c >= a_cnt)  break;
-      x_move = x_move->s_next;
-      ++c;
-   }
-   if (x_move  == NULL) {
-      sprintf  (ykine__unit_answer, "MOVE unit        : there is no move %d for %d/seq %d", a_cnt, a_leg, a_seg);
-      return ykine__unit_answer;
+   strlcpy  (ykine__unit_answer, "MOVE unit      : question not understood", LEN_STR);
+   /*---(supporting data)----------------*/
+   if (a_leg >= 0) {
+      /*---(get servo)-------------------*/
+      x_servo = ykine_servo_pointer (a_leg, a_seg);
+      if (x_servo == NULL) {
+         sprintf  (ykine__unit_answer, "MOVE unit      : could not locate leg %d/seq %d", a_leg, a_seg);
+         return ykine__unit_answer;
+      }
+      /*---(get move)--------------------*/
+      x_next  = x_servo->head;
+      if (x_next  == NULL) {
+         sprintf  (ykine__unit_answer, "MOVE unit      : no moves for this servo");
+         return ykine__unit_answer;
+      }
+      while (x_next != NULL) {
+         x_move = x_next;
+         if (c >= a_cnt)  break;
+         x_next = x_next->s_next;
+         ++c;
+      }
+      if (c < a_cnt) {
+         sprintf  (ykine__unit_answer, "MOVE unit      : past end of moves");
+         return ykine__unit_answer;
+      }
+      /*---(done)------------------------*/
    }
    /*---(answer)-------------------------*/
    if (strcmp (a_question, "header"  ) == 0) {
       sprintf (ykine__unit_answer, "MOVE header    : %2d/%2d %c %-10.10s %8.3lf %8.3lf %8.3lf", x_move->seq, x_servo->count, x_move->type, x_move->label, x_move->sec_beg, x_move->sec_end, x_move->sec_dur);
+   }
+   else if (strcmp (a_question, "detail"  ) == 0) {
+      sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfb %8.1lfe %8.2lfx %8.2lfz %8.2lfy", x_move->deg_beg, x_move->deg_end, x_move->x_pos, x_move->z_pos, x_move->y_pos);
+   }
+   else if (strcmp (a_question, "counts"  ) == 0) {
+      strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_STR);
+      for (i = 0; i < g_nservo; ++i) {
+         if (i > 0 && i % 3 == 0)  strlcat (ykine__unit_answer, " ", LEN_STR);
+         sprintf (x_msg, "%1d", g_servo_info [i].count);
+         strlcat (ykine__unit_answer, x_msg, LEN_STR);
+      }
    }
    /*---(complete)-----------------------*/
    return ykine__unit_answer;

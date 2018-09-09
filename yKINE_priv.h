@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9e"
-#define     YKINE_VER_TXT   "updated servo logic to simply scripts and updated unit testing"
+#define     YKINE_VER_NUM   "0.9f"
+#define     YKINE_VER_TXT   "basic kine calc unit testing working with arachne opengl output"
 
 
 

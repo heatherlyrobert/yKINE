@@ -28,8 +28,6 @@ tSEGDATA    seg_data [YKINE_MAX_SEGS] = {
    { "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0 },
    { "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
    { "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0 },
-   /*> { "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -90.0,    0.0,   45.0,   50.0,   57.0,    0.0 },   <*/
-   /*> { "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,   10.0,   90.0,  130.0,  100.0,  130.0,    0.0 },   <*/
    { "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0 },
    { "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0 },
    { "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
@@ -291,7 +289,7 @@ yKINE_opengl       (int a_leg, int a_seg, double a_deg, double a_x, double a_z, 
       x_leg [a_seg].h   = 0.0;
       x_leg [a_seg].ch  = x_leg [YKINE_FEMU].ch;
    } else if (a_seg == YKINE_TIBI) {
-      x_leg [a_seg].v   = a_deg * DEG2RAD;
+      x_leg [a_seg].v   = (90.0 - a_deg) * DEG2RAD;
       x_leg [a_seg].cv  = x_leg [YKINE_TIBI].v   + x_leg [YKINE_PATE].cv;
       x_leg [a_seg].h   = 0.0;
       x_leg [a_seg].ch  = x_leg [YKINE_FEMU].ch;

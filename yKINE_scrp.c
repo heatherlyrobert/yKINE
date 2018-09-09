@@ -985,10 +985,8 @@ ykine_scrp_fk_pure      (void)
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
    char        rc          = 0;
-   int         i           = 0;
-   int         j           = 0;
-   int         x_len       = 0;
    int         x_leg       = 0.0;
+   tSERVO     *x_servo     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(parse)--------------------------*/
@@ -1004,23 +1002,35 @@ ykine_scrp_fk_pure      (void)
       return rc;
    }
    /*---(process)------------------------*/
-   for (j = 0; j < g_nservo; ++j) {
-      if (g_servo_info [j].scrp != 'y') continue;
-      /*---(save forward)----------------*/
-      yKINE_move_create (MOVE_SERVO, g_servo_info + j + 0, myKINE.s_verb, myKINE.s_lines, myKINE.s_femu, myKINE.s_secs);
-      yKINE_move_create (MOVE_SERVO, g_servo_info + j + 1, myKINE.s_verb, myKINE.s_lines, myKINE.s_pate, myKINE.s_secs);
-      yKINE_move_create (MOVE_SERVO, g_servo_info + j + 2, myKINE.s_verb, myKINE.s_lines, myKINE.s_tibi, myKINE.s_secs);
-      /*---(calc inverse)----------------*/
-      x_leg = j / 3.0;
+   for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
+      /*---(filter)----------------------*/
+      if (ykine_servo_unfocused (x_leg, YKINE_FEMU))  continue;
+      /*---(calculate endpoint)----------*/
       rc = yKINE_forward     (x_leg, myKINE.s_femu, myKINE.s_pate, myKINE.s_tibi);
       DEBUG_YKINE_SCRP  yLOG_value   ("fk pure rc", rc);
+      /*---(add femur)-------------------*/
+      x_servo = ykine_servo_pointer (x_leg, YKINE_FEMU);
+      if (x_servo ==  NULL)  continue;
+      rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, myKINE.s_femu, myKINE.s_secs);
+      rc = yKINE_endpoint    (x_leg, YKINE_FEMU, YKINE_FK, NULL, NULL, &myKINE.s_xpos, &myKINE.s_zpos, &myKINE.s_ypos);
+      rc = yKINE_move_addloc (x_servo, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+      /*---(add patella)-----------------*/
+      x_servo = ykine_servo_pointer (x_leg, YKINE_PATE);
+      if (x_servo ==  NULL)  continue;
+      rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, myKINE.s_pate, myKINE.s_secs);
+      rc = yKINE_endpoint    (x_leg, YKINE_PATE, YKINE_FK, NULL, NULL, &myKINE.s_xpos, &myKINE.s_zpos, &myKINE.s_ypos);
+      rc = yKINE_move_addloc (x_servo, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+      /*---(add tibia)-------------------*/
+      x_servo = ykine_servo_pointer (x_leg, YKINE_TIBI);
+      if (x_servo ==  NULL)  continue;
+      rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, myKINE.s_tibi, myKINE.s_secs);
       rc = yKINE_endpoint    (x_leg, YKINE_TARG, YKINE_FK, NULL, NULL, &myKINE.s_xpos, &myKINE.s_zpos, &myKINE.s_ypos);
-      rc = yKINE_move_addloc (g_servo_info + j + 2, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+      rc = yKINE_move_addloc (x_servo, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
       /*---(update servo)----------------*/
-      g_servo_info [j + 2].saved  = 'y';
-      g_servo_info [j + 2].xsave  = myKINE.s_xpos;
-      g_servo_info [j + 2].zsave  = myKINE.s_zpos;
-      g_servo_info [j + 2].ysave  = myKINE.s_ypos;
+      x_servo->saved  = 'y';
+      x_servo->xsave  = myKINE.s_xpos;
+      x_servo->zsave  = myKINE.s_zpos;
+      x_servo->ysave  = myKINE.s_ypos;
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
