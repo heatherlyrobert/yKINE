@@ -448,12 +448,11 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
    x_leg [YKINE_PATE].h    =  0.0f;
    /*---(calc basics)--------------------*/
    d    =  x_leg [YKINE_PATE].cd   =  a_deg;
-   v    =  x_leg [YKINE_PATE].cv   =  a_deg * DEG2RAD;
+   v    =  x_leg [YKINE_PATE].cv   = -x_leg [YKINE_PATE].v;
    h    =  x_leg [YKINE_PATE].ch   =  x_leg [YKINE_FEMU].ch;
    DEBUG_YKINE_CALC   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fcv, %6.3fch", l, d, v, h);
    /*---(calc end coords)----------------*/
-   /*> y    =  x_leg [YKINE_PATE].y    = -l * sin (v);                                <*/
-   y    =  x_leg [YKINE_PATE].y    =  l * sin (v);
+   y    =  x_leg [YKINE_PATE].y    = -l * sin (v);
    xz   =  x_leg [YKINE_PATE].xz   =  sqrt (( l *  l) - ( y *  y));
    x    =  x_leg [YKINE_PATE].x    =  xz * cos (h);
    z    =  x_leg [YKINE_PATE].z    = -xz * sin (h);
@@ -487,15 +486,16 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
     *
     */
    /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;      /* return code for errors              */
+   char        rce         =  -10;     /* return code for errors              */
    double      x,  y,  z;              /* coordintates                        */
    double      l;                      /* length                              */
    double      d;                      /* degrees                             */
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
    double      xz, sl, fl;             /* lengths in xz, seg, and full        */
-   double      x_forgive   = 0.0;
+   double      x_forgive   =  0.0;
    tSEG       *x_leg       = NULL;
+   double      x_cum       =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_num);
@@ -538,6 +538,8 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
    y    =  x_leg [YKINE_TIBI].y    = -l * sin (v);
    xz   =  x_leg [YKINE_TIBI].xz   =  sqrt (( l *  l) - ( y *  y));
    if (x_leg [YKINE_TIBI].cv > 90.0 * DEG2RAD)  xz *= -1.0;
+   x_cum = x_leg [YKINE_COXA].cv - x_leg [YKINE_PATE].cv;
+   DEBUG_YKINE_CALC   yLOG_complex ("verts"    , "femu %6.1fd/%6.3fv/%6.3fcv, pate %6.1fd/%6.3fv/%6.3fcv, tibi %6.1fd/%6.3fv/%6.3fcv", x_leg [YKINE_FEMU].d, x_leg [YKINE_FEMU].v, x_leg [YKINE_FEMU].cv, x_leg [YKINE_PATE].d, x_leg [YKINE_PATE].v, x_leg [YKINE_PATE].cv, x_leg [YKINE_TIBI].d, x_leg [YKINE_TIBI].v, x_leg [YKINE_TIBI].cv);
    x    =  x_leg [YKINE_TIBI].x    =  xz * cos (h);
    z    =  x_leg [YKINE_TIBI].z    = -xz * sin (h);
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
@@ -679,7 +681,7 @@ yKINE__foot        (int  a_num)
 static void      o___FORWARD_________________o (void) {;}
 
 char       /*----: set the leg target ----------------------------------------*/
-yKINE__targ        (int a_num, int a_meth)
+yKINE__FK_targ     (int a_num, int a_meth)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -846,8 +848,8 @@ yKINE__IK_pate     (int a_num)
    DEBUG_YKINE_CALC   yLOG_double  ("dv"        , dv);
    DEBUG_YKINE_CALC   yLOG_complex ("lengths"  , "%6.1fsl, %6.1fpl, %6.1ftl",  sl, pl, tl);
    a    =  acos (((sl * sl) + (pl * pl) - (tl * tl)) / (2.0 * sl * pl));
-   d    =  a * RAD2DEG;
    if (isnan (a))    d = 0.0;
+   else              d = a * RAD2DEG;
    DEBUG_YKINE_CALC   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*---(reorient as needed)-------------*/
    DEBUG_YKINE_CALC   yLOG_char    ("under femu", x_leg [YKINE_FEMU].u);
@@ -863,7 +865,7 @@ yKINE__IK_pate     (int a_num)
    }
    DEBUG_YKINE_CALC   yLOG_double  ("new d"     , d);
    /*----(save)--------------------------*/
-   rc   = yKINE__pate     (a_num, d, YKINE_IK);
+   rc   = yKINE__pate     (a_num, -d, YKINE_IK);
    DEBUG_YKINE_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YKINE_CALC   yLOG_note    ("calc function failed");
@@ -949,7 +951,7 @@ yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
    if (rc >= 0)  rc = yKINE__pate     (a_num, a_pate, YKINE_FK);
    if (rc >= 0)  rc = yKINE__tibi     (a_num, a_tibi, YKINE_FK);
    /*---(target setting)-----------------*/
-   if (rc >= 0)  rc = yKINE__targ     (a_num, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__FK_targ  (a_num, YKINE_FK);
    if (rc >= 0)  rc = yKINE__lowr     (a_num, YKINE_FK);
    /*---(future)-------------------------*/
    if (rc >= 0)  rc = yKINE__meta     (a_num);

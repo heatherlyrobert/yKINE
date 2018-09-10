@@ -285,7 +285,7 @@ yKINE_opengl       (int a_leg, int a_seg, double a_deg, double a_x, double a_z, 
       x_leg [a_seg].h   = a_deg * DEG2RAD;
       x_leg [a_seg].ch  = x_leg [YKINE_FEMU].h   + x_leg [YKINE_TROC].ch;
    } else if (a_seg == YKINE_PATE) {
-      x_leg [a_seg].cv  = x_leg [a_seg].v   = a_deg * DEG2RAD;
+      x_leg [a_seg].cv  = x_leg [a_seg].v   = -a_deg * DEG2RAD;
       x_leg [a_seg].h   = 0.0;
       x_leg [a_seg].ch  = x_leg [YKINE_FEMU].ch;
    } else if (a_seg == YKINE_TIBI) {
@@ -301,7 +301,7 @@ yKINE_opengl       (int a_leg, int a_seg, double a_deg, double a_x, double a_z, 
    }
    /*---(target)-------------------------*/
    if (a_seg == YKINE_TIBI) {
-      yKINE__targ     (a_leg, YKINE_GK);
+      yKINE__FK_targ  (a_leg, YKINE_GK);
       yKINE__lowr     (a_leg, YKINE_GK);
    }
    /*---(complete)-----------------------*/

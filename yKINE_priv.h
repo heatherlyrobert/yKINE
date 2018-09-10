@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9f"
-#define     YKINE_VER_TXT   "basic kine calc unit testing working with arachne opengl output"
+#define     YKINE_VER_NUM   "0.9g"
+#define     YKINE_VER_TXT   "unit testing successful for single joint moves on RR (opengl expected)"
 
 
 
@@ -238,7 +238,7 @@ char        yKINE__femu        (int  a_num, double a_deg, int a_meth);
 char        yKINE__pate        (int  a_num, double a_deg, int a_meth);
 char        yKINE__tibi        (int  a_num, double a_deg, int a_meth);
 char        yKINE__lowr        (int  a_num, int    a_meth);
-char        yKINE__targ        (int  a_num, int    a_meth);
+char        yKINE__FK_targ     (int  a_num, int    a_meth);
 /*---(inverse kinematics)----------------*/
 char        yKINE__IK_targ     (int  a_num, double a_x, double a_z, double a_y);
 char        yKINE__IK_femu     (int  a_num);
