@@ -1049,7 +1049,7 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       sprintf (ykine__unit_answer, "MOVE header    : %2d/%2d %c %-10.10s %8.3lf %8.3lf %8.3lf", x_move->seq, x_servo->count, x_move->type, x_move->label, x_move->sec_beg, x_move->sec_end, x_move->sec_dur);
    }
    else if (strcmp (a_question, "detail"  ) == 0) {
-      sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfb %8.1lfe %8.2lfx %8.2lfz %8.2lfy", x_move->deg_beg, x_move->deg_end, x_move->x_pos, x_move->z_pos, x_move->y_pos);
+      sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfb %8.1lfe %8.1lfx %8.1lfz %8.1lfy", x_move->deg_beg, x_move->deg_end, x_move->x_pos, x_move->z_pos, x_move->y_pos);
    }
    else if (strcmp (a_question, "counts"  ) == 0) {
       strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_STR);

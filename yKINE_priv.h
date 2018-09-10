@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9g"
-#define     YKINE_VER_TXT   "unit testing successful for single joint moves on RR (opengl expected)"
+#define     YKINE_VER_NUM   "0.9h"
+#define     YKINE_VER_TXT   "fk script verbs pure/from simpified and unit tested"
 
 
 
@@ -74,6 +74,7 @@ struct cLOCAL {
    int         s_iverb;                     /* index of verb                  */
    char        s_targ;                      /* leg/seg targeting override     */
    char        s_type;                      /* value intrepretation           */
+   char        s_from;                      /* pure vs from                   */
    char        s_vers;                      /* script line version            */
    int         s_count;
    double      s_secs;
@@ -150,6 +151,7 @@ struct cSERVO {
    double      xsave;                  /* saved x-pos                         */
    double      zsave;                  /* saved z-pos                         */
    double      ysave;                  /* saved y-pos                         */
+   double      dsave;                  /* saved degree                        */
    /*---(list)---------------------------*/
    tMOVE      *head;
    tMOVE      *tail;
@@ -265,7 +267,7 @@ char        ykine_scrp_zero         (void);
 char        ykine_scrp_orient       (void);
 char        ykine_scrp_ik_pure      (void);
 char        ykine_scrp_ik_from      (void);
-char        ykine_scrp_fk_pure      (void);
+char        ykine_scrp_fk           (void);
 char        ykine_scrp_repeat       (void);
 
 

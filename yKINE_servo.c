@@ -8,47 +8,47 @@
 
 tSERVO     g_servo_info  [YKINE_MAX_SERVO] = {
    /*---(big legs)--------------------*/
-   /* label---------- leg------ seg-------- cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos  head  tail */
-   { "RR.femu"      , YKINE_RR, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RR.pate"      , YKINE_RR, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RR.tibi"      , YKINE_RR, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RM.femu"      , YKINE_RM, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RM.pate"      , YKINE_RM, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RM.tibi"      , YKINE_RM, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RF.femu"      , YKINE_RF, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RF.pate"      , YKINE_RF, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "RF.tibi"      , YKINE_RF, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LF.femu"      , YKINE_LF, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LF.pate"      , YKINE_LF, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LF.tibi"      , YKINE_LF, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LM.femu"      , YKINE_LM, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LM.pate"      , YKINE_LM, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LM.tibi"      , YKINE_LM, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LR.femu"      , YKINE_LR, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LR.pate"      , YKINE_LR, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "LR.tibi"      , YKINE_LR, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   /* label---------- leg------ seg-------- cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos   deg  head  tail */
+   { "RR.femu"      , YKINE_RR, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RR.pate"      , YKINE_RR, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RR.tibi"      , YKINE_RR, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RM.femu"      , YKINE_RM, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RM.pate"      , YKINE_RM, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RM.tibi"      , YKINE_RM, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RF.femu"      , YKINE_RF, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RF.pate"      , YKINE_RF, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "RF.tibi"      , YKINE_RF, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LF.femu"      , YKINE_LF, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LF.pate"      , YKINE_LF, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LF.tibi"      , YKINE_LF, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LM.femu"      , YKINE_LM, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LM.pate"      , YKINE_LM, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LM.tibi"      , YKINE_LM, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LR.femu"      , YKINE_LR, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LR.pate"      , YKINE_LR, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "LR.tibi"      , YKINE_LR, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
    /*---(little legs)-----------------*/
-   /* label---------- leg------ seg-------- cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos  head  tail */
-   { "rr.femu"      , YKINE_RP, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "rr.pate"      , YKINE_RP, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "rr.tibi"      , YKINE_RP, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "rf.femu"      , YKINE_RA, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "rf.pate"      , YKINE_RA, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "rf.tibi"      , YKINE_RA, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lf.femu"      , YKINE_LA, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lf.pate"      , YKINE_LA, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lf.tibi"      , YKINE_LA, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lr.femu"      , YKINE_LP, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lr.pate"      , YKINE_LP, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "lr.tibi"      , YKINE_LP, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   /* label---------- leg------ seg-------- cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos   deg  head  tail */
+   { "rr.femu"      , YKINE_RP, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "rr.pate"      , YKINE_RP, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "rr.tibi"      , YKINE_RP, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "rf.femu"      , YKINE_RA, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "rf.pate"      , YKINE_RA, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "rf.tibi"      , YKINE_RA, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "lf.femu"      , YKINE_LA, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "lf.pate"      , YKINE_LA, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "lf.tibi"      , YKINE_LA, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "lr.femu"      , YKINE_LP, YKINE_FEMU,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "lr.pate"      , YKINE_LP, YKINE_PATE,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "lr.tibi"      , YKINE_LP, YKINE_TIBI,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
    /*---(body)------------------------*/
-   /* label---------- leg------ seg-------- cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos  head  tail */
-   { "--.pitch"     , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "--.yaw"       , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "--.roll"      , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
-   { "--.center"    , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   /* label---------- leg------ seg-------- cnt  exact   curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos   deg  head  tail */
+   { "--.pitch"     , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "--.yaw"       , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "--.roll"      , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
+   { "--.center"    , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
    /*---(done)------------------------*/
-   { "end-of-list"  , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0, NULL, NULL },
+   { "end-of-list"  , -1      , -1        ,   0,   '-',  NULL,  0.0,  0.0,  0.0,  0.0, '-', NULL, '-', NULL, '-', '-',  0.0,  0.0,  0.0,  0.0, NULL, NULL },
 };
 int         g_nservo;
 
@@ -133,27 +133,31 @@ ykine_servo_unfocused   (int a_leg, int a_seg)
    char        rc          =   -1;
    /*---(prepare)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_leg);
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_seg);
    /*---(cycle)--------------------------*/
    for (i = 0; i < g_nservo; ++i) {
       if (g_servo_info [i].leg != a_leg)  continue;
       if (g_servo_info [i].seg != a_seg)  continue;
       rc = i;
+      break;
    }
    DEBUG_YKINE_SCRP   yLOG_sint    (rc);
    if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("not found");
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      return 1;
    }
    DEBUG_YKINE_SCRP   yLOG_schar   (g_servo_info [rc].scrp);
-   if (g_servo_info [rc].scrp == 'y')  {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("NOT selected");
+   if (g_servo_info [rc].scrp != 'y')  {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("unfocused");
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      return 1;
    }
-   DEBUG_YKINE_SCRP   yLOG_snote   ("selected");
+   DEBUG_YKINE_SCRP   yLOG_snote   ("SELECTED");
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 1;
+   return 0;
 }
 
 tSERVO*
