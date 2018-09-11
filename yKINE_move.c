@@ -87,9 +87,7 @@ yKINE__move_new    (void)
 }
 
 static tMOVE*  /*--> destroy a single move -----------------[ leaf   [ ------ ]-*/
-yKINE__move_free   (
-      /*----------+-----------+-----------------------------------------------*/
-      tMOVE      *a_move)
+yKINE__move_free   (tMOVE *a_move)
 {  /*---(design notes)--------------------------------------------------------*/
    /*
     *  clears and destroys a single move entry as well as removing it from the
@@ -373,40 +371,100 @@ yKINE_move_dsegno      (
 }
 
 char         /*--> remove a move -------------------------[ ------ [ ------ ]-*/
-yKINE_move_delete  (tMOVE *a_move)
+ykine_move_delete  (tMOVE *a_move)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
    tMOVE      *x_next      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   if (a_move        == NULL)  return -1;
-   /*---(update timings)-----------------*/
+   DEBUG_YKINE_SCRP   yLOG_point   ("a_move"    , a_move);
+   --rce;  if (a_move == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(update timings downstream)------*/
    x_next = a_move->s_next;
+   DEBUG_YKINE_SCRP   yLOG_point   ("x_next"    , x_next);
    while (x_next != NULL) {
+      DEBUG_YKINE_SCRP   yLOG_value   ("sec less"  , a_move->sec_dur);
       x_next->sec_beg -= a_move->sec_dur;
       x_next->sec_end -= a_move->sec_dur;
       x_next = x_next->s_next;
+      DEBUG_YKINE_SCRP   yLOG_point   ("x_next"    , x_next);
    }
    /*---(update next deg_beg)------------*/
+   DEBUG_YKINE_SCRP   yLOG_point   ("s_next"    , a_move->s_next);
+   DEBUG_YKINE_SCRP   yLOG_point   ("s_prev"    , a_move->s_prev);
    if (a_move->s_prev != NULL && a_move->s_next != NULL) {
       a_move->s_next->deg_beg = a_move->s_prev->deg_end;
    }
    /*---(mark deleted)-------------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("wipe move header values");
    a_move->type     = YKINE_MOVE_DEL;
-   a_move->sec_dur  = 0.0;
    a_move->sec_beg  = 0.0;
    a_move->sec_end  = 0.0;
-   a_move->deg_beg  = a_move->s_prev->deg_end;
-   a_move->deg_end  = a_move->s_prev->deg_end;
-   /*> /+---(remove from servo list)---------+/                                       <* 
-    *> DEBUG_YKINE_SCRP   yLOG_note    ("remove from backwards/prev direction");      <* 
-    *> if (a_move->s_next != NULL) a_move->s_next->s_prev = a_move->s_prev;           <* 
-    *> else                        a_move->servo->tail    = a_move->s_prev;           <* 
-    *> DEBUG_YKINE_SCRP   yLOG_note    ("remove from forewards/next direction");      <* 
-    *> if (a_move->s_prev != NULL) a_move->s_prev->s_next = a_move->s_next;           <* 
-    *> else                        a_move->servo->head    = a_move->s_next;           <* 
-    *> DEBUG_YKINE_SCRP   yLOG_note    ("decrement count");                           <* 
-    *> --a_move->servo->count;                                                        <* 
-    *> yKINE__move_free (a_move);                                                     <*/
+   a_move->sec_dur  = 0.0;
+   if (a_move->s_prev != NULL) {
+      a_move->deg_beg  = a_move->s_prev->deg_end;
+      a_move->deg_end  = a_move->s_prev->deg_end;
+   }
+   /*---(remove from servo list)---------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("remove from backwards/prev direction");
+   if (a_move->s_next != NULL) a_move->s_next->s_prev = a_move->s_prev;
+   else                        a_move->servo->tail    = a_move->s_prev;
+   DEBUG_YKINE_SCRP   yLOG_note    ("remove from forewards/next direction");
+   if (a_move->s_prev != NULL) a_move->s_prev->s_next = a_move->s_next;
+   else                        a_move->servo->head    = a_move->s_next;
+   DEBUG_YKINE_SCRP   yLOG_note    ("decrement count");
+   --a_move->servo->count;
+   /*---(free memory)--------------------*/
+   rc = yKINE__move_free (a_move);
+   DEBUG_YKINE_SCRP   yLOG_value   ("free"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> remove a move -------------------------[ ------ [ ------ ]-*/
+ykine_move_clear_servo  (tSERVO *a_servo)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tMOVE      *x_curr      = NULL;
+   tMOVE      *x_prev      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_point   ("a_servo"   , a_servo);
+   --rce;  if (a_servo == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_complex ("label"     , "%d/%d %s", a_servo->leg, a_servo->seg, a_servo->label);
+   /*---(prepare)------------------------*/
+   x_curr = a_servo->tail;
+   DEBUG_YKINE_SCRP   yLOG_point   ("head"      , x_curr);
+   while (x_curr != NULL) {
+      x_prev = x_curr->s_prev;
+      rc = ykine_move_delete (x_curr);
+      DEBUG_YKINE_SCRP   yLOG_value   ("delete"    , rc);
+      if (rc < 0) {
+         DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+         return rc;
+      }
+      x_curr = x_prev;
+      DEBUG_YKINE_SCRP   yLOG_point   ("prev"      , x_curr);
+   }
+   /*---(compete)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

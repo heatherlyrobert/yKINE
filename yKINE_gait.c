@@ -175,7 +175,7 @@ yKINE__gait_roll     (int a_servo, int a_order, int a_count)
       yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "extended", x_curr->line, x_curr->deg_end, x_curr->sec_dur);
       yKINE_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
       /*---(delete current)--------*/
-      yKINE_move_delete (x_curr);
+      ykine_move_delete (x_curr);
       /*---(go to next)------------*/
       x_curr = x_next;
       DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);

@@ -1363,7 +1363,16 @@ yKINE_script       (double *a_len)
    /*---(read lines)---------------------*/
    DEBUG_YKINE_SCRP  yLOG_note    ("read lines");
    while (1) {
-      ykine_parse ();
+      rc = ykine_parse ();
+      DEBUG_YKINE_SCRP  yLOG_value   ("read"      , rc);
+      --rce;  if (feof (stdin)) {
+         DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
+         return rce;
+      }
+      if (rc < 0) {
+         DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
+         return rc;
+      }
       /*---(handle verb)-----------------*/
       x_active = s_verb_info [myKINE.s_iverb].active;
       DEBUG_YKINE_SCRP  yLOG_char    ("active"    , x_active);

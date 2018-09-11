@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9h"
-#define     YKINE_VER_TXT   "fk script verbs pure/from simpified and unit tested"
+#define     YKINE_VER_NUM   "0.9i"
+#define     YKINE_VER_TXT   "fk script verbs fully unit tested including clearing"
 
 
 
@@ -132,7 +132,6 @@ struct cSERVO {
    char        label       [20];
    int         leg;                    /* specific identifier of leg          */
    int         seg;                    /* specific identifier of segment      */
-   int         count;
    /*---(current)------------------------*/
    char        exact;                  /* servo move starts                   */
    tMOVE      *curr;                   /* current move pointer                */
@@ -152,7 +151,8 @@ struct cSERVO {
    double      zsave;                  /* saved z-pos                         */
    double      ysave;                  /* saved y-pos                         */
    double      dsave;                  /* saved degree                        */
-   /*---(list)---------------------------*/
+   /*---(moves)--------------------------*/
+   int         count;
    tMOVE      *head;
    tMOVE      *tail;
    /*---(done)---------------------------*/
@@ -284,7 +284,10 @@ char        ykine_servos            (char *a_source);
 char*       ykine__unit_servo       (char *a_question);
 
 
+char        ykine_move_delete       (tMOVE *a_move);
+char        ykine_move_clear_servo  (tSERVO *a_servo);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
+
 
 
 char        ykine_parse_read        (void);
