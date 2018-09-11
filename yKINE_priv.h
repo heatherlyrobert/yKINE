@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9j"
-#define     YKINE_VER_TXT   "ik script using pure is basic and has one unit test cond pass"
+#define     YKINE_VER_NUM   "0.9k"
+#define     YKINE_VER_TXT   "ik pure and from has full single leg unit test cond pass"
 
 
 

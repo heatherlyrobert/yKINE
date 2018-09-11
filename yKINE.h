@@ -278,6 +278,15 @@
 #define     YKINE_MOVE_NOTE   'n'
 #define     YKINE_MOVE_DEL    'x'
 
+#define     YKINE_NONE        '-'
+#define     YKINE_FROM        'f'
+#define     YKINE_PURE        'p'
+#define     YKINE_DOWN        'd'
+
+#define     YKINE_FORWARD     'f'
+#define     YKINE_INVERSE     'i'
+#define     YKINE_ORIENT      'o'
+#define     YKINE_ZERO        'z'
 
 
 char*       yKINE_version      (void);
