@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9i"
-#define     YKINE_VER_TXT   "fk script verbs fully unit tested including clearing"
+#define     YKINE_VER_NUM   "0.9j"
+#define     YKINE_VER_TXT   "ik script using pure is basic and has one unit test cond pass"
 
 
 
@@ -267,6 +267,8 @@ char        ykine_scrp_zero         (void);
 char        ykine_scrp_orient       (void);
 char        ykine_scrp_ik_pure      (void);
 char        ykine_scrp_ik_from      (void);
+
+char        ykine_scrp_ik           (void);
 char        ykine_scrp_fk           (void);
 char        ykine_scrp_repeat       (void);
 

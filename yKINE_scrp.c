@@ -41,12 +41,13 @@ struct cVERBS {
 tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ inverse kinematics ]]================================================*/
    /* verb----------- actv- vers--------- targ- rel-- type--------- call----------------- description---------------------------------------- */
-   { "ik_pure"      , 'y' , "a"         , 'i' , 'p' , PARSE_POINT , ykine_scrp_ik_pure  , "set an exact endpoint in 3d space"                 },
-   { "ik_from"      , 'y' , "a"         , 'i' , 'f' , PARSE_POINT , ykine_scrp_ik_from  , "set a relative endpoint based on last position"    },
+   { "ik_pure"      , 'y' , "a"         , 'i' , 'p' , PARSE_POINT , ykine_scrp_ik       , "set an exact endpoint in 3d space"                 },
+   { "ik_down"      , '-' , "a"         , 'i' , 'd' , PARSE_POINT , ykine_scrp_ik       , "set an exact endpoint, except rel to ground (y)"   },
+   { "ik_from"      , 'y' , "a"         , 'i' , 'f' , PARSE_POINT , ykine_scrp_ik       , "set a relative endpoint based on last position"    },
    /* ===[[ forward kinematics ]]================================================*/
    /* verb----------- actv- vers--------- targ- rel-- type--------- call----------------- description---------------------------------------- */
    { "fk_pure"      , 'y' , "a"         , 'f' , 'p' , PARSE_ANGLE , ykine_scrp_fk       , "set absolute joint angles on all three joints"     },
-   { "fk_from"      , '-' , "a"         , 'f' , 'f' , PARSE_ANGLE , ykine_scrp_fk       , "set relative joint angles based on last angle"     },
+   { "fk_from"      , 'y' , "a"         , 'f' , 'f' , PARSE_ANGLE , ykine_scrp_fk       , "set relative joint angles based on last angle"     },
    /* ===[[ body pos/orient ]]===================================================*/
    /* verb----------- actv- vers--------- targ- rel-- type--------- call----------------- description---------------------------------------- */
    { "or_pure"      , 'y' , "a"         , 'o' , 'p' , PARSE_ANGLE , ykine_scrp_orient   , "set absolute body orientation angles"              },
@@ -753,6 +754,132 @@ ykine_parse             (void)
 /*===----                         ik movements                         ----===*/
 /*====================------------------------------------====================*/
 static void      o___IK_MOVES________________o (void) {;}
+
+char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
+ykine__scrp_ik_adjust   (int a_leg)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   char        rc          =    0;
+   int         x_seg       =    0;
+   tSERVO     *x_servo     =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(filter)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
+   if (myKINE.s_from != 'f') {
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(servo)--------------------------*/
+   x_servo = ykine_servo_pointer (a_leg, YKINE_TIBI);
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
+   --rce;  if (x_servo ==  NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(x-pos)--------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_double  ("xsave"     , x_servo->xsave);
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_xpos"    , myKINE.s_xpos);
+   myKINE.s_xpos += x_servo->xsave;
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_xpos new", myKINE.s_xpos);
+   /*---(z-pos)--------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_double  ("zsave"     , x_servo->zsave);
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_zpos"    , myKINE.s_zpos);
+   myKINE.s_zpos += x_servo->zsave;
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_zpos new", myKINE.s_zpos);
+   /*---(y-pos)--------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_double  ("ysave"     , x_servo->ysave);
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_ypos"    , myKINE.s_ypos);
+   myKINE.s_ypos += x_servo->ysave;
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_ypos new", myKINE.s_ypos);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
+ykine__scrp_ik_servo    (int a_leg, int a_seg, double a_deg)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   char        rc          =    0;
+   tSERVO     *x_servo     =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(servo)--------------------------*/
+   x_servo = ykine_servo_pointer (a_leg, a_seg);
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
+   --rce;  if (x_servo ==  NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(calculate)----------------------*/
+   if (rc == 0)  rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, a_deg, myKINE.s_secs);
+   if (rc == 0)  rc = yKINE_endpoint    (a_leg, a_seg, YKINE_IK, NULL, NULL, &myKINE.s_xpos, &myKINE.s_zpos, &myKINE.s_ypos);
+   if (rc == 0)  rc = yKINE_move_addloc (x_servo, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(save)---------------------------*/
+   x_servo->saved  = 'y';
+   x_servo->xsave  = myKINE.s_xpos;
+   x_servo->zsave  = myKINE.s_zpos;
+   x_servo->ysave  = myKINE.s_ypos;
+   x_servo->dsave  = a_deg;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> handle inverse verbs ------------------[ ------ [ ------ ]-*/
+ykine_scrp_ik           (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   char        rc          =    0;
+   int         x_leg       =  0.0;
+   tSERVO     *x_servo     =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(process)------------------------*/
+   for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
+      /*---(filter)----------------------*/
+      if (ykine_servo_unfocused (x_leg, YKINE_TIBI))  continue;
+      /*---(adjust positions)------------*/
+      rc = ykine__scrp_ik_adjust (x_leg);
+      if (rc <  0) {
+         DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+         return rc;
+      }
+      /*---(inverse kinematics)----------*/
+      rc = yKINE_inverse  (x_leg, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+      DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
+      if (rc <  0) {
+         DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+         return rc;
+      }
+      /*---(retrieve angles)-------------*/
+      rc = yKINE_angles   (x_leg, YKINE_IK, NULL, &myKINE.s_femu, &myKINE.s_pate, &myKINE.s_tibi);
+      DEBUG_YKINE_SCRP  yLOG_value   ("angles"    , rc);
+      if (rc <  0) {
+         DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+         return rc;
+      }
+      DEBUG_YKINE_SCRP  yLOG_double  ("femu deg"  , myKINE.s_femu);
+      DEBUG_YKINE_SCRP  yLOG_double  ("pate deg"  , myKINE.s_pate);
+      DEBUG_YKINE_SCRP  yLOG_double  ("tibi deg"  , myKINE.s_tibi);
+      /*---(process moves)---------------*/
+      rc = ykine__scrp_ik_servo  (x_leg, YKINE_FEMU, myKINE.s_femu);
+      rc = ykine__scrp_ik_servo  (x_leg, YKINE_PATE, myKINE.s_pate);
+      rc = ykine__scrp_ik_servo  (x_leg, YKINE_TIBI, myKINE.s_tibi);
+      /*---(done)------------------------*/
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 char  /*--> save abolute ik based move ------------[ ------ [ ------ ]-*/
 ykine_scrp_ik_pure      (void)
