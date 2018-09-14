@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9k"
-#define     YKINE_VER_TXT   "ik pure and from has full single leg unit test cond pass"
+#define     YKINE_VER_NUM   "0.9l"
+#define     YKINE_VER_TXT   "reading zero body verbs in scripting working and unit tested"
 
 
 
@@ -164,16 +164,18 @@ extern      int         g_nservo;
 typedef struct cLEGDATA tLEGDATA;
 struct cLEGDATA
 {
+   char        leg;
    char        full        [25];
    char        two         [ 5];
    char        caps        [ 5];
    double      deg;
 };
-extern tLEGDATA    leg_data [YKINE_MAX_LEGS];
+extern tLEGDATA    g_leg_data [YKINE_MAX_LEGS];
 
 
 typedef struct cSEGDATA tSEGDATA;
 struct cSEGDATA {
+   char        seg;
    char        full        [25];            /* descriptive name               */
    char        four        [ 5];            /* abbreviated name               */
    char        caps        [ 5];            /* capitalized name for titles    */
@@ -186,7 +188,7 @@ struct cSEGDATA {
    double      test2;                       /* test length (2) newer          */
    double      test3;                       /* test length (3)                */
 };
-extern tSEGDATA    seg_data [YKINE_MAX_SEGS];
+extern tSEGDATA    g_seg_data [YKINE_MAX_SEGS];
 
 
 /*---(hexapod leg)-----------------------*/
@@ -273,6 +275,7 @@ char        ykine_scrp_fk           (void);
 char        ykine_scrp_repeat       (void);
 
 
+char        ykine_servo_purge       (void);
 char        ykine_servo_init        (void);
 char        ykine_servo_prep        (void);
 int         ykine_servo_find        (int   a_leg, int a_seg);
@@ -296,6 +299,7 @@ char        ykine_parse_read        (void);
 char        ykine_parse_prep        (char *a_verb);
 char        ykine_parse_fields      (void);
 char        ykine_parse_check       (void);
+char        ykine_parse             (void);
 
 char        ykine_gait_begin        (char  a_count);
 char        ykine_gait_update       (char  a_count);

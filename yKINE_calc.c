@@ -277,14 +277,14 @@ yKINE__femu        (int  a_num, double a_deg, int a_meth)
    }
    if (a_meth == YKINE_IK)   x_forgive = 0.5;
    DEBUG_YKINE_CALC   yLOG_double  ("IK forgive", x_forgive);
-   DEBUG_YKINE_CALC   yLOG_double  ("min deg"   , seg_data [YKINE_FEMU].min);
-   --rce;  if (a_deg <  seg_data [YKINE_FEMU].min - x_forgive) {
+   DEBUG_YKINE_CALC   yLOG_double  ("min deg"   , g_seg_data [YKINE_FEMU].min);
+   --rce;  if (a_deg <  g_seg_data [YKINE_FEMU].min - x_forgive) {
       DEBUG_YKINE_CALC   yLOG_note    ("degree is less than minimum");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_YKINE_CALC   yLOG_double  ("max deg"   , seg_data [YKINE_FEMU].max);
-   --rce;  if (a_deg >  seg_data [YKINE_FEMU].max + x_forgive) {
+   DEBUG_YKINE_CALC   yLOG_double  ("max deg"   , g_seg_data [YKINE_FEMU].max);
+   --rce;  if (a_deg >  g_seg_data [YKINE_FEMU].max + x_forgive) {
       DEBUG_YKINE_CALC   yLOG_note    ("degree is greater than maximum");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -426,14 +426,14 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
    }
    if (a_meth == YKINE_IK)   x_forgive = 0.5;
    DEBUG_YKINE_CALC   yLOG_double  ("IK forgive", x_forgive);
-   DEBUG_YKINE_CALC   yLOG_double  ("min deg"   , seg_data [YKINE_PATE].min);
-   --rce;  if (a_deg <  seg_data [YKINE_PATE].min - x_forgive) {
+   DEBUG_YKINE_CALC   yLOG_double  ("min deg"   , g_seg_data [YKINE_PATE].min);
+   --rce;  if (a_deg <  g_seg_data [YKINE_PATE].min - x_forgive) {
       DEBUG_YKINE_CALC   yLOG_note    ("degree is less than minimum");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_YKINE_CALC   yLOG_double  ("max deg"   , seg_data [YKINE_PATE].max);
-   --rce;  if (a_deg >  seg_data [YKINE_PATE].max + x_forgive) {
+   DEBUG_YKINE_CALC   yLOG_double  ("max deg"   , g_seg_data [YKINE_PATE].max);
+   --rce;  if (a_deg >  g_seg_data [YKINE_PATE].max + x_forgive) {
       DEBUG_YKINE_CALC   yLOG_note    ("degree is greater than maximum");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
@@ -509,14 +509,14 @@ yKINE__tibi        (int  a_num, double a_deg, int a_meth)
    }
    if (a_meth == YKINE_IK)   x_forgive = 0.5;
    DEBUG_YKINE_CALC   yLOG_double  ("IK forgive", x_forgive);
-   DEBUG_YKINE_CALC   yLOG_double  ("min deg"   , seg_data [YKINE_TIBI].min);
-   --rce;  if (a_deg <  seg_data [YKINE_TIBI].min - x_forgive) {
+   DEBUG_YKINE_CALC   yLOG_double  ("min deg"   , g_seg_data [YKINE_TIBI].min);
+   --rce;  if (a_deg <  g_seg_data [YKINE_TIBI].min - x_forgive) {
       DEBUG_YKINE_CALC   yLOG_note    ("degree is less than minimum");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_YKINE_CALC   yLOG_double  ("max deg"   , seg_data [YKINE_TIBI].max);
-   --rce;  if (a_deg >  seg_data [YKINE_TIBI].max + x_forgive) {
+   DEBUG_YKINE_CALC   yLOG_double  ("max deg"   , g_seg_data [YKINE_TIBI].max);
+   --rce;  if (a_deg >  g_seg_data [YKINE_TIBI].max + x_forgive) {
       DEBUG_YKINE_CALC   yLOG_note    ("degree is greater than maximum");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;

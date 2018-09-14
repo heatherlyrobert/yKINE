@@ -218,8 +218,8 @@
 
 
 
-
 /*===[[ CONSTANTS ]]======================================*/
+
 
 
 /*---(methods)------------------------*/
@@ -228,24 +228,25 @@
 #define     YKINE_IK         1
 #define     YKINE_GK         2
 
-/*---(big legs)-----------------------*/
-#define     YKINE_MAX_LEGS  15       /* all possible legs      */
-#define     YKINE_RR         0
-#define     YKINE_RM         1
-#define     YKINE_RF         2
-#define     YKINE_LF         3
-#define     YKINE_LM         4
-#define     YKINE_LR         5
-/*---(little legs)--------------------*/
-#define     YKINE_RP         6
-#define     YKINE_RA         7
-#define     YKINE_LA         8
-#define     YKINE_LP         9
 
-/*---(body)---------------------------*/
-#define     YKINE_YAW        0
-#define     YKINE_PITCH      1
-#define     YKINE_ROLL       2
+
+/*---(overall)------------------------*/
+#define     YKINE_MAX_LEGS  15       /* all possible legs      */
+#define     YKINE_BODY       0
+/*---(big legs)-----------------------*/
+#define     YKINE_RR         1
+#define     YKINE_RM         2
+#define     YKINE_RF         3
+#define     YKINE_LF         4
+#define     YKINE_LM         5
+#define     YKINE_LR         6
+/*---(little legs)--------------------*/
+#define     YKINE_RP         7
+#define     YKINE_RA         8
+#define     YKINE_LA         9
+#define     YKINE_LP        10
+
+
 
 /*---(segments)-----------------------*/
 #define     YKINE_MAX_SEGS  25
@@ -267,6 +268,11 @@
 #define     YKINE_TARG      15
 #define     YKINE_LOWR      16
 #define     YKINE_CALC      17
+
+/*---(body)---------------------------*/
+#define     YKINE_YAW        5
+#define     YKINE_PITCH      6
+#define     YKINE_ROLL       7
 
 /*---(servos)-------------------------*/
 #define     YKINE_MAX_SERVO   64

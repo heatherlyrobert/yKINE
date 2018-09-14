@@ -6,41 +6,46 @@
 
 
 
-/*---(global characteristics)----------------------*/
-
-tLEGDATA    leg_data [YKINE_MAX_LEGS] = {
+tLEGDATA    g_leg_data [YKINE_MAX_LEGS] = {
    /* front is facing down the negative z-axis        */
-   /* ---full------------ --two---- --caps--- ----deg */
-   { "right rear"        , "rr"    , "RR"    ,  300.0 },
-   { "right middle"      , "rm"    , "RM"    ,    0.0 },
-   { "right front"       , "rf"    , "RF"    ,   60.0 },
-   { "left front"        , "lf"    , "LF"    ,  120.0 },
-   { "left middle"       , "lm"    , "LM"    ,  180.0 },
-   { "left rear"         , "lr"    , "LR"    ,  240.0 },
-   { "-----"             , "--"    , "--"    ,    0.0 },
+   /* leg-------- full----------------- two------ caps----- deg---- */
+   {  YKINE_BODY, "body"              , "--"    , "--"    ,    0.0  },
+   {  YKINE_RR  , "right rear"        , "rr"    , "RR"    ,  300.0  },
+   {  YKINE_RM  , "right middle"      , "rm"    , "RM"    ,    0.0  },
+   {  YKINE_RF  , "right front"       , "rf"    , "RF"    ,   60.0  },
+   {  YKINE_LF  , "left front"        , "lf"    , "LF"    ,  120.0  },
+   {  YKINE_LM  , "left middle"       , "lm"    , "LM"    ,  180.0  },
+   {  YKINE_LR  , "left rear"         , "lr"    , "LR"    ,  240.0  },
+   {  YKINE_RP  , "right posterior"   , "rp"    , "RP"    ,    0.0  },
+   {  YKINE_RA  , "right anterior"    , "ra"    , "RA"    ,    0.0  },
+   {  YKINE_LA  , "left anterior"     , "la"    , "LA"    ,    0.0  },
+   {  YKINE_LP  , "left posterior"    , "lp"    , "LP"    ,    0.0  },
+   {  -1        , "-----"             , "--"    , "--"    ,    0.0  },
 };
 
-tSEGDATA    seg_data [YKINE_MAX_SEGS] = {
-   /* ---full------------ --four--- --caps--- move ----len ----min ---attn ----max --test1 --test2 --test3 */
-   { "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0 },
-   { "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0 },
-   { "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0 },
-   { "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0 },
-   { "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0 },
-   { "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "original"          , "orig"  , "ORIG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "target"            , "targ"  , "TARG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "lower_leg"         , "lowr"  , "LOWR"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "calculation"       , "calc"  , "CALC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
-   { "-----"             , "----"  , "----"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0 },
+
+
+tSEGDATA    g_seg_data [YKINE_MAX_SEGS] = {
+   /* seg-------- ---full-------------- four----- caps----- move len---- min---- attn--- max---- test1-- test2-- test3-- */
+   {  YKINE_FOCU, "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_CORE, "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_THOR, "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0  },
+   {  YKINE_COXA, "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0  },
+   {  YKINE_TROC, "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_FEMU, "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0  },
+   {  YKINE_PATE, "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0  },
+   {  YKINE_TIBI, "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0  },
+   {  YKINE_META, "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_TARS, "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_FOOT, "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_CLAW, "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_MAGN, "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_HOOK, "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_ORIG, "original"          , "orig"  , "ORIG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_TARG, "target"            , "targ"  , "TARG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_LOWR, "lower_leg"         , "lowr"  , "LOWR"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  YKINE_CALC, "calculation"       , "calc"  , "CALC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   {  -1        , "-----"             , "----"  , "----"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
 };
 
 
@@ -50,18 +55,18 @@ tSEGDATA    seg_data [YKINE_MAX_SEGS] = {
 /*====================------------------------------------====================*/
 static void      o___STATIC__________________o (void) {;};
 
-char*    yKINE_legtwo       (int a_leg)    { return leg_data [a_leg].two;  }
-char*    yKINE_legcaps      (int a_leg)    { return leg_data [a_leg].caps; }
-char*    yKINE_legfull      (int a_leg)    { return leg_data [a_leg].full; }
-double   yKINE_legdeg       (int a_leg)    { return leg_data [a_leg].deg;  }
+char*    yKINE_legtwo       (int a_leg)    { return g_leg_data [a_leg].two;  }
+char*    yKINE_legcaps      (int a_leg)    { return g_leg_data [a_leg].caps; }
+char*    yKINE_legfull      (int a_leg)    { return g_leg_data [a_leg].full; }
+double   yKINE_legdeg       (int a_leg)    { return g_leg_data [a_leg].deg;  }
 
-char*    yKINE_segfour      (int a_seg)    { return seg_data [a_seg].four; }
-char*    yKINE_segcaps      (int a_seg)    { return seg_data [a_seg].caps; }
-char*    yKINE_segfull      (int a_seg)    { return seg_data [a_seg].full; }
-double   yKINE_seglen       (int a_seg)    { return seg_data [a_seg].len;  }
-double   yKINE_segmin       (int a_seg)    { return seg_data [a_seg].min;  }
-double   yKINE_segattn      (int a_seg)    { return seg_data [a_seg].attn; }
-double   yKINE_segmax       (int a_seg)    { return seg_data [a_seg].max;  }
+char*    yKINE_segfour      (int a_seg)    { return g_seg_data [a_seg].four; }
+char*    yKINE_segcaps      (int a_seg)    { return g_seg_data [a_seg].caps; }
+char*    yKINE_segfull      (int a_seg)    { return g_seg_data [a_seg].full; }
+double   yKINE_seglen       (int a_seg)    { return g_seg_data [a_seg].len;  }
+double   yKINE_segmin       (int a_seg)    { return g_seg_data [a_seg].min;  }
+double   yKINE_segattn      (int a_seg)    { return g_seg_data [a_seg].attn; }
+double   yKINE_segmax       (int a_seg)    { return g_seg_data [a_seg].max;  }
 
 
 

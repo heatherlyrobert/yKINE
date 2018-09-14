@@ -95,20 +95,20 @@ yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_typ
    if (strlen(a_name) != 2)                   return -1;
    if (a_curr  == NULL)                       return -2;
    /*---(set name)-----------------------*/
-   snprintf (a_curr->n, 11, "%s.%s", leg_data [a_leg].caps, seg_data [a_seg].four);
+   snprintf (a_curr->n, 11, "%s.%s", g_leg_data [a_leg].caps, g_seg_data [a_seg].four);
    /*---(self-knowledge)-----------------*/
    a_curr->leg    = a_leg;
    a_curr->seg    = a_seg;
    /*---(set lengths)--------------------*/
    switch (a_type) {
-   case '1' :  a_curr->l  = a_curr->sl = seg_data [a_seg].test1;  break;
-   case '2' :  a_curr->l  = a_curr->sl = seg_data [a_seg].test2;  break;
-   default  :  a_curr->l  = a_curr->sl = seg_data [a_seg].len;    break;
+   case '1' :  a_curr->l  = a_curr->sl = g_seg_data [a_seg].test1;  break;
+   case '2' :  a_curr->l  = a_curr->sl = g_seg_data [a_seg].test2;  break;
+   default  :  a_curr->l  = a_curr->sl = g_seg_data [a_seg].len;    break;
    }
    a_curr->fl     =   0.0;
    /*---(angles)-------------------------*/
    a_curr->d      =   0.0;
-   if (a_seg == YKINE_THOR)  a_curr->d    =  leg_data [a_leg].deg;
+   if (a_seg == YKINE_THOR)  a_curr->d    =  g_leg_data [a_leg].deg;
    a_curr->h      =   0.0;
    a_curr->v      =   0.0;
    a_curr->cd     =   0.0;
@@ -211,7 +211,7 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
             a_leg, ik[a_leg][YKINE_PATE].v, ik[a_leg][YKINE_TIBI].v);
    } else if (strcmp(a_question, "final")     == 0) {
       sprintf(ykine__unit_answer, "%1d/%1d %4.4s final  %8.1fl,%8.1fx,%8.1fz,%8.1fy", 
-            a_leg, a_seg, seg_data [a_seg].full, fk[a_leg][a_seg].l,
+            a_leg, a_seg, g_seg_data [a_seg].full, fk[a_leg][a_seg].l,
             fk[a_leg][a_seg].x, fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
    }
    /*---(leg values)--------------------------------------*/
