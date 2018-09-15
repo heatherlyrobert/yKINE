@@ -655,54 +655,121 @@ static void      o___SEQUENCIAL______________o (void) {;}
 static tSERVO  *s_servo = NULL;
 static tMOVE   *s_curr  = NULL;
 
-/*> char         /+--> retrieve the first move ---------------[ ------ [ ------ ]-+/   <* 
- *> yKINE_orient_first      (double *a_sec, double *a_x, double *a_z, double *a_y)     <* 
- *> {                                                                                  <* 
- *>    /+---(locals)-----------+-----------+-+/                                        <* 
- *>    char        rce         =  -10;                                                 <* 
- *>    tMOVE      *x_next      = NULL;                                                 <* 
- *>    /+---(header)-------------------------+/                                        <* 
- *>    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);                                 <* 
- *>    /+---(find servo)---------------------+/                                        <* 
- *>    s_servo   = ykine_servo_pointer (a_leg, a_seq);                                 <* 
- *>    DEBUG_YKINE_SCRP   yLOG_spoint  (s_servo);                                      <* 
- *>    --rce;  if (s_servo == NULL) {                                                  <* 
- *>       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);                         <* 
- *>       return rce;                                                                  <* 
- *>    }                                                                               <* 
- *>    /+---(skip non-moves)-----------------+/                                        <* 
- *>    x_next = s_servo->head;                                                         <* 
- *>    while (x_next != NULL) {                                                        <* 
- *>       if (x_next->type == YKINE_MOVE_INIT )  break;                                <* 
- *>       if (x_next->type == YKINE_MOVE_SERVO)  break;                                <* 
- *>       if (x_next->type == YKINE_MOVE_WAIT )  break;                                <* 
- *>       x_next = x_next->s_next;                                                     <* 
- *>    }                                                                               <* 
- *>    /+---(refuse null)--------------------+/                                        <* 
- *>    --rce;  if (x_next == NULL) {                                                   <* 
- *>       s_curr  = NULL;                                                              <* 
- *>       if (a_sec != NULL)  *a_sec  = 0.0;                                           <* 
- *>       if (a_sec != NULL)  *a_deg  = 0.0;                                           <* 
- *>       DEBUG_YKINE_SCRP   yLOG_snote   ("no moves for servo");                      <* 
- *>       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);                         <* 
- *>       return rce;                                                                  <* 
- *>    }                                                                               <* 
- *>    /+---(return values)------------------+/                                        <* 
- *>    DEBUG_YKINE_SCRP   yLOG_svalue  ("found move", x_next->seq);                    <* 
- *>    s_curr  = x_next;                                                               <* 
- *>    if (a_sec != NULL)  *a_sec  = s_curr->sec_end;                                  <* 
- *>    if (a_deg != NULL)  *a_deg  = s_curr->deg_end;                                  <* 
- *>    /+---(complete)-----------------------+/                                        <* 
- *>    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);                                 <* 
- *>    return 0;                                                                       <* 
- *> }                                                                                  <*/
+char
+ykine__servo_next       (char a_dir, char a_type, double *a, double *b, double *c, double *d)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   /*---(prepare)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_schar   (a_dir);
+   --rce;  switch (a_dir) {
+   case 'H' : s_curr = s_servo->head;  a_dir = 'n';          break;
+   case 'n' : if (s_curr != NULL)  s_curr = s_curr->s_next;  break;
+   case 'p' : if (s_curr != NULL)  s_curr = s_curr->s_prev;  break;
+   case 'T' : s_curr = s_servo->tail;  a_dir = 'p';          break;
+   default  : /*---(problem)-------------*/
+              DEBUG_YKINE_SCRP   yLOG_snote   ("invalid dir");
+              return rce;
+              break;
+   }
+   DEBUG_YKINE_SCRP   yLOG_spoint  (s_curr);
+   /*---(check for next)-----------------*/
+   while (s_curr != NULL) {
+      DEBUG_YKINE_SCRP   yLOG_schar   (s_curr->type);
+      if (s_curr->type == YKINE_MOVE_INIT )  break;
+      if (s_curr->type == YKINE_MOVE_SERVO)  break;
+      if (s_curr->type == YKINE_MOVE_WAIT )  break;
+      switch (a_dir) {
+      case 'n' : s_curr = s_curr->s_next;  break;
+      case 'p' : s_curr = s_curr->s_prev;  break;
+      }
+   }
+   DEBUG_YKINE_SCRP   yLOG_spoint  (s_curr);
+   /*---(refuse null)--------------------*/
+   --rce;  if (s_curr == NULL) {
+      s_curr  = NULL;
+      if (a  != NULL)  *a  = 0.0;
+      if (b  != NULL)  *b  = 0.0;
+      if (c  != NULL)  *c  = 0.0;
+      if (d  != NULL)  *d  = 0.0;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("no more moves");
+      return rce;
+   }
+   /*---(save position)------------------*/
+   DEBUG_YKINE_SCRP   yLOG_svalue  ("found move", s_curr->seq);
+   /*---(return values)------------------*/
+   DEBUG_YKINE_SCRP   yLOG_schar   (a_type);
+   --rce;  switch (a_type) {
+   case 'd' :
+      if (a  != NULL)  *a  = s_curr->sec_end;
+      if (b  != NULL)  *b  = s_curr->deg_end;
+      break;
+   case 'c' :
+      if (a  != NULL)  *a  = s_curr->sec_end;
+      if (b  != NULL)  *b  = s_curr->x_pos;
+      if (c  != NULL)  *c  = s_curr->z_pos;
+      if (d  != NULL)  *d  = s_curr->y_pos;
+      break;
+   default  :
+      DEBUG_YKINE_SCRP   yLOG_snote   ("invalid type");
+      return rce;
+      break;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
+yKINE_zero_first        (double *a_sec, double *a_x, double *a_z, double *a_y)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -100;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(find servo)---------------------*/
+   s_servo   = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
+   DEBUG_YKINE_SCRP   yLOG_spoint  (s_servo);
+   --rce;  if (s_servo == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(process)------------------------*/
+   rc = ykine__servo_next ('H', 'c', a_sec, a_x, a_z, a_y);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> retrieve the next move ----------------[ ------ [ ------ ]-*/
+yKINE_zero_next          (double *a_sec, double *a_x, double *a_z, double *a_y)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(process)------------------------*/
+   rc = ykine__servo_next ('n', 'c', a_sec, a_x, a_z, a_y);
+   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
 yKINE_move_first         (int a_leg, int a_seg, double *a_sec, double *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   tMOVE      *x_next      = NULL;
+   char        rce         = -100;
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(find servo)---------------------*/
@@ -712,28 +779,12 @@ yKINE_move_first         (int a_leg, int a_seg, double *a_sec, double *a_deg)
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   /*---(skip non-moves)-----------------*/
-   x_next = s_servo->head;
-   while (x_next != NULL) {
-      if (x_next->type == YKINE_MOVE_INIT )  break;
-      if (x_next->type == YKINE_MOVE_SERVO)  break;
-      if (x_next->type == YKINE_MOVE_WAIT )  break;
-      x_next = x_next->s_next;
+   /*---(process)------------------------*/
+   rc = ykine__servo_next ('H', 'd', a_sec, a_deg, NULL, NULL);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
    }
-   /*---(refuse null)--------------------*/
-   --rce;  if (x_next == NULL) {
-      s_curr  = NULL;
-      if (a_sec != NULL)  *a_sec  = 0.0;
-      if (a_sec != NULL)  *a_deg  = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no moves for servo");
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(return values)------------------*/
-   DEBUG_YKINE_SCRP   yLOG_svalue  ("found move", x_next->seq);
-   s_curr  = x_next;
-   if (a_sec != NULL)  *a_sec  = s_curr->sec_end;
-   if (a_deg != NULL)  *a_deg  = s_curr->deg_end;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -743,41 +794,16 @@ char         /*--> retrieve the next move ----------------[ ------ [ ------ ]-*/
 yKINE_move_next          (double *a_sec, double *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
-   tMOVE      *x_next      = NULL;
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(get current)--------------------*/
-   x_next = s_curr;
-   if (x_next == NULL) {
-      s_curr  = NULL;
-      if (a_sec != NULL)  *a_sec  = 0.0;
-      if (a_deg != NULL)  *a_deg  = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no current move for servo");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return -10;
+   /*---(process)------------------------*/
+   rc = ykine__servo_next ('n', 'd', a_sec, a_deg, NULL, NULL);
+   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
    }
-   /*---(skip non-moves)-----------------*/
-   x_next = x_next->s_next;
-   while (x_next != NULL) {
-      if (x_next->type == YKINE_MOVE_INIT )  break;
-      if (x_next->type == YKINE_MOVE_SERVO)  break;
-      if (x_next->type == YKINE_MOVE_WAIT )  break;
-      x_next = x_next->s_next;
-   }
-   /*---(get next)-----------------------*/
-   if (x_next == NULL) {
-      s_curr  = NULL;
-      if (a_sec != NULL)  *a_sec  = 0.0;
-      if (a_deg != NULL)  *a_deg  = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no next move for servo");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return -11;
-   }
-   /*---(return values)------------------*/
-   DEBUG_YKINE_SCRP   yLOG_svalue  ("found move", x_next->seq);
-   s_curr  = x_next;
-   if (a_sec != NULL)  *a_sec  = x_next->sec_end;
-   if (a_deg != NULL)  *a_deg  = x_next->deg_end;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -787,43 +813,16 @@ char         /*--> retrieve the prev move ----------------[ ------ [ ------ ]-*/
 yKINE_move_prev          (double *a_sec, double *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
-   tMOVE      *x_prev      = NULL;
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(get current)--------------------*/
-   x_prev = s_curr;
-   if (x_prev == NULL) {
-      s_curr  = NULL;
-      if (a_sec != NULL)  *a_sec  = 0.0;
-      if (a_deg != NULL)  *a_deg  = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no current move for servo");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return -10;
+   /*---(process)------------------------*/
+   rc = ykine__servo_next ('p', 'd', a_sec, a_deg, NULL, NULL);
+   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
    }
-   /*---(skip non-moves)-----------------*/
-   x_prev = x_prev->s_prev;
-   while (x_prev != NULL) {
-      if (x_prev->type == YKINE_MOVE_INIT )  break;
-      if (x_prev->type == YKINE_MOVE_SERVO)  break;
-      if (x_prev->type == YKINE_MOVE_WAIT )  break;
-      x_prev = x_prev->s_prev;
-   }
-   /*---(get next)-----------------------*/
-   if (x_prev == NULL) {
-      s_curr  = NULL;
-      if (a_sec != NULL)  *a_sec  = 0.0;
-      if (a_deg != NULL)  *a_deg  = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no prev move for servo");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return -11;
-   }
-   /*---(return values)------------------*/
-   DEBUG_YKINE_SCRP   yLOG_svalue  ("found move", x_prev->seq);
-   s_curr  = x_prev;
-   if (a_sec != NULL)  *a_sec  = x_prev->sec_end;
-   if (a_deg != NULL)  *a_deg  = x_prev->deg_end;
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_snote   ("failed");
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
@@ -832,8 +831,8 @@ char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
 yKINE_move_last          (int a_leg, int a_seg, double *a_sec, double *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   tMOVE      *x_prev      = NULL;
+   char        rce         = -100;
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(find servo)---------------------*/
@@ -843,30 +842,12 @@ yKINE_move_last          (int a_leg, int a_seg, double *a_sec, double *a_deg)
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   /*---(skip non-moves)-----------------*/
-   x_prev = s_servo->tail;
-   while (x_prev != NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
-      if (x_prev->type == YKINE_MOVE_INIT )  break;
-      if (x_prev->type == YKINE_MOVE_SERVO)  break;
-      if (x_prev->type == YKINE_MOVE_WAIT )  break;
-      if (x_prev->type == YKINE_MOVE_NOTE )  break;
-      x_prev = x_prev->s_prev;
+   /*---(process)------------------------*/
+   rc = ykine__servo_next ('T', 'd', a_sec, a_deg, NULL, NULL);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
    }
-   /*---(refuse null)--------------------*/
-   --rce;  if (x_prev == NULL) {
-      s_curr  = NULL;
-      if (a_sec != NULL)  *a_sec  = 0.0;
-      if (a_deg != NULL)  *a_deg  = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no moves for servo");
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(return values)------------------*/
-   DEBUG_YKINE_SCRP   yLOG_svalue  ("found move", x_prev->seq);
-   s_curr  = x_prev;
-   if (a_sec != NULL)  *a_sec  = s_curr->sec_end;
-   if (a_deg != NULL)  *a_deg  = s_curr->deg_end;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -876,38 +857,23 @@ char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
 yKINE_move_last_servo    (int a_servo, double *a_sec, double *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   tMOVE      *x_prev      = NULL;
+   char        rce         = -100;
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(find servo)---------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_servo);
    s_servo   = ykine_servo_pointer (g_servo_info [a_servo].leg, g_servo_info [a_servo].seg);
    DEBUG_YKINE_SCRP   yLOG_spoint  (s_servo);
-   /*---(skip non-moves)-----------------*/
-   x_prev = s_servo->tail;
-   while (x_prev != NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->seq);
-      if (x_prev->type == YKINE_MOVE_INIT )  break;
-      if (x_prev->type == YKINE_MOVE_SERVO)  break;
-      if (x_prev->type == YKINE_MOVE_WAIT )  break;
-      if (x_prev->type == YKINE_MOVE_NOTE )  break;
-      x_prev = x_prev->s_prev;
-   }
-   /*---(refuse null)--------------------*/
-   --rce;  if (x_prev == NULL) {
-      s_curr  = NULL;
-      if (a_sec != NULL)  *a_sec  = 0.0;
-      if (a_deg != NULL)  *a_deg  = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no moves for servo");
+   --rce;  if (s_servo == NULL) {
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   /*---(return values)------------------*/
-   DEBUG_YKINE_SCRP   yLOG_svalue  ("found move", x_prev->seq);
-   s_curr  = x_prev;
-   if (a_sec != NULL)  *a_sec  = s_curr->sec_end;
-   if (a_deg != NULL)  *a_deg  = s_curr->deg_end;
+   /*---(process)------------------------*/
+   rc = ykine__servo_next ('T', 'd', a_sec, a_deg, NULL, NULL);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
+   }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -978,20 +944,38 @@ yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_di
 char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
 yKINE_servo_deg          (int a_leg, int a_seg, double *a_deg)
 {
-   int         x_servo     = 0;
+   tSERVO     *x_servo     = NULL;
    double      x_deg       = 0.0;
-   if (a_leg < YKINE_RR   || a_leg > YKINE_LR  )  return -1;
-   if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;
-   x_servo = (a_leg * 3) + (a_seg - YKINE_FEMU);
-   if (g_servo_info [x_servo].curr == NULL) {
+   /*> if (a_leg < YKINE_BODY || a_leg > YKINE_LR  )  return -1;                      <* 
+    *> if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;                      <*/
+   x_servo = ykine_servo_pointer (a_leg, a_seg);
+   if (x_servo->curr == NULL) {
       if (a_seg == YKINE_FEMU)  x_deg  =  0.0;
       if (a_seg == YKINE_PATE)  x_deg  =  0.0;
-      if (a_seg == YKINE_TIBI)  x_deg  = 90.0;
+      if (a_seg == YKINE_TIBI)  x_deg  =  0.0;
       if (a_deg       != NULL)  *a_deg = x_deg;
       return -1;
    }
-   if (a_deg       != NULL)  *a_deg = g_servo_info [x_servo].deg;
-   if (g_servo_info [x_servo].exact == 'y')  return 1;
+   if (a_deg       != NULL)  *a_deg = x_servo->deg;
+   if (x_servo->exact == 'y')  return 1;
+   return 0;
+}
+
+char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
+yKINE_zero_pos           (double *a_x, double *a_z, double *a_y)
+{
+   tSERVO     *x_servo     = NULL;
+   x_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
+   if (x_servo == NULL || x_servo->curr == NULL) {
+      if (a_x != NULL)  *a_x   = 0.0;
+      if (a_z != NULL)  *a_z   = 0.0;
+      if (a_y != NULL)  *a_y   = 0.0;
+      return -1;
+   }
+   if (a_x != NULL)  *a_x   = x_servo->xexp;
+   if (a_z != NULL)  *a_z   = x_servo->zexp;
+   if (a_y != NULL)  *a_y   = x_servo->yexp;
+   if (x_servo->exact == 'y')  return 1;
    return 0;
 }
 
@@ -1045,6 +1029,32 @@ yKINE_servo_line         (int a_leg, int a_seg, double *a_x1, double *a_z1, doub
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                       adjusted values                        ----===*/
+/*====================------------------------------------====================*/
+static void      o___ADJUSTED________________o (void) {;}
+
+struct cPOS {
+   /*---(planned angles)-----------------*/
+   double      o_femu;
+   double      o_pate;
+   double      o_tibi;
+   /*---(planned endpoint)---------------*/
+   double      o_x;
+   double      o_z;
+   double      o_y;
+   /*---(revised endpoint)---------------*/
+   double      r_x;
+   double      r_z;
+   double      r_y;
+   /*---(revised angles)-----------------*/
+   double      r_femu;
+   double      r_pate;
+   double      r_tibi;
+   /*---(done)---------------------------*/
+} s_details [YKINE_MAX_LEGS][400];
 
 
 /*====================------------------------------------====================*/

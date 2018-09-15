@@ -268,8 +268,8 @@ static void      o___MOVES___________________o (void) {;}
 #define     FIELD_ZPOS     4
 #define     FIELD_YPOS     5
 /*---(repeat related)-----------------*/
-#define     FIELD_TIMES    2
-#define     FIELD_COUNT    3
+#define     FIELD_COUNT    2
+#define     FIELD_TIMES    3
 /*---(suffix)-------------------------*/
 #define     FIELD_ARGS     6
 
@@ -1525,20 +1525,20 @@ ykine_scrp_repeat       (void)
             return rce;
          }
          break;
-      case  FIELD_TIMES :  /*---(times to repeat)----*/
-         x_times = atoi (p);
-         DEBUG_YKINE_SCRP  yLOG_value   ("x_times"   , x_times);
-         --rce;  if (x_times < 1 || x_times > 100) {
-            DEBUG_YKINE_SCRP  yLOG_warn    ("times"     , "out of range (1 - 100)");
-            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-            return rce;
-         }
-         break;
       case  FIELD_COUNT :  /*---(moves to repeat)----*/
          x_count = atoi (p);
          DEBUG_YKINE_SCRP  yLOG_value   ("x_count"   , x_count);
          --rce;  if (x_count < 1 || x_count > 100) {
             DEBUG_YKINE_SCRP  yLOG_warn    ("moves"     , "out of range (1 - 100)");
+            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+            return rce;
+         }
+         break;
+      case  FIELD_TIMES :  /*---(times to repeat)----*/
+         x_times = atoi (p);
+         DEBUG_YKINE_SCRP  yLOG_value   ("x_times"   , x_times);
+         --rce;  if (x_times < 1 || x_times > 100) {
+            DEBUG_YKINE_SCRP  yLOG_warn    ("times"     , "out of range (1 - 100)");
             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
             return rce;
          }

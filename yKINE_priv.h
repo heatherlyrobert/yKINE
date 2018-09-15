@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9m"
-#define     YKINE_VER_TXT   "reading orient body verbs in scripting working and unit tested"
+#define     YKINE_VER_NUM   "0.9n"
+#define     YKINE_VER_TXT   "pulled common login from move cursor functions to simplify"
 
 
 
