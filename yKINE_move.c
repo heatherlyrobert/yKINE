@@ -1057,7 +1057,13 @@ struct cPOS {
    double      r_pate;
    double      r_tibi;
    /*---(done)---------------------------*/
-} s_details [YKINE_MAX_LEGS][400];
+} s_details [4][YKINE_MAX_LEGS][400];
+
+char
+yKINE_panel_details     (int a_panel, int a_begsec)
+{
+
+}
 
 
 /*====================------------------------------------====================*/

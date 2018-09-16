@@ -298,10 +298,13 @@
 char*       yKINE_version      (void);
 char        yKINE_init         (char a_type);
 
-char        yKINE_center       (double a_x, double a_z, double a_y);
-char        yKINE_inverse      (int a_num, double a_x, double a_z, double a_y);
-char        yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi);
-char        yKINE_opengl       (int a_leg, int a_seg, double a_deg, double a_x, double a_z, double a_y, double a_len);
+/*> char        yKINE_center            (double a_x, double a_z, double a_y);         <*/
+char        yKINE_zero              (double a_x, double a_z, double a_y);
+char        yKINE_orient            (double a_yaw, double a_pitch, double a_roll);
+char        yKINE_forward           (int a_num, double a_femu, double a_pate, double a_tibi);
+char        yKINE_inverse           (int a_num, double a_x, double a_z, double a_y);
+char        yKINE_inverse_adapt     (int a_num, double a_x, double a_z, double a_y);
+char        yKINE_opengl            (int a_leg, int a_seg, double a_deg, double a_x, double a_z, double a_y, double a_len);
 
 /*---(static data accessors)----------*/
 char*       yKINE_legtwo       (int a_leg);

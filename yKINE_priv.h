@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9o"
-#define     YKINE_VER_TXT   "unit test created for first, next, prev, and last move cursors"
+#define     YKINE_VER_NUM   "0.9p"
+#define     YKINE_VER_TXT   "added IK adapting to body orient/zero logic.  started unit testing."
 
 
 
@@ -89,7 +89,7 @@ struct cLOCAL {
    float       s_zcenter;
    float       s_ycenter;
    float       s_yaw;
-   float       s_rotate;
+   float       s_roll;
    float       s_pitch;
    /*---(done)--------------*/
 };

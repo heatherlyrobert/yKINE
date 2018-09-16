@@ -658,7 +658,7 @@ ykine__parse_adjust     (void)
    DEBUG_YKINE_SCRP  yLOG_note    ("rotate calcs");
    x_dist  = myKINE.s_xpos;
    DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
-   x_rads  = myKINE.s_rotate * DEG2RAD;
+   x_rads  = myKINE.s_roll * DEG2RAD;
    DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
    x_degs  = x_rads * RAD2DEG;
    DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
@@ -1377,53 +1377,53 @@ ykine_scrp_orient       (void)
  *>    return 0;                                                                               <* 
  *> }                                                                                          <*/
 
-static char  /*--> make changes to body tilt -------------[ ------ [ ------ ]-*/
-yKINE__scrp_tilt   (char *a_verb)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;                /* return code for errors    */
-   char        rc          = 0;
-   int         x_len       = 0;
-   char        x_type      = 'i';
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(parse)--------------------------*/
-   rc = ykine_parse_fields  ();
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
-   /*---(check)--------------------------*/
-   rc = ykine_parse_check   ();
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
-   /*---(handle)-------------------------*/
-   --rce;  switch (a_verb [3]) {
-   case YKINE_PURE :
-      myKINE.s_xcenter  = myKINE.s_xpos;
-      myKINE.s_zcenter  = myKINE.s_zpos;
-      myKINE.s_ycenter  = myKINE.s_ypos;
-      /*> rc = ykine_scrp_ik_pure   (a_verb);                                        <*/
-      break;
-   case YKINE_FROM :
-      myKINE.s_xcenter += myKINE.s_xpos;
-      myKINE.s_zcenter += myKINE.s_zpos;
-      myKINE.s_ycenter += myKINE.s_ypos;
-      break;
-   default  :
-      DEBUG_YKINE_SCRP  yLOG_warn    ("a_verb"    , "verb not understood");
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   DEBUG_YKINE_SCRP  yLOG_double  ("s_xcenter" , myKINE.s_xcenter);
-   DEBUG_YKINE_SCRP  yLOG_double  ("s_zcenter" , myKINE.s_zcenter);
-   DEBUG_YKINE_SCRP  yLOG_double  ("s_ycenter" , myKINE.s_ycenter);
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> static char  /+--> make changes to body tilt -------------[ ------ [ ------ ]-+/           <* 
+ *> yKINE__scrp_tilt   (char *a_verb)                                                          <* 
+ *> {                                                                                          <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                <* 
+ *>    char        rce         = -10;                /+ return code for errors    +/           <* 
+ *>    char        rc          = 0;                                                            <* 
+ *>    int         x_len       = 0;                                                            <* 
+ *>    char        x_type      = 'i';                                                          <* 
+ *>    /+---(header)-------------------------+/                                                <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                         <* 
+ *>    /+---(parse)--------------------------+/                                                <* 
+ *>    rc = ykine_parse_fields  ();                                                            <* 
+ *>    if (rc < 0) {                                                                           <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                                       <* 
+ *>       return rc;                                                                           <* 
+ *>    }                                                                                       <* 
+ *>    /+---(check)--------------------------+/                                                <* 
+ *>    rc = ykine_parse_check   ();                                                            <* 
+ *>    if (rc < 0) {                                                                           <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                                       <* 
+ *>       return rc;                                                                           <* 
+ *>    }                                                                                       <* 
+ *>    /+---(handle)-------------------------+/                                                <* 
+ *>    --rce;  switch (a_verb [3]) {                                                           <* 
+ *>    case YKINE_PURE :                                                                       <* 
+ *>       myKINE.s_xcenter  = myKINE.s_xpos;                                                   <* 
+ *>       myKINE.s_zcenter  = myKINE.s_zpos;                                                   <* 
+ *>       myKINE.s_ycenter  = myKINE.s_ypos;                                                   <* 
+ *>       /+> rc = ykine_scrp_ik_pure   (a_verb);                                        <+/   <* 
+ *>       break;                                                                               <* 
+ *>    case YKINE_FROM :                                                                       <* 
+ *>       myKINE.s_xcenter += myKINE.s_xpos;                                                   <* 
+ *>       myKINE.s_zcenter += myKINE.s_zpos;                                                   <* 
+ *>       myKINE.s_ycenter += myKINE.s_ypos;                                                   <* 
+ *>       break;                                                                               <* 
+ *>    default  :                                                                              <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_warn    ("a_verb"    , "verb not understood");                <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                                       <* 
+ *>       return rce;                                                                          <* 
+ *>    }                                                                                       <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("s_xcenter" , myKINE.s_xcenter);                        <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("s_zcenter" , myKINE.s_zcenter);                        <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("s_ycenter" , myKINE.s_ycenter);                        <* 
+ *>    /+---(complete)-----------------------+/                                                <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                         <* 
+ *>    return 0;                                                                               <* 
+ *> }                                                                                          <*/
 
 
 

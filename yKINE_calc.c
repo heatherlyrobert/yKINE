@@ -67,14 +67,22 @@ yKINE__wipe        (int  a_leg, int a_meth)
 /*====================------------------------------------====================*/
 static void      o___BODY____________________o (void) {;}
 
-char         /*--: establish thorax endpoint -------------[ leaf   [ ------ ]-*/
-yKINE__zero        (int   a_num)
+char         /*--: establish body zero-point -------------[ leaf   [ ------ ]-*/
+yKINE_zero              (double a_x, double a_z, double a_y)
 {
+   myKINE.s_xcenter = a_x;
+   myKINE.s_zcenter = a_z;
+   myKINE.s_ycenter = a_y;
+   return 0;
 }
 
-char         /*--: establish thorax endpoint -------------[ leaf   [ ------ ]-*/
-yKINE__orient      (int   a_num)
+char         /*--: establish body orientation ------------[ leaf   [ ------ ]-*/
+yKINE_orient            (double a_yaw, double a_pitch, double a_roll)
 {
+   myKINE.s_yaw     = a_yaw;
+   myKINE.s_pitch   = a_pitch;
+   myKINE.s_roll    = a_roll;
+   return 0;
 }
 
 
@@ -741,7 +749,7 @@ yKINE__FK_targ     (int a_num, int a_meth)
 static void      o___INVERSE_________________o (void) {;};
 
 char       /*----: set the leg target ----------------------------------------*/
-yKINE__IK_targ     (int a_num, double a_x, double a_z, double a_y)
+yKINE__IK_targ     (int a_leg, double a_x, double a_z, double a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -751,18 +759,18 @@ yKINE__IK_targ     (int a_num, double a_x, double a_z, double a_y)
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_num);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_leg);
    DEBUG_YKINE_CALC   yLOG_double  ("x"         , a_x);
    DEBUG_YKINE_CALC   yLOG_double  ("z"         , a_z);
    DEBUG_YKINE_CALC   yLOG_double  ("y"         , a_y);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0 || a_num > YKINE_MAX_LEGS) {
+   --rce;  if (a_leg < 0 || a_leg > YKINE_MAX_LEGS) {
       DEBUG_YKINE_CALC   yLOG_note    ("leg number is out of range");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(test and set)-------------------*/
-   x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
+   x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);
    /*---(save cums)----------------------*/
    x    =  x_leg [YKINE_TARG].x   =  x_leg [YKINE_TARG].cx  =  a_x;
    z    =  x_leg [YKINE_TARG].z   =  x_leg [YKINE_TARG].cz  =  a_z;
@@ -772,6 +780,87 @@ yKINE__IK_targ     (int a_num, double a_x, double a_z, double a_y)
    /*---(calc basics)--------------------*/
    fl   =  x_leg [YKINE_TARG].sl   =  x_leg [YKINE_TARG].fl   = sqrt  ((x * x) + (z * z) + (y * y));
    DEBUG_YKINE_CALC   yLOG_complex ("basics"   , "%6.3fcv, %6.3fch, %6.1ffl",  cv, ch, fl);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char       /*----: set the leg target ----------------------------------------*/
+yKINE__IK_adapt    (int a_leg)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;      /* return code for errors              */
+   double      x,  y,  z;              /* coordintates                        */
+   double      xz, fl;                 /* xz and xzy plane length             */
+   tSEG       *x_leg       = NULL;
+   double      x_degs      = 0.0;
+   double      x_rads      = 0.0;
+   double      x_dist      = 0.0;
+   double      x_orig      = 0.0;
+   double      x_vert      = 0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(test and set)-------------------*/
+   x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);
+   /*---(zero-point)---------------------*/
+   x    =  x_leg [YKINE_TARG].x   -  myKINE.s_xcenter;
+   z    =  x_leg [YKINE_TARG].z   -  myKINE.s_zcenter;
+   y    =  x_leg [YKINE_TARG].y   -  myKINE.s_ycenter;
+   /*---(yaw)----------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("yaw calcs");
+   x_dist  = sqrt  ((x * x) + (z * z));
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
+   x_rads  = - atan2 (z , x);
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
+   x_rads += (myKINE.s_yaw * DEG2RAD);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_rads", x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_degs", x_degs);
+   x  =   x_dist * cos (x_rads);
+   z  = -(x_dist * sin (x_rads));
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x", x);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new z", z);
+   /*---(rotate)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("rotate calcs");
+   x_dist  = x;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
+   x_rads  = myKINE.s_roll * DEG2RAD;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
+   x_vert  = x_dist * sin (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);
+   x_vert  = y + x_vert;
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);
+   x  = x - (y * sin (x_rads));
+   y  = x_vert * cos (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x", x);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new y", y);
+   /*---(pitch)--------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_note    ("pitch calcs");
+   x_dist  = z;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
+   x_rads  = myKINE.s_pitch * DEG2RAD;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
+   x_degs  = x_rads * RAD2DEG;
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
+   x_vert  = x_dist * sin (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);
+   x_vert  = y + x_vert;
+   DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);
+   z  = z - (y * sin (x_rads));
+   y  = x_vert * cos (x_rads);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new z", z);
+   DEBUG_YKINE_SCRP  yLOG_double  ("new y", y);
+   /*---(save)---------------------------*/
+   x_leg [YKINE_TARG].x   =  x_leg [YKINE_TARG].cx  =  x;
+   x_leg [YKINE_TARG].z   =  x_leg [YKINE_TARG].cz  =  z;
+   x_leg [YKINE_TARG].y   =  x_leg [YKINE_TARG].cy  =  y;
+   x_leg [YKINE_TARG].xz  =  x_leg [YKINE_TARG].cxz = sqrt  ((x * x) + (z * z));
+   x_leg [YKINE_TARG].sl  =  x_leg [YKINE_TARG].fl  = sqrt  ((x * x) + (z * z) + (y * y));
+   DEBUG_YKINE_CALC   yLOG_complex ("adapted"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz , %6.1ffl",  x,  z,  y, xz, fl);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -833,7 +922,7 @@ yKINE__IK_femu     (int a_leg)
 
 
 char       /*----: isolate the leg values ------------------------------------*/
-yKINE__IK_pate     (int a_num)
+yKINE__IK_pate     (int a_leg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -847,15 +936,15 @@ yKINE__IK_pate     (int a_num)
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_num);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_leg);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0 || a_num > YKINE_MAX_LEGS) {
+   --rce;  if (a_leg < 0 || a_leg > YKINE_MAX_LEGS) {
       DEBUG_YKINE_CALC   yLOG_note    ("leg number is out of range");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(test and set)-------------------*/
-   x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
+   x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);
    /*---(patella angle)------------------*/
    dv   =  x_leg [YKINE_LOWR].d;
    sl   =  x_leg [YKINE_LOWR].sl;
@@ -881,7 +970,7 @@ yKINE__IK_pate     (int a_num)
    }
    DEBUG_YKINE_CALC   yLOG_double  ("new d"     , d);
    /*----(save)--------------------------*/
-   rc   = yKINE__pate     (a_num, -d, YKINE_IK);
+   rc   = yKINE__pate     (a_leg, -d, YKINE_IK);
    DEBUG_YKINE_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YKINE_CALC   yLOG_note    ("calc function failed");
@@ -894,7 +983,7 @@ yKINE__IK_pate     (int a_num)
 }
 
 char       /*----: isolate the leg values ------------------------------------*/
-yKINE__IK_tibi     (int a_num)
+yKINE__IK_tibi     (int a_leg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -908,15 +997,15 @@ yKINE__IK_tibi     (int a_num)
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_num);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_leg);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0 || a_num > YKINE_MAX_LEGS) {
+   --rce;  if (a_leg < 0 || a_leg > YKINE_MAX_LEGS) {
       DEBUG_YKINE_CALC   yLOG_note    ("leg number is out of range");
       DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(test and set)-------------------*/
-   x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
+   x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);
    /*---(tibia angle)--------------------*/
    dv   =  x_leg [YKINE_LOWR].d;
    sl   =  x_leg [YKINE_LOWR].sl;
@@ -930,7 +1019,7 @@ yKINE__IK_tibi     (int a_num)
    if (isnan (a))    d = 0.0;
    DEBUG_YKINE_CALC   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*----(save)--------------------------*/
-   rc   = yKINE__tibi     (a_num, 90.0 - d, YKINE_IK);
+   rc   = yKINE__tibi     (a_leg, 90.0 - d, YKINE_IK);
    DEBUG_YKINE_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YKINE_CALC   yLOG_note    ("calc function failed");
@@ -950,61 +1039,74 @@ yKINE__IK_tibi     (int a_num)
 static void      o___MAIN____________________o (void) {;};
 
 char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
-yKINE_forward      (int a_num, double a_femu, double a_pate, double a_tibi)
+yKINE_forward      (int a_leg, double a_femu, double a_pate, double a_tibi)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   yKINE__wipe     (a_num, YKINE_FK);
+   yKINE__wipe     (a_leg, YKINE_FK);
    /*---(fixed body)---------------------*/
-   if (rc >= 0)  rc = yKINE__thor     (a_num);
-   if (rc >= 0)  rc = yKINE__coxa     (a_num);
-   if (rc >= 0)  rc = yKINE__troc     (a_num);
+   if (rc >= 0)  rc = yKINE__thor     (a_leg);
+   if (rc >= 0)  rc = yKINE__coxa     (a_leg);
+   if (rc >= 0)  rc = yKINE__troc     (a_leg);
    /*---(movable)------------------------*/
-   if (rc >= 0)  rc = yKINE__femu     (a_num, a_femu, YKINE_FK);
-   if (rc >= 0)  rc = yKINE__pate     (a_num, a_pate, YKINE_FK);
-   if (rc >= 0)  rc = yKINE__tibi     (a_num, a_tibi, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__femu     (a_leg, a_femu, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__pate     (a_leg, a_pate, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__tibi     (a_leg, a_tibi, YKINE_FK);
    /*---(target setting)-----------------*/
-   if (rc >= 0)  rc = yKINE__FK_targ  (a_num, YKINE_FK);
-   if (rc >= 0)  rc = yKINE__lowr     (a_num, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__FK_targ  (a_leg, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__lowr     (a_leg, YKINE_FK);
    /*---(future)-------------------------*/
-   if (rc >= 0)  rc = yKINE__meta     (a_num);
-   if (rc >= 0)  rc = yKINE__tars     (a_num);
-   if (rc >= 0)  rc = yKINE__foot     (a_num);
+   if (rc >= 0)  rc = yKINE__meta     (a_leg);
+   if (rc >= 0)  rc = yKINE__tars     (a_leg);
+   if (rc >= 0)  rc = yKINE__foot     (a_leg);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
-yKINE_inverse      (int a_num, double a_x, double a_z, double a_y)
+ykine_inverse_detail    (char a_adapt, int a_leg, double a_x, double a_z, double a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   yKINE__wipe     (a_num, YKINE_IK);
+   yKINE__wipe     (a_leg, YKINE_IK);
    /*---(target setting)-----------------*/
-   if (rc >= 0)  rc = yKINE__IK_targ  (a_num, a_x, a_z, a_y);
+   if (rc >= 0)  rc = yKINE__IK_targ  (a_leg, a_x, a_z, a_y);
+   if (rc >= 0 && a_adapt == 'y')  rc = yKINE__IK_adapt (a_leg);
    /*---(fixed body)---------------------*/
-   if (rc >= 0)  rc = yKINE__thor     (a_num);
-   if (rc >= 0)  rc = yKINE__coxa     (a_num);
-   if (rc >= 0)  rc = yKINE__troc     (a_num);
+   if (rc >= 0)  rc = yKINE__thor     (a_leg);
+   if (rc >= 0)  rc = yKINE__coxa     (a_leg);
+   if (rc >= 0)  rc = yKINE__troc     (a_leg);
    /*---(movable)------------------------*/
-   if (rc >= 0)  rc = yKINE__IK_femu  (a_num);
-   if (rc >= 0)  rc = yKINE__lowr     (a_num, YKINE_IK);
-   if (rc >= 0)  rc = yKINE__IK_pate  (a_num);
-   if (rc >= 0)  rc = yKINE__IK_tibi  (a_num);
+   if (rc >= 0)  rc = yKINE__IK_femu  (a_leg);
+   if (rc >= 0)  rc = yKINE__lowr     (a_leg, YKINE_IK);
+   if (rc >= 0)  rc = yKINE__IK_pate  (a_leg);
+   if (rc >= 0)  rc = yKINE__IK_tibi  (a_leg);
    /*---(future)-------------------------*/
-   if (rc >= 0)  rc = yKINE__meta     (a_num);
-   if (rc >= 0)  rc = yKINE__tars     (a_num);
-   if (rc >= 0)  rc = yKINE__foot     (a_num);
+   if (rc >= 0)  rc = yKINE__meta     (a_leg);
+   if (rc >= 0)  rc = yKINE__tars     (a_leg);
+   if (rc >= 0)  rc = yKINE__foot     (a_leg);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
+}
+
+char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
+yKINE_inverse_adapt     (int a_leg, double a_x, double a_z, double a_y)
+{
+   return ykine_inverse_detail ('y', a_leg, a_x, a_z, a_y);
+}
+
+char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
+yKINE_inverse           (int a_leg, double a_x, double a_z, double a_y)
+{
+   return ykine_inverse_detail ('-', a_leg, a_x, a_z, a_y);
 }
 
 

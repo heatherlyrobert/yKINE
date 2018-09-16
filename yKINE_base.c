@@ -202,9 +202,10 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
          sprintf(ykine__unit_answer, "IK %1d/success", a_leg);
       else
          sprintf(ykine__unit_answer, "IK %1d/FAILURE", a_leg);
-   } else if (strcmp(a_question, "IK_angles_OLD") == 0) {
-      sprintf(ykine__unit_answer, "IK %1d/angles    : %8.2fc,%8.2ff,%8.2fp,%8.2ft", 
-            a_leg, ik[a_leg][YKINE_COXA].d, ik[a_leg][YKINE_FEMU].d,
+   } else if (strcmp(a_question, "IK_result"    ) == 0) {
+      sprintf(ykine__unit_answer, "IK-%-2.2s/angles   : %8.1fc, %8.1ff, %8.1fp, %8.1ft", 
+            ik[a_leg][a_seg].n ,
+            ik[a_leg][YKINE_COXA].d, ik[a_leg][YKINE_FEMU].d,
             ik[a_leg][YKINE_PATE].d, ik[a_leg][YKINE_TIBI].d);
    } else if (strcmp(a_question, "IK_lower")  == 0) {
       sprintf(ykine__unit_answer, "IK %1d/lower     : %8.3fp,%8.3ft", 
