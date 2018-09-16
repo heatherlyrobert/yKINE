@@ -660,7 +660,14 @@ ykine__servo_next       (char a_dir, char a_type, double *a, double *b, double *
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_schar   (a_dir);
    /*---(prepare)------------------------*/
+   if (a  != NULL)  *a  = 0.0;
+   if (b  != NULL)  *b  = 0.0;
+   if (c  != NULL)  *c  = 0.0;
+   if (d  != NULL)  *d  = 0.0;
+   /*---(update current)-----------------*/
    DEBUG_YKINE_SCRP   yLOG_schar   (a_dir);
    --rce;  switch (a_dir) {
    case 'H' : s_curr = s_servo->head;  a_dir = 'n';          break;
@@ -688,10 +695,6 @@ ykine__servo_next       (char a_dir, char a_type, double *a, double *b, double *
    /*---(refuse null)--------------------*/
    --rce;  if (s_curr == NULL) {
       s_curr  = NULL;
-      if (a  != NULL)  *a  = 0.0;
-      if (b  != NULL)  *b  = 0.0;
-      if (c  != NULL)  *c  = 0.0;
-      if (d  != NULL)  *d  = 0.0;
       DEBUG_YKINE_SCRP   yLOG_snote   ("no more moves");
       return rce;
    }
@@ -1157,6 +1160,10 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
          sprintf (x_msg, "%1d", g_servo_info [i].count);
          strlcat (ykine__unit_answer, x_msg, LEN_STR);
       }
+   }
+   else if (strcmp (a_question, "current" ) == 0) {
+      if (s_curr == NULL)  sprintf (ykine__unit_answer, "MOVE current   : no current move");
+      else                 sprintf (ykine__unit_answer, "MOVE current   : %2d/%2d %c %-10.10s %8.3lf %8.3lf %8.3lf", s_curr->seq, s_servo->count, s_curr->type, s_curr->label, s_curr->sec_beg, s_curr->sec_end, s_curr->sec_dur);
    }
    /*---(complete)-----------------------*/
    return ykine__unit_answer;

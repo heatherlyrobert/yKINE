@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9n"
-#define     YKINE_VER_TXT   "pulled common login from move cursor functions to simplify"
+#define     YKINE_VER_NUM   "0.9o"
+#define     YKINE_VER_TXT   "unit test created for first, next, prev, and last move cursors"
 
 
 
