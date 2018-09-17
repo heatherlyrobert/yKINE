@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9q"
-#define     YKINE_VER_TXT   "exact positioning logic to support arachne unit tested"
+#define     YKINE_VER_NUM   "0.9r"
+#define     YKINE_VER_TXT   "catch up all unit tests with small changes while coding"
 
 
 

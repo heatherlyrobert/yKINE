@@ -1114,38 +1114,6 @@ yKINE_servo_line         (int a_leg, int a_seg, double *a_x1, double *a_z1, doub
 
 
 /*====================------------------------------------====================*/
-/*===----                       adjusted values                        ----===*/
-/*====================------------------------------------====================*/
-static void      o___ADJUSTED________________o (void) {;}
-
-struct cPOS {
-   /*---(planned angles)-----------------*/
-   double      o_femu;
-   double      o_pate;
-   double      o_tibi;
-   /*---(planned endpoint)---------------*/
-   double      o_x;
-   double      o_z;
-   double      o_y;
-   /*---(revised endpoint)---------------*/
-   double      r_x;
-   double      r_z;
-   double      r_y;
-   /*---(revised angles)-----------------*/
-   double      r_femu;
-   double      r_pate;
-   double      r_tibi;
-   /*---(done)---------------------------*/
-} s_details [4][YKINE_MAX_LEGS][400];
-
-char
-yKINE_panel_details     (int a_panel, int a_begsec)
-{
-
-}
-
-
-/*====================------------------------------------====================*/
 /*===----                       reporting                              ----===*/
 /*====================------------------------------------====================*/
 static void      o___REPORTS_________________o (void) {;}
