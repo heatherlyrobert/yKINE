@@ -314,7 +314,7 @@ ykine_servo_segment     (char *a_char)
     *  ---- = center
     *
     */
-   char       *x_valid     = " femu pate tibi full center pitch yaw roll ";
+   char       *x_valid     = " femu pate tibi full zero pitch yaw roll ";
    char        x_check     [LEN_LABEL];
    char       *p           = NULL;
    if (a_char == NULL)         return -11;

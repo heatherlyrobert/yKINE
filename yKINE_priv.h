@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "0.9p"
-#define     YKINE_VER_TXT   "added IK adapting to body orient/zero logic.  started unit testing."
+#define     YKINE_VER_NUM   "0.9q"
+#define     YKINE_VER_TXT   "exact positioning logic to support arachne unit tested"
 
 
 
@@ -293,6 +293,8 @@ char        ykine_move_delete       (tMOVE *a_move);
 char        ykine_move_clear_servo  (tSERVO *a_servo);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
+char        ykine__exact_find        (tSERVO *a_servo, double a_sec);
+char        ykine__exact_data        (tSERVO *a_servo, double a_sec);
 
 
 char        ykine_parse_read        (void);

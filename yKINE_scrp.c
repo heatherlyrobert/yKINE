@@ -504,7 +504,7 @@ ykine_parse_fields      (void)
       /*---(handle)----------------------*/
       switch (i) {
       case  FIELD_SVO   :  /*---(servo)----*/
-         if (p [0] == '-')  sprintf (x_request, "%c%c.center", p [0], p [1]);
+         if (p [0] == '-')  sprintf (x_request, "%c%c.zero"  , p [0], p [1]);
          else               sprintf (x_request, "%c%c.femu"  , p [0], p [1]);
          myKINE.s_count = ykine_servos (x_request);
          DEBUG_YKINE_SCRP  yLOG_value   ("count"     , myKINE.s_count);
@@ -964,7 +964,7 @@ ykine_scrp_ik           (void)
          return rc;
       }
       /*---(inverse kinematics)----------*/
-      rc = yKINE_inverse  (x_leg, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+      rc = yKINE_inverse_adapt (x_leg, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
       if (rc <  0) {
          DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);

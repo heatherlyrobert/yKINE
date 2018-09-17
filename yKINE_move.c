@@ -475,53 +475,119 @@ ykine_move_clear_servo  (tSERVO *a_servo)
 /*====================------------------------------------====================*/
 static void      o___CURRENT_________________o (void) {;}
 
-char         /*--> set the current move for a servo ------[ ------ [ ------ ]-*/
-yKINE_move_curset        (int a_servo, double a_time)
+char         /*--> identify the current move -------------[ ------ [ ------ ]-*/
+ykine__exact_check       (tMOVE *a_curr, double a_sec)
 {
-   /*---(locals)-----------+-----------+-*/
-   tMOVE      *x_next      = NULL;
-   int         x_curlong   = 0;
-   int         x_beglong   = 0;
-   int         x_endlong   = 0;
+   /*---(locals)-----------+-----+-----+-*/
+   int         x_beg       =    0;
+   int         x_cur       =    0;
+   int         x_end       =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   x_next = g_servo_info [a_servo].head;
-   g_servo_info [a_servo].exact = '-';
-   if (x_next == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no moves for servo");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return -10;
+   if (a_curr == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("null move");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, -2);
+      return -2;
    }
-   x_curlong = round (a_time          * 1000.0);
+   /*---(prepare)------------------------*/
+   x_cur = round (a_sec * 1000.0);
+   x_beg = round (a_curr->sec_beg * 1000.0);
+   x_end = round (a_curr->sec_end * 1000.0);
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_curr->seq);
+   /*---(start time)---------------------*/
+   if (x_cur == x_end && x_end == 0.00) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("start");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return  2;
+   }
+   /*---(check not yet)------------------*/
+   if (x_cur >  x_end) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("not yet");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return  1;
+   }
+   /*---(check missed)-------------------*/
+   if (x_cur <= x_beg) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("too far");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return -1;
+   }
+   /*---(exactly)------------------------*/
+   if (x_cur == x_end) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("exactly");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return  2;
+   }
+   /*---(found it)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_snote   ("in range");
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> identify the current move -------------[ ------ [ ------ ]-*/
+ykine__exact_find       (tSERVO *a_servo, double a_sec)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tMOVE      *x_next      = NULL;
+   int         x_seq       =   -1;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   a_servo->exact = '-';
+   a_servo->deg   = 0.0;
+   a_servo->xexp  = 0.0;
+   a_servo->zexp  = 0.0;
+   a_servo->yexp  = 0.0;
+   if (a_servo->curr == NULL)  x_next = a_servo->head;
+   else                        x_next = a_servo->curr;
    /*---(walk thru moves)----------------*/
    while (x_next != NULL) {
-      x_beglong = round (x_next->sec_beg * 1000.0);
-      x_endlong = round (x_next->sec_end * 1000.0);
-      DEBUG_YKINE_SCRP   yLOG_sint    (x_next->seq);
-      if (x_curlong < x_beglong) {
-         DEBUG_YKINE_SCRP   yLOG_snote   ("too far");
-         DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-         return -11;
+      rc = ykine__exact_check (x_next, a_sec);
+      if (rc == 0 || rc == 2) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("success, save values");
+         a_servo->curr  = x_next;
+         if (rc == 2)  a_servo->exact = 'y';
+         else          a_servo->exact = 'n';
+         DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+         return 0;
       }
-      if (x_curlong >= x_endlong) {
-         x_next = x_next->s_next;
-         continue;
-      }
-      DEBUG_YKINE_SCRP   yLOG_snote   ("found it");
-      g_servo_info [a_servo].curr = x_next;
-      g_servo_info [a_servo].exact = 'y';
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return 0;
+      if      (rc ==  1)   x_next = x_next->s_next;
+      else if (rc == -1)   x_next = x_next->s_prev;
    }
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_snote   ("failed");
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return -12;
+   DEBUG_YKINE_SCRP   yLOG_note    ("failed, current move never found");
+   DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, --rce);
+   return rce;
+}
+
+double
+ykine__exact_calc        (double a_beg, double a_end, double a_pct)
+{
+   double      x_range     = 0.0;
+   double      x_inc       = 0.0;
+   double      x_pos       = 0.0;
+   if (a_beg <= a_end) {
+      x_range = a_end - a_beg;
+      x_inc   = x_range * a_pct;
+      x_pos   = a_beg + x_inc;
+   } else {
+      x_range = a_beg - a_end;
+      x_inc   = x_range * a_pct;
+      x_pos   = a_beg - x_inc;
+   }
+   DEBUG_YKINE_SCRP   yLOG_double  ("a_beg"     , a_beg);
+   DEBUG_YKINE_SCRP   yLOG_double  ("a_end"     , a_end);
+   DEBUG_YKINE_SCRP   yLOG_double  ("x_range"   , x_range);
+   DEBUG_YKINE_SCRP   yLOG_double  ("x_inc"     , x_inc);
+   DEBUG_YKINE_SCRP   yLOG_double  ("x_pos"     , x_pos);
+   return x_pos;
 }
 
 char         /*--> calc the current deg for a servo ------[ ------ [ ------ ]-*/
-yKINE_move_curone        (int a_servo, double a_time)
+ykine__exact_data        (tSERVO *a_servo, double a_sec)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
@@ -531,116 +597,129 @@ yKINE_move_curone        (int a_servo, double a_time)
    double      x_end       = 0.0;
    double      x_pct       = 0.0;
    double      x_range     = 0.0;
-   double      x_pos       = 0.0;
-   int         x_curlong   = 0;
-   int         x_beglong   = 0;
-   int         x_endlong   = 0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_info    ("label"     , g_servo_info [a_servo].label);
-   g_servo_info [a_servo].exact = '-';
-   /*---(check for correct current)------*/
-   if        (g_servo_info [a_servo].curr == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("servo current is not set");
-      rc = yKINE_move_curset (a_servo, a_time);
-      DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
+   /*---(verify current)-----------------*/
+   rc = ykine__exact_find  (a_servo, a_sec);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("no valid move for time requested");
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   /*---(check return code)--------------*/
-   if      (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
-   /*---(check for right times)----------*/
-   x_curr  = g_servo_info [a_servo].curr;
-   x_curlong = round (a_time          * 1000.0);
-   x_beglong = round (x_curr->sec_beg * 1000.0);
-   x_endlong = round (x_curr->sec_end * 1000.0);
-   /*> printf ("\na_time = %8.5lf, sec_end = %8.5lf, sec_end = %8.5lf\n", a_time, x_curr->sec_beg, x_curr->sec_end);   <* 
-    *> printf (  "a_time = %8d, sec_beg %8d, sec_end %8d\n", x_curlong, x_beglong, x_endlong);                         <*/
-   if        (x_curlong < x_beglong) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("time is before current move beg");
-      rc = yKINE_move_curset (a_servo, a_time);
-      DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
-      /*> printf ("before\n");                                                        <*/
-   } else if (x_curlong >= x_endlong) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("time is on or after current move end");
-      rc = yKINE_move_curset (a_servo, a_time);
-      DEBUG_YKINE_SCRP   yLOG_value   ("rc"        , rc);
-      /*> printf ("on-or-after\n");                                                   <*/
-   }
-   /*---(check return code)--------------*/
-   if      (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
-   x_curr  = g_servo_info [a_servo].curr;
-   x_curlong = round (a_time          * 1000.0);
-   x_beglong = round (x_curr->sec_beg * 1000.0);
-   x_endlong = round (x_curr->sec_end * 1000.0);
-   /*> printf ("\na_time = %8.5lf, sec_end = %8.5lf, sec_end = %8.5lf\n", a_time, x_curr->sec_beg, x_curr->sec_end);   <* 
-    *> printf (  "a_time = %8d, sec_beg %8d, sec_end %8d\n", x_curlong, x_beglong, x_endlong);                         <*/
-   /*---(calc degrees)-------------------*/
-   DEBUG_YKINE_SCRP   yLOG_double  ("sec_beg"   , x_curr->sec_beg);
-   DEBUG_YKINE_SCRP   yLOG_double  ("sec_end"   , x_curr->sec_end);
+   /*---(prepare)------------------------*/
+   x_curr  = a_servo->curr;
+   /*---(calc percent)-------------------*/
    x_beg   = x_curr->sec_beg;
    x_end   = x_curr->sec_end;
-   DEBUG_YKINE_SCRP   yLOG_double  ("deg_beg"   , x_curr->deg_beg);
-   DEBUG_YKINE_SCRP   yLOG_double  ("deg_end"   , x_curr->deg_end);
-   x_pct   = (a_time - x_beg) / (x_end - x_beg);
-   if (x_end == 0.0)  x_pct = 0.0;
-   DEBUG_YKINE_SCRP   yLOG_double  ("x_pct"     , x_pct);
-   x_range = x_curr->deg_end - x_curr->deg_beg;
+   x_range = x_end - x_beg;
+   if (x_range == 0.0)  x_pct   = 0.0;
+   else                 x_pct   = (a_sec - x_beg) / x_range;
+   DEBUG_YKINE_SCRP   yLOG_double  ("x_beg"     , x_beg);
+   DEBUG_YKINE_SCRP   yLOG_double  ("x_end"     , x_end);
    DEBUG_YKINE_SCRP   yLOG_double  ("x_range"   , x_range);
-   x_pos   = x_curr->deg_beg + (x_range * x_pct);
-   DEBUG_YKINE_SCRP   yLOG_double  ("x_pos"     , x_pos);
-   g_servo_info [a_servo].deg = x_pos;
+   DEBUG_YKINE_SCRP   yLOG_double  ("x_pct"     , x_pct);
+   /*---(calc degrees)-------------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("calculate degrees");
+   a_servo->deg = ykine__exact_calc (x_curr->deg_beg, x_curr->deg_end, x_pct);
    /*---(calc position)------------------*/
    if (x_curr->s_prev == NULL) {
-      g_servo_info [a_servo].xexp  = x_curr->x_pos;
-      g_servo_info [a_servo].zexp  = x_curr->z_pos;
-      g_servo_info [a_servo].yexp  = x_curr->y_pos;
+      DEBUG_YKINE_SCRP   yLOG_note    ("exact start match, just copy coordinates");
+      a_servo->xexp  = x_curr->x_pos;
+      a_servo->zexp  = x_curr->z_pos;
+      a_servo->yexp  = x_curr->y_pos;
    } else {
-      x_range = x_curr->x_pos - x_curr->s_prev->x_pos;
-      g_servo_info [a_servo].xexp = x_curr->s_prev->x_pos + (x_range * x_pct);
-      x_range = x_curr->z_pos - x_curr->s_prev->z_pos;
-      g_servo_info [a_servo].zexp = x_curr->s_prev->z_pos + (x_range * x_pct);
-      x_range = x_curr->y_pos - x_curr->s_prev->y_pos;
-      g_servo_info [a_servo].yexp = x_curr->s_prev->y_pos + (x_range * x_pct);
+      DEBUG_YKINE_SCRP   yLOG_note    ("calculate x-pos");
+      a_servo->xexp = ykine__exact_calc (x_curr->s_prev->x_pos, x_curr->x_pos, x_pct);
+      /*> x_range = x_curr->x_pos - x_curr->s_prev->x_pos;                            <* 
+       *> a_servo->xexp = x_curr->s_prev->x_pos + (x_range * x_pct);                  <*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("calculate z-pos");
+      a_servo->zexp = ykine__exact_calc (x_curr->s_prev->z_pos, x_curr->z_pos, x_pct);
+      /*> x_range = x_curr->z_pos - x_curr->s_prev->z_pos;                            <* 
+       *> a_servo->zexp = x_curr->s_prev->z_pos + (x_range * x_pct);                  <*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("calculate y-pos");
+      a_servo->yexp = ykine__exact_calc (x_curr->s_prev->y_pos, x_curr->y_pos, x_pct);
+      /*> x_range = x_curr->y_pos - x_curr->s_prev->y_pos;                            <* 
+       *> a_servo->yexp = x_curr->s_prev->y_pos + (x_range * x_pct);                  <*/
    }
-   /*> printf ("%8.3lf  %2d  %-10s  %8.2lf  %8.2lf  %8.2lf\n", a_time, a_servo,         <* 
-    *>       x_curr->label,                                                             <* 
-    *>    g_servo_info [a_servo].xexp, g_servo_info [a_servo].zexp, g_servo_info [a_servo].yexp);   <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char         /*--> calc current move/deg for a leg -------[ ------ [ ------ ]-*/
-yKINE_move_curleg        (double a_secs, int a_leg)
+yKINE_exact_leg          (double a_sec, int a_leg)
 {
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
-   char        rc          =   0;
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;          /* return code for errors         */
+   char        rc          =    0;
+   int         i           =    0;
+   tSERVO     *x_servo     = NULL;
    /*---(header)-------------------------*/
-   rc = yKINE_move_curone  (a_leg * 3 + 0, a_secs);
-   rc = yKINE_move_curone  (a_leg * 3 + 1, a_secs);
-   rc = yKINE_move_curone  (a_leg * 3 + 2, a_secs);
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(walk all segs)------------------*/
+   for (i = YKINE_FEMU; i <= YKINE_TIBI; ++i) {
+      x_servo   = ykine_servo_pointer (a_leg, i);
+      DEBUG_YKINE_SCRP   yLOG_point   ("x_servo"   , x_servo);
+      if (x_servo == NULL)   continue;
+      rc = ykine__exact_data  (x_servo, a_sec);
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char         /*--> calc current move/deg for all servos --[ ------ [ ------ ]-*/
-yKINE_move_curall        (double a_time)
+yKINE_exact_all          (double a_sec)
 {
    /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
    char        rc          =   0;
    int         i           =   0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   for (i = 0; i < YKINE_MAX_SERVO; ++i) {
-      if (strcmp (g_servo_info [i].label, "end-of-list") == 0)  break;
-      rc = yKINE_move_curone  (i, a_time);
+   for (i = 0; i < g_nservo; ++i) {
+      rc = yKINE_exact_leg    (i, a_sec);
+      if (rc < 0)  continue;
+      rc = ykine__exact_data  (i, a_sec);
    }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> calc the current deg for a servo ------[ ------ [ ------ ]-*/
+yKINE_exact              (int a_leg, int a_seg, double a_sec, double *a_deg, double *a_x, double *a_z, double *a_y)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;          /* return code for errors         */
+   char        rc          =    0;
+   int         i           =    0;
+   tSERVO     *x_servo     = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   if (a_deg != NULL)  *a_deg = 0.0;
+   if (a_x   != NULL)  *a_x   = 0.0;
+   if (a_z   != NULL)  *a_z   = 0.0;
+   if (a_y   != NULL)  *a_y   = 0.0;
+   /*---(get servo)----------------------*/
+   x_servo   = ykine_servo_pointer (a_leg, a_seg);
+   DEBUG_YKINE_SCRP   yLOG_point   ("x_servo"   , x_servo);
+   --rce;  if (x_servo == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get data)-----------------------*/
+   rc = ykine__exact_data  (x_servo, a_sec);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(return data)--------------------*/
+   if (a_deg != NULL)  *a_deg = x_servo->deg;
+   if (a_x   != NULL)  *a_x   = x_servo->xexp;
+   if (a_z   != NULL)  *a_z   = x_servo->zexp;
+   if (a_y   != NULL)  *a_y   = x_servo->yexp;
+   /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -920,7 +999,7 @@ yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_di
    }
    x_leg = a_leg * 3;
    DEBUG_YKINE_SCRP   yLOG_value   ("x_leg"     , x_leg);
-   rc1 = yKINE_move_curleg    (a_sec, a_leg);
+   rc1 = yKINE_exact_leg      (a_sec, a_leg);
    rc2 = yKINE_forward  (a_leg, g_servo_info [x_leg + 0].deg, g_servo_info [x_leg + 1].deg, g_servo_info [x_leg + 2].deg);
    DEBUG_YKINE_SCRP   yLOG_value   ("rc2"       , rc2);
    rc3 = yKINE_endpoint (a_leg, YKINE_TIBI, YKINE_FK, NULL, NULL, &x_xpos, &x_zpos, &x_ypos);
@@ -1170,6 +1249,9 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    else if (strcmp (a_question, "current" ) == 0) {
       if (s_curr == NULL)  sprintf (ykine__unit_answer, "MOVE current   : no current move");
       else                 sprintf (ykine__unit_answer, "MOVE current   : %2d/%2d %c %-10.10s %8.3lf %8.3lf %8.3lf", s_curr->seq, s_servo->count, s_curr->type, s_curr->label, s_curr->sec_beg, s_curr->sec_end, s_curr->sec_dur);
+   }
+   else if (strcmp (a_question, "exact"   ) == 0) {
+      sprintf (ykine__unit_answer, "MOVE exact     : %c %8.1lfd, %8.1lfx, %8.1lfz, %8.1lfy", x_servo->exact, x_servo->deg, x_servo->xexp, x_servo->zexp, x_servo->yexp);
    }
    /*---(complete)-----------------------*/
    return ykine__unit_answer;

@@ -28,7 +28,7 @@ yKINE_phys_flat    (char a_meth, double a_sec, double *a_lowest, int *a_count)
       x_legnum = i * 3;
       if (x_legnum + 2 >= g_nservo) break;
       /*> printf ("   leg = %d, servo = %d\n", i, x_legnum);                          <*/
-      yKINE_move_curleg (a_sec, i);
+      yKINE_exact_leg   (a_sec, i);
       yKINE_forward     (i, g_servo_info [x_legnum + 0].deg, g_servo_info [x_legnum + 1].deg, g_servo_info [x_legnum + 2].deg);
       /*---(check for new lowest)--------*/
       /*> printf ("   TIBI.y  = %8.1lf, x_lowest = %8.1lf, x_count = %2d, x_forgive = %8.1lf\n", x_leg [YKINE_TIBI].y, x_lowest, x_count, x_forgive);   <*/

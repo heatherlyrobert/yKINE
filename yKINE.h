@@ -332,7 +332,9 @@ char        yKINE_servo        (char *a_source);
 char        yKINE_script       (double *a_len);
 
 
-char        yKINE_move_curall  (double  a_time);
+char        yKINE_exact_all          (double  a_time);
+char        yKINE_exact              (int a_leg, int a_seg, double a_sec, double *a_deg, double *a_x, double *a_z, double *a_y);
+
 char        yKINE_move_first         (int a_leg, int a_seg, double *a_sec, double *a_deg);
 char        yKINE_move_next          (double *a_sec  , double *a_deg);
 char        yKINE_move_prev          (double *a_sec  , double *a_deg);
