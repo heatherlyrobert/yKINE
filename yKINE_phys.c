@@ -6,7 +6,7 @@
 
 
 /*> char                                                                                                                                                          <* 
- *> yKINE_phys_flat    (char a_meth, double a_sec, double *a_lowest, int *a_count)                                                                                <* 
+ *> yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count)                                                                                <* 
  *> {                                                                                                                                                             <* 
  *>    /+---(locals)-----------+-----------+-+/                                                                                                                   <* 
  *>    int         i           = 0;                                                                                                                               <* 

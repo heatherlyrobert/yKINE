@@ -58,15 +58,15 @@ static void      o___STATIC__________________o (void) {;};
 char*    yKINE_legtwo       (int a_leg)    { return g_leg_data [a_leg].two;  }
 char*    yKINE_legcaps      (int a_leg)    { return g_leg_data [a_leg].caps; }
 char*    yKINE_legfull      (int a_leg)    { return g_leg_data [a_leg].full; }
-double   yKINE_legdeg       (int a_leg)    { return g_leg_data [a_leg].deg;  }
+float    yKINE_legdeg       (int a_leg)    { return g_leg_data [a_leg].deg;  }
 
 char*    yKINE_segfour      (int a_seg)    { return g_seg_data [a_seg].four; }
 char*    yKINE_segcaps      (int a_seg)    { return g_seg_data [a_seg].caps; }
 char*    yKINE_segfull      (int a_seg)    { return g_seg_data [a_seg].full; }
-double   yKINE_seglen       (int a_seg)    { return g_seg_data [a_seg].len;  }
-double   yKINE_segmin       (int a_seg)    { return g_seg_data [a_seg].min;  }
-double   yKINE_segattn      (int a_seg)    { return g_seg_data [a_seg].attn; }
-double   yKINE_segmax       (int a_seg)    { return g_seg_data [a_seg].max;  }
+float    yKINE_seglen       (int a_seg)    { return g_seg_data [a_seg].len;  }
+float    yKINE_segmin       (int a_seg)    { return g_seg_data [a_seg].min;  }
+float    yKINE_segattn      (int a_seg)    { return g_seg_data [a_seg].attn; }
+float    yKINE_segmax       (int a_seg)    { return g_seg_data [a_seg].max;  }
 
 
 
@@ -76,7 +76,7 @@ double   yKINE_segmax       (int a_seg)    { return g_seg_data [a_seg].max;  }
 static void      o___DYNAMIC_________________o (void) {;};
 
 char
-yKINE_endpoint     (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+yKINE_endpoint     (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -97,7 +97,7 @@ yKINE_endpoint     (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_l
 }
 
 char
-yKINE_segment      (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+yKINE_segment      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -118,7 +118,7 @@ yKINE_segment      (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_l
 }
 
 char
-yKINE_angle        (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_len, double *a_v, double *a_h)
+yKINE_angle        (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_v, float *a_h)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -138,7 +138,7 @@ yKINE_angle        (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_l
 }
 
 char
-yKINE_enddiff      (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+yKINE_enddiff      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -160,7 +160,7 @@ yKINE_enddiff      (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_l
 }
 
 char
-yKINE_segdiff      (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_len, double *a_x, double *a_z, double *a_y)
+yKINE_segdiff      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -182,7 +182,7 @@ yKINE_segdiff      (int a_leg, int a_seg, int a_meth, double *a_deg, double *a_l
 }
 
 char
-yKINE_angles       (int a_leg, int a_meth, double *a_coxa, double *a_femu, double *a_pate, double *a_tibi)
+yKINE_angles       (int a_leg, int a_meth, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -209,9 +209,9 @@ static void      o___SETTERS_________________o (void) {;};
 
 char       /*----: unit testing setter for unit testing ----------------------*/
 yKINE__setlen      (
-      double a_thor, double a_coxa, double a_troc,
-      double a_femu, double a_pate, double a_tibi,
-      double a_meta, double a_tars, double a_foot)
+      float a_thor, float a_coxa, float a_troc,
+      float a_femu, float a_pate, float a_tibi,
+      float a_meta, float a_tars, float a_foot)
 {
    int i = 0;
    for (i = 0; i < YKINE_MAX_LEGS; ++i) {
@@ -229,7 +229,7 @@ yKINE__setlen      (
 }
 
 char       /*----: unit testing setter for unit testing ----------------------*/
-yKINE__setter      (char *a_request, int a_leg, int a_seg, double a_value)
+yKINE__setter      (char *a_request, int a_leg, int a_seg, float a_value)
 {
    char        rce         = -11;
    /*---(defense)-----------------------------------------*/
@@ -257,7 +257,7 @@ yKINE__setter      (char *a_request, int a_leg, int a_seg, double a_value)
 static void      o___OPENGL__________________o (void) {;};
 
 char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
-yKINE_opengl       (int a_leg, int a_seg, double a_deg, double a_x, double a_z, double a_y, double a_len)
+yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
 {
    /*---(locals)-----------+-----------+-*/
    double      x_len       = 0.0;

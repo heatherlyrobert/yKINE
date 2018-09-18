@@ -476,7 +476,7 @@ ykine_move_clear_servo  (tSERVO *a_servo)
 static void      o___CURRENT_________________o (void) {;}
 
 char         /*--> identify the current move -------------[ ------ [ ------ ]-*/
-ykine__exact_check       (tMOVE *a_curr, double a_sec)
+ykine__exact_check       (tMOVE *a_curr, float a_sec)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         x_beg       =    0;
@@ -526,7 +526,7 @@ ykine__exact_check       (tMOVE *a_curr, double a_sec)
 }
 
 char         /*--> identify the current move -------------[ ------ [ ------ ]-*/
-ykine__exact_find       (tSERVO *a_servo, double a_sec)
+ykine__exact_find       (tSERVO *a_servo, float a_sec)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -563,8 +563,8 @@ ykine__exact_find       (tSERVO *a_servo, double a_sec)
    return rce;
 }
 
-double
-ykine__exact_calc        (double a_beg, double a_end, double a_pct)
+float
+ykine__exact_calc        (float a_beg, float a_end, float a_pct)
 {
    double      x_range     = 0.0;
    double      x_inc       = 0.0;
@@ -587,7 +587,7 @@ ykine__exact_calc        (double a_beg, double a_end, double a_pct)
 }
 
 char         /*--> calc the current deg for a servo ------[ ------ [ ------ ]-*/
-ykine__exact_data        (tSERVO *a_servo, double a_sec)
+ykine__exact_data        (tSERVO *a_servo, float a_sec)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
@@ -647,7 +647,7 @@ ykine__exact_data        (tSERVO *a_servo, double a_sec)
 }
 
 /*> char         /+--> calc current move/deg for a leg -------[ ------ [ ------ ]-+/   <* 
- *> yKINE_exact_leg          (double a_sec, int a_leg)                                 <* 
+ *> yKINE_exact_leg          (float a_sec, int a_leg)                                 <* 
  *> {                                                                                  <* 
  *>    /+---(locals)-----------+-----+-----+-+/                                        <* 
  *>    char        rce         =  -10;          /+ return code for errors         +/   <* 
@@ -669,7 +669,7 @@ ykine__exact_data        (tSERVO *a_servo, double a_sec)
  *> }                                                                                  <*/
 
 char         /*--> calc current move/deg for all servos --[ ------ [ ------ ]-*/
-yKINE_exact_all          (double a_sec)
+yKINE_exact_all          (float a_sec)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =    0;
@@ -689,7 +689,7 @@ yKINE_exact_all          (double a_sec)
 }
 
 char         /*--> calc the current deg for a servo ------[ ------ [ ------ ]-*/
-yKINE_exact              (int a_leg, int a_seg, double *a_deg, double *a_x, double *a_z, double *a_y)
+yKINE_exact              (int a_leg, int a_seg, float *a_deg, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;          /* return code for errors         */
@@ -731,7 +731,7 @@ static tSERVO  *s_servo = NULL;
 static tMOVE   *s_curr  = NULL;
 
 char
-ykine__servo_next       (char a_dir, char a_type, double *a, double *b, double *c, double *d)
+ykine__servo_next       (char a_dir, char a_type, float *a, float *b, float *c, float *d)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -798,7 +798,7 @@ ykine__servo_next       (char a_dir, char a_type, double *a, double *b, double *
 }
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_zero_first        (double *a_sec, double *a_x, double *a_z, double *a_y)
+yKINE_zero_first        (float *a_sec, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -100;
@@ -824,7 +824,7 @@ yKINE_zero_first        (double *a_sec, double *a_x, double *a_z, double *a_y)
 }
 
 char         /*--> retrieve the next move ----------------[ ------ [ ------ ]-*/
-yKINE_zero_next          (double *a_sec, double *a_x, double *a_z, double *a_y)
+yKINE_zero_next          (float *a_sec, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =    0;
@@ -843,7 +843,7 @@ yKINE_zero_next          (double *a_sec, double *a_x, double *a_z, double *a_y)
 }
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_move_first         (int a_leg, int a_seg, double *a_sec, double *a_deg)
+yKINE_move_first         (int a_leg, int a_seg, float *a_sec, float *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -100;
@@ -869,7 +869,7 @@ yKINE_move_first         (int a_leg, int a_seg, double *a_sec, double *a_deg)
 }
 
 char         /*--> retrieve the next move ----------------[ ------ [ ------ ]-*/
-yKINE_move_next          (double *a_sec, double *a_deg)
+yKINE_move_next          (float *a_sec, float *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =    0;
@@ -888,7 +888,7 @@ yKINE_move_next          (double *a_sec, double *a_deg)
 }
 
 char         /*--> retrieve the prev move ----------------[ ------ [ ------ ]-*/
-yKINE_move_prev          (double *a_sec, double *a_deg)
+yKINE_move_prev          (float *a_sec, float *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =    0;
@@ -906,7 +906,7 @@ yKINE_move_prev          (double *a_sec, double *a_deg)
 }
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_move_last          (int a_leg, int a_seg, double *a_sec, double *a_deg)
+yKINE_move_last          (int a_leg, int a_seg, float *a_sec, float *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -100;
@@ -932,7 +932,7 @@ yKINE_move_last          (int a_leg, int a_seg, double *a_sec, double *a_deg)
 }
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_move_last_servo    (int a_servo, double *a_sec, double *a_deg)
+yKINE_move_last_servo    (int a_servo, float *a_sec, float *a_deg)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -100;
@@ -958,7 +958,7 @@ yKINE_move_last_servo    (int a_servo, double *a_sec, double *a_deg)
 }
 
 char         /*--> retrieve data about current -----------[ ------ [ ------ ]-*/
-yKINE_move_curdata       (double *a_x, double *a_z, double *a_y)
+yKINE_move_curdata       (float *a_x, float *a_z, float *a_y)
 {
    if (s_curr == NULL)   return -1;
    if (a_x != NULL)  *a_x = s_curr->x_pos;
@@ -968,7 +968,7 @@ yKINE_move_curdata       (double *a_x, double *a_z, double *a_y)
 }
 
 /*> char         /+--> retrieve an exact place in time -------[ ------ [ ------ ]-+/                                                                                                      <* 
- *> yKINE_move_exact         (double a_sec, int a_leg, double *a_diffx, double *a_diffz, double *a_diffy, double *a_y)                                                                    <* 
+ *> yKINE_move_exact         (float a_sec, int a_leg, float *a_diffx, float *a_diffz, float *a_diffy, float *a_y)                                                                    <* 
  *> {                                                                                                                                                                                     <* 
  *>    char        rc1         = 0;                                                                                                                                                       <* 
  *>    char        rc2         = 0;                                                                                                                                                       <* 
@@ -1020,7 +1020,7 @@ yKINE_move_curdata       (double *a_x, double *a_z, double *a_y)
  *> }                                                                                                                                                                                     <*/
 
 char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
-yKINE_servo_deg          (int a_leg, int a_seg, double *a_deg)
+yKINE_servo_deg          (int a_leg, int a_seg, float *a_deg)
 {
    tSERVO     *x_servo     = NULL;
    double      x_deg       = 0.0;
@@ -1040,7 +1040,7 @@ yKINE_servo_deg          (int a_leg, int a_seg, double *a_deg)
 }
 
 char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
-yKINE_zero_pos           (double *a_x, double *a_z, double *a_y)
+yKINE_zero_pos           (float *a_x, float *a_z, float *a_y)
 {
    tSERVO     *x_servo     = NULL;
    x_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
@@ -1058,7 +1058,7 @@ yKINE_zero_pos           (double *a_x, double *a_z, double *a_y)
 }
 
 char         /*--> get the current details for servo -----[ ------ [ ------ ]-*/
-yKINE_servo_move         (int a_leg, int a_seg, char *a_label, double *a_secb, double *a_sece, double *a_dur , double *a_degb, double *a_dege, int *a_seq , int *a_line)
+yKINE_servo_move         (int a_leg, int a_seg, char *a_label, float *a_secb, float *a_sece, float *a_dur , float *a_degb, float *a_dege, int *a_seq , int *a_line)
 {
    int         x_servo     = 0;
    double      x_deg       = 0.0;
@@ -1079,7 +1079,7 @@ yKINE_servo_move         (int a_leg, int a_seg, char *a_label, double *a_secb, d
 }
 
 char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
-yKINE_servo_line         (int a_leg, int a_seg, double *a_x1, double *a_z1, double *a_y1, double *a_x2, double *a_z2, double *a_y2)
+yKINE_servo_line         (int a_leg, int a_seg, float *a_x1, float *a_z1, float *a_y1, float *a_x2, float *a_z2, float *a_y2)
 {
    int         x_servo     = 0;
    double      x_deg       = 0.0;

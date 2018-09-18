@@ -131,37 +131,37 @@ yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_typ
    return 0;
 }
 
-char       /*----: change the center of gravity ------------------------------*/
-yKINE_center       (double a_x, double a_z, double a_y)
-{
-   /*---(locals)-----------+-----------+-*/
-   int         x_legnum = 0;              /* iterator         */
-   tSEG       *x_leg       = NULL;
-   int         i           =   0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_CALC   yLOG_double  ("a_x"       , a_x);
-   DEBUG_YKINE_CALC   yLOG_double  ("a_z"       , a_z);
-   DEBUG_YKINE_CALC   yLOG_double  ("a_y"       , a_y);
-   /*---(kinematics)---------------------*/
-   for (x_legnum = 0; x_legnum < YKINE_MAX_LEGS; ++x_legnum) {
-      DEBUG_YKINE_CALC   yLOG_value   ("legnum"    , x_legnum);
-      for (i = 0; i < 2; ++i) {
-         DEBUG_YKINE_CALC   yLOG_value   ("fk/ik"     , i);
-         /*---(test and set)----------------*/
-         if (i == 0)  x_leg = ((tSEG *) fk) + (x_legnum * YKINE_MAX_SEGS);
-         if (i == 1)  x_leg = ((tSEG *) ik) + (x_legnum * YKINE_MAX_SEGS);
-         /*---(save basics)-----------------*/
-         x_leg [YKINE_CORE].cx   =  x_leg [YKINE_CORE].x   = a_x;
-         x_leg [YKINE_CORE].cz   =  x_leg [YKINE_CORE].z   = a_z;
-         x_leg [YKINE_CORE].cy   =  x_leg [YKINE_CORE].y   = a_y;
-         /*---(done)------------------------*/
-      }
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char       /+----: change the center of gravity ------------------------------+/   <* 
+ *> yKINE_center       (double a_x, double a_z, double a_y)                            <* 
+ *> {                                                                                  <* 
+ *>    /+---(locals)-----------+-----------+-+/                                        <* 
+ *>    int         x_legnum = 0;              /+ iterator         +/                   <* 
+ *>    tSEG       *x_leg       = NULL;                                                 <* 
+ *>    int         i           =   0;                                                  <* 
+ *>    /+---(header)-------------------------+/                                        <* 
+ *>    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);                                 <* 
+ *>    DEBUG_YKINE_CALC   yLOG_double  ("a_x"       , a_x);                            <* 
+ *>    DEBUG_YKINE_CALC   yLOG_double  ("a_z"       , a_z);                            <* 
+ *>    DEBUG_YKINE_CALC   yLOG_double  ("a_y"       , a_y);                            <* 
+ *>    /+---(kinematics)---------------------+/                                        <* 
+ *>    for (x_legnum = 0; x_legnum < YKINE_MAX_LEGS; ++x_legnum) {                     <* 
+ *>       DEBUG_YKINE_CALC   yLOG_value   ("legnum"    , x_legnum);                    <* 
+ *>       for (i = 0; i < 2; ++i) {                                                    <* 
+ *>          DEBUG_YKINE_CALC   yLOG_value   ("fk/ik"     , i);                        <* 
+ *>          /+---(test and set)----------------+/                                     <* 
+ *>          if (i == 0)  x_leg = ((tSEG *) fk) + (x_legnum * YKINE_MAX_SEGS);         <* 
+ *>          if (i == 1)  x_leg = ((tSEG *) ik) + (x_legnum * YKINE_MAX_SEGS);         <* 
+ *>          /+---(save basics)-----------------+/                                     <* 
+ *>          x_leg [YKINE_CORE].cx   =  x_leg [YKINE_CORE].x   = a_x;                  <* 
+ *>          x_leg [YKINE_CORE].cz   =  x_leg [YKINE_CORE].z   = a_z;                  <* 
+ *>          x_leg [YKINE_CORE].cy   =  x_leg [YKINE_CORE].y   = a_y;                  <* 
+ *>          /+---(done)------------------------+/                                     <* 
+ *>       }                                                                            <* 
+ *>    }                                                                               <* 
+ *>    /+---(complete)-----------------------+/                                        <* 
+ *>    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);                                 <* 
+ *>    return 0;                                                                       <* 
+ *> }                                                                                  <*/
 
 
 /*====================------------------------------------====================*/

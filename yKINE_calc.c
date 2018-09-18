@@ -4,8 +4,8 @@
 #include    "yKINE.h"
 #include    "yKINE_priv.h"
 
-const    double   DEG2RAD   = M_PI / 180.0;
-const    double   RAD2DEG   = 180.0 / M_PI;
+const    float    DEG2RAD   = M_PI / 180.0;
+const    float    RAD2DEG   = 180.0 / M_PI;
 
 
 char       /*----: clear most recent kinematics working data -----------------*/
@@ -68,7 +68,7 @@ yKINE__wipe        (int  a_leg, int a_meth)
 static void      o___BODY____________________o (void) {;}
 
 char         /*--: establish body zero-point -------------[ leaf   [ ------ ]-*/
-yKINE_zero              (double a_x, double a_z, double a_y)
+yKINE_zero              (float a_x, float a_z, float a_y)
 {
    myKINE.s_xcenter = a_x;
    myKINE.s_zcenter = a_z;
@@ -77,7 +77,7 @@ yKINE_zero              (double a_x, double a_z, double a_y)
 }
 
 char         /*--: establish body orientation ------------[ leaf   [ ------ ]-*/
-yKINE_orient            (double a_yaw, double a_pitch, double a_roll)
+yKINE_orient            (float a_yaw, float a_pitch, float a_roll)
 {
    myKINE.s_yaw     = a_yaw;
    myKINE.s_pitch   = a_pitch;
@@ -271,7 +271,7 @@ static void      o___DRIVERS_________________o (void) {;}
 
 
 char
-yKINE__femu        (int  a_num, double a_deg, int a_meth)
+yKINE__femu        (int  a_num, float a_deg, int a_meth)
 {  /*---(design notes)-------------------*/
    /*
     *   expand degree range by +/-1 degree to accomodate IK appoximations
@@ -420,7 +420,7 @@ yKINE__lowr        (int  a_num, int a_meth)
 }
 
 char
-yKINE__pate        (int  a_num, double a_deg, int a_meth)
+yKINE__pate        (int  a_num, float a_deg, int a_meth)
 {  /*---(design notes)-------------------*/
    /*
     *   expand degree range by +/-1 degree to accomodate IK appoximations
@@ -502,7 +502,7 @@ yKINE__pate        (int  a_num, double a_deg, int a_meth)
 }
 
 char
-yKINE__tibi        (int  a_num, double a_deg, int a_meth)
+yKINE__tibi        (int  a_num, float a_deg, int a_meth)
 {  /*---(design notes)-------------------*/
    /*
     *   expand degree range by +/-1 degree to accomodate IK appoximations
@@ -749,7 +749,7 @@ yKINE__FK_targ     (int a_num, int a_meth)
 static void      o___INVERSE_________________o (void) {;};
 
 char       /*----: set the leg target ----------------------------------------*/
-yKINE__IK_targ     (int a_leg, double a_x, double a_z, double a_y)
+yKINE__IK_targ     (int a_leg, float a_x, float a_z, float a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -1042,7 +1042,7 @@ yKINE__IK_tibi     (int a_leg)
 static void      o___MAIN____________________o (void) {;};
 
 char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
-yKINE_forward      (int a_leg, double a_femu, double a_pate, double a_tibi)
+yKINE_forward      (int a_leg, float a_femu, float a_pate, float a_tibi)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
@@ -1071,7 +1071,7 @@ yKINE_forward      (int a_leg, double a_femu, double a_pate, double a_tibi)
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
-ykine_inverse_detail    (char a_adapt, int a_leg, double a_x, double a_z, double a_y)
+ykine_inverse_detail    (char a_adapt, int a_leg, float a_x, float a_z, float a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
@@ -1101,13 +1101,13 @@ ykine_inverse_detail    (char a_adapt, int a_leg, double a_x, double a_z, double
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
-yKINE_inverse_adapt     (int a_leg, double a_x, double a_z, double a_y)
+yKINE_inverse_adapt     (int a_leg, float a_x, float a_z, float a_y)
 {
    return ykine_inverse_detail ('y', a_leg, a_x, a_z, a_y);
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
-yKINE_inverse           (int a_leg, double a_x, double a_z, double a_y)
+yKINE_inverse           (int a_leg, float a_x, float a_z, float a_y)
 {
    return ykine_inverse_detail ('-', a_leg, a_x, a_z, a_y);
 }
