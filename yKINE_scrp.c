@@ -351,6 +351,7 @@ ykine_parse_read       (void)
    myKINE.s_type      = '-';
    myKINE.s_vers      = '-';
    myKINE.s_count     = -1;
+   myKINE.s_beats     = 0.0;
    myKINE.s_secs      = 0.0;
    myKINE.s_femu      = FAILED;
    myKINE.s_pate      = FAILED;
@@ -476,6 +477,7 @@ ykine_parse_fields          (float *a, float *b, float *c, float *d)
    int         i           = 0;
    char        x_request   [LEN_LABEL];
    int         x_len       = 0;
+   float       x_temp      =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(read fields)--------------------*/
@@ -492,11 +494,22 @@ ykine_parse_fields          (float *a, float *b, float *c, float *d)
       x_len = strlen (p);
       DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
       DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
+      if (i == FIELD_ARGS) {
+         DEBUG_YKINE_SCRP  yLOG_note    ("done");
+         DEBUG_YKINE_SCRP  yLOG_note    ("over");
+         DEBUG_YKINE_SCRP  yLOG_note    ("gone");
+         DEBUG_YKINE_SCRP  yLOG_note    ("finito");
+         break;
+      }
       /*---(handle)----------------------*/
       switch (i) {
       case  FIELD_SVO   :  /*---(servo)----*/
-         if (p [0] == '-')  sprintf (x_request, "%c%c.zero"  , p [0], p [1]);
-         else               sprintf (x_request, "%c%c.femu"  , p [0], p [1]);
+         switch (p [0]) {
+         case 'z' :  sprintf (x_request, "%c%c.zero"  , p [0], p [1]); break;
+         case 'o' :  sprintf (x_request, "%c%c.yaw"   , p [0], p [1]); break;
+         case 'i' :  sprintf (x_request, "%c%c.tibi"  , p [0], p [1]); break;
+         default  :  sprintf (x_request, "%c%c.femu"  , p [0], p [1]); break;
+         }
          myKINE.s_count = ykine_servos (x_request);
          DEBUG_YKINE_SCRP  yLOG_value   ("count"     , myKINE.s_count);
          --rce;  if (myKINE.s_count < 0) {
@@ -506,7 +519,13 @@ ykine_parse_fields          (float *a, float *b, float *c, float *d)
          }
          break;
       case  FIELD_SEC   :  /*---(secs)---*/
+         x_temp = atof (p);
          if (a != NULL) {
+            if (x_temp < 0.0) {
+               DEBUG_YKINE_SCRP  yLOG_note    ("sec/count value can not be negative");
+               DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+               return rce;
+            }
             *a = atof (p);
             DEBUG_YKINE_SCRP  yLOG_double  ("a"         , *a);
          }
@@ -805,6 +824,7 @@ ykine_parse             (void)
       rc = ykine_parse_fields  (&myKINE.s_1st  , &myKINE.s_2nd , NULL, NULL);
       break;
    }
+   DEBUG_YKINE_SCRP  yLOG_note    ("checking");
    if (x_type != PARSE_OTHER) {
       DEBUG_YKINE_SCRP  yLOG_value   ("parse"     , rc);
       if (rc < 0) {
@@ -812,6 +832,7 @@ ykine_parse             (void)
          return rc;
       }
    }
+   DEBUG_YKINE_SCRP  yLOG_note    ("checking two");
    /*---(check)--------------------------*/
    if (x_type == PARSE_POINT || x_type == PARSE_ANGLE) {
       rc = ykine_parse_check   ();
@@ -821,6 +842,7 @@ ykine_parse             (void)
          return rc;
       }
    }
+   DEBUG_YKINE_SCRP  yLOG_note    ("checking three");
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -909,7 +931,6 @@ ykine_scrp_fk           (void)
    char        rce         = -10;                /* return code for errors    */
    char        rc          = 0;
    int         x_leg       = 0.0;
-   tSERVO     *x_servo     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(process)------------------------*/
@@ -1005,6 +1026,8 @@ ykine__scrp_ik_servo    (int a_leg, int a_seg, float a_deg)
       return rce;
    }
    /*---(calculate)----------------------*/
+   DEBUG_YKINE_SCRP  yLOG_double  ("s_beats"   , myKINE.s_beats);
+   DEBUG_YKINE_SCRP  yLOG_double  ("pase"      , x_servo->pace);
    myKINE.s_secs = myKINE.s_beats * x_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_double  ("s_secs"    , myKINE.s_secs);
    if (rc == 0)  rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, a_deg, myKINE.s_secs);
@@ -1032,7 +1055,6 @@ ykine_scrp_ik           (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    int         x_leg       =  0.0;
-   tSERVO     *x_servo     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(process)------------------------*/
@@ -1278,6 +1300,7 @@ ykine_scrp_zero         (void)
       return rc;
    }
    /*---(process moves)---------------*/
+   myKINE.s_secs = myKINE.s_beats * x_servo->pace;
    if (rc == 0)  rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, 0.0, myKINE.s_secs);
    if (rc == 0)  rc = yKINE_move_addloc (x_servo, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
    --rce;  if (rc <  0) {
@@ -1344,6 +1367,7 @@ ykine__scrp_orient_servo    (int a_seg, float a_deg)
       return rce;
    }
    /*---(calculate)----------------------*/
+   myKINE.s_secs = myKINE.s_beats * x_servo->pace;
    if (rc == 0)  rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, a_deg, myKINE.s_secs);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -1638,7 +1662,17 @@ ykine_scrp_repeat       (void)
    DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
    for (j = 0; j < g_nservo; ++j) {
       if (g_servo_info [j].scrp != 'y') continue;
-      yKINE_move_repeat     (g_servo_info + j, myKINE.s_1st, myKINE.s_2nd);
+      if (myKINE.s_verb [0] == 'z') {
+         yKINE_move_repeat     (g_servo_info + j    , (int) myKINE.s_1st, (int) myKINE.s_2nd);
+      } else if (myKINE.s_verb [0] == 'i') {
+         yKINE_move_repeat     (g_servo_info + j - 2, (int) myKINE.s_1st, (int) myKINE.s_2nd);
+         yKINE_move_repeat     (g_servo_info + j - 1, (int) myKINE.s_1st, (int) myKINE.s_2nd);
+         yKINE_move_repeat     (g_servo_info + j    , (int) myKINE.s_1st, (int) myKINE.s_2nd);
+      } else {
+         yKINE_move_repeat     (g_servo_info + j    , (int) myKINE.s_1st, (int) myKINE.s_2nd);
+         yKINE_move_repeat     (g_servo_info + j + 1, (int) myKINE.s_1st, (int) myKINE.s_2nd);
+         yKINE_move_repeat     (g_servo_info + j + 2, (int) myKINE.s_1st, (int) myKINE.s_2nd);
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -1723,8 +1757,8 @@ yKINE_script       (float *a_len)
    int         rc          =    0;
    char        x_verb      [20] = "";;
    int         i           =    0;
-   double      x_len       =  0.0;
-   double      x_sec       =  0.0;
+   float       x_len       =  0.0;
+   float       x_sec       =  0.0;
    char        x_type      =  '-';
    char        x_active    =  '-';
    /*---(header)-------------------------*/
@@ -1803,10 +1837,13 @@ yKINE_script       (float *a_len)
    x_len = 0.0;
    for (i = 0; i < g_nservo; ++i) {
       yKINE_move_last_servo (i, &x_sec, NULL);
+      /*> printf ("#%-2d, %-10.10s, %fs\n", i, g_servo_info [i].label, x_sec);        <*/
       if (x_sec > x_len)  x_len = x_sec;
    }
    myKINE.scrp_len = x_len;
    if (a_len != NULL)  *a_len = x_len;
+   /*> printf ("so, %fs and %fs\n", x_len, myKINE.scrp_len);                          <*/
+   /*> exit (1);                                                                      <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1818,6 +1855,18 @@ yKINE_script       (float *a_len)
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void      o___UNITTEST________________o (void) {;};
+
+char
+ykine_parse_fields_pos  (void)
+{
+   return ykine_parse_fields (&(myKINE.s_beats), &(myKINE.s_xpos), &(myKINE.s_zpos), &(myKINE.s_ypos));
+}
+
+char
+ykine_parse_fields_deg  (void)
+{
+   return ykine_parse_fields (&(myKINE.s_beats), &(myKINE.s_femu), &(myKINE.s_pate), &(myKINE.s_tibi));
+}
 
 char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine__unit_scrp        (char *a_question, int a_num)
@@ -1832,10 +1881,10 @@ ykine__unit_scrp        (char *a_question, int a_num)
       sprintf (ykine__unit_answer, "SCRP verb      : %-7.7s    , vers %c, type %c", myKINE.s_verb, myKINE.s_vers, myKINE.s_type);
    }
    else if (strcmp (a_question, "angles"   ) == 0) {
-      sprintf (ykine__unit_answer, "SCRP angles    : %8.3fs, %8.2ff, %8.2fp, %8.2ft", myKINE.s_secs, myKINE.s_femu, myKINE.s_pate, myKINE.s_tibi);
+      sprintf (ykine__unit_answer, "SCRP angles    : %8.3fb, %8.2ff, %8.2fp, %8.2ft", myKINE.s_beats, myKINE.s_femu, myKINE.s_pate, myKINE.s_tibi);
    }
    else if (strcmp (a_question, "positions") == 0) {
-      sprintf (ykine__unit_answer, "SCRP positions : %8.3fs, %8.2fx, %8.2fz, %8.2fy", myKINE.s_secs, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+      sprintf (ykine__unit_answer, "SCRP positions : %8.3fb, %8.2fx, %8.2fz, %8.2fy", myKINE.s_beats, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;

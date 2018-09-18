@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0b"
-#define     YKINE_VER_TXT   "separated body servos into o=orient and z=zero to assist repeats"
+#define     YKINE_VER_NUM   "1.0c"
+#define     YKINE_VER_TXT   "converted all interface real numbers to float (from double)"
 
 
 
@@ -297,13 +297,16 @@ char        ykine_move_delete       (tMOVE *a_move);
 char        ykine_move_clear_servo  (tSERVO *a_servo);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
-char        ykine__exact_find        (tSERVO *a_servo, float a_sec);
-char        ykine__exact_data        (tSERVO *a_servo, float a_sec);
+char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
+char        ykine__exact_data       (tSERVO *a_servo, float a_sec);
 
 
 char        ykine_parse_read        (void);
 char        ykine_parse_prep        (char *a_verb);
-char        ykine_parse_fields_OLD      (void);
+char        ykine_parse_fields      (float *a, float *b, float *c, float *d);
+char        ykine_parse_fields_pos  (void);
+char        ykine_parse_fields_deg  (void);
+char        ykine_parse_fields_OLD  (void);
 char        ykine_parse_check       (void);
 char        ykine_parse             (void);
 

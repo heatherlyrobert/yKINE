@@ -5,7 +5,7 @@
 #include    "yKINE_priv.h"
 
 
-static const float YKINE_PACE = (60.0 / 90.0) / 4.0;
+static const float YKINE_PACE = 0.250;  /* easy testing value */
 tSERVO     g_servo_info  [YKINE_MAX_SERVO] = {
    /*---(big legs)--------------------*/
    /* label---------- leg-------- seg--------- pace, exact  curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos   deg- cnt  head  tail */
@@ -338,7 +338,7 @@ ykine_servo_segment     (char *a_char)
    char        x_check     [LEN_LABEL];
    char       *p           = NULL;
    if (a_char == NULL)         return -11;
-   if (strlen (a_char) <  4)   return -12;
+   if (strlen (a_char) <  3)   return -12;
    if (strlen (a_char) > 10)   return -13;
    sprintf (x_check, " %s ", a_char);
    if (strstr (x_valid, x_check) == NULL) {
