@@ -244,6 +244,7 @@ ykine_servo_side        (char a_char)
     *  smalls     : l=left  , r=right , a=all
     *  both       : <=left  , >=right , *=all
     *  center     : -
+    *  everything : =
     *
     */
    switch (a_char) {
@@ -257,6 +258,7 @@ ykine_servo_side        (char a_char)
    case 'a' : strlcpy (s_sides , "lr"        , LEN_LABEL);   break;
    case '*' : strlcpy (s_sides , "LRlr"      , LEN_LABEL);   break;
    case '-' : strlcpy (s_sides , "-"         , LEN_LABEL);   break;
+   case '=' : strlcpy (s_sides , "LRlr-"     , LEN_LABEL);   break;
    default  : strlcpy (s_sides , ""          , LEN_LABEL);
               return -11;
               break;
@@ -273,6 +275,7 @@ ykine_servo_rank        (char a_char)
     *  smalls     : r=rear  ,         , f=front , a=all
     *  both       : v=rear  ,         , ^=front , *=all
     *  center     : -
+    *  everything : =
     *
     */
    switch (a_char) {
@@ -287,6 +290,7 @@ ykine_servo_rank        (char a_char)
    case 'a' : strlcpy (s_ranks , "rf"        , LEN_LABEL);   break;
    case '*' : strlcpy (s_ranks , "RMFrf"     , LEN_LABEL);   break;
    case '-' : strlcpy (s_ranks , "-"         , LEN_LABEL);   break;
+   case '=' : strlcpy (s_ranks , "RMFrf-"    , LEN_LABEL);   break;
    default  : strlcpy (s_ranks , ""          , LEN_LABEL);
               return -11;
               break;
