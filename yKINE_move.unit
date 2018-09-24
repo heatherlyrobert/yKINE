@@ -1282,9 +1282,6 @@ SCRP          v21  (MOVE  ) verify first, next, prev, and tail cursors are wor
      exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
-
-
-
 #  15jyy15kp0100|100dlxxxxxxxxxxxxllllllllllllllllllllllllllllllllllllllllllllllllllllllvlllllykhhhhhhhhhhhhhPlxxxxxuxxjllllllllllllllllvllllllykhhhhhhhhhhhhPlxxxxxxxjllllllllllllllllvlllllykhhhhhhhhhhhPlxxxxxxjddn
 #  15jyy15kp0100|110dl0138|v5lyk2hPl6dlj6lv5lykPl6dlj4lv5lykPl6dljddn
 

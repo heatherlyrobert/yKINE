@@ -283,6 +283,8 @@
 #define     YKINE_MOVE_INIT   'i'
 #define     YKINE_MOVE_NOTE   'n'
 #define     YKINE_MOVE_DEL    'x'
+#define     YKINE_MOVE_MARK   '#'
+#define     YKINE_MOVE_TEMPO  '>'
 
 #define     YKINE_NONE        '-'
 #define     YKINE_FROM        'f'
@@ -300,9 +302,9 @@ char        yKINE_init         (char a_type);
 
 char        yKINE_zero              (float a_x, float a_z, float a_y);
 char        yKINE_orient            (float a_yaw, float a_pitch, float a_roll);
-char        yKINE_forward           (int a_num, float a_femu, float a_pate, float a_tibi);
-char        yKINE_inverse           (int a_num, float a_x, float a_z, float a_y);
-char        yKINE_inverse_adapt     (int a_num, float a_x, float a_z, float a_y);
+char        yKINE_forward           (int a_leg, float a_femu, float a_pate, float a_tibi);
+char        yKINE_inverse           (int a_leg, float a_x, float a_z, float a_y);
+char        yKINE_inverse_adapt     (int a_leg, float a_x, float a_z, float a_y);
 char        yKINE_opengl            (int a_leg, int a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len);
 
 /*---(static data accessors)----------*/
@@ -327,8 +329,10 @@ char        yKINE_segdiff           (int a_leg, int a_seg, int a_type, float *a_
 char        yKINE_angles            (int a_leg, int a_type, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi);
 
 
-char        yKINE_servo        (char *a_source);
-char        yKINE_script       (float *a_len);
+/*---rc---- -----function---------- -----parameters---------------------------*/
+char        yKINE_servo_which       (int a_seq, int *a_leg, int *a_seg);
+char        yKINE_servo             (char *a_source);
+char        yKINE_script            (float *a_len);
 
 
 char        yKINE_exact_all          (float  a_time);

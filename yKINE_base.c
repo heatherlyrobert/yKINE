@@ -174,6 +174,7 @@ char          ykine__unit_answer [ LEN_STR ];
 char*      /*----: unit testing accessor for clean validation interface ------*/
 yKINE__getter      (char *a_question, int a_leg,  int a_seg)
 {
+   float       x, z, y, e;
    /*---(defense)-----------------------------------------*/
    if (a_leg < 0 || a_leg > YKINE_MAX_LEGS) {
       sprintf(ykine__unit_answer, "leg value out of range");
@@ -187,8 +188,12 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
    strlcpy  (ykine__unit_answer, "BASE unit        : question not understood", LEN_STR);
    /*---(answer)------------------------------------------*/
    if (strcmp(a_question, "IK_final") == 0) {
-      sprintf(ykine__unit_answer, "IK %1d/final     : %8.2fx,%8.2fz,%8.2fy", 
-            a_leg, ik[a_leg][YKINE_CALC].x, ik[a_leg][YKINE_CALC].z, ik[a_leg][YKINE_CALC].y);
+      x = ik[a_leg][YKINE_TARG].x - ik[a_leg][YKINE_CALC].x;
+      z = ik[a_leg][YKINE_TARG].z - ik[a_leg][YKINE_CALC].z;
+      y = ik[a_leg][YKINE_TARG].y - ik[a_leg][YKINE_CALC].y;
+      e = sqrt ((x * x) + (z * z) + (y * y));
+      sprintf(ykine__unit_answer, "IK-%-2.2s/final    : %8.1fx, %8.1fz, %8.1fy, %8.3fe", 
+            ik[a_leg][a_seg].n, ik[a_leg][YKINE_CALC].x, ik[a_leg][YKINE_CALC].z, ik[a_leg][YKINE_CALC].y, e);
    } else if (strcmp(a_question, "FK_final") == 0) {
       sprintf(ykine__unit_answer, "FK %1d/final     : %8.2fx,%8.2fz,%8.2fy", 
             a_leg, fk[a_leg][YKINE_CALC].x, fk[a_leg][YKINE_CALC].z, fk[a_leg][YKINE_CALC].y);
@@ -233,32 +238,32 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
    }
    /*---(NEW TESTS)---------------------------------------*/
    else if (strcmp(a_question, "FK_seg_angle"     ) == 0) {
-      sprintf(ykine__unit_answer, "FK-%-7.7s ang :%8.0fd,%8.2fv,%8.2fh", 
+      sprintf(ykine__unit_answer, "FK-%-7.7s ang :%8.1fd,%8.3fv,%8.3fh", 
             fk[a_leg][a_seg].n ,
             fk[a_leg][a_seg].d , fk[a_leg][a_seg].cv, fk[a_leg][a_seg].ch);
    }
    else if (strcmp(a_question, "FK_seg_size"      ) == 0) {
-      sprintf(ykine__unit_answer, "FK-%-7.7s siz :%8.0fm,%8.0fx,%8.0fz,%8.0fy", 
+      sprintf(ykine__unit_answer, "FK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
             fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
             fk[a_leg][a_seg].x , fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
    }
    else if (strcmp(a_question, "FK_seg_end"       ) == 0) {
-      sprintf(ykine__unit_answer, "FK-%-7.7s end :%8.0fm,%8.0fx,%8.0fz,%8.0fy", 
+      sprintf(ykine__unit_answer, "FK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
             fk[a_leg][a_seg].n , fk[a_leg][a_seg].fl,
             fk[a_leg][a_seg].cx, fk[a_leg][a_seg].cz, fk[a_leg][a_seg].cy);
    }
    else if (strcmp(a_question, "IK_seg_angle"     ) == 0) {
-      sprintf(ykine__unit_answer, "IK-%-7.7s ang :%8.0fd,%8.2fv,%8.2fh", 
+      sprintf(ykine__unit_answer, "IK-%-7.7s ang :%8.1fd,%8.3fv,%8.3fh", 
             ik[a_leg][a_seg].n ,
             ik[a_leg][a_seg].d , ik[a_leg][a_seg].cv, ik[a_leg][a_seg].ch);
    }
    else if (strcmp(a_question, "IK_seg_size"      ) == 0) {
-      sprintf(ykine__unit_answer, "IK-%-7.7s siz :%8.0fm,%8.0fx,%8.0fz,%8.0fy", 
+      sprintf(ykine__unit_answer, "IK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
             ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
             ik[a_leg][a_seg].x , ik[a_leg][a_seg].z, ik[a_leg][a_seg].y);
    }
    else if (strcmp(a_question, "IK_seg_end"       ) == 0) {
-      sprintf(ykine__unit_answer, "IK-%-7.7s end :%8.0fm,%8.0fx,%8.0fz,%8.0fy", 
+      sprintf(ykine__unit_answer, "IK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
             ik[a_leg][a_seg].n , ik[a_leg][a_seg].fl,
             ik[a_leg][a_seg].cx, ik[a_leg][a_seg].cz, ik[a_leg][a_seg].cy);
    }

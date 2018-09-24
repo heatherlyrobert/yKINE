@@ -1068,7 +1068,7 @@ ykine_scrp_ik           (void)
          return rc;
       }
       /*---(inverse kinematics)----------*/
-      rc = yKINE_inverse_adapt (x_leg, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+      rc = yKINE_inverse (x_leg, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
       if (rc <  0) {
          DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);

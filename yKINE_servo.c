@@ -167,6 +167,42 @@ ykine_servo_find        (int a_leg, int a_seg)
 }
 
 char
+yKINE_servo_which       (int a_seq, int *a_leg, int *a_seg)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;          /* loop iterator                  */
+   int         i           =    0;          /* loop iterator                  */
+   int         c           =    0;
+   int         rc          =   -1;
+   /*---(prepare)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_seq);
+   --rce;  if (a_seq < 0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("too small");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   --rce;  if (a_seq >= g_nservo) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("too large");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(return values)------------------*/
+   if (a_leg != NULL) {
+      *a_leg = g_servo_info [a_seq].leg;
+      DEBUG_YKINE_SCRP   yLOG_sint    (*a_leg);
+   }
+   if (a_seg != NULL) {
+      *a_seg = g_servo_info [a_seq].seg;
+      DEBUG_YKINE_SCRP   yLOG_sint    (*a_seg);
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
 ykine_servo_unfocused   (int a_leg, int a_seg)
 {
    /*---(locals)-----------+-----------+-*/

@@ -362,7 +362,7 @@ yKINE__lowr        (int  a_num, int a_meth)
    double      d;                      /* degrees                             */
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
-   double      xz, sl, fl;             /* lengths in xz, seg, and full        */
+   double      xz, sl;                 /* lengths in xz, seg, and full        */
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
@@ -379,10 +379,10 @@ yKINE__lowr        (int  a_num, int a_meth)
    if (a_meth == YKINE_IK)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
    if (a_meth == YKINE_GK)  x_leg = ((tSEG *) gk) + (a_num * YKINE_MAX_SEGS);
    /*---(cumulatives)--------------------*/
-   x    = x_leg [YKINE_LOWR].cx   =  x_leg [YKINE_TARG].cx;
-   z    = x_leg [YKINE_LOWR].cz   =  x_leg [YKINE_TARG].cz;
-   y    = x_leg [YKINE_LOWR].cy   =  x_leg [YKINE_TARG].cy;
-   fl   = x_leg [YKINE_LOWR].fl   =  sqrt  (( x *  x) + ( z *  z) + ( y *  y));
+   x_leg [YKINE_LOWR].cx   =  x_leg [YKINE_TARG].cx;
+   x_leg [YKINE_LOWR].cz   =  x_leg [YKINE_TARG].cz;
+   x_leg [YKINE_LOWR].cy   =  x_leg [YKINE_TARG].cy;
+   x_leg [YKINE_LOWR].fl   =  x_leg [YKINE_TARG].fl;
    x_leg [YKINE_LOWR].cxz  =  x_leg [YKINE_TARG].cxz;
    x_leg [YKINE_LOWR].cv   =  x_leg [YKINE_TARG].cv;
    x_leg [YKINE_LOWR].ch   =  x_leg [YKINE_TARG].ch;
@@ -391,9 +391,9 @@ yKINE__lowr        (int  a_num, int a_meth)
    x    =  x_leg [YKINE_LOWR].x    =  x_leg [YKINE_TARG].cx - x_leg [YKINE_FEMU].cx;
    z    =  x_leg [YKINE_LOWR].z    =  x_leg [YKINE_TARG].cz - x_leg [YKINE_FEMU].cz;
    y    =  x_leg [YKINE_LOWR].y    =  x_leg [YKINE_TARG].cy - x_leg [YKINE_FEMU].cy;
-   xz   =  x_leg [YKINE_LOWR].xz   =  sqrt  (( x *  x) + ( z *  z));
+   xz   =  x_leg [YKINE_LOWR].xz   =  sqrt  ((x * x) + (z * z));
    DEBUG_YKINE_CALC   yLOG_complex ("lower"    , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
-   x_leg [YKINE_LOWR].sl   =  sqrt  (( x *  x) + ( z *  z) + ( y *  y));
+   x_leg [YKINE_LOWR].sl   =  sqrt  ((x * x) + (z * z) + (y * y));
    x_leg [YKINE_LOWR].l    =  x_leg [YKINE_LOWR].sl;
    x_leg [YKINE_LOWR].v    =  atan2  (-y , xz);
    x_leg [YKINE_LOWR].h    =  atan2  ( z ,  x);
@@ -1018,7 +1018,7 @@ yKINE__IK_tibi     (int a_leg)
    DEBUG_YKINE_CALC   yLOG_complex ("lengths"  , "%6.1fsl, %6.1fpl, %6.1ftl",  sl, pl, tl);
    a    =  acos (((tl * tl) + (pl * pl) - (sl * sl)  ) / (2.0 * pl * tl));
    a   -=  M_PI;
-   d    =  -(round  (a  * RAD2DEG));
+   d    =  -(a  * RAD2DEG);
    if (isnan (a))    d = 0.0;
    DEBUG_YKINE_CALC   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*----(save)--------------------------*/
