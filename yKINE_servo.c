@@ -5,7 +5,8 @@
 #include    "yKINE_priv.h"
 
 
-static const float YKINE_PACE = 0.250;  /* easy testing value */
+/*> static const float YKINE_PACE = 0.250;  /+ easy testing value +/                  <*/
+static const float YKINE_PACE = 0.100;  /* easy testing value */
 tSERVO     g_servo_info  [YKINE_MAX_SERVO] = {
    /*---(big legs)--------------------*/
    /* label---------- leg-------- seg--------- pace, exact  curr  degs  xpos  zpos  ypos  --segno--  --coda--- scrp  sav  xpos  zpos  ypos   deg- cnt  head  tail */

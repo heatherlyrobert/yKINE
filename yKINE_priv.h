@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0d"
-#define     YKINE_VER_TXT   "solved IK issues with lower angles (retarded use of round)"
+#define     YKINE_VER_NUM   "1.0e"
+#define     YKINE_VER_TXT   "better, not perfect, body orientation logic in place"
 
 
 
