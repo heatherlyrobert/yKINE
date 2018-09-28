@@ -20,6 +20,7 @@ tLEGDATA    g_leg_data [YKINE_MAX_LEGS] = {
    {  YKINE_RA  , "right anterior"    , "ra"    , "RA"    ,    0.0  },
    {  YKINE_LA  , "left anterior"     , "la"    , "LA"    ,    0.0  },
    {  YKINE_LP  , "left posterior"    , "lp"    , "LP"    ,    0.0  },
+   {  YKINE_PT  , "pointer"           , "pt"    , "PT"    ,    0.0  },
    {  -1        , "-----"             , "--"    , "--"    ,    0.0  },
 };
 

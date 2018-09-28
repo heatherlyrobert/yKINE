@@ -245,6 +245,8 @@
 #define     YKINE_RA         8
 #define     YKINE_LA         9
 #define     YKINE_LP        10
+/*---(special)------------------------*/
+#define     YKINE_PT        11
 
 
 

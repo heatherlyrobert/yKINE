@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0e"
-#define     YKINE_VER_TXT   "better, not perfect, body orientation logic in place"
+#define     YKINE_VER_NUM   "1.0f"
+#define     YKINE_VER_TXT   "segno/repeat working together with a stack to allow nesting"
 
 
 
@@ -143,9 +143,9 @@ struct cSERVO {
    float       xexp;                   /* expected x-pos                      */
    float       zexp;                   /* expected z-pos                      */
    float       yexp;                   /* expected y-pos                      */
-   /*---(reapeats)-----------------------*/
-   char        segno_flag;
-   tMOVE      *segno;
+   /*---(repeats)------------------------*/
+   char        nsegno;                 /* number of segnos                    */
+   tMOVE      *segni       [10];       /* saved segnos in stack               */
    char        coda_flag;
    tMOVE      *coda;
    char        scrp;
@@ -155,6 +155,7 @@ struct cSERVO {
    float       zsave;                  /* saved z-pos                         */
    float       ysave;                  /* saved y-pos                         */
    float       dsave;                  /* saved degree                        */
+   float       lsave;                  /* saved distance from default         */
    /*---(moves)--------------------------*/
    int         count;
    tMOVE      *head;
@@ -270,12 +271,14 @@ char        ykine__scrp_prep        (void);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
 
 char        ykine_scrp_zero         (void);
+char        ykine_scrp_zero_polar   (void);
 char        ykine_scrp_orient       (void);
 char        ykine_scrp_ik_pure      (void);
 char        ykine_scrp_ik_from      (void);
 
 char        ykine_scrp_ik           (void);
 char        ykine_scrp_fk           (void);
+char        ykine_scrp_segno        (void);
 char        ykine_scrp_repeat       (void);
 
 
@@ -293,6 +296,7 @@ char        ykine_servos            (char *a_source);
 char*       ykine__unit_servo       (char *a_question);
 
 
+char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
 char        ykine_move_delete       (tMOVE *a_move);
 char        ykine_move_clear_servo  (tSERVO *a_servo);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);

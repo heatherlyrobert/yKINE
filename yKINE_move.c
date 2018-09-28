@@ -208,12 +208,6 @@ yKINE_move_create  (
       DEBUG_YKINE_SCRP   yLOG_note    ("end time greater than current length");
       DEBUG_YKINE_SCRP   yLOG_double  ("scrp_len"  , myKINE.scrp_len);
    }
-   /*---(check segno)--------------------*/
-   if (a_servo->segno_flag == 'y') {
-      if (a_servo->segno == NULL) {
-         a_servo->segno = x_move;
-      }
-   }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -252,78 +246,71 @@ yKINE_move_addloc        (
    return 0;
 }
 
-char         /*--> repeat the last moves -----------------[ ------ [ ------ ]-*/
-yKINE_move_repeat        (
-      /*----------+-----------+-----------------------------------------------*/
-      tSERVO     *a_servo     ,   /* servo                                    */
-      int         a_count     ,   /* how many steps to copy (off end)         */
-      int         a_times     )   /* how many times to copy                   */
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;           /* return code for errors         */
-   char        x_label     [LEN_LABEL];
-   tMOVE      *x_curr      = NULL;
-   tMOVE      *x_moves     [100];
-   int         i           = 0;
-   int         j           = 0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_point   ("a_servo"   , a_servo);
-   DEBUG_YKINE_SCRP   yLOG_value   ("a_count"   , a_count);
-   DEBUG_YKINE_SCRP   yLOG_value   ("a_times"   , a_times);
-   /*---(defense)------------------------*/
-   --rce;  if (a_servo        == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("not a valid servo");
-      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   DEBUG_YKINE_SCRP   yLOG_info    ("servo"     , a_servo->label);
-   --rce;  if (a_servo->tail  == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("no moves on servo, nothing to repeat");
-      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   DEBUG_YKINE_SCRP   yLOG_value   ("count"     , a_servo->count);
-   --rce;  if (a_servo->count <  a_count) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("not enough moves on servo to repeat count");
-      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(build queue)--------------------*/
-   for (i = 0; i < 100; ++i) {
-      x_moves [i] = NULL;
-   }
-   x_curr = a_servo->tail;
-   for (i = 1; i < a_count; ++i) {
-      x_curr = x_curr->s_prev;
-   }
-   for (i = 0; i < a_count; ++i) {
-      x_moves [i] = x_curr;
-      x_curr      = x_curr->s_next;
-   }
-   /*---(add)----------------------------*/
-   for (i = 0; i < a_times; ++i) {
-      for (j = 0; j < a_count; ++j) {
-         sprintf (x_label, "repeat %d.%d", i,j);
-         yKINE_move_create (YKINE_MOVE_SERVO, a_servo, x_label, x_moves [j]->line, x_moves [j]->deg_end, x_moves [j]->sec_dur);
-         yKINE_move_addloc (a_servo, x_moves [j]->x_pos, x_moves [j]->z_pos, x_moves [j]->y_pos);
-      }
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char         /+--> repeat the last moves -----------------[ ------ [ ------ ]-+/                                                  <* 
+ *> yKINE_move_repeat        (tSERVO *a_servo, int a_times)                                                                           <* 
+ *> {                                                                                                                                 <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                       <* 
+ *>    char        rce         = -10;           /+ return code for errors         +/                                                  <* 
+ *>    char        x_label     [LEN_LABEL];                                                                                           <* 
+ *>    tMOVE      *x_curr      = NULL;                                                                                                <* 
+ *>    tMOVE      *x_moves     [100];                                                                                                 <* 
+ *>    int         i           = 0;                                                                                                   <* 
+ *>    int         j           = 0;                                                                                                   <* 
+ *>    /+---(header)-------------------------+/                                                                                       <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                                                                <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_point   ("a_servo"   , a_servo);                                                                       <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_value   ("a_times"   , a_times);                                                                       <* 
+ *>    /+---(defense)------------------------+/                                                                                       <* 
+ *>    --rce;  if (a_servo        == NULL) {                                                                                          <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("not a valid servo");                                                                      <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                                                             <* 
+ *>       return rce;                                                                                                                 <* 
+ *>    }                                                                                                                              <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_info    ("servo"     , a_servo->label);                                                                <* 
+ *>    --rce;  if (a_servo->tail  == NULL) {                                                                                          <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("no moves on servo, nothing to repeat");                                                   <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                                                             <* 
+ *>       return rce;                                                                                                                 <* 
+ *>    }                                                                                                                              <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_value   ("count"     , a_servo->count);                                                                <* 
+ *>    --rce;  if (a_servo->count <  a_count) {                                                                                       <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("not enough moves on servo to repeat count");                                              <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                                                             <* 
+ *>       return rce;                                                                                                                 <* 
+ *>    }                                                                                                                              <* 
+ *>    /+---(build queue)--------------------+/                                                                                       <* 
+ *>    for (i = 0; i < 100; ++i) {                                                                                                    <* 
+ *>       x_moves [i] = NULL;                                                                                                         <* 
+ *>    }                                                                                                                              <* 
+ *>    x_curr = a_servo->tail;                                                                                                        <* 
+ *>    for (i = 1; i < a_count; ++i) {                                                                                                <* 
+ *>       x_curr = x_curr->s_prev;                                                                                                    <* 
+ *>    }                                                                                                                              <* 
+ *>    for (i = 0; i < a_count; ++i) {                                                                                                <* 
+ *>       x_moves [i] = x_curr;                                                                                                       <* 
+ *>       x_curr      = x_curr->s_next;                                                                                               <* 
+ *>    }                                                                                                                              <* 
+ *>    /+---(add)----------------------------+/                                                                                       <* 
+ *>    for (i = 0; i < a_times; ++i) {                                                                                                <* 
+ *>       for (j = 0; j < a_count; ++j) {                                                                                             <* 
+ *>          sprintf (x_label, "repeat %d.%d", i,j);                                                                                  <* 
+ *>          yKINE_move_create (YKINE_MOVE_SERVO, a_servo, x_label, x_moves [j]->line, x_moves [j]->deg_end, x_moves [j]->sec_dur);   <* 
+ *>          yKINE_move_addloc (a_servo, x_moves [j]->x_pos, x_moves [j]->z_pos, x_moves [j]->y_pos);                                 <* 
+ *>       }                                                                                                                           <* 
+ *>    }                                                                                                                              <* 
+ *>    /+---(complete)-----------------------+/                                                                                       <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                                                                <* 
+ *>    return 0;                                                                                                                      <* 
+ *> }                                                                                                                                 <*/
 
 char         /*--> repeat from the last segno ------------[ ------ [ ------ ]-*/
-yKINE_move_dsegno      (
-      /*----------+-----------+-----------------------------------------------*/
-      tSERVO     *a_servo     ,   /* servo                                    */
-      int         a_times     )   /* how many times to copy                   */
+ykine_move_repeat      (tSERVO *a_servo, int a_times)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
    char        x_label     [LEN_LABEL];
    tMOVE      *x_curr      = NULL;
+   tMOVE      *x_beg       = NULL;
    tMOVE      *x_end       = NULL;
    int         i           = 0;
    int         j           = 0;
@@ -343,28 +330,40 @@ yKINE_move_dsegno      (
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_char    ("segno_flag", a_servo->segno_flag);
-   --rce;  if (a_servo->segno_flag != 'y') {
-      DEBUG_YKINE_SCRP   yLOG_note    ("a segno is not ready for use");
+   DEBUG_YKINE_SCRP   yLOG_value   ("nsegno"    , a_servo->nsegno);
+   --rce;  if (a_servo->nsegno <= 0) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("no segni in servo stack");
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   /*---(add)----------------------------*/
+   /*---(adjust segno count)-------------*/
+   --(a_servo->nsegno);
+   /*---(find beg and end)---------------*/
    x_end  = a_servo->tail;
+   DEBUG_YKINE_SCRP   yLOG_point   ("x_end"     , x_end);
+   x_beg  = a_servo->segni [a_servo->nsegno];
+   DEBUG_YKINE_SCRP   yLOG_point   ("x_beg"     , x_beg);
+   if (x_beg == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("bad segni at current position in stack");
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   x_beg = x_beg->s_next;
+   /*---(add)----------------------------*/
    for (i = 0; i < a_times; ++i) {
-      x_curr = a_servo->segno;
       j = 0;
+      x_curr = x_beg;
       while (x_curr != NULL) {
-         sprintf (x_label, "segno %d.%d", i,j);
+         sprintf (x_label, "repeat %d.%d", i,j);
          yKINE_move_create (YKINE_MOVE_SERVO, a_servo, x_label, x_curr->line, x_curr->deg_end, x_curr->sec_dur);
+         yKINE_move_addloc (a_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
          if (x_curr == x_end)  break;
          x_curr = x_curr->s_next;
          ++j;
       }
    }
    /*---(clear)--------------------------*/
-   a_servo->segno      = NULL;
-   a_servo->segno_flag = '-';
+   a_servo->segni [a_servo->nsegno] = NULL;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
