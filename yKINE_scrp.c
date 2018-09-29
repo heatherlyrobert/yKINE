@@ -14,6 +14,9 @@
 #define    PARSE_MUSIC        'c'
 #define    PARSE_NONE         '-'
 
+#define        FAILED    -666.0
+
+
 #define    MAX_VERBS       100
 typedef    struct  cVERBS  tVERBS;
 struct cVERBS {
@@ -169,6 +172,15 @@ ykine__scrp_prep   (void)
    myKINE.s_iverb     = -1;
    myKINE.s_targ      = '-';
    myKINE.s_from      = '-';
+   myKINE.s_count     = -1;
+   myKINE.s_beats     = 0.0;
+   myKINE.s_secs      = 0.0;
+   myKINE.s_femu      = FAILED;
+   myKINE.s_pate      = FAILED;
+   myKINE.s_tibi      = FAILED;
+   myKINE.s_xpos      = FAILED;
+   myKINE.s_zpos      = FAILED;
+   myKINE.s_ypos      = FAILED;
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -359,7 +371,6 @@ yKINE__scrp_move   (char *a_type)
 /*====================------------------------------------====================*/
 static void      o___PARSING_________________o (void) {;}
 
-#define        FAILED    -666.0
 
 char  /*--> parse a IK/FK move --------------------[ ------ [ ------ ]-*/
 ykine_parse_read       (void)
@@ -370,19 +381,6 @@ ykine_parse_read       (void)
    char       *p           = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(defaults)-----------------------*/
-   strlcpy (myKINE.s_verb, "", LEN_LABEL);
-   myKINE.s_iverb     = -1;
-   myKINE.s_targ      = '-';
-   myKINE.s_count     = -1;
-   myKINE.s_beats     = 0.0;
-   myKINE.s_secs      = 0.0;
-   myKINE.s_femu      = FAILED;
-   myKINE.s_pate      = FAILED;
-   myKINE.s_tibi      = FAILED;
-   myKINE.s_xpos      = FAILED;
-   myKINE.s_zpos      = FAILED;
-   myKINE.s_ypos      = FAILED;
    /*---(source line)--------------------*/
    ++myKINE.s_lines;
    DEBUG_YKINE_SCRP   yLOG_value   ("line"      , myKINE.s_lines);
@@ -414,23 +412,6 @@ ykine_parse_read       (void)
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   /*---(get recd type)---------------*/
-   p = strtok_r (myKINE.s_recd, myKINE.s_q, &myKINE.s_context);
-   --rce;  if (p == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("can not parse type field");
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strltrim  (p, ySTR_BOTH, LEN_RECD);
-   rc = ykine_scrp_verb (p);
-   --rce;  if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("can not identify verb");
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   myKINE.s_iverb = rc;
-   myKINE.s_targ = s_verb_info [myKINE.s_iverb].target;
-   myKINE.s_from = s_verb_info [myKINE.s_iverb].from;
    /*---(complete)--------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -466,132 +447,132 @@ ykine_parse_prep       (char *a_verb)
    return 0;
 }
 
-char  /*--> parse a IK/FK move --------------------[ ------ [ ------ ]-*/
-ykine_parse_fields_OLD      (float *a, float *b, float *c, float *d)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;                /* return code for errors    */
-   char        rc          =   0;                /* generic return code       */
-   char       *p           = NULL;
-   int         i           = 0;
-   char        x_request   [LEN_LABEL];
-   int         x_len       = 0;
-   float       x_temp      =  0.0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(read fields)--------------------*/
-   for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {
-      /*---(parse field)-----------------*/
-      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
-      p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);
-      --rce;  if (p == NULL) {
-         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
-         break;
-      }
-      strltrim (p, ySTR_BOTH, LEN_RECD);
-      x_len = strlen (p);
-      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
-      DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
-      if (i == FIELD_ARGS) {
-         DEBUG_YKINE_SCRP  yLOG_note    ("done");
-         DEBUG_YKINE_SCRP  yLOG_note    ("over");
-         DEBUG_YKINE_SCRP  yLOG_note    ("gone");
-         DEBUG_YKINE_SCRP  yLOG_note    ("finito");
-         break;
-      }
-      /*---(handle)----------------------*/
-      switch (i) {
-      case  FIELD_SVO   :  /*---(servo)----*/
-         /*> switch (p [0]) {                                                         <* 
-          *> case 'z' :  sprintf (x_request, "%c%c.zero"  , p [0], p [1]); break;     <* 
-          *> case 'o' :  sprintf (x_request, "%c%c.yaw"   , p [0], p [1]); break;     <* 
-          *> case 'i' :  sprintf (x_request, "%c%c.tibi"  , p [0], p [1]); break;     <* 
-          *> default  :  sprintf (x_request, "%c%c.femu"  , p [0], p [1]); break;     <* 
-          *> }                                                                        <*/
-         myKINE.s_count = ykine_servos (p);
-         DEBUG_YKINE_SCRP  yLOG_value   ("count"     , myKINE.s_count);
-         --rce;  if (myKINE.s_count < 0) {
-            DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");
-            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-            return rce;
-         }
-         break;
-      case  FIELD_SEC   :  /*---(secs)---*/
-         x_temp = atof (p);
-         if (a != NULL) {
-            if (x_temp < 0.0) {
-               DEBUG_YKINE_SCRP  yLOG_note    ("sec/count value can not be negative");
-               DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-               return rce;
-            }
-            *a = atof (p);
-            DEBUG_YKINE_SCRP  yLOG_double  ("a"         , *a);
-         }
-         break;
-      case  FIELD_XPOS  :  /*---(xpos)---*/
-         if (b != NULL) {
-            *b = atof (p);
-            DEBUG_YKINE_SCRP  yLOG_double  ("b"         , *b);
-         }
-         break;
-      case  FIELD_ZPOS  :  /*---(zpos)---*/
-         if (c != NULL) {
-            *c = atof (p);
-            DEBUG_YKINE_SCRP  yLOG_double  ("c"         , *c);
-         }
-         break;
-      case  FIELD_YPOS  :  /*---(ypos)---*/
-         if (d != NULL) {
-            *d = atof (p);
-            DEBUG_YKINE_SCRP  yLOG_double  ("d"         , *d);
-         }
-         break;
-      case  FIELD_ARGS  :  /*---(args)-----*/
-         rc = yKINE__scrp_args (p);
-         break;
-      }
-      /*---(done)------------------------*/
-      DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");
-   } 
-   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
-   /*---(done)---------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char  /+--> parse a IK/FK move --------------------[ ------ [ ------ ]-+/                   <* 
+ *> ykine_parse_fields_OLD      (float *a, float *b, float *c, float *d)                        <* 
+ *> {                                                                                           <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                 <* 
+ *>    char        rce         = -10;                /+ return code for errors    +/            <* 
+ *>    char        rc          =   0;                /+ generic return code       +/            <* 
+ *>    char       *p           = NULL;                                                          <* 
+ *>    int         i           = 0;                                                             <* 
+ *>    char        x_request   [LEN_LABEL];                                                     <* 
+ *>    int         x_len       = 0;                                                             <* 
+ *>    float       x_temp      =  0.0;                                                          <* 
+ *>    /+---(header)-------------------------+/                                                 <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                          <* 
+ *>    /+---(read fields)--------------------+/                                                 <* 
+ *>    for (i = FIELD_SVO  ; i <= FIELD_ARGS ; ++i) {                                           <* 
+ *>       /+---(parse field)-----------------+/                                                 <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("read next field");                                  <* 
+ *>       p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);                                 <* 
+ *>       --rce;  if (p == NULL) {                                                              <* 
+ *>          DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");                        <* 
+ *>          break;                                                                             <* 
+ *>       }                                                                                     <* 
+ *>       strltrim (p, ySTR_BOTH, LEN_RECD);                                                    <* 
+ *>       x_len = strlen (p);                                                                   <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);                                     <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);                                 <* 
+ *>       if (i == FIELD_ARGS) {                                                                <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_note    ("done");                                           <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_note    ("over");                                           <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_note    ("gone");                                           <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_note    ("finito");                                         <* 
+ *>          break;                                                                             <* 
+ *>       }                                                                                     <* 
+ *>       /+---(handle)----------------------+/                                                 <* 
+ *>       switch (i) {                                                                          <* 
+ *>       case  FIELD_SVO   :  /+---(servo)----+/                                               <* 
+ *>          /+> switch (p [0]) {                                                         <*    <* 
+ *>           *> case 'z' :  sprintf (x_request, "%c%c.zero"  , p [0], p [1]); break;     <*    <* 
+ *>           *> case 'o' :  sprintf (x_request, "%c%c.yaw"   , p [0], p [1]); break;     <*    <* 
+ *>           *> case 'i' :  sprintf (x_request, "%c%c.tibi"  , p [0], p [1]); break;     <*    <* 
+ *>           *> default  :  sprintf (x_request, "%c%c.femu"  , p [0], p [1]); break;     <*    <* 
+ *>           *> }                                                                        <+/   <* 
+ *>          myKINE.s_count = ykine_servos (p);                                                 <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_value   ("count"     , myKINE.s_count);                     <* 
+ *>          --rce;  if (myKINE.s_count < 0) {                                                  <* 
+ *>             DEBUG_YKINE_SCRP  yLOG_warn    ("servo"     , "not found");                     <* 
+ *>             DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                                  <* 
+ *>             return rce;                                                                     <* 
+ *>          }                                                                                  <* 
+ *>          break;                                                                             <* 
+ *>       case  FIELD_SEC   :  /+---(secs)---+/                                                 <* 
+ *>          x_temp = atof (p);                                                                 <* 
+ *>          if (a != NULL) {                                                                   <* 
+ *>             if (x_temp < 0.0) {                                                             <* 
+ *>                DEBUG_YKINE_SCRP  yLOG_note    ("sec/count value can not be negative");      <* 
+ *>                DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                               <* 
+ *>                return rce;                                                                  <* 
+ *>             }                                                                               <* 
+ *>             *a = atof (p);                                                                  <* 
+ *>             DEBUG_YKINE_SCRP  yLOG_double  ("a"         , *a);                              <* 
+ *>          }                                                                                  <* 
+ *>          break;                                                                             <* 
+ *>       case  FIELD_XPOS  :  /+---(xpos)---+/                                                 <* 
+ *>          if (b != NULL) {                                                                   <* 
+ *>             *b = atof (p);                                                                  <* 
+ *>             DEBUG_YKINE_SCRP  yLOG_double  ("b"         , *b);                              <* 
+ *>          }                                                                                  <* 
+ *>          break;                                                                             <* 
+ *>       case  FIELD_ZPOS  :  /+---(zpos)---+/                                                 <* 
+ *>          if (c != NULL) {                                                                   <* 
+ *>             *c = atof (p);                                                                  <* 
+ *>             DEBUG_YKINE_SCRP  yLOG_double  ("c"         , *c);                              <* 
+ *>          }                                                                                  <* 
+ *>          break;                                                                             <* 
+ *>       case  FIELD_YPOS  :  /+---(ypos)---+/                                                 <* 
+ *>          if (d != NULL) {                                                                   <* 
+ *>             *d = atof (p);                                                                  <* 
+ *>             DEBUG_YKINE_SCRP  yLOG_double  ("d"         , *d);                              <* 
+ *>          }                                                                                  <* 
+ *>          break;                                                                             <* 
+ *>       case  FIELD_ARGS  :  /+---(args)-----+/                                               <* 
+ *>          rc = yKINE__scrp_args (p);                                                         <* 
+ *>          break;                                                                             <* 
+ *>       }                                                                                     <* 
+ *>       /+---(done)------------------------+/                                                 <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("done with loop");                                   <* 
+ *>    }                                                                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");                                 <* 
+ *>    /+---(done)---------------------------+/                                                 <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                          <* 
+ *>    return 0;                                                                                <* 
+ *> }                                                                                           <*/
 
-char  /*--> parse a IK/FK move --------------------[ ------ [ ------ ]-*/
-ykine_parse_fields          (void)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;                /* return code for errors    */
-   char        rc          =   0;                /* generic return code       */
-   char       *p           = NULL;
-   int         i           = 0;
-   char        x_request   [LEN_LABEL];
-   int         x_len       = 0;
-   float       x_temp      =  0.0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(read fields)--------------------*/
-   while (1) {
-      /*---(parse field)-----------------*/
-      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
-      p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);
-      --rce;  if (p == NULL) {
-         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
-         break;
-      }
-      strltrim (p, ySTR_BOTH, LEN_RECD);
-      x_len = strlen (p);
-      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
-      DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
-      rc = ykine_queue_push (p);
-   }
-   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
-   /*---(done)---------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char  /+--> parse a IK/FK move --------------------[ ------ [ ------ ]-+/          <* 
+ *> ykine_parse_fields          (void)                                                 <* 
+ *> {                                                                                  <* 
+ *>    /+---(locals)-----------+-----------+-+/                                        <* 
+ *>    char        rce         = -10;                /+ return code for errors    +/   <* 
+ *>    char        rc          =   0;                /+ generic return code       +/   <* 
+ *>    char       *p           = NULL;                                                 <* 
+ *>    int         i           = 0;                                                    <* 
+ *>    char        x_request   [LEN_LABEL];                                            <* 
+ *>    int         x_len       = 0;                                                    <* 
+ *>    float       x_temp      =  0.0;                                                 <* 
+ *>    /+---(header)-------------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                 <* 
+ *>    /+---(read fields)--------------------+/                                        <* 
+ *>    while (1) {                                                                     <* 
+ *>       /+---(parse field)-----------------+/                                        <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("read next field");                         <* 
+ *>       p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);                        <* 
+ *>       --rce;  if (p == NULL) {                                                     <* 
+ *>          DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");               <* 
+ *>          break;                                                                    <* 
+ *>       }                                                                            <* 
+ *>       strltrim (p, ySTR_BOTH, LEN_RECD);                                           <* 
+ *>       x_len = strlen (p);                                                          <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);                            <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);                        <* 
+ *>       rc = ykine_queue_push (p);                                                   <* 
+ *>    }                                                                               <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");                        <* 
+ *>    /+---(done)---------------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                 <* 
+ *>    return 0;                                                                       <* 
+ *> }                                                                                  <*/
 
 /*> char  /+--> check results of a IK/FK parse --------[ ------ [ ------ ]-+/          <* 
  *> ykine_parse_check      (void)                                                      <* 
@@ -652,77 +633,77 @@ ykine_parse_fields          (void)
  *>    return 0;                                                                       <* 
  *> }                                                                                  <*/
 
-char  /*--> adjust coordinates based on body ------[ ------ [ ------ ]-*/
-ykine__parse_adjust     (void)
-{
-   char        rce         = -10;                /* return code for errors    */
-   double      x_degs      = 0.0;
-   double      x_rads      = 0.0;
-   double      x_dist      = 0.0;
-   double      x_orig      = 0.0;
-   double      x_vert      = 0.0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(center changes)-----------------*/
-   DEBUG_YKINE_SCRP  yLOG_note    ("shift adjustments");
-   myKINE.s_xpos -= myKINE.s_xcenter;
-   myKINE.s_zpos -= myKINE.s_zcenter;
-   myKINE.s_ypos -= myKINE.s_ycenter;
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_xpos", myKINE.s_xpos);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_zpos", myKINE.s_zpos);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_ypos", myKINE.s_ypos);
-   /*---(yaw)----------------------------*/
-   DEBUG_YKINE_SCRP  yLOG_note    ("yaw calcs");
-   x_dist  = sqrt  ((myKINE.s_xpos * myKINE.s_xpos) + (myKINE.s_zpos * myKINE.s_zpos));
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
-   x_rads  = - atan2 (myKINE.s_zpos , myKINE.s_xpos);
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
-   x_degs  = x_rads * RAD2DEG;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
-   x_rads += (myKINE.s_yaw * DEG2RAD);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new x_rads", x_rads);
-   x_degs  = x_rads * RAD2DEG;
-   DEBUG_YKINE_SCRP  yLOG_double  ("new x_degs", x_degs);
-   myKINE.s_xpos  =   x_dist * cos (x_rads);
-   myKINE.s_zpos  = -(x_dist * sin (x_rads));
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_xpos", myKINE.s_xpos);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_zpos", myKINE.s_zpos);
-   /*---(rotate)-------------------------*/
-   DEBUG_YKINE_SCRP  yLOG_note    ("rotate calcs");
-   x_dist  = myKINE.s_xpos;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
-   x_rads  = myKINE.s_roll * DEG2RAD;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
-   x_degs  = x_rads * RAD2DEG;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
-   x_vert  = x_dist * sin (x_rads);
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);
-   x_vert  = myKINE.s_ypos + x_vert;
-   DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);
-   myKINE.s_xpos  = myKINE.s_xpos - (myKINE.s_ypos * sin (x_rads));
-   myKINE.s_ypos  = x_vert * cos (x_rads);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_xpos", myKINE.s_xpos);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_ypos", myKINE.s_ypos);
-   /*---(pitch)--------------------------*/
-   DEBUG_YKINE_SCRP  yLOG_note    ("pitch calcs");
-   x_dist  = myKINE.s_zpos;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);
-   x_rads  = myKINE.s_pitch * DEG2RAD;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);
-   x_degs  = x_rads * RAD2DEG;
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);
-   x_vert  = x_dist * sin (x_rads);
-   DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);
-   x_vert  = myKINE.s_ypos + x_vert;
-   DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);
-   myKINE.s_zpos  = myKINE.s_zpos - (myKINE.s_ypos * sin (x_rads));
-   myKINE.s_ypos  = x_vert * cos (x_rads);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_zpos", myKINE.s_zpos);
-   DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_ypos", myKINE.s_ypos);
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char  /+--> adjust coordinates based on body ------[ ------ [ ------ ]-+/                 <* 
+ *> ykine__parse_adjust     (void)                                                            <* 
+ *> {                                                                                         <* 
+ *>    char        rce         = -10;                /+ return code for errors    +/          <* 
+ *>    double      x_degs      = 0.0;                                                         <* 
+ *>    double      x_rads      = 0.0;                                                         <* 
+ *>    double      x_dist      = 0.0;                                                         <* 
+ *>    double      x_orig      = 0.0;                                                         <* 
+ *>    double      x_vert      = 0.0;                                                         <* 
+ *>    /+---(header)-------------------------+/                                               <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                        <* 
+ *>    /+---(center changes)-----------------+/                                               <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_note    ("shift adjustments");                                  <* 
+ *>    myKINE.s_xpos -= myKINE.s_xcenter;                                                     <* 
+ *>    myKINE.s_zpos -= myKINE.s_zcenter;                                                     <* 
+ *>    myKINE.s_ypos -= myKINE.s_ycenter;                                                     <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_xpos", myKINE.s_xpos);                   <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_zpos", myKINE.s_zpos);                   <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_ypos", myKINE.s_ypos);                   <* 
+ *>    /+---(yaw)----------------------------+/                                               <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_note    ("yaw calcs");                                          <* 
+ *>    x_dist  = sqrt  ((myKINE.s_xpos * myKINE.s_xpos) + (myKINE.s_zpos * myKINE.s_zpos));   <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);                                 <* 
+ *>    x_rads  = - atan2 (myKINE.s_zpos , myKINE.s_xpos);                                     <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);                                 <* 
+ *>    x_degs  = x_rads * RAD2DEG;                                                            <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);                                 <* 
+ *>    x_rads += (myKINE.s_yaw * DEG2RAD);                                                    <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new x_rads", x_rads);                                 <* 
+ *>    x_degs  = x_rads * RAD2DEG;                                                            <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new x_degs", x_degs);                                 <* 
+ *>    myKINE.s_xpos  =   x_dist * cos (x_rads);                                              <* 
+ *>    myKINE.s_zpos  = -(x_dist * sin (x_rads));                                             <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_xpos", myKINE.s_xpos);                   <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_zpos", myKINE.s_zpos);                   <* 
+ *>    /+---(rotate)-------------------------+/                                               <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_note    ("rotate calcs");                                       <* 
+ *>    x_dist  = myKINE.s_xpos;                                                               <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);                                 <* 
+ *>    x_rads  = myKINE.s_roll * DEG2RAD;                                                     <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);                                 <* 
+ *>    x_degs  = x_rads * RAD2DEG;                                                            <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);                                 <* 
+ *>    x_vert  = x_dist * sin (x_rads);                                                       <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);                                 <* 
+ *>    x_vert  = myKINE.s_ypos + x_vert;                                                      <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);                                 <* 
+ *>    myKINE.s_xpos  = myKINE.s_xpos - (myKINE.s_ypos * sin (x_rads));                       <* 
+ *>    myKINE.s_ypos  = x_vert * cos (x_rads);                                                <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_xpos", myKINE.s_xpos);                   <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_ypos", myKINE.s_ypos);                   <* 
+ *>    /+---(pitch)--------------------------+/                                               <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_note    ("pitch calcs");                                        <* 
+ *>    x_dist  = myKINE.s_zpos;                                                               <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_dist"    , x_dist);                                 <* 
+ *>    x_rads  = myKINE.s_pitch * DEG2RAD;                                                    <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_rads"    , x_rads);                                 <* 
+ *>    x_degs  = x_rads * RAD2DEG;                                                            <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_degs"    , x_degs);                                 <* 
+ *>    x_vert  = x_dist * sin (x_rads);                                                       <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("x_vert"    , x_vert);                                 <* 
+ *>    x_vert  = myKINE.s_ypos + x_vert;                                                      <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new x_vert", x_vert);                                 <* 
+ *>    myKINE.s_zpos  = myKINE.s_zpos - (myKINE.s_ypos * sin (x_rads));                       <* 
+ *>    myKINE.s_ypos  = x_vert * cos (x_rads);                                                <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_zpos", myKINE.s_zpos);                   <* 
+ *>    DEBUG_YKINE_SCRP  yLOG_double  ("new myKINE.s_ypos", myKINE.s_ypos);                   <* 
+ *>    /+---(complete)-----------------------+/                                               <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                        <* 
+ *>    return 0;                                                                              <* 
+ *> }                                                                                         <*/
 
 
 char  /*--> parse a full record -------------------[ ------ [ ------ ]-*/
@@ -734,6 +715,13 @@ ykine_parse             (void)
    char        x_type      =  '-';
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   rc = ykine__scrp_prep     ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("prep"      , rc);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
    /*---(read and clean)-----------------*/
    rc = ykine_parse_read     ();
    DEBUG_YKINE_SCRP  yLOG_value   ("read"      , rc);
@@ -745,52 +733,20 @@ ykine_parse             (void)
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
-   DEBUG_YKINE_SCRP  yLOG_value   ("iverb"     , myKINE.s_iverb);
+   /*---(load the queue)-----------------*/
+   rc = ykine_queue_recd  (myKINE.s_recd);
+   DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    if (myKINE.s_iverb < 0) {
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
-   /*---(prepare)------------------------*/
-   rc = ykine__scrp_prep     ();
-   DEBUG_YKINE_SCRP  yLOG_value   ("prep"      , rc);
+   /*---(handle the verb)----------------*/
+   rc = ykine_queue_popverb ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("verb"      , rc);
    if (rc < 0) {
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
-   /*---(parsing)------------------------*/
-   /*> x_type = s_verb_info [myKINE.s_iverb].type;                                    <*/
-   /*> DEBUG_YKINE_SCRP  yLOG_char    ("type"      , x_type);                         <*/
-   rc = ykine_parse_fields  ();
-   /*> switch (x_type) {                                                                                <* 
-    *> case PARSE_POINT :                                                                               <* 
-    *>    rc = ykine_parse_fields  (&myKINE.s_beats, &myKINE.s_xpos, &myKINE.s_zpos, &myKINE.s_ypos);   <* 
-    *>    break;                                                                                        <* 
-    *> case PARSE_ANGLE :                                                                               <* 
-    *>    rc = ykine_parse_fields  (&myKINE.s_beats, &myKINE.s_femu, &myKINE.s_pate, &myKINE.s_tibi);   <* 
-    *>    break;                                                                                        <* 
-    *> case PARSE_MUSIC :                                                                               <* 
-    *>    rc = ykine_parse_fields  (&myKINE.s_1st  , &myKINE.s_2nd , NULL, NULL);                       <* 
-    *>    break;                                                                                        <* 
-    *> }                                                                                                <*/
-   DEBUG_YKINE_SCRP  yLOG_note    ("checking");
-   if (x_type != PARSE_NONE) {
-      DEBUG_YKINE_SCRP  yLOG_value   ("parse"     , rc);
-      if (rc < 0) {
-         DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
-         return rc;
-      }
-   }
-   DEBUG_YKINE_SCRP  yLOG_note    ("checking two");
-   /*---(check)--------------------------*/
-   /*> if (x_type == PARSE_POINT || x_type == PARSE_ANGLE) {                          <* 
-    *>    rc = ykine_parse_check   ();                                                <* 
-    *>    DEBUG_YKINE_SCRP  yLOG_value   ("parse"     , rc);                          <* 
-    *>    if (rc < 0) {                                                               <* 
-    *>       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);                       <* 
-    *>       return rc;                                                               <* 
-    *>    }                                                                           <* 
-    *> }                                                                              <*/
-   /*> DEBUG_YKINE_SCRP  yLOG_note    ("checking three");                             <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1065,7 +1021,7 @@ ykine_scrp_ik_pure      (void)
        *> myKINE.s_zpos = x_zsave;                                                    <* 
        *> myKINE.s_ypos = x_ysave;                                                    <*/
       /*---(adjust)----------------------*/
-      rc = ykine__parse_adjust ();
+      /*> rc = ykine__parse_adjust ();                                                <*/
       /*---(calc angles)-----------------*/
       rc = yKINE_inverse  (x_leg, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse rc", rc);
@@ -1155,7 +1111,7 @@ ykine_scrp_ik_from      (void)
       DEBUG_YKINE_SCRP  yLOG_double  ("myKINE.s_zpos new", myKINE.s_zpos);
       DEBUG_YKINE_SCRP  yLOG_double  ("myKINE.s_ypos new", myKINE.s_ypos);
       /*---(adjust)----------------------*/
-      rc = ykine__parse_adjust ();
+      /*> rc = ykine__parse_adjust ();                                                <*/
       /*---(get angles)------------------*/
       rc = yKINE_inverse  (x_leg, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
       rc = yKINE_angles   (x_leg, YKINE_IK, NULL, &myKINE.s_femu, &myKINE.s_pate, &myKINE.s_tibi);

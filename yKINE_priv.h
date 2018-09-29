@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0g"
-#define     YKINE_VER_TXT   "parsing queue built and push/pop working and unit tested"
+#define     YKINE_VER_NUM   "1.0h"
+#define     YKINE_VER_TXT   "queue logic for verbs, servos, and recds unit tested"
 
 
 
@@ -331,7 +331,8 @@ char        ykine_queue_recd        (char  *a_recd);
 char        ykine_queue_func        (char  *a_func);
 char        ykine_queue_popstr      (char  *a_string);
 char        ykine_queue_popval      (float *a_value, char *a_rel);
-char        ykine_queue_servos      (void);
+char        ykine_queue_popverb     (void);
+char        ykine_queue_popservo    (void);
 char*       ykine__unit_queue       (char *a_question, int a_num);
 
 

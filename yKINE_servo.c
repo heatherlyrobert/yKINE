@@ -521,30 +521,10 @@ ykine_servos            (char *a_source)
       return rce;
    }
    DEBUG_YKINE_SCRP  yLOG_info    ("s_ranks"   , s_ranks);
-   /*---(interpret segment)--------------*/
-   /*> if (x_len > 2) {                                                               <* 
-    *>    strlcpy (x_seg, a_source + 3, LEN_LABEL);                                   <* 
-    *>    rc = ykine_servo_segment (x_seg);                                           <* 
-    *>    --rce;  if (rc < 0) {                                                       <* 
-    *>       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);                     <* 
-    *>       return rce;                                                              <* 
-    *>    }                                                                           <* 
-    *> } else {                                                                       <* 
-    *>    strlcpy (x_seg, "femu"        , LEN_LABEL);                                 <* 
-    *> }                                                                              <* 
-    *> switch (myKINE.s_targ) {                                                       <* 
-    *> case YKINE_FORWARD : strlcpy (x_seg, "femu"  , LEN_LABEL);  break;             <* 
-    *> case YKINE_INVERSE : strlcpy (x_seg, "tibi"  , LEN_LABEL);  break;             <* 
-    *> case YKINE_ORIENT  : strlcpy (x_seg, "yaw"   , LEN_LABEL);  break;             <* 
-    *> case YKINE_ZERO    : strlcpy (x_seg, "zero"  , LEN_LABEL);  break;             <* 
-    *> }                                                                              <*/
    /*---(cycle)--------------------------*/
    for (i = 0; i < s_nside; ++i) {
       for (j = 0; j < s_nrank; ++j) {
          rc = ykine_servo_format (s_sides [i], s_ranks [j], x_label);
-         /*> if (s_sides [i] == 'z' && s_ranks [i] != 'z')  continue;                 <* 
-          *> if (s_sides [i] == 'o' && s_ranks [i] != 'o')  continue;                 <* 
-          *> sprintf (x_label, "%c%c.%s", s_sides [i], s_ranks [j], x_seg);           <*/
          DEBUG_YKINE_SCRP  yLOG_info    ("x_label"   , x_label);
          x_index = ykine_servo_one (x_label);
          if (x_index > 0)  ++c;

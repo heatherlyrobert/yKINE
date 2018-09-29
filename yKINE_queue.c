@@ -59,7 +59,6 @@ ykine_queue_push        (char *a_string)
    return 0;
 }
 
-
 char         /*--> parse incomming record ----------------[ ------ [ ------ ]-*/
 ykine_queue_recd            (char *a_recd)
 {
@@ -261,7 +260,7 @@ ykine_queue_popverb     (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;               /* generic return code       */
    int         i           =    0;
-   char       *x_verb      = NULL;
+   char        x_verb      [LEN_RECD];
    int         x_len       =    0;
    int         x_index     =   -1;
    /*---(header)-------------------------*/
@@ -270,6 +269,7 @@ ykine_queue_popverb     (void)
    rc = ykine_queue_popstr (x_verb);
    if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
    }
    /*---(lower)--------------------------*/
    x_len = strllen (x_verb, LEN_RECD);
@@ -280,6 +280,7 @@ ykine_queue_popverb     (void)
    rc = ykine_scrp_verb   (x_verb);
    if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -287,28 +288,23 @@ ykine_queue_popverb     (void)
 }
 
 char
-ykine_queue_servos      (void)
+ykine_queue_popservo    (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    int         x_len       =    0;
-   char       *p           = NULL;
+   char        x_servo     [LEN_RECD];
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_YKINE_SCRP  yLOG_value   ("s_nqueue"  , s_nqueue);
-   --rce;  if (s_nqueue <= 0) {
-      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_YKINE_SCRP  yLOG_value   ("MAX_QUEUE" , MAX_QUEUE);
-   DEBUG_YKINE_SCRP  yLOG_value   ("s_cqueue"  , s_cqueue);
-   --rce;  if (s_cqueue >= MAX_QUEUE) {
-      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   /*---(pop)----------------------------*/
+   rc = ykine_queue_popstr (x_servo);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
    }
    /*---(prepare)------------------------*/
-   x_len = strlen (s_queue [s_cqueue]);
+   x_len = strlen (x_servo);
    /*---(check empty)--------------------*/
    --rce;  if (x_len == 0) {
       return rce;
@@ -320,16 +316,12 @@ ykine_queue_servos      (void)
       return rce;
    }
    /*---(identify servos)----------------*/
-   p = s_queue [s_cqueue];
-   myKINE.s_count = ykine_servos (p);
+   myKINE.s_count = ykine_servos (x_servo);
    DEBUG_YKINE_SCRP  yLOG_value   ("count"     , myKINE.s_count);
    --rce;  if (myKINE.s_count < 0) {
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(prepare for next)---------------*/
-   ykine_queue_wipe (s_cqueue);
-   ++s_cqueue;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
    return 0;
