@@ -504,11 +504,11 @@ ykine_scrp_walk        (int a_repeats)
          case 11 :  myKINE.s_xpos =  32.00;  myKINE.s_ypos =   10.00; break;
          }
          /*---(check)--------------------------*/
-         rc = ykine_parse_check   ();
-         if (rc < 0) {
-            DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-            return rc;
-         }
+         /*> rc = ykine_parse_check   ();                                             <* 
+          *> if (rc < 0) {                                                            <* 
+          *>    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                        <* 
+          *>    return rc;                                                            <* 
+          *> }                                                                        <*/
          /*---(handle IK)----------------------*/
          rc = ykine_scrp_ik_from   ();
       }
@@ -624,11 +624,11 @@ ykine_scrp_turn        (int a_repeats)
             myKINE.s_secs = 0.100;
             DEBUG_YKINE_SCRP  yLOG_double  ("myKINE.s_secs"    , myKINE.s_secs);
             /*---(check)--------------------------*/
-            rc = ykine_parse_check   ();
-            if (rc < 0) {
-               DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-               return rc;
-            }
+            /*> rc = ykine_parse_check   ();                                          <* 
+             *> if (rc < 0) {                                                         <* 
+             *>    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                     <* 
+             *>    return rc;                                                         <* 
+             *> }                                                                     <*/
             /*---(handle IK)----------------------*/
             rc = ykine_scrp_ik_from   ();
          }

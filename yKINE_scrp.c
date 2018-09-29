@@ -19,48 +19,57 @@ typedef    struct  cVERBS  tVERBS;
 struct cVERBS {
    char        name        [LEN_LABEL];     /* full verb name                 */
    char        active;                      /* allowed for use                */
-   char        vers        [LEN_LABEL];     /* allowed versions               */
    char        target;                      /* leg/seg targeting override     */
    char        from;                        /* pure vs from coding            */
-   char        type;                        /* field interpretation type      */
    char        (*call)     (void);          /* function pointer               */
    char        desc        [LEN_STR  ];     /* english description            */
 };
 tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ inverse kinematics ]]================================================*/
-   /* verb----------- actv- vers--------- targ---------- rel-------- type--------- call------------------- description---------------------------------------- */
-   { "ik_pure"      , 'y' , "ab"        , YKINE_INVERSE, YKINE_PURE, PARSE_POINT , ykine_scrp_ik         , "set an exact endpoint in 3d space"                 },
-   { "ik_down"      , '-' , "ab"        , YKINE_INVERSE, YKINE_DOWN, PARSE_POINT , ykine_scrp_ik         , "set an exact endpoint, except rel to ground (y)"   },
-   { "ik_from"      , 'y' , "ab"        , YKINE_INVERSE, YKINE_FROM, PARSE_POINT , ykine_scrp_ik         , "set a relative endpoint based on last position"    },
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "ik_pure"      , 'y' , YKINE_INVERSE, YKINE_PURE, ykine_scrp_ik         , "set an exact endpoint in 3d space"                 },
+   { "ik_down"      , '-' , YKINE_INVERSE, YKINE_DOWN, ykine_scrp_ik         , "set an exact endpoint, except rel to ground (y)"   },
+   { "ik_from"      , 'y' , YKINE_INVERSE, YKINE_FROM, ykine_scrp_ik         , "set a relative endpoint based on last position"    },
    /* ===[[ forward kinematics ]]================================================*/
-   /* verb----------- actv- vers--------- targ---------- rel-------- type--------- call------------------- description---------------------------------------- */
-   { "fk_pure"      , 'y' , "ab"        , YKINE_FORWARD, YKINE_PURE, PARSE_ANGLE , ykine_scrp_fk         , "set absolute joint angles on all three joints"     },
-   { "fk_from"      , 'y' , "ab"        , YKINE_FORWARD, YKINE_FROM, PARSE_ANGLE , ykine_scrp_fk         , "set relative joint angles based on last angle"     },
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "fk_pure"      , 'y' , YKINE_FORWARD, YKINE_PURE, ykine_scrp_fk         , "set absolute joint angles on all three joints"     },
+   { "fk_from"      , 'y' , YKINE_FORWARD, YKINE_FROM, ykine_scrp_fk         , "set relative joint angles based on last angle"     },
    /* ===[[ body zero-point ]]===================================================*/
-   /* verb----------- actv- vers--------- targ---------- rel-------- type--------- call------------------- description---------------------------------------- */
-   { "ze_pure"      , 'y' , "ab"        , YKINE_ZERO   , YKINE_PURE, PARSE_POINT , ykine_scrp_zero       , "set absolute body position in 3d space"            },
-   { "ze_from"      , 'y' , "ab"        , YKINE_ZERO   , YKINE_FROM, PARSE_POINT , ykine_scrp_zero       , "set relative body position based on last position" },
-   { "ze_polar"     , 'y' , "ab"        , YKINE_ZERO   , YKINE_PURE, PARSE_POINT , ykine_scrp_zero_polar , "set relative body position based on last position" },
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "ze_pure"      , 'y' , YKINE_ZERO   , YKINE_PURE, ykine_scrp_zero       , "set absolute body position in 3d space"            },
+   { "ze_from"      , 'y' , YKINE_ZERO   , YKINE_FROM, ykine_scrp_zero       , "set relative body position based on last position" },
+   { "ze_polar"     , 'y' , YKINE_ZERO   , YKINE_PURE, ykine_scrp_zero_polar , "set relative body position based on last position" },
    /* ===[[ body orientation ]]==================================================*/
-   /* verb----------- actv- vers--------- targ---------- rel-------- type--------- call------------------- description---------------------------------------- */
-   { "or_pure"      , 'y' , "ab"        , YKINE_ORIENT , YKINE_PURE, PARSE_ANGLE , ykine_scrp_orient     , "set absolute body orientation angles"              },
-   { "or_from"      , 'y' , "ab"        , YKINE_ORIENT , YKINE_FROM, PARSE_ANGLE , ykine_scrp_orient     , "set relative body orientation from last position"  },
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "or_pure"      , 'y' , YKINE_ORIENT , YKINE_PURE, ykine_scrp_orient     , "set absolute body orientation angles"              },
+   { "or_from"      , 'y' , YKINE_ORIENT , YKINE_FROM, ykine_scrp_orient     , "set relative body orientation from last position"  },
    /* ===[[ music notation ]]====================================================*/
-   /* verb----------- actv- vers--------- targ---------- rel-------- type--------- call------------------- description---------------------------------------- */
-   { "meter"        , 'y' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_MUSIC , ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
-   { "tempo"        , 'y' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_MUSIC , ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
-   { "segno"        , 'y' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_MUSIC , ykine_scrp_segno      , "mark a place in the music for later repeats"       },
-   { "repeat"       , 'y' , "ab"        , YKINE_NONE   , YKINE_NONE, PARSE_MUSIC , ykine_scrp_repeat     , "repeat a particular section of movements"          },
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "meter"        , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tempo"        , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
+   { "segno"        , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_segno      , "mark a place in the music for later repeats"       },
+   { "repeat"       , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "repeat a particular section of movements"          },
+   /* ===[[ turtle graphics ]]===================================================*/
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "tu_home"      , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_move"      , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_goto"      , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_turn"      , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_head"      , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_lower"     , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_raise"     , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_push"      , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { "tu_pop"       , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
    /* ===[[ gait framework ]]====================================================*/
-   /* verb----------- actv- vers--------- targ---------- rel-------- type--------- call------------------- description---------------------------------------- */
-   { "06_GAIT_BEG"  , 'y' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_NONE  , ykine_gait_06_beg     , "begin a 6-step gait description"                   },
-   { "06_GAIT_END"  , 'y' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_NONE  , ykine_gait_06_end     , "end a 6-step gait description"                     },
-   { "12_GAIT_BEG"  , 'y' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_NONE  , ykine_gait_12_beg     , "begin a 12-step gait description"                  },
-   { "12_GAIT_END"  , 'y' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_NONE  , ykine_gait_12_end     , "end a 12-step gait description"                    },
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "06_GAIT_BEG"  , 'y' , YKINE_NONE   , YKINE_NONE, ykine_gait_06_beg     , "begin a 6-step gait description"                   },
+   { "06_GAIT_END"  , 'y' , YKINE_NONE   , YKINE_NONE, ykine_gait_06_end     , "end a 6-step gait description"                     },
+   { "12_GAIT_BEG"  , 'y' , YKINE_NONE   , YKINE_NONE, ykine_gait_12_beg     , "begin a 12-step gait description"                  },
+   { "12_GAIT_END"  , 'y' , YKINE_NONE   , YKINE_NONE, ykine_gait_12_end     , "end a 12-step gait description"                    },
    /* ===[[ complex gaits ]]=====================================================*/
-   /* verb----------- actv- vers--------- targ---------- rel-------- type--------- call------------------- description---------------------------------------- */
-   { "walk"         , '-' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_NONE  , NULL                  , "repeat a specific number of steps"                 },
-   { "circle"       , '-' , "a"         , YKINE_NONE   , YKINE_NONE, PARSE_NONE  , NULL                  , "repeat a specific number of steps"                 },
+   /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
+   { "walk"         , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "repeat a specific number of steps"                 },
+   { "circle"       , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "repeat a specific number of steps"                 },
    /* done-------------------*/
 };
 
@@ -146,12 +155,20 @@ ykine_scrp_init    (void)
 char  /* file reading driver ----------------------[--------[--------]-*/
 ykine__scrp_prep   (void)
 {
-   int         i           = 0;
-   ykine_servo_prep ();
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   /*---(call clears)--------------------*/
+   ykine_servo_prep  ();
+   ykine_queue_purge ();
    for (i = 0; i < MAX_SCRPARG; ++i) {
       if (strcmp (s_scrparg [i].name, "end-of-list") == 0)  break;
       s_scrparg [i].flag = '-';
    }
+   /*---(reset globals)------------------*/
+   strlcpy (myKINE.s_verb, "", LEN_LABEL);
+   myKINE.s_iverb     = -1;
+   myKINE.s_targ      = '-';
+   myKINE.s_from      = '-';
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -169,14 +186,11 @@ ykine_scrp_verb         (char *a_char)
    DEBUG_YKINE_SCRP   yLOG_spoint  (a_char);
    /*---(defense)------------------------*/
    --rce;  if (a_char == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("NULL");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YKINE_SCRP   yLOG_snote   ("no value");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_YKINE_SCRP   yLOG_snote   (a_char);
-   /*---(lower)--------------------------*/
-   x_len = strlen (a_char);
-   for (i = 0; i < x_len; ++i)   a_char [i] = tolower (a_char [i]);
    /*---(cycle)--------------------------*/
    for (i = 0; i < MAX_VERBS; ++i) {
       /*---(check legs first)------------*/
@@ -186,17 +200,21 @@ ykine_scrp_verb         (char *a_char)
       x_index = i;
       break;
    }
-   if (x_index <  0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, x_index);
-      return x_index;
+   --rce;  if (x_index <  0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("not found");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
    }
    DEBUG_YKINE_SCRP   yLOG_sint    (x_index);
    /*---(save)---------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_snote   ("saving globally");
    strncpy   (myKINE.s_verb, s_verb_info [x_index].name, LEN_LABEL);
-   myKINE.s_type = s_verb_info [x_index].type;
+   myKINE.s_iverb = x_index;
+   myKINE.s_targ = s_verb_info [myKINE.s_iverb].target;
+   myKINE.s_from = s_verb_info [myKINE.s_iverb].from;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return x_index;
+   return 0;
 }
 
 static char  /*--> reture an argument value --------------[ ------ [ ------ ]-*/
@@ -356,8 +374,6 @@ ykine_parse_read       (void)
    strlcpy (myKINE.s_verb, "", LEN_LABEL);
    myKINE.s_iverb     = -1;
    myKINE.s_targ      = '-';
-   myKINE.s_type      = '-';
-   myKINE.s_vers      = '-';
    myKINE.s_count     = -1;
    myKINE.s_beats     = 0.0;
    myKINE.s_secs      = 0.0;
@@ -415,31 +431,6 @@ ykine_parse_read       (void)
    myKINE.s_iverb = rc;
    myKINE.s_targ = s_verb_info [myKINE.s_iverb].target;
    myKINE.s_from = s_verb_info [myKINE.s_iverb].from;
-   /*---(get version)-----------------*/
-   p = strtok_r (NULL     , myKINE.s_q, &myKINE.s_context);
-   --rce;  if (p == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("can not parse version field");
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   strltrim  (p, ySTR_BOTH, LEN_RECD);
-   --rce;  if (strlen (p) != 3) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("invalid length version field (3)");
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   --rce;  if (p[0] != '-' || p[2] != '-') {
-      DEBUG_YKINE_SCRP   yLOG_note    ("invalid format version field (-x-)");
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   --rce;  if (strchr (s_verb_info [rc].vers, p [1]) == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_note    ("not an allowed version");
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   myKINE.s_vers = p[1];
-   DEBUG_YKINE_SCRP  yLOG_char    ("version"   , myKINE.s_vers);
    /*---(complete)--------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -476,7 +467,7 @@ ykine_parse_prep       (char *a_verb)
 }
 
 char  /*--> parse a IK/FK move --------------------[ ------ [ ------ ]-*/
-ykine_parse_fields          (float *a, float *b, float *c, float *d)
+ykine_parse_fields_OLD      (float *a, float *b, float *c, float *d)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -568,64 +559,98 @@ ykine_parse_fields          (float *a, float *b, float *c, float *d)
    return 0;
 }
 
-char  /*--> check results of a IK/FK parse --------[ ------ [ ------ ]-*/
-ykine_parse_check      (void)
+char  /*--> parse a IK/FK move --------------------[ ------ [ ------ ]-*/
+ykine_parse_fields          (void)
 {
+   /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
+   char        rc          =   0;                /* generic return code       */
+   char       *p           = NULL;
+   int         i           = 0;
+   char        x_request   [LEN_LABEL];
+   int         x_len       = 0;
+   float       x_temp      =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(check duration)-----------------*/
-   --rce;  if (myKINE.s_secs == FAILED) {
-      DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_secs"    , "never read");
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rce;
+   /*---(read fields)--------------------*/
+   while (1) {
+      /*---(parse field)-----------------*/
+      DEBUG_YKINE_SCRP   yLOG_note    ("read next field");
+      p = strtok_r (NULL  , myKINE.s_q, &myKINE.s_context);
+      --rce;  if (p == NULL) {
+         DEBUG_YKINE_SCRP   yLOG_note    ("strtok_r came up empty");
+         break;
+      }
+      strltrim (p, ySTR_BOTH, LEN_RECD);
+      x_len = strlen (p);
+      DEBUG_YKINE_SCRP  yLOG_info    ("field"     , p);
+      DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
+      rc = ykine_queue_push (p);
    }
-   /*---(check angles)-------------------*/
-   if (myKINE.s_type == PARSE_ANGLE) {
-      --rce;  if (myKINE.s_femu == FAILED) {
-         DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_femu"    , "never read");
-         DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      --rce;  if (myKINE.s_pate == FAILED) {
-         DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_pate"    , "never read");
-         DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      --rce;  if (myKINE.s_tibi == FAILED) {
-         DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_tibi"    , "never read");
-         DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-   }
-   /*---(check endpoint)-----------------*/
-   else if (myKINE.s_type == PARSE_POINT) {
-      --rce;  if (myKINE.s_xpos == FAILED) {
-         DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_xpos"    , "never read");
-         DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      --rce;  if (myKINE.s_zpos == FAILED) {
-         DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_zpos"    , "never read");
-         DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      --rce;  if (myKINE.s_ypos == FAILED) {
-         DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_ypos"    , "never read");
-         DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-   }
-   /*---(bad type)-----------------------*/
-   else {
-      DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_type"    , "unknown type");
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
+   DEBUG_YKINE_SCRP   yLOG_note    ("done parsing fields");
    /*---(done)---------------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+/*> char  /+--> check results of a IK/FK parse --------[ ------ [ ------ ]-+/          <* 
+ *> ykine_parse_check      (void)                                                      <* 
+ *> {                                                                                  <* 
+ *>    char        rce         = -10;                /+ return code for errors    +/   <* 
+ *>    /+---(header)-------------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                 <* 
+ *>    /+---(check duration)-----------------+/                                        <* 
+ *>    --rce;  if (myKINE.s_secs == FAILED) {                                          <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_secs"    , "never read");          <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                               <* 
+ *>       return rce;                                                                  <* 
+ *>    }                                                                               <* 
+ *>    /+---(check angles)-------------------+/                                        <* 
+ *>    if (myKINE.s_type == PARSE_ANGLE) {                                             <* 
+ *>       --rce;  if (myKINE.s_femu == FAILED) {                                       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_femu"    , "never read");       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                            <* 
+ *>          return rce;                                                               <* 
+ *>       }                                                                            <* 
+ *>       --rce;  if (myKINE.s_pate == FAILED) {                                       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_pate"    , "never read");       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                            <* 
+ *>          return rce;                                                               <* 
+ *>       }                                                                            <* 
+ *>       --rce;  if (myKINE.s_tibi == FAILED) {                                       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_tibi"    , "never read");       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                            <* 
+ *>          return rce;                                                               <* 
+ *>       }                                                                            <* 
+ *>    }                                                                               <* 
+ *>    /+---(check endpoint)-----------------+/                                        <* 
+ *>    else if (myKINE.s_type == PARSE_POINT) {                                        <* 
+ *>       --rce;  if (myKINE.s_xpos == FAILED) {                                       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_xpos"    , "never read");       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                            <* 
+ *>          return rce;                                                               <* 
+ *>       }                                                                            <* 
+ *>       --rce;  if (myKINE.s_zpos == FAILED) {                                       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_zpos"    , "never read");       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                            <* 
+ *>          return rce;                                                               <* 
+ *>       }                                                                            <* 
+ *>       --rce;  if (myKINE.s_ypos == FAILED) {                                       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_ypos"    , "never read");       <* 
+ *>          DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                            <* 
+ *>          return rce;                                                               <* 
+ *>       }                                                                            <* 
+ *>    }                                                                               <* 
+ *>    /+---(bad type)-----------------------+/                                        <* 
+ *>    else {                                                                          <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_warn    ("myKINE.s_type"    , "unknown type");        <* 
+ *>       DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                               <* 
+ *>       return rce;                                                                  <* 
+ *>    }                                                                               <* 
+ *>    /+---(done)---------------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                 <* 
+ *>    return 0;                                                                       <* 
+ *> }                                                                                  <*/
 
 char  /*--> adjust coordinates based on body ------[ ------ [ ------ ]-*/
 ykine__parse_adjust     (void)
@@ -733,19 +758,20 @@ ykine_parse             (void)
       return rc;
    }
    /*---(parsing)------------------------*/
-   x_type = s_verb_info [myKINE.s_iverb].type;
-   DEBUG_YKINE_SCRP  yLOG_char    ("type"      , x_type);
-   switch (x_type) {
-   case PARSE_POINT :
-      rc = ykine_parse_fields  (&myKINE.s_beats, &myKINE.s_xpos, &myKINE.s_zpos, &myKINE.s_ypos);
-      break;
-   case PARSE_ANGLE :
-      rc = ykine_parse_fields  (&myKINE.s_beats, &myKINE.s_femu, &myKINE.s_pate, &myKINE.s_tibi);
-      break;
-   case PARSE_MUSIC :
-      rc = ykine_parse_fields  (&myKINE.s_1st  , &myKINE.s_2nd , NULL, NULL);
-      break;
-   }
+   /*> x_type = s_verb_info [myKINE.s_iverb].type;                                    <*/
+   /*> DEBUG_YKINE_SCRP  yLOG_char    ("type"      , x_type);                         <*/
+   rc = ykine_parse_fields  ();
+   /*> switch (x_type) {                                                                                <* 
+    *> case PARSE_POINT :                                                                               <* 
+    *>    rc = ykine_parse_fields  (&myKINE.s_beats, &myKINE.s_xpos, &myKINE.s_zpos, &myKINE.s_ypos);   <* 
+    *>    break;                                                                                        <* 
+    *> case PARSE_ANGLE :                                                                               <* 
+    *>    rc = ykine_parse_fields  (&myKINE.s_beats, &myKINE.s_femu, &myKINE.s_pate, &myKINE.s_tibi);   <* 
+    *>    break;                                                                                        <* 
+    *> case PARSE_MUSIC :                                                                               <* 
+    *>    rc = ykine_parse_fields  (&myKINE.s_1st  , &myKINE.s_2nd , NULL, NULL);                       <* 
+    *>    break;                                                                                        <* 
+    *> }                                                                                                <*/
    DEBUG_YKINE_SCRP  yLOG_note    ("checking");
    if (x_type != PARSE_NONE) {
       DEBUG_YKINE_SCRP  yLOG_value   ("parse"     , rc);
@@ -756,15 +782,15 @@ ykine_parse             (void)
    }
    DEBUG_YKINE_SCRP  yLOG_note    ("checking two");
    /*---(check)--------------------------*/
-   if (x_type == PARSE_POINT || x_type == PARSE_ANGLE) {
-      rc = ykine_parse_check   ();
-      DEBUG_YKINE_SCRP  yLOG_value   ("parse"     , rc);
-      if (rc < 0) {
-         DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
-         return rc;
-      }
-   }
-   DEBUG_YKINE_SCRP  yLOG_note    ("checking three");
+   /*> if (x_type == PARSE_POINT || x_type == PARSE_ANGLE) {                          <* 
+    *>    rc = ykine_parse_check   ();                                                <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_value   ("parse"     , rc);                          <* 
+    *>    if (rc < 0) {                                                               <* 
+    *>       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);                       <* 
+    *>       return rc;                                                               <* 
+    *>    }                                                                           <* 
+    *> }                                                                              <*/
+   /*> DEBUG_YKINE_SCRP  yLOG_note    ("checking three");                             <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1097,11 +1123,11 @@ ykine_scrp_ik_from      (void)
       return rc;
    }
    /*---(check)--------------------------*/
-   rc = ykine_parse_check   ();
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
+   /*> rc = ykine_parse_check   ();                                                   <*/
+   /*> if (rc < 0) {                                                                  <* 
+    *>    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);                              <* 
+    *>    return rc;                                                                  <* 
+    *> }                                                                              <*/
    /*---(process)------------------------*/
    x_xsave = myKINE.s_xpos;
    x_zsave = myKINE.s_zpos;
@@ -1636,17 +1662,17 @@ yKINE_script       (float *a_len)
 /*====================------------------------------------====================*/
 static void      o___UNITTEST________________o (void) {;};
 
-char
-ykine_parse_fields_pos  (void)
-{
-   return ykine_parse_fields (&(myKINE.s_beats), &(myKINE.s_xpos), &(myKINE.s_zpos), &(myKINE.s_ypos));
-}
+/*> char                                                                                                      <* 
+ *> ykine_parse_fields_pos  (void)                                                                            <* 
+ *> {                                                                                                         <* 
+ *>    return ykine_parse_fields (&(myKINE.s_beats), &(myKINE.s_xpos), &(myKINE.s_zpos), &(myKINE.s_ypos));   <* 
+ *> }                                                                                                         <*/
 
-char
-ykine_parse_fields_deg  (void)
-{
-   return ykine_parse_fields (&(myKINE.s_beats), &(myKINE.s_femu), &(myKINE.s_pate), &(myKINE.s_tibi));
-}
+/*> char                                                                                                      <* 
+ *> ykine_parse_fields_deg  (void)                                                                            <* 
+ *> {                                                                                                         <* 
+ *>    return ykine_parse_fields (&(myKINE.s_beats), &(myKINE.s_femu), &(myKINE.s_pate), &(myKINE.s_tibi));   <* 
+ *> }                                                                                                         <*/
 
 char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine__unit_scrp        (char *a_question, int a_num)
@@ -1658,7 +1684,11 @@ ykine__unit_scrp        (char *a_question, int a_num)
    strlcpy  (ykine__unit_answer, "SCRP unit        : question not understood", LEN_STR);
    /*---(answer)------------------------------------------*/
    if (strcmp (a_question, "verb"    ) == 0) {
-      sprintf (ykine__unit_answer, "SCRP verb      : %-7.7s    , vers %c, type %c", myKINE.s_verb, myKINE.s_vers, myKINE.s_type);
+      if (myKINE.s_iverb < 0) {
+         sprintf (ykine__unit_answer, "SCRP verb      : none");
+      } else {
+         sprintf (ykine__unit_answer, "SCRP verb      : %-10.10s, targ %c, from %c", myKINE.s_verb, myKINE.s_targ, myKINE.s_from);
+      }
    }
    else if (strcmp (a_question, "angles"   ) == 0) {
       sprintf (ykine__unit_answer, "SCRP angles    : %8.3fb, %8.2ff, %8.2fp, %8.2ft", myKINE.s_beats, myKINE.s_femu, myKINE.s_pate, myKINE.s_tibi);

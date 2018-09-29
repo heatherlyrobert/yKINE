@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0f"
-#define     YKINE_VER_TXT   "segno/repeat working together with a stack to allow nesting"
+#define     YKINE_VER_NUM   "1.0g"
+#define     YKINE_VER_TXT   "parsing queue built and push/pop working and unit tested"
 
 
 
@@ -73,9 +73,7 @@ struct cLOCAL {
    char        s_verb      [LEN_LABEL];     /* script line verb               */
    int         s_iverb;                     /* index of verb                  */
    char        s_targ;                      /* leg/seg targeting override     */
-   char        s_type;                      /* value intrepretation           */
    char        s_from;                      /* pure vs from                   */
-   char        s_vers;                      /* script line version            */
    int         s_count;
    float       s_beats;
    float       s_secs;
@@ -269,6 +267,7 @@ char        yKINE__unit_end    (void);
 char        ykine_scrp_init         (void);
 char        ykine__scrp_prep        (void);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
+char        ykine_scrp_verb         (char *a_char);
 
 char        ykine_scrp_zero         (void);
 char        ykine_scrp_zero_polar   (void);
@@ -304,14 +303,13 @@ char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
 char        ykine__exact_data       (tSERVO *a_servo, float a_sec);
 
-
 char        ykine_parse_read        (void);
 char        ykine_parse_prep        (char *a_verb);
-char        ykine_parse_fields      (float *a, float *b, float *c, float *d);
+char        ykine_parse_fields      (void);
 char        ykine_parse_fields_pos  (void);
 char        ykine_parse_fields_deg  (void);
-char        ykine_parse_fields_OLD  (void);
-char        ykine_parse_check       (void);
+/*> char        ykine_parse_fields_OLD  (void);                                       <*/
+/*> char        ykine_parse_check       (void);                                       <*/
 char        ykine_parse             (void);
 
 char        ykine_gait_begin        (char  a_count);
@@ -324,6 +322,18 @@ char        ykine_gait_12_end       (void);
 
 char        ykine_scrp_walk         (int   a_repeats);
 char        ykine_scrp_turn         (int   a_repeats);
+
+
+/*===[[ YKINE_queue.c ]]======================================================*/
+char        ykine_queue_purge       (void);
+char        ykine_queue_push        (char  *a_string);
+char        ykine_queue_recd        (char  *a_recd);
+char        ykine_queue_func        (char  *a_func);
+char        ykine_queue_popstr      (char  *a_string);
+char        ykine_queue_popval      (float *a_value, char *a_rel);
+char        ykine_queue_servos      (void);
+char*       ykine__unit_queue       (char *a_question, int a_num);
+
 
 
 
