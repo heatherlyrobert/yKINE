@@ -68,7 +68,7 @@ ykine_queue_recd            (char *a_recd)
    int         x_len       = 0;
    int         c           =    0;
    char       *p           = NULL;
-   char       *q           = "";
+   char       *q           = "(,";
    char       *r           = NULL;
    int         i           =    0;
    float       x_temp      =  0.0;
@@ -83,8 +83,9 @@ ykine_queue_recd            (char *a_recd)
    DEBUG_YKINE_SCRP  yLOG_info    ("a_recd"    , a_recd);
    x_len = strllen   (a_recd, LEN_RECD);
    DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
-   c     = strldcnt (a_recd, q [0], LEN_RECD);
-   DEBUG_YKINE_SCRP  yLOG_value   ("c"         , c);
+   x_len = strllen   (q, LEN_RECD);
+   for (i = c = 0; i < x_len; ++i)   c += strldcnt (a_recd, q [i], LEN_RECD);
+   DEBUG_YKINE_SCRP  yLOG_value   ("fields"    , c);
    /*---(get first)----------------------*/
    p     = strtok_r (a_recd, q, &r);
    DEBUG_YKINE_SCRP  yLOG_point   ("p"         , p);
@@ -141,6 +142,49 @@ ykine__queue_popcheck   (void)
 }
 
 char
+ykine_queue_popable     (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(check)--------------------------*/
+   rc = ykine__queue_popcheck ();
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return 0;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 1;
+}
+
+char
+ykine_queue_popskip     (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(check)--------------------------*/
+   rc = ykine__queue_popcheck ();
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(prepare for next)---------------*/
+   DEBUG_YKINE_SCRP   yLOG_snote   ("wiping");
+   ykine_queue_wipe (s_cqueue);
+   ++s_cqueue;
+   DEBUG_YKINE_SCRP   yLOG_sint    (s_cqueue);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
 ykine_queue_popstr      (char *a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -175,27 +219,22 @@ ykine_queue_popstr      (char *a_string)
 }
 
 char
-ykine_queue_popval      (float *a_value, char *a_rel)
+ykine_queue_popval      (const float a_old, float *a_new)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    int         x_len       =    0;
+   char        x_rel       =  '-';
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_spoint  (a_value);
-   --rce;  if (a_value == NULL) {
+   DEBUG_YKINE_SCRP   yLOG_spoint  (a_new);
+   --rce;  if (a_new == NULL) {
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_spoint  (a_rel);
-   --rce;  if (a_rel == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   *a_rel   = 0;
-   *a_value = 0.0;
+   *a_new = 0.0;
    /*---(check)--------------------------*/
    rc = ykine__queue_popcheck ();
    if (rc < 0) {
@@ -203,46 +242,45 @@ ykine_queue_popval      (float *a_value, char *a_rel)
       return rc;
    }
    /*---(prepare)------------------------*/
-   *a_rel = 0;
    x_len = strlen (s_queue [s_cqueue]);
    /*---(check empty)--------------------*/
    --rce;  if (x_len == 0) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("empty");
-      *a_rel   = 0;
-      *a_value = 0.0;
+      *a_new   = 0.0;
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
       return rce;
    }
-   /*---(check zero marker)--------------*/
+   /*---(check zero markers)-------------*/
    if (x_len == 3 && strcmp (s_queue [s_cqueue], "-.-") == 0) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("zero marker");
-      *a_rel   = 0;
-      *a_value = 0.0;
+      *a_new = 0.0;
    }
-   /*---(check one marker)---------------*/
    else if (x_len == 1 && s_queue [s_cqueue][0] == '-') {
       DEBUG_YKINE_SCRP   yLOG_snote   ("one marker");
-      *a_rel   = 0;
-      *a_value = 1.0;
+      *a_new = 1.0;
+   }
+   /*---(check min/one marker)-----------*/
+   else if (x_len == 1 && s_queue [s_cqueue][0] == '.') {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("one marker");
+      *a_new = 1.0;
    }
    /*---(check unchanged marker)---------*/
-   else if (x_len == 1 && s_queue [s_cqueue][0] == '"') {
+   else if (x_len == 1 && s_queue [s_cqueue][0] == '=') {
       DEBUG_YKINE_SCRP   yLOG_snote   ("unchanged marker");
-      *a_rel   = 1;
-      *a_value = 0.0;
+      *a_new   = a_old;
    }
    /*---(check normal value)-------------*/
    else {
       DEBUG_YKINE_SCRP   yLOG_snote   ("normal");
       if (x_len > 1 && s_queue [s_cqueue][x_len - 1] == 'r') {
-         *a_rel   = 1;
+         x_rel   = 'y';
          s_queue [s_cqueue][--x_len] = 0;
       }
-      *a_value = atof (s_queue [s_cqueue]);
+      *a_new = atof (s_queue [s_cqueue]);
+      if (x_rel == 'y')   *a_new += a_old;
    }
    /*---(output)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sint    (*a_rel);
-   DEBUG_YKINE_SCRP   yLOG_sint    (*a_value);
+   DEBUG_YKINE_SCRP   yLOG_sint    (*a_new);
    /*---(prepare for next)---------------*/
    DEBUG_YKINE_SCRP   yLOG_snote   ("wiping");
    ykine_queue_wipe (s_cqueue);

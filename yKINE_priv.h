@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0h"
-#define     YKINE_VER_TXT   "queue logic for verbs, servos, and recds unit tested"
+#define     YKINE_VER_NUM   "1.0i"
+#define     YKINE_VER_TXT   "queue parses both delimited and function-style line"
 
 
 
@@ -101,6 +101,10 @@ tLOCAL      myKINE;
 /*===[[ TYPEDEFS ]]===========================================================*/
 typedef     struct      cMOVE       tMOVE;
 typedef     struct      cSERVO      tSERVO;
+
+#define     MOVE_NULL   '-'
+#define     MOVE_PAUSE  'p'
+#define     MOVE_SERVO  's'
 
 
 
@@ -329,8 +333,10 @@ char        ykine_queue_purge       (void);
 char        ykine_queue_push        (char  *a_string);
 char        ykine_queue_recd        (char  *a_recd);
 char        ykine_queue_func        (char  *a_func);
+char        ykine_queue_popable     (void);
+char        ykine_queue_popskip     (void);
 char        ykine_queue_popstr      (char  *a_string);
-char        ykine_queue_popval      (float *a_value, char *a_rel);
+char        ykine_queue_popval      (const float a_old, float *a_new);
 char        ykine_queue_popverb     (void);
 char        ykine_queue_popservo    (void);
 char*       ykine__unit_queue       (char *a_question, int a_num);
