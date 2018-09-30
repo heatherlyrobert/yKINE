@@ -37,7 +37,8 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
    { "ze_pure"      , 'y' , YKINE_ZERO   , YKINE_PURE, ykine_scrp_zero       , "set absolute body position in 3d space"            },
    { "ze_from"      , 'y' , YKINE_ZERO   , YKINE_FROM, ykine_scrp_zero       , "set relative body position based on last position" },
-   { "ze_polar"     , 'y' , YKINE_ZERO   , YKINE_PURE, ykine_scrp_zero_polar , "set relative body position based on last position" },
+   { "po_pure"      , 'y' , YKINE_ZERO   , YKINE_PURE, ykine_scrp_polar      , "set relative body position based on last position" },
+   { "po_from"      , 'y' , YKINE_ZERO   , YKINE_FROM, ykine_scrp_polar      , "set relative body position based on last position" },
    /* ===[[ body orientation ]]==================================================*/
    /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
    { "or_pure"      , 'y' , YKINE_ORIENT , YKINE_PURE, ykine_scrp_orient     , "set absolute body orientation angles"              },
@@ -410,7 +411,7 @@ ykine_parse_read       (void)
    }
    /*---(complete)--------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return 1;
 }
 
 char  /*--> prepare a IK/FK move parse ------------[ ------ [ ------ ]-*/
@@ -725,6 +726,10 @@ ykine_parse             (void)
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
       return rce;
    }
+   if (rc == 0) {
+      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
    if (rc < 0) {
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
       return rc;
@@ -732,7 +737,7 @@ ykine_parse             (void)
    /*---(load the queue)-----------------*/
    rc = ykine_queue_recd  (myKINE.s_recd);
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
-   if (myKINE.s_iverb < 0) {
+   if (rc < 0) {
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }

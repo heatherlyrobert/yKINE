@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0i"
-#define     YKINE_VER_TXT   "queue parses both delimited and function-style line"
+#define     YKINE_VER_NUM   "1.0j"
+#define     YKINE_VER_TXT   "all body moves use the new queue input system"
 
 
 
@@ -274,7 +274,7 @@ char*       ykine__unit_scrp        (char *a_question, int a_num);
 char        ykine_scrp_verb         (char *a_char);
 
 char        ykine_scrp_zero         (void);
-char        ykine_scrp_zero_polar   (void);
+char        ykine_scrp_polar        (void);
 char        ykine_scrp_orient       (void);
 char        ykine_scrp_ik_pure      (void);
 char        ykine_scrp_ik_from      (void);
@@ -337,6 +337,7 @@ char        ykine_queue_popable     (void);
 char        ykine_queue_popskip     (void);
 char        ykine_queue_popstr      (char  *a_string);
 char        ykine_queue_popval      (const float a_old, float *a_new);
+char        ykine_queue_popfrom     (const float a_old, float *a_new);
 char        ykine_queue_popverb     (void);
 char        ykine_queue_popservo    (void);
 char*       ykine__unit_queue       (char *a_question, int a_num);

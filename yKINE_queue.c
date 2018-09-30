@@ -256,12 +256,12 @@ ykine_queue_popval      (const float a_old, float *a_new)
       *a_new = 0.0;
    }
    else if (x_len == 1 && s_queue [s_cqueue][0] == '-') {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("one marker");
-      *a_new = 1.0;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("zero marker");
+      *a_new = 0.0;
    }
    /*---(check min/one marker)-----------*/
    else if (x_len == 1 && s_queue [s_cqueue][0] == '.') {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("one marker");
+      DEBUG_YKINE_SCRP   yLOG_snote   ("min/one marker");
       *a_new = 1.0;
    }
    /*---(check unchanged marker)---------*/
@@ -288,6 +288,17 @@ ykine_queue_popval      (const float a_old, float *a_new)
    DEBUG_YKINE_SCRP   yLOG_sint    (s_cqueue);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_queue_popfrom     (const float a_old, float *a_new)
+{
+   char        rc          =    0;
+   float       a_temp      =  0.0;
+   rc = ykine_queue_popval (0.0, &a_temp);
+   if (rc < 0)  return rc;
+   *a_new = a_old + a_temp;
    return 0;
 }
 
