@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0j"
-#define     YKINE_VER_TXT   "all body moves use the new queue input system"
+#define     YKINE_VER_NUM   "1.0k"
+#define     YKINE_VER_TXT   "basic zero-point and orient polar modes working"
 
 
 
@@ -274,8 +274,10 @@ char*       ykine__unit_scrp        (char *a_question, int a_num);
 char        ykine_scrp_verb         (char *a_char);
 
 char        ykine_scrp_zero         (void);
-char        ykine_scrp_polar        (void);
+char        ykine_scrp_zpolar       (void);
 char        ykine_scrp_orient       (void);
+char        ykine_scrp_opolar       (void);
+
 char        ykine_scrp_ik_pure      (void);
 char        ykine_scrp_ik_from      (void);
 

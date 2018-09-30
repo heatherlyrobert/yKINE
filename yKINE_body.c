@@ -40,7 +40,7 @@ ykine__scrp_zero_pos    (float a_deg, float a_len, float *a_xpos, float *a_zpos)
    x =  a_len * cos (a_deg * DEG2RAD);
    z =  a_len * sin (a_deg * DEG2RAD);
    if      (a_deg <=  90.0)  z *= -1;
-   else if (a_deg <= 190.0)  x *= -1;
+   else if (a_deg <= 180.0)  x *= -1;
    else if (a_deg <= 270.0)  z *= -1;
    else                      x *= -1;
    if (a_xpos != NULL)  *a_xpos = x;
@@ -116,7 +116,7 @@ ykine_scrp_zero         (void)
 }
 
 char         /*--> handle body centering -----------------[ ------ [ ------ ]-*/
-ykine_scrp_polar        (void)
+ykine_scrp_zpolar       (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -272,7 +272,7 @@ ykine_scrp_orient       (void)
    float       f, p, t;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(speed)--------------------------*/
+   /*---(timing)-------------------------*/
    rc  = ykine_queue_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(adjust angles)---------------*/
@@ -287,4 +287,63 @@ ykine_scrp_orient       (void)
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+char         /*--> handle body centering -----------------[ ------ [ ------ ]-*/
+ykine_scrp_opolar       (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   char        rc          =    0;
+   tSERVO     *x_servo     =    0;
+   float       d           =  0.0;
+   float       b           =  0.0;
+   float       x, y, z;
+   float       p, t;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(servo)--------------------------*/
+   x_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
+   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
+   --rce;  if (x_servo ==  NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get values)------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("saves"     , "%8.2fx, %8.2fz, %8.2fy, %8.2fd, %8.2fl", x_servo->xsave, x_servo->zsave, x_servo->ysave, x_servo->dsave, x_servo->lsave);
+   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
+   rc  = ykine_queue_popval   (0.0, &b);
+   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
+   if (myKINE.s_from == YKINE_PURE) {
+      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->dsave, &d);
+      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->ysave, &y);
+   } else {
+      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->dsave, &d);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->ysave, &y);
+   }
+   DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP  yLOG_complex ("deg/y"     , "%8.2fd, %8.2fy", d, y);
+   /*---(caclulate end)---------------*/
+   rc = ykine__scrp_zero_pos  (d, 1.0, &x, &z);
+   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
+   p  = x * y;
+   t  = z * y;
+   if      (d <=  90.0)  t *= -1.0;
+   else if (d <= 180.0)  p *= -1.0;
+   else if (d <= 270.0)  t *= -1.0;
+   else                  p *= -1.0;
+   DEBUG_YKINE_SCRP  yLOG_complex ("orient"    , "%8.2fp, %8.2ft", p, t);
+   /*---(process moves)---------------*/
+   rc = ykine__scrp_orient_servo  (YKINE_YAW  , 0.0, b);
+   rc = ykine__scrp_orient_servo  (YKINE_PITCH, p  , b);
+   rc = ykine__scrp_orient_servo  (YKINE_ROLL , t  , b);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
 
