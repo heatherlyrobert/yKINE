@@ -219,30 +219,31 @@ ykine_queue_popstr      (char *a_string)
 }
 
 char
-ykine_queue_popval      (const float a_old, float *a_new)
+ykine_queue_adjval      (const float a_old, const char *a_entry, float *a_new)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    int         x_len       =    0;
    char        x_rel       =  '-';
+   char        x_entry     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_spoint  (a_new);
-   --rce;  if (a_new == NULL) {
+   DEBUG_YKINE_SCRP   yLOG_spoint  (a_entry);
+   --rce;  if (a_entry == NULL) {
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   *a_new = 0.0;
-   /*---(check)--------------------------*/
-   rc = ykine__queue_popcheck ();
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
+   DEBUG_YKINE_SCRP   yLOG_spoint  (a_new);
+   --rce;  if (a_new   == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
    }
    /*---(prepare)------------------------*/
-   x_len = strlen (s_queue [s_cqueue]);
+   *a_new = 0.0;
+   strlcpy (x_entry, a_entry, LEN_LABEL);
+   x_len  = strlen (x_entry);
    /*---(check empty)--------------------*/
    --rce;  if (x_len == 0) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("empty");
@@ -251,43 +252,84 @@ ykine_queue_popval      (const float a_old, float *a_new)
       return rce;
    }
    /*---(check zero markers)-------------*/
-   if (x_len == 3 && strcmp (s_queue [s_cqueue], "-.-") == 0) {
+   if (x_len == 4 && strcmp (x_entry, "-.--") == 0) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("zero marker");
       *a_new = 0.0;
    }
-   else if (x_len == 1 && s_queue [s_cqueue][0] == '-') {
+   if (x_len == 3 && strcmp (x_entry, "-.-") == 0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("zero marker");
+      *a_new = 0.0;
+   }
+   else if (x_len == 1 && x_entry[0] == '-') {
       DEBUG_YKINE_SCRP   yLOG_snote   ("zero marker");
       *a_new = 0.0;
    }
    /*---(check min/one marker)-----------*/
-   else if (x_len == 1 && s_queue [s_cqueue][0] == '.') {
+   else if (x_len == 1 && x_entry[0] == '.') {
       DEBUG_YKINE_SCRP   yLOG_snote   ("min/one marker");
       *a_new = 1.0;
    }
    /*---(check unchanged marker)---------*/
-   else if (x_len == 1 && s_queue [s_cqueue][0] == '=') {
+   else if (x_len == 1 && x_entry[0] == '=') {
       DEBUG_YKINE_SCRP   yLOG_snote   ("unchanged marker");
       *a_new   = a_old;
    }
    /*---(check normal value)-------------*/
    else {
       DEBUG_YKINE_SCRP   yLOG_snote   ("normal");
-      if (x_len > 1 && s_queue [s_cqueue][x_len - 1] == 'r') {
+      if (x_len > 1 && x_entry[x_len - 1] == 'r') {
          x_rel   = 'y';
-         s_queue [s_cqueue][--x_len] = 0;
+         x_entry[--x_len] = 0;
       }
-      *a_new = atof (s_queue [s_cqueue]);
+      *a_new = atof (x_entry);
       if (x_rel == 'y')   *a_new += a_old;
    }
    /*---(output)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_sint    (*a_new);
-   /*---(prepare for next)---------------*/
-   DEBUG_YKINE_SCRP   yLOG_snote   ("wiping");
-   ykine_queue_wipe (s_cqueue);
-   ++s_cqueue;
-   DEBUG_YKINE_SCRP   yLOG_sint    (s_cqueue);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_queue_adjfrom     (const float a_old, const char *a_entry, float *a_new)
+{
+   char        rc          =    0;
+   float       a_temp      =  0.0;
+   rc = ykine_queue_adjval (0.0, a_entry, &a_temp);
+   if (rc < 0)  return rc;
+   *a_new = a_old + a_temp;
+   return 0;
+}
+
+char
+ykine_queue_popval      (const float a_old, float *a_new)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         x_len       =    0;
+   char        x_rel       =  '-';
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(check)--------------------------*/
+   rc = ykine__queue_popcheck ();
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(run)----------------------------*/
+   rc = ykine_queue_adjval (a_old, s_queue [s_cqueue], a_new);
+   if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(prepare for next)---------------*/
+   ykine_queue_wipe (s_cqueue);
+   ++s_cqueue;
+   DEBUG_YKINE_SCRP   yLOG_value   ("s_cqueue"  , s_cqueue);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

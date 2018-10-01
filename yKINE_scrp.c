@@ -51,6 +51,7 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { "tempo"        , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
    { "segno"        , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_segno      , "mark a place in the music for later repeats"       },
    { "repeat"       , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "repeat a particular section of movements"          },
+   { "ripetere"     , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "repeat a particular section of movements"          },
    /* ===[[ turtle graphics ]]===================================================*/
    /* verb----------- actv- targ---------- rel-------- call------------------- description---------------------------------------- */
    { "tu_home"      , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
@@ -348,7 +349,7 @@ yKINE__scrp_move   (char *a_type)
          DEBUG_YKINE_SCRP  yLOG_double  ("degrees"   , x_degs);
          for (j = 0; j < g_nservo; ++j) {
             if (g_servo_info [j].scrp != 'y') continue;
-            yKINE_move_create (MOVE_SERVO, g_servo_info + j, a_type, myKINE.s_lines, x_degs, x_secs);
+            ykine_move_create (MOVE_SERVO, g_servo_info + j, a_type, myKINE.s_lines, x_degs, x_secs);
          }
          break;
       case  FIELD_ARGS  :  /*---(args)-----*/

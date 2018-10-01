@@ -58,7 +58,8 @@ ykine_scrp_zero         (void)
    float       d           =  0.0;
    float       l           =  0.0;
    float       b, s        =  0.0;
-   float       x, y, z;
+   float       x , z , y;                        /* current coordinates       */
+   float       xp, zp, yp;                       /* previous coordinates      */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(servo)--------------------------*/
@@ -68,19 +69,20 @@ ykine_scrp_zero         (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get values)------------------*/
-   DEBUG_YKINE_SCRP  yLOG_complex ("saves"     , "%8.2fx, %8.2fz, %8.2fy, %8.2fd, %8.2fl", x_servo->xsave, x_servo->zsave, x_servo->ysave, x_servo->dsave, x_servo->lsave);
-   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
+   /*---(get duration)----------------*/
    rc  = ykine_queue_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
+   /*---(det coordinates)-------------*/
+   rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xp, &zp, &yp, NULL);
+   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->xsave, &x);
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->zsave, &z);
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->ysave, &y);
+      if (rc == 0)  rc  = ykine_queue_popval   (xp, &x);
+      if (rc == 0)  rc  = ykine_queue_popval   (zp, &z);
+      if (rc == 0)  rc  = ykine_queue_popval   (yp, &y);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->xsave, &x);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->zsave, &z);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->ysave, &y);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (xp, &x);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (zp, &z);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (yp, &y);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
@@ -88,28 +90,20 @@ ykine_scrp_zero         (void)
       return rce;
    }
    DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
+   /*---(caclulate polar)-------------*/
+   rc = ykine__scrp_zero_deg  (x, z, &d, &l);
+   DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
    /*---(process moves)---------------*/
    s = b * x_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
-   if (rc == 0)  rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, 0.0, s);
+   if (rc == 0)  rc = ykine_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, d, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
-   if (rc == 0)  rc = yKINE_move_addloc (x_servo, x, z, y);
+   if (rc == 0)  rc = ykine_move_addloc (x_servo, x, z, y);
    DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(caclulate polar)-------------*/
-   rc = ykine__scrp_zero_deg  (x, z, &d, &l);
-   DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
-   /*---(save)---------------------------*/
-   x_servo->saved  = 'y';
-   x_servo->xsave  = x;
-   x_servo->zsave  = z;
-   x_servo->ysave  = y;
-   x_servo->dsave  = d;
-   x_servo->lsave  = l;
-   DEBUG_YKINE_SCRP  yLOG_complex ("saved"     , "%8.2fx, %8.2fz, %8.2fy, %8.2fd, %8.2fl", x_servo->xsave, x_servo->zsave, x_servo->ysave, x_servo->dsave, x_servo->lsave);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -125,7 +119,8 @@ ykine_scrp_zpolar       (void)
    float       d           =  0.0;
    float       l           =  0.0;
    float       b, s        =  0.0;
-   float       x, y, z;
+   float       x , z , y;                        /* current coordinates       */
+   float       dp, lp, yp;                       /* previous coordinates      */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(servo)--------------------------*/
@@ -135,25 +130,28 @@ ykine_scrp_zpolar       (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get values)------------------*/
-   DEBUG_YKINE_SCRP  yLOG_complex ("saves"     , "%8.2fx, %8.2fz, %8.2fy, %8.2fd, %8.2fl", x_servo->xsave, x_servo->zsave, x_servo->ysave, x_servo->dsave, x_servo->lsave);
-   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
+   /*---(get duration)----------------*/
    rc  = ykine_queue_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
+   /*---(det coordinates)-------------*/
+   rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, &yp, &lp);
+   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->dsave, &d);
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->lsave, &l);
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->ysave, &y);
+      if (rc == 0)  rc  = ykine_queue_popval   (dp, &d);
+      if (rc == 0)  rc  = ykine_queue_popval   (lp, &l);
+      if (rc == 0)  rc  = ykine_queue_popval   (yp, &y);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->dsave, &d);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->lsave, &l);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->ysave, &y);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (dp, &d);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (lp, &l);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (yp, &y);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   if (d <    0.0)   d  = 360.0 + d;
+   if (d >  360.0)   d  = d - 360.0;
    DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
    /*---(caclulate end)---------------*/
    rc = ykine__scrp_zero_pos  (d, l, &x, &z);
@@ -161,22 +159,14 @@ ykine_scrp_zpolar       (void)
    /*---(process moves)---------------*/
    s = b * x_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
-   if (rc == 0)  rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, 0.0, s);
+   if (rc == 0)  rc = ykine_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, d, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
-   if (rc == 0)  rc = yKINE_move_addloc (x_servo, x, z, y);
+   if (rc == 0)  rc = ykine_move_addloc (x_servo, x, z, y);
    DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(save)---------------------------*/
-   x_servo->saved  = 'y';
-   x_servo->xsave  = x;
-   x_servo->zsave  = z;
-   x_servo->ysave  = y;
-   x_servo->dsave  = d;
-   x_servo->lsave  = l;
-   DEBUG_YKINE_SCRP  yLOG_complex ("saved"     , "%8.2fx, %8.2fz, %8.2fy, %8.2fd, %8.2fl", x_servo->xsave, x_servo->zsave, x_servo->ysave, x_servo->dsave, x_servo->lsave);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -197,6 +187,7 @@ ykine__scrp_orient_adjust   (int a_seg, float *a_deg)
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
    float       d           =  0.0;
+   float       dp          =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(servo)--------------------------*/
@@ -206,12 +197,13 @@ ykine__scrp_orient_adjust   (int a_seg, float *a_deg)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get values)------------------*/
+   /*---(det coordinates)-------------*/
+   rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, NULL, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->dsave, &d);
+      if (rc == 0)  rc  = ykine_queue_popval   (dp, &d);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->dsave, &d);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (dp, &d);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
@@ -245,18 +237,11 @@ ykine__scrp_orient_servo    (int a_seg, float a_deg, float a_beat)
    }
    /*---(calculate)----------------------*/
    s = a_beat * x_servo->pace;
-   if (rc == 0)  rc = yKINE_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, a_deg, s);
+   if (rc == 0)  rc = ykine_move_create (MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, a_deg, s);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(save)---------------------------*/
-   x_servo->saved  = 'y';
-   x_servo->xsave  = 0.0;
-   x_servo->zsave  = 0.0;
-   x_servo->ysave  = 0.0;
-   x_servo->dsave  = a_deg;
-   x_servo->lsave  = 0.0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -297,7 +282,8 @@ ykine_scrp_opolar       (void)
    tSERVO     *x_servo     =    0;
    float       d           =  0.0;
    float       b           =  0.0;
-   float       x, y, z;
+   float       x , z , y;                        /* current coordinates       */
+   float       dp, lp, yp;                       /* previous coordinates      */
    float       p, t;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -308,17 +294,19 @@ ykine_scrp_opolar       (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get values)------------------*/
-   DEBUG_YKINE_SCRP  yLOG_complex ("saves"     , "%8.2fx, %8.2fz, %8.2fy, %8.2fd, %8.2fl", x_servo->xsave, x_servo->zsave, x_servo->ysave, x_servo->dsave, x_servo->lsave);
-   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
+   /*---(get duration)----------------*/
    rc  = ykine_queue_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
+   /*---(det coordinates)-------------*/
+   rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, &yp, &lp);
+   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
+   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->dsave, &d);
-      if (rc == 0)  rc  = ykine_queue_popval   (x_servo->ysave, &y);
+      if (rc == 0)  rc  = ykine_queue_popval   (dp, &d);
+      if (rc == 0)  rc  = ykine_queue_popval   (yp, &y);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->dsave, &d);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (x_servo->ysave, &y);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (dp, &d);
+      if (rc == 0)  rc  = ykine_queue_popfrom  (yp, &y);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {

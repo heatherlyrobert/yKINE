@@ -79,28 +79,28 @@ ykine_gait_begin    (char a_count)
       switch (a_count) {
       case  6 :
          DEBUG_YKINE_SCRP   yLOG_note     ("starting a 6 gait");
-         yKINE_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "6_GAIT_BEG"   , myKINE.s_lines, 0.0  , 0.0);
+         ykine_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "6_GAIT_BEG"   , myKINE.s_lines, 0.0  , 0.0);
          break;
       case  0 :
          DEBUG_YKINE_SCRP   yLOG_note     ("starting a walking gait");
-         yKINE_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "WA_GAIT_BEG"  , myKINE.s_lines, 0.0  , 0.0);
+         ykine_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "WA_GAIT_BEG"  , myKINE.s_lines, 0.0  , 0.0);
          break;
       case 12 :
          DEBUG_YKINE_SCRP   yLOG_note     ("starting a 12 gait");
-         yKINE_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "12_GAIT_BEG"  , myKINE.s_lines, 0.0  , 0.0);
+         ykine_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "12_GAIT_BEG"  , myKINE.s_lines, 0.0  , 0.0);
          break;
       case 18 :
          DEBUG_YKINE_SCRP   yLOG_note     ("starting a 18 gait");
-         yKINE_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "18_GAIT_BEG"  , myKINE.s_lines, 0.0  , 0.0);
+         ykine_move_create (YKINE_MOVE_NOTE , g_servo_info + i, "18_GAIT_BEG"  , myKINE.s_lines, 0.0  , 0.0);
          break;
       }
       /*---(write header placeholders)---*/
-      yKINE_move_addloc (g_servo_info + i, x_xpos, x_zpos, x_ypos);
-      yKINE_move_create (YKINE_MOVE_WAIT , g_servo_info + i, "wait for turn", myKINE.s_lines, x_deg, 3.0);
-      yKINE_move_addloc (g_servo_info + i, x_xpos, x_zpos, x_ypos);
-      yKINE_move_create (YKINE_MOVE_SERVO, g_servo_info + i, "up to neutral", myKINE.s_lines, 0.0  , 0.5);
-      yKINE_move_create (YKINE_MOVE_SERVO, g_servo_info + i, "step to first", myKINE.s_lines, 0.0  , 0.5);
-      yKINE_move_create (YKINE_MOVE_WAIT , g_servo_info + i, "wait for legs", myKINE.s_lines, 0.0  , 3.0);
+      ykine_move_addloc (g_servo_info + i, x_xpos, x_zpos, x_ypos);
+      ykine_move_create (YKINE_MOVE_WAIT , g_servo_info + i, "wait for turn", myKINE.s_lines, x_deg, 3.0);
+      ykine_move_addloc (g_servo_info + i, x_xpos, x_zpos, x_ypos);
+      ykine_move_create (YKINE_MOVE_SERVO, g_servo_info + i, "up to neutral", myKINE.s_lines, 0.0  , 0.5);
+      ykine_move_create (YKINE_MOVE_SERVO, g_servo_info + i, "step to first", myKINE.s_lines, 0.0  , 0.5);
+      ykine_move_create (YKINE_MOVE_WAIT , g_servo_info + i, "wait for legs", myKINE.s_lines, 0.0  , 3.0);
       /*---(save end of header)----------*/
       DEBUG_YKINE_SCRP   yLOG_point    ("saved"     , g_servo_info [i].tail);
       s_gait_begin [i] = g_servo_info [i].tail;
@@ -172,8 +172,8 @@ yKINE__gait_roll     (int a_servo, int a_order, int a_count)
       /*---(prepare for delete)----*/
       x_next  = x_curr->s_next;
       /*---(add dup to end)--------*/
-      yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "extended", x_curr->line, x_curr->deg_end, x_curr->sec_dur);
-      yKINE_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
+      ykine_move_create (YKINE_MOVE_SERVO, x_servo , "extended", x_curr->line, x_curr->deg_end, x_curr->sec_dur);
+      ykine_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
       /*---(delete current)--------*/
       ykine_move_delete (x_curr);
       /*---(go to next)------------*/
@@ -331,16 +331,16 @@ yKINE__gait_add_tail      (int a_servo, int a_order)
    DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
    x_servo = s_gait_begin [a_servo]->servo;;
    /*---(add tail)-----------------------*/
-   yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_curr->deg_end  , a_order * 0.500);
-   yKINE_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
-   yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "neutral"  , -1           , s_neud          , 0.500           );
-   yKINE_move_addloc (x_servo, s_neux, s_neuz, s_neuy);
-   yKINE_move_create (YKINE_MOVE_SERVO, x_servo , "back down", -1           , s_inid          , 0.500           );
-   yKINE_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
-   yKINE_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , s_inid          , (5 - a_order) * 0.500);
-   yKINE_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
-   yKINE_move_create (YKINE_MOVE_NOTE , x_servo , "GAIT_END", myKINE.s_lines, 0.0, 0.0);
-   yKINE_move_addloc (x_servo, 0.0, 0.0, 0.0);
+   ykine_move_create (YKINE_MOVE_WAIT , x_servo , "wait turn"    , -1     , x_curr->deg_end  , a_order * 0.500);
+   ykine_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
+   ykine_move_create (YKINE_MOVE_SERVO, x_servo , "neutral"  , -1           , s_neud          , 0.500           );
+   ykine_move_addloc (x_servo, s_neux, s_neuz, s_neuy);
+   ykine_move_create (YKINE_MOVE_SERVO, x_servo , "back down", -1           , s_inid          , 0.500           );
+   ykine_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
+   ykine_move_create (YKINE_MOVE_WAIT , x_servo , "wait all legs", -1       , s_inid          , (5 - a_order) * 0.500);
+   ykine_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
+   ykine_move_create (YKINE_MOVE_NOTE , x_servo , "GAIT_END", myKINE.s_lines, 0.0, 0.0);
+   ykine_move_addloc (x_servo, 0.0, 0.0, 0.0);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -591,8 +591,8 @@ ykine_scrp_turn        (int a_repeats)
             x_deg *= -1.5;
             DEBUG_YKINE_SCRP  yLOG_double  ("x_deg"     , x_deg);
             /*---(get current)--------------------*/
-            x_xcur  = g_servo_info [(x_leg * 3) + 2].xsave;
-            x_zcur  = g_servo_info [(x_leg * 3) + 2].zsave;
+            /*> x_xcur  = g_servo_info [(x_leg * 3) + 2].xsave;                       <* 
+             *> x_zcur  = g_servo_info [(x_leg * 3) + 2].zsave;                       <*/
             DEBUG_YKINE_SCRP  yLOG_double  ("x_xcur"    , x_xcur);
             DEBUG_YKINE_SCRP  yLOG_double  ("x_zcur"    , x_zcur);
             DEBUG_YKINE_SCRP  yLOG_double  ("x_xorig"   , x_xorig);

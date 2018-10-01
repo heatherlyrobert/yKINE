@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0k"
-#define     YKINE_VER_TXT   "basic zero-point and orient polar modes working"
+#define     YKINE_VER_NUM   "1.0l"
+#define     YKINE_VER_TXT   "ik/fk now use new queue input method"
 
 
 
@@ -122,6 +122,7 @@ struct      cMOVE {
    float       x_pos;
    float       z_pos;
    float       y_pos;
+   float       xz_len;
    char        status;
    tMOVE      *m_prev;
    tMOVE      *m_next;
@@ -151,13 +152,6 @@ struct cSERVO {
    char        coda_flag;
    tMOVE      *coda;
    char        scrp;
-   /*---(saved)--------------------------*/
-   char        saved;                  /* saved flag (y/n)                    */
-   float       xsave;                  /* saved x-pos                         */
-   float       zsave;                  /* saved z-pos                         */
-   float       ysave;                  /* saved y-pos                         */
-   float       dsave;                  /* saved degree                        */
-   float       lsave;                  /* saved distance from default         */
    /*---(moves)--------------------------*/
    int         count;
    tMOVE      *head;
@@ -301,9 +295,12 @@ char        ykine_servos            (char *a_source);
 char*       ykine__unit_servo       (char *a_question);
 
 
+char        ykine_move_create       (char a_type, tSERVO *a_servo, char *a_label, int a_line, float a_deg, float a_sec);
+char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
 char        ykine_move_delete       (tMOVE *a_move);
 char        ykine_move_clear_servo  (tSERVO *a_servo);
+char        ykine_move_savedloc     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
@@ -338,6 +335,8 @@ char        ykine_queue_func        (char  *a_func);
 char        ykine_queue_popable     (void);
 char        ykine_queue_popskip     (void);
 char        ykine_queue_popstr      (char  *a_string);
+char        ykine_queue_adjval      (const float a_old, const char *a_entry, float *a_new);
+char        ykine_queue_adjfrom     (const float a_old, const char *a_entry, float *a_new);
 char        ykine_queue_popval      (const float a_old, float *a_new);
 char        ykine_queue_popfrom     (const float a_old, float *a_new);
 char        ykine_queue_popverb     (void);
