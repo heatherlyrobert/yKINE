@@ -4,6 +4,18 @@
 #include    "yKINE.h"
 #include    "yKINE_priv.h"
 
+typedef     struct      cLINE       tLINE;
+struct      cLINE {
+   int         line;
+   char       *recd;
+   int         uses;
+   tLINE      *next;
+   tLINE      *prev;
+};
+tLINE      *s_head      = NULL;
+tLINE      *s_tail      = NULL;
+int         s_nline     =    0;
+
 
 
 /*---1----- -----2----- -----3----- -----4----- ----------comments------------*/
@@ -12,6 +24,61 @@ static      char       *s_queue     [MAX_QUEUE];
 static      int         s_nqueue    =    0;
 static      int         s_cqueue    =    0;
 
+
+
+char
+ykine_queue_getline     (int a_line)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        i           =    0;
+   tLINE      *s_curr      = NULL;
+   /*---(prepare)------------------------*/
+   s_curr = s_tail;
+   /*---(find)---------------------------*/
+   while (s_curr != NULL) {
+      if (a_line == s_curr->line) {
+         ++(s_curr->uses);
+         strlcpy (myKINE.s_recd, s_curr->recd, LEN_RECD);
+         return 0;
+      }
+      s_curr = s_curr->prev;
+   }
+   /*---(complete)-----------------------*/
+   return -1;
+}
+
+char
+ykine__queue_addline    (int a_line, char *a_recd)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        i           =    0;
+   tLINE      *s_curr      = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_recd == NULL)  return rce;
+   /*---(create)-------------------------*/
+   s_curr = (tLINE *) malloc (sizeof (tLINE));
+   --rce;  if (s_curr == NULL)  return rce;
+   /*---(defaults)-----------------------*/
+   s_curr->line = a_line;
+   s_curr->recd = strdup (a_recd);
+   s_curr->next = NULL;
+   s_curr->prev = NULL;
+   s_curr->uses =    0;
+   /*---(attatch)------------------------*/
+   if (s_head == NULL) {
+      s_head  = s_curr;
+      s_tail  = s_curr;
+      s_nline = 1;
+   } else  {
+      s_tail->next = s_curr;
+      s_curr->prev = s_tail;
+      s_tail       = s_curr;
+      ++s_nline;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
 
 char
 ykine_queue_wipe        (char a_index)
@@ -68,7 +135,7 @@ ykine_queue_recd            (char *a_recd)
    int         x_len       = 0;
    int         c           =    0;
    char       *p           = NULL;
-   char       *q           = "(,";
+   char       *q           = "(,)";
    char       *r           = NULL;
    int         i           =    0;
    float       x_temp      =  0.0;
@@ -80,6 +147,7 @@ ykine_queue_recd            (char *a_recd)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   ykine_queue_purge ();
    DEBUG_YKINE_SCRP  yLOG_info    ("a_recd"    , a_recd);
    x_len = strllen   (a_recd, LEN_RECD);
    DEBUG_YKINE_SCRP  yLOG_value   ("x_len"     , x_len);
@@ -107,7 +175,38 @@ ykine_queue_recd            (char *a_recd)
       /*---(done)------------------------*/
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("fields"    , c);
-   /*---(done)---------------------------*/
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_queue_reusable    (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        x_recd      [LEN_RECD];
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(start)--------------------------*/
+   sprintf (x_recd, "%-10.10s (", myKINE.s_verb);
+   DEBUG_YKINE_SCRP   yLOG_info    ("reusable"  , x_recd);
+   /*---(copy fields)--------------------*/
+   for (i = s_cqueue; i < s_nqueue; ++i) {
+      if (i == s_cqueue && myKINE.s_servo == 'y')  {
+         strlcat (x_recd, "XX,"      , LEN_RECD);
+      } else {
+         strlcat (x_recd, s_queue [i], LEN_RECD);
+         strlcat (x_recd, ","        , LEN_RECD);
+      }
+      DEBUG_YKINE_SCRP   yLOG_info    ("reusable"  , x_recd);
+   }
+   x_recd [strlen (x_recd) - 1] = ')';
+   DEBUG_YKINE_SCRP   yLOG_info    ("reusable"  , x_recd);
+   /*---(save)---------------------------*/
+   ykine__queue_addline (myKINE.s_lines, x_recd);
+   /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -373,6 +472,7 @@ ykine_queue_popverb     (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
+   /*---(recd reuse)---------------------*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -440,6 +540,7 @@ static void      o___UNITTEST________________o (void) {;};
 char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine__unit_queue       (char *a_question, int a_num)
 {
+   char        rc          =    0;
    char        x_msg       [LEN_STR];
    /*---(preprare)-----------------------*/
    strlcpy  (ykine__unit_answer, "QUEUE unit       : question not understood", LEN_STR);
@@ -454,6 +555,14 @@ ykine__unit_queue       (char *a_question, int a_num)
          sprintf (ykine__unit_answer, "QUEUE entry  %d : null", a_num);
       } else {
          sprintf (ykine__unit_answer, "QUEUE entry  %d : %2d[%s]", a_num, strlen (s_queue [a_num]), s_queue [a_num]);
+      }
+   }
+   else if (strcmp (a_question, "line"     ) == 0) {
+      rc = ykine_queue_getline (a_num);
+      if (rc < 0) {
+         sprintf (ykine__unit_answer, "QUEUE line   - : not a valid entry");
+      } else {
+         sprintf (ykine__unit_answer, "QUEUE line  %2d : %2d[%s]", a_num, strlen (myKINE.s_recd), myKINE.s_recd);
       }
    }
    /*---(complete)----------------------------------------*/

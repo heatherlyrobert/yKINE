@@ -246,7 +246,7 @@
 #define     YKINE_LA         9
 #define     YKINE_LP        10
 /*---(special)------------------------*/
-#define     YKINE_PT        11
+#define     YKINE_TU        11
 
 
 
@@ -310,25 +310,25 @@ char        yKINE_inverse_adapt     (int a_leg, float a_x, float a_z, float a_y)
 char        yKINE_opengl            (int a_leg, int a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len);
 
 /*---(static data accessors)----------*/
-char*       yKINE_legtwo            (int a_leg);
-char*       yKINE_legcaps           (int a_leg);
-char*       yKINE_legfull           (int a_leg);
-float       yKINE_legdeg            (int a_leg);
-char*       yKINE_segfour           (int a_seg);
-char*       yKINE_segcaps           (int a_seg);
-char*       yKINE_segfull           (int a_seg);
-float       yKINE_seglen            (int a_seg);
-float       yKINE_segmin            (int a_seg);
-float       yKINE_segattn           (int a_seg);
-float       yKINE_segmax            (int a_seg);
+char*       yKINE_legtwo            (char a_leg);
+char*       yKINE_legcaps           (char a_leg);
+char*       yKINE_legfull           (char a_leg);
+float       yKINE_legdeg            (char a_leg);
+char*       yKINE_segfour           (char a_seg);
+char*       yKINE_segcaps           (char a_seg);
+char*       yKINE_segfull           (char a_seg);
+float       yKINE_seglen            (char a_seg);
+float       yKINE_segmin            (char a_seg);
+float       yKINE_segattn           (char a_seg);
+float       yKINE_segmax            (char a_seg);
 
 /*---(dynamic datae accessors)--------*/
-char        yKINE_endpoint          (int a_leg, int a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
-char        yKINE_segment           (int a_leg, int a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
-char        yKINE_angle             (int a_leg, int a_seg, int a_type, float *a_deg, float *a_len, float *a_v, float *a_h);
-char        yKINE_enddiff           (int a_leg, int a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
-char        yKINE_segdiff           (int a_leg, int a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
-char        yKINE_angles            (int a_leg, int a_type, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi);
+char        yKINE_endpoint          (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
+char        yKINE_segment           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
+char        yKINE_angle             (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_v, float *a_h);
+char        yKINE_enddiff           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
+char        yKINE_segdiff           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
+char        yKINE_angles            (char a_leg, char a_meth, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi);
 
 
 /*---rc---- -----function---------- -----parameters---------------------------*/

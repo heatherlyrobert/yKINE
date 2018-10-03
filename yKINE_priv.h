@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0l"
-#define     YKINE_VER_TXT   "ik/fk now use new queue input method"
+#define     YKINE_VER_NUM   "1.0m"
+#define     YKINE_VER_TXT   "very basic turtle repeating working now (lots of rebuilding)"
 
 
 
@@ -65,13 +65,16 @@ struct cLOCAL {
    /*---(script)------------*/
    char        s_name      [LEN_RECD];      /* script file name               */
    FILE       *s_file;                      /* script file handle             */
-   char        s_recd      [LEN_RECD];      /* record                         */
+   char        s_orig      [LEN_RECD];      /* original line read             */
+   char        s_recd      [LEN_RECD];      /* working record                 */
    int         s_len;                       /* original record length         */
    char        s_q         [LEN_LABEL];     /* record parsing delimiter       */
    char       *s_context;                   /* record parsing context         */
    int         s_lines;                     /* source file line               */
    char        s_verb      [LEN_LABEL];     /* script line verb               */
+   char        s_hidden;                    /* a hidden action/move           */
    int         s_iverb;                     /* index of verb                  */
+   char        s_servo;                     /* verb needs a servo specifier   */
    char        s_targ;                      /* leg/seg targeting override     */
    char        s_from;                      /* pure vs from                   */
    int         s_count;
@@ -102,32 +105,32 @@ tLOCAL      myKINE;
 typedef     struct      cMOVE       tMOVE;
 typedef     struct      cSERVO      tSERVO;
 
-#define     MOVE_NULL   '-'
-#define     MOVE_PAUSE  'p'
-#define     MOVE_SERVO  's'
 
 
 
 struct      cMOVE {
+   /*---(keys)--------------*/
    int         seq;
    char        type;
    tSERVO     *servo;
    char        label       [LEN_LABEL];
    int         line;
-   float       sec_dur;
-   float       deg_beg;
-   float       deg_end;
-   float       sec_beg;
-   float       sec_end;
+   /*---(timing)------------*/
+   float       dur;
+   float       secs;
+   /*---(angle)-------------*/
+   float       degs;
+   /*---(position)----------*/
    float       x_pos;
    float       z_pos;
    float       y_pos;
    float       xz_len;
-   char        status;
+   /*---(linked-lists)------*/
    tMOVE      *m_prev;
    tMOVE      *m_next;
    tMOVE      *s_prev;
    tMOVE      *s_next;
+   /*---(done)--------------*/
 };
 extern      tMOVE      *m_head;
 extern      tMOVE      *m_tail;
@@ -136,8 +139,8 @@ extern      int         m_count;
 struct cSERVO {
    /*---(overall)------------------------*/
    const char  label       [20];
-   const int   leg;                    /* specific identifier of leg          */
-   const int   seg;                    /* specific identifier of segment      */
+   const char  leg;                    /* specific identifier of leg          */
+   const char  seg;                    /* specific identifier of segment      */
    /*---(current)------------------------*/
    float       pace;                   /* secs per beat                       */
    char        exact;                  /* servo move starts                   */
@@ -279,6 +282,7 @@ char        ykine_scrp_ik           (void);
 char        ykine_scrp_fk           (void);
 char        ykine_scrp_segno        (void);
 char        ykine_scrp_repeat       (void);
+char        ykine_scrp_exec         (void);
 
 
 char        ykine_servo_purge       (void);
@@ -301,19 +305,24 @@ char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
 char        ykine_move_delete       (tMOVE *a_move);
 char        ykine_move_clear_servo  (tSERVO *a_servo);
 char        ykine_move_savedloc     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
+char        ykine_move_savedprev    (tMOVE  *a_move , float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
 char        ykine__exact_data       (tSERVO *a_servo, float a_sec);
 
-char        ykine_parse_read        (void);
+char        ykine__parse_stdin      (void);
+char        ykine__parse_existing   (int a_line, char *a_label);
+char        ykine__parse_check      (void);
 char        ykine_parse_prep        (char *a_verb);
-char        ykine_parse_fields      (void);
+
+char        ykine_parse             (char *a_recd);
+char        ykine_parse_file        (void);
+char        ykine_parse_load        (char *a_recd);
+char        ykine_parse_reload      (int a_line, char *a_label);
+char        ykine_parse_hidden      (char *a_recd);
 char        ykine_parse_fields_pos  (void);
 char        ykine_parse_fields_deg  (void);
-/*> char        ykine_parse_fields_OLD  (void);                                       <*/
-/*> char        ykine_parse_check       (void);                                       <*/
-char        ykine_parse             (void);
 
 char        ykine_gait_begin        (char  a_count);
 char        ykine_gait_update       (char  a_count);
@@ -327,10 +336,13 @@ char        ykine_scrp_walk         (int   a_repeats);
 char        ykine_scrp_turn         (int   a_repeats);
 
 
+
 /*===[[ YKINE_queue.c ]]======================================================*/
+/*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
 char        ykine_queue_purge       (void);
 char        ykine_queue_push        (char  *a_string);
 char        ykine_queue_recd        (char  *a_recd);
+char        ykine_queue_reusable    (void);
 char        ykine_queue_func        (char  *a_func);
 char        ykine_queue_popable     (void);
 char        ykine_queue_popskip     (void);
@@ -343,6 +355,15 @@ char        ykine_queue_popverb     (void);
 char        ykine_queue_popservo    (void);
 char*       ykine__unit_queue       (char *a_question, int a_num);
 
+
+
+/*===[[ YKINE_turtle.c ]]=====================================================*/
+/*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
+char        ykine_turtle_speed      (void);
+char        ykine_turtle_home       (void);
+char        ykine_turtle_move       (void);
+char        ykine_turtle_head       (void);
+char        ykine_turtle_turn       (void);
 
 
 

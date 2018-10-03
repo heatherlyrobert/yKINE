@@ -20,7 +20,7 @@ tLEGDATA    g_leg_data [YKINE_MAX_LEGS] = {
    {  YKINE_RA  , "right anterior"    , "ra"    , "RA"    ,    0.0  },
    {  YKINE_LA  , "left anterior"     , "la"    , "LA"    ,    0.0  },
    {  YKINE_LP  , "left posterior"    , "lp"    , "LP"    ,    0.0  },
-   {  YKINE_PT  , "pointer"           , "pt"    , "PT"    ,    0.0  },
+   {  YKINE_TU  , "turtle"            , "tu"    , "TU"    ,    0.0  },
    {  -1        , "-----"             , "--"    , "--"    ,    0.0  },
 };
 
@@ -56,18 +56,18 @@ tSEGDATA    g_seg_data [YKINE_MAX_SEGS] = {
 /*====================------------------------------------====================*/
 static void      o___STATIC__________________o (void) {;};
 
-char*    yKINE_legtwo       (int a_leg)    { return g_leg_data [a_leg].two;  }
-char*    yKINE_legcaps      (int a_leg)    { return g_leg_data [a_leg].caps; }
-char*    yKINE_legfull      (int a_leg)    { return g_leg_data [a_leg].full; }
-float    yKINE_legdeg       (int a_leg)    { return g_leg_data [a_leg].deg;  }
+char*    yKINE_legtwo       (char a_leg)    { return g_leg_data [a_leg].two;  }
+char*    yKINE_legcaps      (char a_leg)    { return g_leg_data [a_leg].caps; }
+char*    yKINE_legfull      (char a_leg)    { return g_leg_data [a_leg].full; }
+float    yKINE_legdeg       (char a_leg)    { return g_leg_data [a_leg].deg;  }
 
-char*    yKINE_segfour      (int a_seg)    { return g_seg_data [a_seg].four; }
-char*    yKINE_segcaps      (int a_seg)    { return g_seg_data [a_seg].caps; }
-char*    yKINE_segfull      (int a_seg)    { return g_seg_data [a_seg].full; }
-float    yKINE_seglen       (int a_seg)    { return g_seg_data [a_seg].len;  }
-float    yKINE_segmin       (int a_seg)    { return g_seg_data [a_seg].min;  }
-float    yKINE_segattn      (int a_seg)    { return g_seg_data [a_seg].attn; }
-float    yKINE_segmax       (int a_seg)    { return g_seg_data [a_seg].max;  }
+char*    yKINE_segfour      (char a_seg)    { return g_seg_data [a_seg].four; }
+char*    yKINE_segcaps      (char a_seg)    { return g_seg_data [a_seg].caps; }
+char*    yKINE_segfull      (char a_seg)    { return g_seg_data [a_seg].full; }
+float    yKINE_seglen       (char a_seg)    { return g_seg_data [a_seg].len;  }
+float    yKINE_segmin       (char a_seg)    { return g_seg_data [a_seg].min;  }
+float    yKINE_segattn      (char a_seg)    { return g_seg_data [a_seg].attn; }
+float    yKINE_segmax       (char a_seg)    { return g_seg_data [a_seg].max;  }
 
 
 
@@ -77,7 +77,7 @@ float    yKINE_segmax       (int a_seg)    { return g_seg_data [a_seg].max;  }
 static void      o___DYNAMIC_________________o (void) {;};
 
 char
-yKINE_endpoint     (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
+yKINE_endpoint     (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -98,7 +98,7 @@ yKINE_endpoint     (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len
 }
 
 char
-yKINE_segment      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
+yKINE_segment      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -119,7 +119,7 @@ yKINE_segment      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len
 }
 
 char
-yKINE_angle        (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_v, float *a_h)
+yKINE_angle        (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_v, float *a_h)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -139,7 +139,7 @@ yKINE_angle        (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len
 }
 
 char
-yKINE_enddiff      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
+yKINE_enddiff      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -161,7 +161,7 @@ yKINE_enddiff      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len
 }
 
 char
-yKINE_segdiff      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
+yKINE_segdiff      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -183,7 +183,7 @@ yKINE_segdiff      (int a_leg, int a_seg, int a_meth, float *a_deg, float *a_len
 }
 
 char
-yKINE_angles       (int a_leg, int a_meth, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi)
+yKINE_angles       (char a_leg, char a_meth, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
