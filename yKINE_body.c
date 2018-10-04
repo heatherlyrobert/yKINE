@@ -96,7 +96,7 @@ ykine_scrp_zero         (void)
    /*---(process moves)---------------*/
    s = b * x_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
-   if (myKINE.s_hidden != 'y')  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, d, s);
+   if (myKINE.s_hidden != 'y')  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, d, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    if (rc == 0)  rc = ykine_move_addloc (x_servo, x, z, y);
    DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
@@ -159,7 +159,7 @@ ykine_scrp_zpolar       (void)
    /*---(process moves)---------------*/
    s = b * x_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
-   rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, d, s);
+   rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, d, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    if (rc == 0)  rc = ykine_move_addloc (x_servo, x, z, y);
    DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
@@ -237,7 +237,7 @@ ykine__scrp_orient_servo    (int a_seg, float a_deg, float a_beat)
    }
    /*---(calculate)----------------------*/
    s = a_beat * x_servo->pace;
-   if (rc == 0)  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_lines, a_deg, s);
+   if (rc == 0)  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, a_deg, s);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

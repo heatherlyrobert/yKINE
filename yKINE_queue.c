@@ -205,7 +205,7 @@ ykine_queue_reusable    (void)
    x_recd [strlen (x_recd) - 1] = ')';
    DEBUG_YKINE_SCRP   yLOG_info    ("reusable"  , x_recd);
    /*---(save)---------------------------*/
-   ykine__queue_addline (myKINE.s_lines, x_recd);
+   ykine__queue_addline (myKINE.s_nline, x_recd);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;

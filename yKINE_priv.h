@@ -25,8 +25,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0m"
-#define     YKINE_VER_TXT   "very basic turtle repeating working now (lots of rebuilding)"
+#define     YKINE_VER_NUM   "1.0n"
+#define     YKINE_VER_TXT   "layered segno loops are working now (not unit tested)"
 
 
 
@@ -70,7 +70,9 @@ struct cLOCAL {
    int         s_len;                       /* original record length         */
    char        s_q         [LEN_LABEL];     /* record parsing delimiter       */
    char       *s_context;                   /* record parsing context         */
-   int         s_lines;                     /* source file line               */
+   int         s_nline;                     /* source file count of lines     */
+   int         s_cline;                     /* source file current line       */
+   /*---(parsing)-----------*/
    char        s_verb      [LEN_LABEL];     /* script line verb               */
    char        s_hidden;                    /* a hidden action/move           */
    int         s_iverb;                     /* index of verb                  */
@@ -359,11 +361,18 @@ char*       ykine__unit_queue       (char *a_question, int a_num);
 
 /*===[[ YKINE_turtle.c ]]=====================================================*/
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
+char        ykine__turtle_last      (void);
 char        ykine_turtle_speed      (void);
+char        ykine_turtle_wait       (void);
 char        ykine_turtle_home       (void);
 char        ykine_turtle_move       (void);
+char        ykine_turtle_goto       (void);
 char        ykine_turtle_head       (void);
 char        ykine_turtle_turn       (void);
+char        ykine_turtle_raise      (void);
+char        ykine_turtle_lower      (void);
+char        ykine_turtle_depth      (void);
+char*       ykine__unit_turtle      (char *a_question, int a_num);
 
 
 
