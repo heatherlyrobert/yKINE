@@ -13,6 +13,7 @@
 /*---(heatherly made)--------------------*/
 #include    <yURG.h>         /* CUSTOM  heatherly urgent processing           */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
+#include    <yPARSE.h>       /* CUSTOM  heatherly record parsing/queuing      */
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 
 
@@ -25,8 +26,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0n"
-#define     YKINE_VER_TXT   "layered segno loops are working now (not unit tested)"
+#define     YKINE_VER_NUM   "1.0o"
+#define     YKINE_VER_TXT   "pulled input queue logic totally out and into yPARSE library"
 
 
 
@@ -154,8 +155,7 @@ struct cSERVO {
    /*---(repeats)------------------------*/
    char        nsegno;                 /* number of segnos                    */
    tMOVE      *segni       [10];       /* saved segnos in stack               */
-   char        coda_flag;
-   tMOVE      *coda;
+   /*---(scripting)----------------------*/
    char        scrp;
    /*---(moves)--------------------------*/
    int         count;
@@ -171,6 +171,7 @@ typedef struct cLEGDATA tLEGDATA;
 struct cLEGDATA
 {
    char        leg;
+   char        abbr;
    char        full        [25];
    char        two         [ 5];
    char        caps        [ 5];
@@ -182,6 +183,7 @@ extern tLEGDATA    g_leg_data [YKINE_MAX_LEGS];
 typedef struct cSEGDATA tSEGDATA;
 struct cSEGDATA {
    char        seg;
+   char        abbr;
    char        full        [25];            /* descriptive name               */
    char        four        [ 5];            /* abbreviated name               */
    char        caps        [ 5];            /* capitalized name for titles    */
@@ -193,6 +195,7 @@ struct cSEGDATA {
    float       test1;                       /* test length (1) original       */
    float       test2;                       /* test length (2) newer          */
    float       test3;                       /* test length (3)                */
+   char        neg         [LEN_LABEL];     /* direction of negative degrees  */
 };
 extern tSEGDATA    g_seg_data [YKINE_MAX_SEGS];
 
@@ -313,19 +316,6 @@ char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
 char        ykine__exact_data       (tSERVO *a_servo, float a_sec);
 
-char        ykine__parse_stdin      (void);
-char        ykine__parse_existing   (int a_line, char *a_label);
-char        ykine__parse_check      (void);
-char        ykine_parse_prep        (char *a_verb);
-
-char        ykine_parse             (char *a_recd);
-char        ykine_parse_file        (void);
-char        ykine_parse_load        (char *a_recd);
-char        ykine_parse_reload      (int a_line, char *a_label);
-char        ykine_parse_hidden      (char *a_recd);
-char        ykine_parse_fields_pos  (void);
-char        ykine_parse_fields_deg  (void);
-
 char        ykine_gait_begin        (char  a_count);
 char        ykine_gait_update       (char  a_count);
 
@@ -341,21 +331,8 @@ char        ykine_scrp_turn         (int   a_repeats);
 
 /*===[[ YKINE_queue.c ]]======================================================*/
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
-char        ykine_queue_purge       (void);
-char        ykine_queue_push        (char  *a_string);
-char        ykine_queue_recd        (char  *a_recd);
-char        ykine_queue_reusable    (void);
-char        ykine_queue_func        (char  *a_func);
-char        ykine_queue_popable     (void);
-char        ykine_queue_popskip     (void);
-char        ykine_queue_popstr      (char  *a_string);
-char        ykine_queue_adjval      (const float a_old, const char *a_entry, float *a_new);
-char        ykine_queue_adjfrom     (const float a_old, const char *a_entry, float *a_new);
-char        ykine_queue_popval      (const float a_old, float *a_new);
-char        ykine_queue_popfrom     (const float a_old, float *a_new);
-char        ykine_queue_popverb     (void);
-char        ykine_queue_popservo    (void);
-char*       ykine__unit_queue       (char *a_question, int a_num);
+char        ykine_scrp_popverb      (void);
+char        ykine_scrp_popservo     (void);
 
 
 

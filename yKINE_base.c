@@ -83,6 +83,7 @@ yKINE_init         (char a_type)
    }
    ykine_servo_init ();
    ykine_scrp_init  ();
+   yPARSE_init      (ykine_scrp_popverb, 'y');
    /*---(complete)-----------------------*/
    yLOG_exit    (__FUNCTION__);
    return 0;

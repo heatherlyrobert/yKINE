@@ -8,45 +8,45 @@
 
 tLEGDATA    g_leg_data [YKINE_MAX_LEGS] = {
    /* front is facing down the negative z-axis        */
-   /* leg-------- full----------------- two------ caps----- deg---- */
-   {  YKINE_BODY, "body"              , "--"    , "--"    ,    0.0  },
-   {  YKINE_RR  , "right rear"        , "rr"    , "RR"    ,  300.0  },
-   {  YKINE_RM  , "right middle"      , "rm"    , "RM"    ,    0.0  },
-   {  YKINE_RF  , "right front"       , "rf"    , "RF"    ,   60.0  },
-   {  YKINE_LF  , "left front"        , "lf"    , "LF"    ,  120.0  },
-   {  YKINE_LM  , "left middle"       , "lm"    , "LM"    ,  180.0  },
-   {  YKINE_LR  , "left rear"         , "lr"    , "LR"    ,  240.0  },
-   {  YKINE_RP  , "right posterior"   , "rp"    , "RP"    ,    0.0  },
-   {  YKINE_RA  , "right anterior"    , "ra"    , "RA"    ,    0.0  },
-   {  YKINE_LA  , "left anterior"     , "la"    , "LA"    ,    0.0  },
-   {  YKINE_LP  , "left posterior"    , "lp"    , "LP"    ,    0.0  },
-   {  YKINE_TU  , "turtle"            , "tu"    , "TU"    ,    0.0  },
-   {  -1        , "-----"             , "--"    , "--"    ,    0.0  },
+   /* leg-------- abbr full----------------- two------ caps----- deg---- */
+   {  YKINE_BODY, '-', "body"              , "--"    , "--"    ,    0.0  },
+   {  YKINE_RR  , '0', "right rear"        , "rr"    , "RR"    ,  300.0  },
+   {  YKINE_RM  , '1', "right middle"      , "rm"    , "RM"    ,    0.0  },
+   {  YKINE_RF  , '2', "right front"       , "rf"    , "RF"    ,   60.0  },
+   {  YKINE_LF  , '3', "left front"        , "lf"    , "LF"    ,  120.0  },
+   {  YKINE_LM  , '4', "left middle"       , "lm"    , "LM"    ,  180.0  },
+   {  YKINE_LR  , '5', "left rear"         , "lr"    , "LR"    ,  240.0  },
+   {  YKINE_RP  , '-', "right posterior"   , "rp"    , "RP"    ,    0.0  },
+   {  YKINE_RA  , '-', "right anterior"    , "ra"    , "RA"    ,    0.0  },
+   {  YKINE_LA  , '-', "left anterior"     , "la"    , "LA"    ,    0.0  },
+   {  YKINE_LP  , '-', "left posterior"    , "lp"    , "LP"    ,    0.0  },
+   {  YKINE_TU  , '-', "turtle"            , "tu"    , "TU"    ,    0.0  },
+   {  -1        , '-', "-----"             , "--"    , "--"    ,    0.0  },
 };
 
 
 
 tSEGDATA    g_seg_data [YKINE_MAX_SEGS] = {
-   /* seg-------- ---full-------------- four----- caps----- move len---- min---- attn--- max---- test1-- test2-- test3-- */
-   {  YKINE_FOCU, "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_CORE, "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_THOR, "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0  },
-   {  YKINE_COXA, "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0  },
-   {  YKINE_TROC, "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_FEMU, "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0  },
-   {  YKINE_PATE, "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0  },
-   {  YKINE_TIBI, "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0  },
-   {  YKINE_META, "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_TARS, "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_FOOT, "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_CLAW, "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_MAGN, "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_HOOK, "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_ORIG, "original"          , "orig"  , "ORIG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_TARG, "target"            , "targ"  , "TARG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_LOWR, "lower_leg"         , "lowr"  , "LOWR"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  YKINE_CALC, "calculation"       , "calc"  , "CALC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
-   {  -1        , "-----"             , "----"  , "----"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0  },
+   /* seg-------- abbr ---full-------------- four----- caps----- move len---- min---- attn--- max---- test1-- test2-- test3-- negative-dir--*/
+   {  YKINE_FOCU, '-', "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_CORE, '-', "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_THOR, '-', "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0, ""            },
+   {  YKINE_COXA, '-', "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0, ""            },
+   {  YKINE_TROC, '-', "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_FEMU, 'f', "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0, "clockwise"   },
+   {  YKINE_PATE, 'p', "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0, "down/inward" },
+   {  YKINE_TIBI, 't', "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0, "down/inward" },
+   {  YKINE_META, '-', "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_TARS, '-', "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_FOOT, '-', "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_CLAW, '-', "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_MAGN, '-', "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_HOOK, '-', "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_ORIG, '-', "original"          , "orig"  , "ORIG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_TARG, '-', "target"            , "targ"  , "TARG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_LOWR, '-', "lower_leg"         , "lowr"  , "LOWR"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_CALC, '-', "calculation"       , "calc"  , "CALC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  -1        , '-', "-----"             , "----"  , "----"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
 };
 
 

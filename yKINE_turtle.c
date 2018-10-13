@@ -101,7 +101,7 @@ ykine_turtle_speed      (void)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get duration)----------------*/
-   rc  = ykine_queue_popval   (s_speed, &s);
+   rc  = yPARSE_popval   (s_speed, &s);
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(check range)-----------------*/
    if (s <   5.0)  s =   5.0;
@@ -131,7 +131,7 @@ ykine_turtle_wait       (void)
       return rce;
    }
    /*---(get timing)------------------*/
-   rc  = ykine_queue_popval   (0.0, &b);
+   rc  = yPARSE_popval   (0.0, &b);
    s = b * s_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(save header)-----------------*/
@@ -177,7 +177,7 @@ ykine_turtle_home       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, 0.0, 0.0, =)", b);
-   rc = ykine_parse_hidden (x_recd);
+   rc = yPARSE_hidden (x_recd);
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -214,8 +214,8 @@ ykine_turtle_goto       (void)
       return rce;
    }
    /*---(get location)----------------*/
-   rc  = ykine_queue_popval   (s_x , &x);
-   rc  = ykine_queue_popval   (-s_z, &z);
+   rc  = yPARSE_popval   (s_x , &x);
+   rc  = yPARSE_popval   (-s_z, &z);
    z *= -1;
    /*---(get timing)------------------*/
    xz = sqrt (((x - s_x) * (x - s_x)) + ((z - s_z) * (z - s_z)));
@@ -227,7 +227,7 @@ ykine_turtle_goto       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, %6.1f, %6.1f, =)", b, x, z);
-   rc = ykine_parse_hidden (x_recd);
+   rc = yPARSE_hidden (x_recd);
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -273,7 +273,53 @@ ykine_turtle_raise      (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
-   rc = ykine_parse_hidden (x_recd);
+   rc = yPARSE_hidden (x_recd);
+   DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(run)-------------------------*/
+   rc = ykine_scrp_zero ();
+   DEBUG_YKINE_SCRP  yLOG_point   ("run"       , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_turtle_lower      (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   char        rc          =    0;
+   float       b, s        =  0.0;
+   char        x_recd      [LEN_RECD];
+   float       y;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get existing values)------------*/
+   rc = ykine__turtle_last ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("prep"      , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(get timing)------------------*/
+   y  = 0.0;
+   b  = (s_y - y) / s_speed;
+   s = b * s_servo->pace;
+   DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
+   /*---(save header)-----------------*/
+   rc = ykine_move_create (YKINE_MOVE_SERVO, s_servo, myKINE.s_verb, myKINE.s_cline, 0.0, s);
+   DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
+   /*---(queue up action)-------------*/
+   sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
+   rc = yPARSE_hidden (x_recd);
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -309,7 +355,7 @@ ykine_turtle_head       (void)
       return rce;
    }
    /*---(get duration)----------------*/
-   rc  = ykine_queue_popval   (s_head, &d);
+   rc  = yPARSE_popval   (s_head, &d);
    if (d <    0.0)   d  = 360.0 + d;
    if (d >  360.0)   d  = d - 360.0;
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
@@ -340,7 +386,7 @@ ykine_turtle_turn       (void)
       return rce;
    }
    /*---(get duration)----------------*/
-   rc  = ykine_queue_popfrom  (s_head, &d);
+   rc  = yPARSE_popfrom  (s_head, &d);
    if (d <    0.0)   d  = 360.0 + d;
    if (d >  360.0)   d  = d - 360.0;
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
@@ -372,7 +418,7 @@ ykine_turtle_move       (void)
       return rce;
    }
    /*---(get distance)----------------*/
-   rc  = ykine_queue_popval   (0.0, &l);
+   rc  = yPARSE_popval   (0.0, &l);
    DEBUG_YKINE_SCRP  yLOG_value   ("l"         , l);
    /*---(calc coordinates)------------*/
    x =  l * cos ((s_head - 90.0) * DEG2RAD);
@@ -387,7 +433,7 @@ ykine_turtle_move       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%6.1f, %6.1f, %6.1f, =)", b, s_x + x, s_z + z);
-   rc = ykine_parse_hidden (x_recd);
+   rc = yPARSE_hidden (x_recd);
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);

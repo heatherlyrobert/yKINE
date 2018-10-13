@@ -70,19 +70,19 @@ ykine_scrp_zero         (void)
       return rce;
    }
    /*---(get duration)----------------*/
-   rc  = ykine_queue_popval   (0.0, &b);
+   rc  = yPARSE_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(det coordinates)-------------*/
    rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xp, &zp, &yp, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (xp, &x);
-      if (rc == 0)  rc  = ykine_queue_popval   (zp, &z);
-      if (rc == 0)  rc  = ykine_queue_popval   (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popval   (xp, &x);
+      if (rc == 0)  rc  = yPARSE_popval   (zp, &z);
+      if (rc == 0)  rc  = yPARSE_popval   (yp, &y);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (xp, &x);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (zp, &z);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popfrom  (xp, &x);
+      if (rc == 0)  rc  = yPARSE_popfrom  (zp, &z);
+      if (rc == 0)  rc  = yPARSE_popfrom  (yp, &y);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
@@ -131,19 +131,19 @@ ykine_scrp_zpolar       (void)
       return rce;
    }
    /*---(get duration)----------------*/
-   rc  = ykine_queue_popval   (0.0, &b);
+   rc  = yPARSE_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(det coordinates)-------------*/
    rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, &yp, &lp);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (dp, &d);
-      if (rc == 0)  rc  = ykine_queue_popval   (lp, &l);
-      if (rc == 0)  rc  = ykine_queue_popval   (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popval   (dp, &d);
+      if (rc == 0)  rc  = yPARSE_popval   (lp, &l);
+      if (rc == 0)  rc  = yPARSE_popval   (yp, &y);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (dp, &d);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (lp, &l);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popfrom  (dp, &d);
+      if (rc == 0)  rc  = yPARSE_popfrom  (lp, &l);
+      if (rc == 0)  rc  = yPARSE_popfrom  (yp, &y);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
@@ -201,9 +201,9 @@ ykine__scrp_orient_adjust   (int a_seg, float *a_deg)
    rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, NULL, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (dp, &d);
+      if (rc == 0)  rc  = yPARSE_popval   (dp, &d);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (dp, &d);
+      if (rc == 0)  rc  = yPARSE_popfrom  (dp, &d);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
@@ -258,7 +258,7 @@ ykine_scrp_orient       (void)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(timing)-------------------------*/
-   rc  = ykine_queue_popval   (0.0, &b);
+   rc  = yPARSE_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(adjust angles)---------------*/
    rc = ykine__scrp_orient_adjust (YKINE_YAW  , &f);
@@ -295,17 +295,17 @@ ykine_scrp_opolar       (void)
       return rce;
    }
    /*---(get duration)----------------*/
-   rc  = ykine_queue_popval   (0.0, &b);
+   rc  = yPARSE_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(det coordinates)-------------*/
    rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, &yp, &lp);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_popval   (dp, &d);
-      if (rc == 0)  rc  = ykine_queue_popval   (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popval   (dp, &d);
+      if (rc == 0)  rc  = yPARSE_popval   (yp, &y);
    } else {
-      if (rc == 0)  rc  = ykine_queue_popfrom  (dp, &d);
-      if (rc == 0)  rc  = ykine_queue_popfrom  (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popfrom  (dp, &d);
+      if (rc == 0)  rc  = yPARSE_popfrom  (yp, &y);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {

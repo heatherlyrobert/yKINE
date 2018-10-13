@@ -73,9 +73,9 @@ ykine__scrp_fk_getter       (int a_leg, int a_seg, char *a_entry, float *a_deg)
    rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, NULL, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_adjval   (dp, a_entry, &d);
+      if (rc == 0)  rc  = yPARSE_adjval   (dp, a_entry, &d);
    } else {
-      if (rc == 0)  rc  = ykine_queue_adjfrom  (dp, a_entry, &d);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (dp, a_entry, &d);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
@@ -105,15 +105,15 @@ ykine_scrp_fk           (void)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(mark servers)----------------*/
-   if (rc >= 0)  rc  = ykine_queue_popservo ();
+   if (rc >= 0)  rc  = ykine_scrp_popservo ();
    DEBUG_YKINE_SCRP  yLOG_value   ("servo"     , rc);
    /*---(get duration)----------------*/
-   if (rc >= 0)  rc  = ykine_queue_popval   (0.0, &b);
+   if (rc >= 0)  rc  = yPARSE_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(get positions)---------------*/
-   if (rc >= 0)  rc = ykine_queue_popstr    (x_femu);
-   if (rc >= 0)  rc = ykine_queue_popstr    (x_pate);
-   if (rc >= 0)  rc = ykine_queue_popstr    (x_tibi);
+   if (rc >= 0)  rc = yPARSE_popstr    (x_femu);
+   if (rc >= 0)  rc = yPARSE_popstr    (x_pate);
+   if (rc >= 0)  rc = yPARSE_popstr    (x_tibi);
    /*---(handle trouble)--------------*/
    if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
@@ -168,13 +168,13 @@ ykine__scrp_ik_getter   (int a_leg, char *x_str, float *x, char *z_str, float *z
    rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xp, &zp, &yp, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = ykine_queue_adjval   (xp, x_str, x);
-      if (rc == 0)  rc  = ykine_queue_adjval   (zp, z_str, z);
-      if (rc == 0)  rc  = ykine_queue_adjval   (yp, y_str, y);
+      if (rc == 0)  rc  = yPARSE_adjval   (xp, x_str, x);
+      if (rc == 0)  rc  = yPARSE_adjval   (zp, z_str, z);
+      if (rc == 0)  rc  = yPARSE_adjval   (yp, y_str, y);
    } else {
-      if (rc == 0)  rc  = ykine_queue_adjfrom  (xp, x_str, x);
-      if (rc == 0)  rc  = ykine_queue_adjfrom  (zp, z_str, z);
-      if (rc == 0)  rc  = ykine_queue_adjfrom  (yp, y_str, y);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (xp, x_str, x);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (zp, z_str, z);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (yp, y_str, y);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
@@ -205,15 +205,15 @@ ykine_scrp_ik           (void)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(mark servers)----------------*/
-   if (rc >= 0)  rc  = ykine_queue_popservo ();
+   if (rc >= 0)  rc  = ykine_scrp_popservo ();
    DEBUG_YKINE_SCRP  yLOG_value   ("servo"     , rc);
    /*---(get duration)----------------*/
-   if (rc >= 0)  rc  = ykine_queue_popval   (0.0, &b);
+   if (rc >= 0)  rc  = yPARSE_popval   (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(get positions)---------------*/
-   if (rc >= 0)  rc = ykine_queue_popstr    (x_str);
-   if (rc >= 0)  rc = ykine_queue_popstr    (z_str);
-   if (rc >= 0)  rc = ykine_queue_popstr    (y_str);
+   if (rc >= 0)  rc = yPARSE_popstr    (x_str);
+   if (rc >= 0)  rc = yPARSE_popstr    (z_str);
+   if (rc >= 0)  rc = yPARSE_popstr    (y_str);
    /*---(handle trouble)--------------*/
    if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);

@@ -305,7 +305,7 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
       x_curr = x_beg;
       while (x_curr != NULL) {
          if (x_curr->type != YKINE_MOVE_NOTE) {
-            rc = ykine_parse_reload (x_curr->line, a_servo->label);
+            rc = yPARSE_reload (x_curr->line, a_servo->label);
             DEBUG_YKINE_SCRP   yLOG_value   ("reload"    , rc);
             if (rc == 1)  rc = ykine_scrp_exec    ();
             DEBUG_YKINE_SCRP   yLOG_value   ("exec"      , rc);
@@ -472,33 +472,26 @@ ykine_move_savedprev    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, fl
       return rce;
    }
    /*---(previous)-----------------------*/
-   x_prev = a_move->s_prev;
-   DEBUG_YKINE_SCRP   yLOG_spoint  (x_prev);
-   /*---(if none)------------------------*/
-   if (x_prev == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("none, so returning zeros");
-      if (a_sec != NULL)  *a_sec = 0.0;
-      if (a_deg != NULL)  *a_deg = 0.0;
-      if (x     != NULL)  *x     = 0.0;
-      if (z     != NULL)  *z     = 0.0;
-      if (y     != NULL)  *y     = 0.0;
-      if (xz    != NULL)  *xz    = 0.0;
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      DEBUG_YKINE_SCRP   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-   }
-   /*---(exxists)------------------------*/
-   else {
-      DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->line);
-      DEBUG_YKINE_SCRP   yLOG_snote   (x_prev->label);
+   if (a_move->s_prev != NULL) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("prev good");
+      x_prev = a_move->s_prev;
       if (a_sec != NULL)  *a_sec = x_prev->secs;
-      if (a_deg != NULL)  *a_deg = x_prev->degs;
-      if (x     != NULL)  *x     = x_prev->x_pos;
-      if (z     != NULL)  *z     = x_prev->z_pos;
-      if (y     != NULL)  *y     = x_prev->y_pos;
-      if (xz    != NULL)  *xz    = x_prev->xz_len;
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      DEBUG_YKINE_SCRP   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", x_prev->secs, x_prev->degs, x_prev->x_pos, x_prev->z_pos, x_prev->y_pos, x_prev->xz_len);
+   } else  {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("no prev, use move");
+      x_prev = a_move;
+      if (a_sec != NULL)  *a_sec = 0.0;
    }
+   DEBUG_YKINE_SCRP   yLOG_spoint  (x_prev);
+   /*---(return data)--------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sint    (x_prev->line);
+   DEBUG_YKINE_SCRP   yLOG_snote   (x_prev->label);
+   if (a_deg != NULL)  *a_deg = x_prev->degs;
+   if (x     != NULL)  *x     = x_prev->x_pos;
+   if (z     != NULL)  *z     = x_prev->z_pos;
+   if (y     != NULL)  *y     = x_prev->y_pos;
+   if (xz    != NULL)  *xz    = x_prev->xz_len;
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", x_prev->secs, x_prev->degs, x_prev->x_pos, x_prev->z_pos, x_prev->y_pos, x_prev->xz_len);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -531,11 +524,17 @@ ykine__exact_check       (tMOVE *a_curr, float a_sec)
    else                          x_beg = 0.0;
    x_end = round (a_curr->secs * 1000.0);
    DEBUG_YKINE_SCRP   yLOG_sint    (a_curr->seq);
-   /*---(start time)---------------------*/
-   if (x_cur == x_end && x_end == 0.00) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("start");
+   /*---(first move)---------------------*/
+   if (x_cur == x_beg && x_beg == 0.00) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("implied start");
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       return  2;
+   }
+   /*---(start time)---------------------*/
+   if (x_cur == x_end && x_end == 0.00) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("init/start");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return  0;
    }
    /*---(check not yet)------------------*/
    if (x_cur >  x_end) {
@@ -645,10 +644,11 @@ ykine__exact_data        (tSERVO *a_servo, float a_sec)
    x_curr  = a_servo->curr;
    DEBUG_YKINE_SCRP   yLOG_complex ("verb"      , "%s at %d", x_curr->label, x_curr->line);
    /*---(get current values)-------------*/
-   xc = x_curr->x_pos;
-   zc = x_curr->z_pos;
-   yc = x_curr->y_pos;
-   sc = x_curr->secs;
+   xc  = x_curr->x_pos;
+   zc  = x_curr->z_pos;
+   yc  = x_curr->y_pos;
+   sc  = x_curr->secs;
+   dc  = x_curr->degs;
    /*---(get previous values)---------*/
    rc = ykine_move_savedprev  (x_curr, &sp, &dp, &xp, &zp, &yp, NULL);
    /*---(calc percent)-------------------*/
@@ -662,19 +662,20 @@ ykine__exact_data        (tSERVO *a_servo, float a_sec)
       lc = sqrt ((xc * xc) + (zc * zc));
       l  = ykine__exact_calc (lp, lc, x_pct);
       DEBUG_YKINE_SCRP   yLOG_complex ("dist"      , "%8.2fb, %8.2fe, %8.2fc", lp, lc, l);
-      dc   = x_curr->degs;
-      if (dp > d) {
-         d = 360.0 + d;
+      if (dp > dc) {
+         dc = 360.0 + dc;
       }
-      d  = a_servo->deg = ykine__exact_calc (dp, d, x_pct);
+      d  = ykine__exact_calc (dp, dc, x_pct);
       if (d <    0.0)   d  = 360.0 + d;
       if (d >  360.0)   d  = d - 360.0;
+      a_servo->deg  = d;
       a_servo->xexp =  l * sin (d * DEG2RAD);
       a_servo->zexp = -l * cos (d * DEG2RAD);
       a_servo->yexp = ykine__exact_calc (yp, yc, x_pct);
    } else {
       DEBUG_YKINE_SCRP   yLOG_note    ("normal verb");
-      d  = a_servo->deg = ykine__exact_calc (dp, dc, x_pct);
+      d  = ykine__exact_calc (dp, dc, x_pct);
+      a_servo->deg  = d;
       a_servo->xexp = ykine__exact_calc (xp, xc, x_pct);
       a_servo->zexp = ykine__exact_calc (zp, zc, x_pct);
       a_servo->yexp = ykine__exact_calc (yp, yc, x_pct);
