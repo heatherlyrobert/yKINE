@@ -26,8 +26,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0p"
-#define     YKINE_VER_TXT   "fixed hidden moves since flags were not set"
+#define     YKINE_VER_NUM   "1.0q"
+#define     YKINE_VER_TXT   "fixed issue with ripetere and yPARSE"
 
 
 

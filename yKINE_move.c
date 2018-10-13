@@ -301,9 +301,11 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
    /*---(add)----------------------------*/
    for (i = 0; i < a_times; ++i) {
       sprintf (x_label, "ripetere %d", i + 1);
+      DEBUG_YKINE_SCRP   yLOG_info    ("RIPETERE"  , x_label);
       rc = ykine_move_create (YKINE_MOVE_NOTE, a_servo, x_label, x_line, 0.0, 0.0);
       x_curr = x_beg;
       while (x_curr != NULL) {
+         DEBUG_YKINE_SCRP   yLOG_value   ("line"      , x_curr->line);
          if (x_curr->type != YKINE_MOVE_NOTE) {
             rc = yPARSE_reload (&(myKINE.s_nline), &(myKINE.s_cline), x_curr->line, a_servo->label);
             DEBUG_YKINE_SCRP   yLOG_value   ("reload"    , rc);
@@ -314,6 +316,7 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
          x_curr = x_curr->s_next;
       }
    }
+   DEBUG_YKINE_SCRP   yLOG_note    ("ERETEPIR to be created");
    rc = ykine_move_create (YKINE_MOVE_NOTE, a_servo, "eretepir", x_line, 0.0, 0.0);
    /*---(clear)--------------------------*/
    a_servo->segni [a_servo->nsegno] = NULL;
