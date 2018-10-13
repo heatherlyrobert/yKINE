@@ -472,6 +472,7 @@ ykine_servos            (char *a_source)
    int         i           =    0;
    int         j           =    0;
    int         c           =    0;
+   int         u           =    0;
    int         x_len       =    0;
    int         x_index     =   -1;
    int         x_nside     =    0;
@@ -525,6 +526,11 @@ ykine_servos            (char *a_source)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(unique)-------------------------*/
+   for (i = 0; i < g_nservo; ++i) {
+      if (g_servo_info [i].scrp == 'y')  ++u;
+   }
+   DEBUG_YKINE_SCRP  yLOG_value   ("u"         , u);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return c;

@@ -305,7 +305,7 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
       x_curr = x_beg;
       while (x_curr != NULL) {
          if (x_curr->type != YKINE_MOVE_NOTE) {
-            rc = yPARSE_reload (x_curr->line, a_servo->label);
+            rc = yPARSE_reload (&(myKINE.s_nline), &(myKINE.s_cline), x_curr->line, a_servo->label);
             DEBUG_YKINE_SCRP   yLOG_value   ("reload"    , rc);
             if (rc == 1)  rc = ykine_scrp_exec    ();
             DEBUG_YKINE_SCRP   yLOG_value   ("exec"      , rc);

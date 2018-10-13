@@ -177,7 +177,8 @@ ykine_turtle_home       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, 0.0, 0.0, =)", b);
-   rc = yPARSE_hidden (x_recd);
+   rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
+   myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -227,7 +228,8 @@ ykine_turtle_goto       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, %6.1f, %6.1f, =)", b, x, z);
-   rc = yPARSE_hidden (x_recd);
+   rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
+   myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -273,7 +275,8 @@ ykine_turtle_raise      (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
-   rc = yPARSE_hidden (x_recd);
+   rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
+   myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -319,7 +322,8 @@ ykine_turtle_lower      (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
-   rc = yPARSE_hidden (x_recd);
+   rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
+   myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -433,7 +437,8 @@ ykine_turtle_move       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%6.1f, %6.1f, %6.1f, =)", b, s_x + x, s_z + z);
-   rc = yPARSE_hidden (x_recd);
+   rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
+   myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);

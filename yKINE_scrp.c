@@ -158,8 +158,6 @@ ykine_scrp_init    (void)
    myKINE.scrp_len    = 0.0;
    myKINE.s_nline     =   0;
    myKINE.s_cline     =   0;
-   /*> strlcpy (myKINE.s_q, "", LEN_LABEL);                                          <*/
-   /*> myKINE.s_context   = NULL;                                                     <*/
    return 0;
 }
 
@@ -517,12 +515,9 @@ yKINE_script       (float *a_len)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    int         rc          =    0;
-   char        x_verb      [20] = "";;
    int         i           =    0;
    float       x_len       =  0.0;
    float       x_sec       =  0.0;
-   char        x_type      =  '-';
-   char        x_active    =  '-';
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
@@ -530,14 +525,14 @@ yKINE_script       (float *a_len)
    /*---(read lines)---------------------*/
    DEBUG_YKINE_SCRP  yLOG_note    ("read lines");
    while (1) {
+      ykine__scrp_prep  ();
       /*---(parse)-----------------------*/
-      rc = yPARSE_stdin ();
+      rc = yPARSE_stdin (&(myKINE.s_nline), &(myKINE.s_cline));
       DEBUG_YKINE_SCRP  yLOG_value   ("read"      , rc);
-      if (rc == 0)               continue;
-      if (rc < 0) {
-         DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rc);
+      if (feof (stdin))  {
          break;
       }
+      if (rc <= 0)               continue;
       /*---(handle verb)-----------------*/
       rc = ykine_scrp_exec ();
       DEBUG_YKINE_SCRP  yLOG_value   ("exec"      , rc);

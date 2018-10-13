@@ -26,8 +26,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0o"
-#define     YKINE_VER_TXT   "pulled input queue logic totally out and into yPARSE library"
+#define     YKINE_VER_NUM   "1.0p"
+#define     YKINE_VER_TXT   "fixed hidden moves since flags were not set"
 
 
 
