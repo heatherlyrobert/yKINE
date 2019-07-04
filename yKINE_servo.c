@@ -241,9 +241,12 @@ ykine_servo_pointer     (int a_leg, int a_seg)
    /*---(prepare)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(cycle)--------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_leg);
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_seg);
    for (i = 0; i < g_nservo; ++i) {
       if (g_servo_info [i].leg != a_leg)  continue;
       if (g_servo_info [i].seg != a_seg)  continue;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
       rc = i;
       break;
    }
@@ -252,6 +255,7 @@ ykine_servo_pointer     (int a_leg, int a_seg)
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       return NULL;
    }
+   DEBUG_YKINE_SCRP   yLOG_snote   (g_servo_info [rc].label);
    x_servo = &(g_servo_info [rc]);
    DEBUG_YKINE_SCRP   yLOG_spoint  (x_servo);
    /*---(complete)-----------------------*/

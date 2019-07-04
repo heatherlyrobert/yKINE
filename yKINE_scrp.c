@@ -153,7 +153,7 @@ yKINE_servo        (char *a_source)
 }
 
 char  /*--> prepare for use ---------s-------------[ leaf   [ ------ ]-*/
-ykine_scrp_init    (void)
+ykine_scrp_begin   (void)
 {
    myKINE.scrp_len    = 0.0;
    myKINE.s_nline     =   0;
@@ -448,7 +448,7 @@ ykine_scrp_repeat       (void)
    int         i           = 0;
    int         j           = 0;
    tSERVO     *x_servo     = NULL;
-   float       c           = 0;
+   double      c           = 0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(mark servers)----------------*/
@@ -521,21 +521,33 @@ yKINE_script       (float *a_len)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   ykine_scrp_init  ();
+   rc = ykine_scrp_begin ();
+   /*---(open stdin)---------------------*/
+   rc = yPARSE_stdin     ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("open"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(read lines)---------------------*/
    DEBUG_YKINE_SCRP  yLOG_note    ("read lines");
    while (1) {
       ykine__scrp_prep  ();
       /*---(parse)-----------------------*/
-      rc = yPARSE_stdin (&(myKINE.s_nline), &(myKINE.s_cline));
+      rc = yPARSE_read  (&(myKINE.s_nline), &(myKINE.s_cline));
       DEBUG_YKINE_SCRP  yLOG_value   ("read"      , rc);
-      if (feof (stdin))  {
-         break;
-      }
+      if (feof (stdin))          break;
       if (rc <= 0)               continue;
       /*---(handle verb)-----------------*/
       rc = ykine_scrp_exec ();
       DEBUG_YKINE_SCRP  yLOG_value   ("exec"      , rc);
+   }
+   /*---(close stdin)--------------------*/
+   rc = yPARSE_close_in  ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("close"     , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    /*---(fix length)---------------------*/
    x_len = 0.0;

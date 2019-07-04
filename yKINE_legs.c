@@ -31,7 +31,7 @@ ykine__scrp_set_servo   (char a_meth, int a_leg, int a_seg, float a_deg, float a
    }
    /*---(calculate)----------------------*/
    s = a_beat * x_servo->pace;
-   DEBUG_YKINE_SCRP  yLOG_double  ("s_secs"    , s);
+   DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
    if (rc == 0)  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, a_deg, s);
    if (rc == 0)  rc = yKINE_endpoint    (a_leg, a_seg, a_meth, NULL, NULL, &x, &z, &y);
    if (rc == 0)  rc = ykine_move_addloc (x_servo, x, z, y);
@@ -58,7 +58,7 @@ ykine__scrp_fk_getter       (int a_leg, int a_seg, char *a_entry, float *a_deg)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   float       d           =  0.0;
+   double      d           =  0.0;
    float       dp          =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -96,7 +96,7 @@ ykine_scrp_fk           (void)
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
    char        rc          = 0;
-   float       b           =  0.0;
+   double      b           =  0.0;
    int         x_leg       = 0.0;
    float       f, p, t;
    char       *x_femu      [LEN_LABEL];
@@ -112,14 +112,18 @@ ykine_scrp_fk           (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(get positions)---------------*/
    if (rc >= 0)  rc = yPARSE_popstr    (x_femu);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_femu"    , x_femu);
    if (rc >= 0)  rc = yPARSE_popstr    (x_pate);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_pate"    , x_pate);
    if (rc >= 0)  rc = yPARSE_popstr    (x_tibi);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_tibi"    , x_tibi);
    /*---(handle trouble)--------------*/
    if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
    /*---(process)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_note    ("CHECK EACH LEG");
    for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
       /*---(filter)----------------------*/
       if (ykine_servo_unfocused (x_leg, YKINE_FEMU))  continue;
@@ -155,6 +159,7 @@ ykine__scrp_ik_getter   (int a_leg, char *x_str, float *x, char *z_str, float *z
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
    float       xp, zp, yp;                       /* previous coordinates      */
+   double      xt, zt, yt;                       /* temporary coordinates     */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(servo)--------------------------*/
@@ -168,20 +173,24 @@ ykine__scrp_ik_getter   (int a_leg, char *x_str, float *x, char *z_str, float *z
    rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xp, &zp, &yp, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = yPARSE_adjval   (xp, x_str, x);
-      if (rc == 0)  rc  = yPARSE_adjval   (zp, z_str, z);
-      if (rc == 0)  rc  = yPARSE_adjval   (yp, y_str, y);
+      if (rc == 0)  rc  = yPARSE_adjval   (xp, x_str, &xt);
+      if (rc == 0)  rc  = yPARSE_adjval   (zp, z_str, &zt);
+      if (rc == 0)  rc  = yPARSE_adjval   (yp, y_str, &yt);
    } else {
-      if (rc == 0)  rc  = yPARSE_adjfrom  (xp, x_str, x);
-      if (rc == 0)  rc  = yPARSE_adjfrom  (zp, z_str, z);
-      if (rc == 0)  rc  = yPARSE_adjfrom  (yp, y_str, y);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (xp, x_str, &xt);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (zp, z_str, &zt);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (yp, y_str, &yt);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", *x, *z, *y);
+   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xt, zt, yt);
+   /*---(save)---------------------------*/
+   if (x != NULL)  *x = xt;
+   if (z != NULL)  *z = zt;
+   if (y != NULL)  *y = yt;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -194,9 +203,7 @@ ykine_scrp_ik           (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    int         x_leg       =  0.0;
-   float       d           =  0.0;
-   float       l           =  0.0;
-   float       b, s        =  0.0;
+   double      b           =  0.0;
    float       x, z, y;
    float       f, p, t;
    char       *x_str       [LEN_LABEL];
@@ -212,8 +219,11 @@ ykine_scrp_ik           (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(get positions)---------------*/
    if (rc >= 0)  rc = yPARSE_popstr    (x_str);
+   DEBUG_YKINE_SCRP  yLOG_info    ("x_str"     , x_str);
    if (rc >= 0)  rc = yPARSE_popstr    (z_str);
+   DEBUG_YKINE_SCRP  yLOG_info    ("z_str"     , z_str);
    if (rc >= 0)  rc = yPARSE_popstr    (y_str);
+   DEBUG_YKINE_SCRP  yLOG_info    ("y_str"     , y_str);
    /*---(handle trouble)--------------*/
    if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);

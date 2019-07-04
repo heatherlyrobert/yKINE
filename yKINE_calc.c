@@ -1258,6 +1258,10 @@ ykine_inverse_detail    (char a_adapt, int a_leg, float a_x, float a_z, float a_
    /*---(clear)--------------------------*/
    yKINE__wipe     (a_leg, YKINE_IK);
    /*---(target setting)-----------------*/
+   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_leg);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_x"       , a_x);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_z"       , a_z);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_y"       , a_y);
    if (rc >= 0)  rc = yKINE__IK_targ  (a_leg, a_x, a_z, a_y);
    if (rc >= 0 && a_adapt == 'y')  rc = yKINE__IK_adapt (a_leg);
    /*---(fixed body)---------------------*/
@@ -1281,13 +1285,29 @@ ykine_inverse_detail    (char a_adapt, int a_leg, float a_x, float a_z, float a_
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
 yKINE_inverse_adapt     (int a_leg, float a_x, float a_z, float a_y)
 {
-   return ykine_inverse_detail ('y', a_leg, a_x, a_z, a_y);
+   /*---(locals)-----------+-----------+-*/
+   char        rc          =   0;      /* generic return code                 */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(run)----------------------------*/
+   rc = ykine_inverse_detail ('y', a_leg, a_x, a_z, a_y);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
+   return rc;
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
 yKINE_inverse           (int a_leg, float a_x, float a_z, float a_y)
 {
-   return ykine_inverse_detail ('-', a_leg, a_x, a_z, a_y);
+   /*---(locals)-----------+-----------+-*/
+   char        rc          =   0;      /* generic return code                 */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(run)----------------------------*/
+   rc = ykine_inverse_detail ('-', a_leg, a_x, a_z, a_y);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
+   return rc;
 }
 
 

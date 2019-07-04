@@ -97,7 +97,7 @@ ykine_turtle_speed      (void)
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   float       s           =  0.0;
+   double      s           =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get duration)----------------*/
@@ -120,7 +120,7 @@ ykine_turtle_wait       (void)
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   float       b, s        =  0.0;
+   double      b, s        =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get existing values)------------*/
@@ -204,7 +204,7 @@ ykine_turtle_goto       (void)
    char        rc          =    0;
    float       b, s        =  0.0;
    char        x_recd      [LEN_RECD];
-   float       x, z, xz;
+   double      x, z, xz;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get existing values)------------*/
@@ -348,7 +348,7 @@ ykine_turtle_head       (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    char        x_recd      [LEN_RECD];
-   float       d           =  0.0;
+   double      d           =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get existing values)------------*/
@@ -378,7 +378,7 @@ ykine_turtle_turn       (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    char        x_recd      [LEN_RECD];
-   float       d           =  0.0;
+   double      d           =  0.0;
    float       xp, zp, yp;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -390,7 +390,9 @@ ykine_turtle_turn       (void)
       return rce;
    }
    /*---(get duration)----------------*/
+   DEBUG_YKINE_SCRP  yLOG_value   ("s_head"    , s_head);
    rc  = yPARSE_popfrom  (s_head, &d);
+   DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
    if (d <    0.0)   d  = 360.0 + d;
    if (d >  360.0)   d  = d - 360.0;
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
@@ -409,7 +411,7 @@ ykine_turtle_move       (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    char        x_recd      [LEN_RECD];
-   float       l           =  0.0;
+   double      l           =  0.0;
    float       x, z, xz;
    float       b, s;
    /*---(header)-------------------------*/

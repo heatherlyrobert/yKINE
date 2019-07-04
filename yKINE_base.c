@@ -49,7 +49,7 @@ yKINE_version      (void)
 #else
    strncpy (t, "[unknown    ]", 15);
 #endif
-   snprintf (yKINE_ver, 100, "%s   %s : %s", t, YKINE_VER_NUM, YKINE_VER_TXT);
+   snprintf (yKINE_ver, 100, "%s   %s : %s", t, P_VERNUM, P_VERTXT);
    return yKINE_ver;
 }
 
@@ -63,11 +63,12 @@ static void      o___INIT____________________o (void) {;}
 char       /*----: set all segments to defaults ------------------------------*/
 yKINE_init         (char a_type)
 {
-   /*---(locals)-------------------------*/
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
    int      x_leg = 0;              /* iterator         */
    int      x_seg = 0;              /* iterator         */
    /*---(header)-------------------------*/
-   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
    /*---(set body)-----------------------*/
    /*> kine_center       (0.0f, 0.0f);                                                <* 
     *> kine_height       (segs_len [YKINE_TIBI]);                                           <* 
@@ -81,11 +82,14 @@ yKINE_init         (char a_type)
          yKINE__clear ( &(gk [x_leg][x_seg]), "gk", x_leg, x_seg, a_type);
       }
    }
-   ykine_servo_init ();
-   ykine_scrp_init  ();
-   yPARSE_init      (ykine_scrp_popverb, 'y');
+   rc = ykine_servo_init ();
+   DEBUG_YKINE  yLOG_value   ("servo"     , rc);
+   rc = ykine_scrp_begin ();
+   DEBUG_YKINE  yLOG_value   ("scrp"      , rc);
+   rc = yPARSE_init      (YPARSE_NOAUTO, ykine_scrp_popverb, YPARSE_REUSE);
+   DEBUG_YKINE  yLOG_value   ("yparse"    , rc);
    /*---(complete)-----------------------*/
-   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -188,14 +192,7 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
    /*---(preprare)-----------------------*/
    strlcpy  (ykine__unit_answer, "BASE unit        : question not understood", LEN_STR);
    /*---(answer)------------------------------------------*/
-   if (strcmp(a_question, "IK_final") == 0) {
-      x = ik[a_leg][YKINE_TARG].x - ik[a_leg][YKINE_CALC].x;
-      z = ik[a_leg][YKINE_TARG].z - ik[a_leg][YKINE_CALC].z;
-      y = ik[a_leg][YKINE_TARG].y - ik[a_leg][YKINE_CALC].y;
-      e = sqrt ((x * x) + (z * z) + (y * y));
-      sprintf(ykine__unit_answer, "IK-%-2.2s/final    : %8.1fx, %8.1fz, %8.1fy, %8.3fe", 
-            ik[a_leg][a_seg].n, ik[a_leg][YKINE_CALC].x, ik[a_leg][YKINE_CALC].z, ik[a_leg][YKINE_CALC].y, e);
-   } else if (strcmp(a_question, "FK_final") == 0) {
+   if (strcmp(a_question, "FK_final") == 0) {
       sprintf(ykine__unit_answer, "FK %1d/final     : %8.2fx,%8.2fz,%8.2fy", 
             a_leg, fk[a_leg][YKINE_CALC].x, fk[a_leg][YKINE_CALC].z, fk[a_leg][YKINE_CALC].y);
    } else if (strcmp(a_question, "IK_target") == 0) {
@@ -208,11 +205,6 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
          sprintf(ykine__unit_answer, "IK %1d/success", a_leg);
       else
          sprintf(ykine__unit_answer, "IK %1d/FAILURE", a_leg);
-   } else if (strcmp(a_question, "IK_result"    ) == 0) {
-      sprintf(ykine__unit_answer, "IK-%-2.2s/angles   : %8.1fc, %8.1ff, %8.1fp, %8.1ft", 
-            ik[a_leg][a_seg].n ,
-            ik[a_leg][YKINE_COXA].d, ik[a_leg][YKINE_FEMU].d,
-            ik[a_leg][YKINE_PATE].d, ik[a_leg][YKINE_TIBI].d);
    } else if (strcmp(a_question, "IK_lower")  == 0) {
       sprintf(ykine__unit_answer, "IK %1d/lower     : %8.3fp,%8.3ft", 
             a_leg, ik[a_leg][YKINE_PATE].v, ik[a_leg][YKINE_TIBI].v);
@@ -221,86 +213,52 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
             a_leg, a_seg, g_seg_data [a_seg].full, fk[a_leg][a_seg].l,
             fk[a_leg][a_seg].x, fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
    }
-   /*---(leg values)--------------------------------------*/
-   else if (strcmp(a_question, "seg_angle"     ) == 0) {
-      sprintf(ykine__unit_answer, "%-7.7s angle  :%8.1fm,%8.1fd,%8.3fv,%8.3fh", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
-            fk[a_leg][a_seg].d , fk[a_leg][a_seg].cv, fk[a_leg][a_seg].ch);
-   }
-   else if (strcmp(a_question, "seg_size"      ) == 0) {
-      sprintf(ykine__unit_answer, "%-7.7s size   :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
-            fk[a_leg][a_seg].x , fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
-   }
-   else if (strcmp(a_question, "seg_end"       ) == 0) {
-      sprintf(ykine__unit_answer, "%-7.7s end    :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
-            fk[a_leg][a_seg].cx, fk[a_leg][a_seg].cz, fk[a_leg][a_seg].cy);
-   }
-   /*---(NEW TESTS)---------------------------------------*/
+   /*---(forward kinematics)------------------------------*/
    else if (strcmp(a_question, "FK_seg_angle"     ) == 0) {
       sprintf(ykine__unit_answer, "FK-%-7.7s ang :%8.1fd,%8.3fv,%8.3fh", 
-            fk[a_leg][a_seg].n ,
-            fk[a_leg][a_seg].d , fk[a_leg][a_seg].cv, fk[a_leg][a_seg].ch);
+            fk [a_leg][a_seg].n ,
+            fk [a_leg][a_seg].d , fk [a_leg][a_seg].cv, fk [a_leg][a_seg].ch);
    }
    else if (strcmp(a_question, "FK_seg_size"      ) == 0) {
       sprintf(ykine__unit_answer, "FK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
-            fk[a_leg][a_seg].x , fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
+            fk [a_leg][a_seg].n , fk [a_leg][a_seg].l ,
+            fk [a_leg][a_seg].x , fk [a_leg][a_seg].z , fk [a_leg][a_seg].y);
    }
    else if (strcmp(a_question, "FK_seg_end"       ) == 0) {
       sprintf(ykine__unit_answer, "FK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].fl,
-            fk[a_leg][a_seg].cx, fk[a_leg][a_seg].cz, fk[a_leg][a_seg].cy);
+            fk [a_leg][a_seg].n , fk [a_leg][a_seg].fl,
+            fk [a_leg][a_seg].cx, fk [a_leg][a_seg].cz, fk [a_leg][a_seg].cy);
    }
-   else if (strcmp(a_question, "IK_seg_angle"     ) == 0) {
+   /*---(inverse kinematics)------------------------------*/
+   else if (strcmp (a_question, "IK_seg_angle"     ) == 0) {
       sprintf(ykine__unit_answer, "IK-%-7.7s ang :%8.1fd,%8.3fv,%8.3fh", 
-            ik[a_leg][a_seg].n ,
-            ik[a_leg][a_seg].d , ik[a_leg][a_seg].cv, ik[a_leg][a_seg].ch);
+            ik [a_leg][a_seg].n ,
+            ik [a_leg][a_seg].d , ik [a_leg][a_seg].cv, ik [a_leg][a_seg].ch);
    }
-   else if (strcmp(a_question, "IK_seg_size"      ) == 0) {
+   else if (strcmp (a_question, "IK_seg_size"      ) == 0) {
       sprintf(ykine__unit_answer, "IK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
-            ik[a_leg][a_seg].x , ik[a_leg][a_seg].z, ik[a_leg][a_seg].y);
+            ik [a_leg][a_seg].n , ik [a_leg][a_seg].l ,
+            ik [a_leg][a_seg].x , ik [a_leg][a_seg].z , ik [a_leg][a_seg].y);
    }
-   else if (strcmp(a_question, "IK_seg_end"       ) == 0) {
+   else if (strcmp (a_question, "IK_seg_end"       ) == 0) {
       sprintf(ykine__unit_answer, "IK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            ik[a_leg][a_seg].n , ik[a_leg][a_seg].fl,
-            ik[a_leg][a_seg].cx, ik[a_leg][a_seg].cz, ik[a_leg][a_seg].cy);
+            ik [a_leg][a_seg].n , ik [a_leg][a_seg].fl,
+            ik [a_leg][a_seg].cx, ik [a_leg][a_seg].cz, ik [a_leg][a_seg].cy);
    }
-
-
-
-
-   else if (strcmp(a_question, "FK_angles"     ) == 0) {
-      sprintf(ykine__unit_answer, "%-10.10s deg :%8.1fm,%8.1fd,%8.3fv,%8.3fh", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
-            fk[a_leg][a_seg].d , fk[a_leg][a_seg].cv, fk[a_leg][a_seg].ch);
+   else if (strcmp (a_question, "IK_angles"    ) == 0) {
+      sprintf(ykine__unit_answer, "IK-%-2.2s/angles   : %8.1fc, %8.1ff, %8.1fp, %8.1ft", 
+            ik [a_leg][a_seg].n ,
+            ik [a_leg][YKINE_COXA].d, ik [a_leg][YKINE_FEMU].d,
+            ik [a_leg][YKINE_PATE].d, ik [a_leg][YKINE_TIBI].d);
    }
-   else if (strcmp(a_question, "FK_segment"    ) == 0) {
-      sprintf(ykine__unit_answer, "%-10.10s seg :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
-            fk[a_leg][a_seg].x , fk[a_leg][a_seg].z, fk[a_leg][a_seg].y);
-   }
-   else if (strcmp(a_question, "FK_endpoint"   ) == 0) {
-      sprintf(ykine__unit_answer, "%-10.10s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            fk[a_leg][a_seg].n , fk[a_leg][a_seg].l,
-            fk[a_leg][a_seg].cx, fk[a_leg][a_seg].cz, fk[a_leg][a_seg].cy);
-   }
-   else if (strcmp(a_question, "IK_angles"     ) == 0) {
-      sprintf(ykine__unit_answer, "%-10.10s deg :%8.1fm,%8.1fd,%8.3fv,%8.3fh", 
-            ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
-            ik[a_leg][a_seg].d , ik[a_leg][a_seg].cv, ik[a_leg][a_seg].ch);
-   }
-   else if (strcmp(a_question, "IK_segment"    ) == 0) {
-      sprintf(ykine__unit_answer, "%-10.10s seg :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
-            ik[a_leg][a_seg].x , ik[a_leg][a_seg].z, ik[a_leg][a_seg].y);
-   }
-   else if (strcmp(a_question, "IK_endpoint"   ) == 0) {
-      sprintf(ykine__unit_answer, "%-10.10s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
-            ik[a_leg][a_seg].n , ik[a_leg][a_seg].l,
-            ik[a_leg][a_seg].cx, ik[a_leg][a_seg].cz, ik[a_leg][a_seg].cy);
+   else if (strcmp (a_question, "IK_final") == 0) {
+      x = ik [a_leg][YKINE_TARG].x - ik [a_leg][YKINE_CALC].x;
+      z = ik [a_leg][YKINE_TARG].z - ik [a_leg][YKINE_CALC].z;
+      y = ik [a_leg][YKINE_TARG].y - ik [a_leg][YKINE_CALC].y;
+      e = sqrt ((x * x) + (z * z) + (y * y));
+      sprintf(ykine__unit_answer, "IK-%-2.2s/final    : %8.1fx, %8.1fz, %8.1fy, %8.3fe", 
+            ik [a_leg][a_seg].n, ik [a_leg][YKINE_CALC].x,
+            ik [a_leg][YKINE_CALC].z, ik [a_leg][YKINE_CALC].y, e);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;
@@ -309,26 +267,26 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__unit_quiet  (void)
 {
-   char       *x_args [2]  = { "yKINE_debug", "@@quiet" };
-   yURG_logger (2, x_args);
-   yURG_urgs   (2, x_args);
+   char       *x_args [1]  = { "yKINE"      , ""        };
+   yURG_logger (1, x_args);
+   yURG_urgs   (1, x_args);
    return 0;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__unit_loud   (void)
 {
-   char       *x_args [4]  = { "yKINE_debug", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp" };
-   yURG_logger (4, x_args);
-   yURG_urgs   (4, x_args);
-   DEBUG_TOPS   yLOG_info     ("yKINE" , yKINE_version   ());
+   char       *x_args [7]  = { "yKINE_unit" , "@@kitchen", "@@ykine", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp", "@@yparse" };
+   yURG_logger (7, x_args);
+   yURG_urgs   (7, x_args);
+   DEBUG_YKINE  yLOG_info     ("yKINE" , yKINE_version   ());
    return 0;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__unit_end    (void)
 {
-   yLOG_end      ();
+   yLOGS_end     ();
    return 0;
 }
 

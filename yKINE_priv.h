@@ -1,5 +1,64 @@
 /*============================----beg-of-source---============================*/
 
+
+/*===[[ HEADER ]]=============================================================*/
+
+/*   focus         : (RO) robotics
+ *   niche         : (sp) spiders
+ *   application   : yKINE
+ *   purpose       : shared, consistent, and reliable spider kinematics/scipting
+ *
+ *   base_system   : gnu/linux   (powerful, ubiquitous, technical, and hackable)
+ *   lang_name     : ansi-c      (wicked, limitless, universal, and everlasting)
+ *   dependencies  : none
+ *   size          : small       (less than 2000 slocL)
+ * 
+ *   author        : rsheatherly
+ *   created       : 2009-07     (about when i bought eva and igor)
+ *   priorities    : direct, simple, brief, vigorous, and lucid (h.w. fowler)
+ *   end goal      : loosely coupled, strict interface, maintainable, portable)
+ * 
+ */
+/*===[[ SUMMARY ]]============================================================*/
+
+/*   yKINE is a consistent, shared, full-featured, and reliable spider
+ *   kinematics library designed around the lynxmotion CH3-R hexapod format
+ *   which will free all other application from detailed calculations.
+ *
+ */
+
+/*===[[ BEG_HEADER ]]=========================================================*/
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
+
+/*===[[ ONE_LINERS ]]=========================================================*/
+
+#define     P_FOCUS     "RO (robotics)"
+#define     P_NICHE     "hx (hexapoda)"
+#define     P_PURPOSE   "shared, consistent, and reliable spider kinematics/scripting"
+
+#define     P_NAMESAKE  "odysseus-metis (cunning)"
+#define     P_HERITAGE  "greek hero of the iliad and odyssey who travelled far and wide"
+#define     P_IMAGERY   "great king of ithica, a handsome and well muscled warrior"
+
+#define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
+#define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
+#define     P_CODESIZE  "small       (appoximately 10,000 slocl)"
+
+#define     P_AUTHOR    "heatherlyrobert"
+#define     P_CREATED   "2009-07"
+#define     P_DEPENDS   "none"
+
+#define     P_VERNUM    "1.0s"
+#define     P_VERTXT    "updated to full unit test pass after yPARSE modified (doubles)"
+
+#define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
+#define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
+#define     P_REMINDER  "there are many better options, but i *own* every byte of this one"
+
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
+/*===[[ END_HEADER ]]=========================================================*/
+
+
 /*===[[ HEADERS ]]========================================*/
 /*---(program)---------------------------*/
 #include    "yKINE.h"
@@ -26,8 +85,8 @@
 
 /*===[[ VERSION ]]========================================*/
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define     YKINE_VER_NUM   "1.0q"
-#define     YKINE_VER_TXT   "fixed issue with ripetere and yPARSE"
+/*> #define     YKINE_VER_NUM   "1.0s"                                                <*/
+/*> #define     YKINE_VER_TXT   "updated to full unit test pass after yPARSE modified (doubles)"   <*/
 
 
 
@@ -270,7 +329,7 @@ char        yKINE__unit_end    (void);
 
 
 
-char        ykine_scrp_init         (void);
+char        ykine_scrp_begin        (void);
 char        ykine__scrp_prep        (void);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
 char        ykine_scrp_verb         (char *a_char);

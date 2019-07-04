@@ -55,10 +55,9 @@ ykine_scrp_zero         (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   float       d           =  0.0;
+   float       d, s        =  0.0;
    float       l           =  0.0;
-   float       b, s        =  0.0;
-   float       x , z , y;                        /* current coordinates       */
+   double      b, x, y, z  =  0.0;
    float       xp, zp, yp;                       /* previous coordinates      */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -70,7 +69,7 @@ ykine_scrp_zero         (void)
       return rce;
    }
    /*---(get duration)----------------*/
-   rc  = yPARSE_popval   (0.0, &b);
+   rc  = yPARSE_popval (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
    /*---(det coordinates)-------------*/
    rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xp, &zp, &yp, NULL);
@@ -116,10 +115,9 @@ ykine_scrp_zpolar       (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   float       d           =  0.0;
-   float       l           =  0.0;
-   float       b, s        =  0.0;
-   float       x , z , y;                        /* current coordinates       */
+   double      b, d, l, y  =  0.0;
+   float       s           =  0.0;
+   float       x , z;                            /* current coordinates       */
    float       dp, lp, yp;                       /* previous coordinates      */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -186,7 +184,7 @@ ykine__scrp_orient_adjust   (int a_seg, float *a_deg)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   float       d           =  0.0;
+   double      d           =  0.0;
    float       dp          =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -225,7 +223,7 @@ ykine__scrp_orient_servo    (int a_seg, float a_deg, float a_beat)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   float       s           =  0.0;
+   double      s           =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(servo)--------------------------*/
@@ -253,7 +251,7 @@ ykine_scrp_orient       (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   float       b           =  0.0;
+   double      b           =  0.0;
    float       f, p, t;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -280,9 +278,8 @@ ykine_scrp_opolar       (void)
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   float       d           =  0.0;
-   float       b           =  0.0;
-   float       x , z , y;                        /* current coordinates       */
+   double      b, d, y     =  0.0;
+   float       x , z;                            /* current coordinates       */
    float       dp, lp, yp;                       /* previous coordinates      */
    float       p, t;
    /*---(header)-------------------------*/
