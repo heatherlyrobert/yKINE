@@ -49,11 +49,12 @@ yKINE__move_new    (void)
    strlcpy (x_new->label, "", LEN_LABEL);
    /*---(position)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("default positions");
-   x_new->degs =  0.0f;
+   x_new->degs    =  0.0f;
    /*---(timing)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("default timings");
-   x_new->dur =  0.0f;
-   x_new->secs =  0.0f;
+   x_new->dur     =  0.0f;
+   x_new->secs    =  0.0f;
+   x_new->other   =  0;
    /*---(location)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_note    ("default locations");
    x_new->x_pos   =  0.0f;
@@ -300,9 +301,10 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
    DEBUG_YKINE_SCRP   yLOG_complex ("x_beg"     , "%3d, %3d, %s", x_beg->seq, x_beg->line, x_beg->label);
    /*---(add)----------------------------*/
    for (i = 0; i < a_times; ++i) {
-      sprintf (x_label, "ripetere %d", i + 1);
+      sprintf (x_label, "repeat %d,%d", x_seg->seq, i + 1);
       DEBUG_YKINE_SCRP   yLOG_info    ("RIPETERE"  , x_label);
       rc = ykine_move_create (YKINE_MOVE_NOTE, a_servo, x_label, x_line, 0.0, 0.0);
+      a_servo->tail->other = x_seg->seq;
       x_curr = x_beg;
       while (x_curr != NULL) {
          DEBUG_YKINE_SCRP   yLOG_value   ("line"      , x_curr->line);
@@ -317,7 +319,9 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
       }
    }
    DEBUG_YKINE_SCRP   yLOG_note    ("ERETEPIR to be created");
-   rc = ykine_move_create (YKINE_MOVE_NOTE, a_servo, "eretepir", x_line, 0.0, 0.0);
+   sprintf (x_label, "taeper %d", x_seg->seq);
+   rc = ykine_move_create (YKINE_MOVE_NOTE, a_servo, x_label, x_line, 0.0, 0.0);
+   a_servo->tail->other = x_seg->seq;
    /*---(clear)--------------------------*/
    a_servo->segni [a_servo->nsegno] = NULL;
    /*---(complete)-----------------------*/
@@ -1189,18 +1193,16 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
          return ykine__unit_answer;
       }
       /*---(get move)--------------------*/
-      x_next  = x_servo->head;
-      if (x_next  == NULL) {
+      x_move = x_servo->head;
+      if (x_move  == NULL) {
          sprintf  (ykine__unit_answer, "MOVE unit      : no moves for this servo");
          return ykine__unit_answer;
       }
-      while (x_next != NULL) {
-         x_move = x_next;
-         if (c >= a_cnt)  break;
-         x_next = x_next->s_next;
-         ++c;
+      for (i = 0; i < a_cnt; ++i) {
+         if (x_move == NULL)  break;
+         x_move = x_move->s_next;
       }
-      if (c < a_cnt) {
+      if (x_move == NULL) {
          sprintf  (ykine__unit_answer, "MOVE unit      : past end of moves");
          return ykine__unit_answer;
       }
@@ -1209,10 +1211,10 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    /*---(answer)-------------------------*/
    if (strcmp (a_question, "header"  ) == 0) {
       ykine_move_savedprev  (x_move, &sp, &dp, NULL, NULL, NULL, NULL);
-      sprintf (ykine__unit_answer, "MOVE header    : %2d/%2d %c %-10.10s %8.3lf %8.3lf %8.3lf", x_move->seq, x_servo->count, x_move->type, x_move->label, sp, x_move->secs, x_move->dur);
+      sprintf (ykine__unit_answer, "MOVE header    : %2d/%2d %c %-11.11s %8.3lfs %8.3lfe %8.3lfd", x_move->seq, x_servo->count, x_move->type, x_move->label, sp, x_move->secs, x_move->dur);
    }
    else if (strcmp (a_question, "detail"  ) == 0) {
-      sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfd %8.1lfx %8.1lfz %8.1lfy", x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos);
+      sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8do", x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos, x_move->other);
    }
    else if (strcmp (a_question, "counts"  ) == 0) {
       strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_STR);

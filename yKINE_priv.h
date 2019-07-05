@@ -36,9 +36,9 @@
 #define     P_NICHE     "hx (hexapoda)"
 #define     P_PURPOSE   "shared, consistent, and reliable spider kinematics/scripting"
 
-#define     P_NAMESAKE  "odysseus-metis (cunning)"
-#define     P_HERITAGE  "greek hero of the iliad and odyssey who travelled far and wide"
-#define     P_IMAGERY   "great king of ithica, a handsome and well muscled warrior"
+#define     P_NAMESAKE  "typhoeus-terrigena (earth-born)"
+#define     P_HERITAGE  "most fearsome greek monster, last son of gaia and tartarus"
+#define     P_IMAGERY   "winged, one-hundred dragon heads, legions of viper coil tentacles"
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
@@ -48,8 +48,8 @@
 #define     P_CREATED   "2009-07"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "1.0s"
-#define     P_VERTXT    "updated to full unit test pass after yPARSE modified (doubles)"
+#define     P_VERNUM    "1.0t"
+#define     P_VERTXT    "fixed repeat failing issue due to changes in verb processing"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -180,6 +180,7 @@ struct      cMOVE {
    /*---(timing)------------*/
    float       dur;
    float       secs;
+   int         other;
    /*---(angle)-------------*/
    float       degs;
    /*---(position)----------*/
