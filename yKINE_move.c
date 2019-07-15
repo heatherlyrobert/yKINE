@@ -238,6 +238,33 @@ ykine_move_addloc        (tSERVO *a_servo, float a_xpos, float a_zpos, float a_y
    return 0;
 }
 
+char
+ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        x_label     [LEN_LABEL];
+   /*---(labels)-------------------------*/
+   if (a_count >= 0) {
+      sprintf (x_label, "repeat %d,%d", a_segno, a_count + 1);
+      DEBUG_YKINE_SCRP   yLOG_info    ("RIPETERE"  , x_label);
+   } else {
+      sprintf (x_label, "taeper %d", a_segno);
+      DEBUG_YKINE_SCRP   yLOG_note    ("ERETEPIR to be created");
+   }
+   /*---(moves)--------------------------*/
+   ykine_move_create (YKINE_MOVE_NOTE, a_servo, x_label, a_nline, 0.0, 0.0);
+   if (a_servo->seg == YKINE_TIBI) {
+      ykine_move_create (YKINE_MOVE_NOTE, a_servo - 1, x_label, a_nline, 0.0, 0.0);
+      ykine_move_create (YKINE_MOVE_NOTE, a_servo - 2, x_label, a_nline, 0.0, 0.0);
+   }
+   else if (a_servo->seg == YKINE_FEMU) {
+      ykine_move_create (YKINE_MOVE_NOTE, a_servo + 1, x_label, a_nline, 0.0, 0.0);
+      ykine_move_create (YKINE_MOVE_NOTE, a_servo + 2, x_label, a_nline, 0.0, 0.0);
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
 char         /*--> repeat from the last segno ------------[ ------ [ ------ ]-*/
 ykine_move_repeat      (tSERVO *a_servo, int a_times)
 {
@@ -301,9 +328,7 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
    DEBUG_YKINE_SCRP   yLOG_complex ("x_beg"     , "%3d, %3d, %s", x_beg->seq, x_beg->line, x_beg->label);
    /*---(add)----------------------------*/
    for (i = 0; i < a_times; ++i) {
-      sprintf (x_label, "repeat %d,%d", x_seg->seq, i + 1);
-      DEBUG_YKINE_SCRP   yLOG_info    ("RIPETERE"  , x_label);
-      rc = ykine_move_create (YKINE_MOVE_NOTE, a_servo, x_label, x_line, 0.0, 0.0);
+      ykine_move__repeatnote (a_servo, x_line, i, x_seg->seq);
       a_servo->tail->other = x_seg->seq;
       x_curr = x_beg;
       while (x_curr != NULL) {
@@ -318,9 +343,7 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
          x_curr = x_curr->s_next;
       }
    }
-   DEBUG_YKINE_SCRP   yLOG_note    ("ERETEPIR to be created");
-   sprintf (x_label, "taeper %d", x_seg->seq);
-   rc = ykine_move_create (YKINE_MOVE_NOTE, a_servo, x_label, x_line, 0.0, 0.0);
+   ykine_move__repeatnote (a_servo, x_line, -1, x_seg->seq);
    a_servo->tail->other = x_seg->seq;
    /*---(clear)--------------------------*/
    a_servo->segni [a_servo->nsegno] = NULL;

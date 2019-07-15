@@ -277,7 +277,7 @@ ykine_servo_side        (char a_char)
     *  bigs       : L=left  , R=right , A=all
     *  smalls     : l=left  , r=right , a=all
     *  both       : <=left  , >=right , *=all
-    *  center     : -
+    *  body       : o=orient, z=zero  , !=all
     *  everything : =
     *
     */
@@ -316,7 +316,7 @@ ykine_servo_rank        (char a_char)
     *  bigs       : R=rear  , M=middle, F=front , A=all
     *  smalls     : r=rear  ,         , f=front , a=all
     *  both       : v=rear  ,         , ^=front , *=all
-    *  center     : -
+    *  body       : o=orient, z=zero  , !=all
     *  everything : =
     *
     */
@@ -459,6 +459,7 @@ ykine_servo_format      (char a_side, char a_rank, char *a_final)
       return 0;
       break;
    case YKINE_INVERSE :
+   case YKINE_CONTROL :
       sprintf (a_final, "%c%c.%s", a_side, a_rank, "tibi");
       return 0;
       break;
@@ -520,6 +521,7 @@ ykine_servos            (char *a_source)
    for (i = 0; i < s_nside; ++i) {
       for (j = 0; j < s_nrank; ++j) {
          rc = ykine_servo_format (s_sides [i], s_ranks [j], x_label);
+         DEBUG_YKINE_SCRP  yLOG_value   ("format"    , rc);
          DEBUG_YKINE_SCRP  yLOG_info    ("x_label"   , x_label);
          x_index = ykine_servo_one (x_label);
          if (x_index > 0)  ++c;

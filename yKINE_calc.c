@@ -1,8 +1,17 @@
 /*============================----beg-of-source---============================*/
-
-/*---(headers)---------------------------*/
 #include    "yKINE.h"
 #include    "yKINE_priv.h"
+
+
+/*===[[ METIS ]]==============================================================*/
+/*
+ * metis  dm8··  add foot size logic to match actual leg size at various angles
+ *
+ *
+ *
+ */
+
+
 
 const    float    DEG2RAD   = M_PI / 180.0;
 const    float    RAD2DEG   = 180.0 / M_PI;
@@ -362,7 +371,7 @@ yKINE__lowr        (int  a_num, int a_meth)
    double      d;                      /* degrees                             */
    double      h,  v;                  /* horz and vert angles in radians     */
    double      cx, cy, cz;             /* coordintates                        */
-   double      xz, sl;                 /* lengths in xz, seg, and full        */
+   double      xz, sl, fl;             /* lengths in xz, seg, and full        */
    tSEG       *x_leg       = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
@@ -379,19 +388,19 @@ yKINE__lowr        (int  a_num, int a_meth)
    if (a_meth == YKINE_IK)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
    if (a_meth == YKINE_GK)  x_leg = ((tSEG *) gk) + (a_num * YKINE_MAX_SEGS);
    /*---(cumulatives)--------------------*/
-   x_leg [YKINE_LOWR].cx   =  x_leg [YKINE_TARG].cx;
-   x_leg [YKINE_LOWR].cz   =  x_leg [YKINE_TARG].cz;
-   x_leg [YKINE_LOWR].cy   =  x_leg [YKINE_TARG].cy;
-   x_leg [YKINE_LOWR].fl   =  x_leg [YKINE_TARG].fl;
+   cx   =  x_leg [YKINE_LOWR].cx   =  x_leg [YKINE_TARG].cx;
+   cz   =  x_leg [YKINE_LOWR].cz   =  x_leg [YKINE_TARG].cz;
+   cy   =  x_leg [YKINE_LOWR].cy   =  x_leg [YKINE_TARG].cy + x_leg [YKINE_FOOT].l;
+   fl   =  x_leg [YKINE_LOWR].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
    x_leg [YKINE_LOWR].cxz  =  x_leg [YKINE_TARG].cxz;
    x_leg [YKINE_LOWR].cv   =  x_leg [YKINE_TARG].cv;
    x_leg [YKINE_LOWR].ch   =  x_leg [YKINE_TARG].ch;
    x_leg [YKINE_LOWR].cd   =  x_leg [YKINE_TARG].cd;
    /*---(patella/tibia calcs)------------*/
-   x    =  x_leg [YKINE_LOWR].x    =  x_leg [YKINE_TARG].cx - x_leg [YKINE_FEMU].cx;
-   z    =  x_leg [YKINE_LOWR].z    =  x_leg [YKINE_TARG].cz - x_leg [YKINE_FEMU].cz;
-   y    =  x_leg [YKINE_LOWR].y    =  x_leg [YKINE_TARG].cy - x_leg [YKINE_FEMU].cy;
+   x    =  x_leg [YKINE_LOWR].x    =  x_leg [YKINE_LOWR].cx - x_leg [YKINE_FEMU].cx;
+   z    =  x_leg [YKINE_LOWR].z    =  x_leg [YKINE_LOWR].cz - x_leg [YKINE_FEMU].cz;
    xz   =  x_leg [YKINE_LOWR].xz   =  sqrt  ((x * x) + (z * z));
+   y    =  x_leg [YKINE_LOWR].y    =  x_leg [YKINE_LOWR].cy - x_leg [YKINE_FEMU].cy;
    DEBUG_YKINE_CALC   yLOG_complex ("lower"    , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    x_leg [YKINE_LOWR].sl   =  sqrt  ((x * x) + (z * z) + (y * y));
    x_leg [YKINE_LOWR].l    =  x_leg [YKINE_LOWR].sl;
@@ -665,35 +674,62 @@ yKINE__tars        (int  a_num)
 }
 
 char
-yKINE__foot        (int  a_num)
+yKINE__foot        (int  a_num, int a_meth)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
    int         i           =   0;
    tSEG       *x_leg       = NULL;
+   double      l           =  0.0;
+   double      d,  v,  h;              /* angles                              */
+   double      x,  y,  z, xz;          /* coordintates                        */
+   double      cx, cy, cz;             /* cums                                */
+   double      sl, fl;                 /* lengths in seg, and full            */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_num);
+   DEBUG_YKINE_CALC   yLOG_value   ("a_meth"    , a_meth);
    /*---(defense)------------------------*/
-   --rce;  if (a_num < 0)            return rce;
-   --rce;  if (a_num > YKINE_MAX_LEGS)     return rce;
-   /*---(kinematics)---------------------*/
-   for (i = 0; i < 2; ++i) {
-      /*---(test and set)----------------*/
-      if (i == 0)  x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
-      if (i == 1)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
-      /*---(calc basics)-----------------*/
-      x_leg [YKINE_FOOT].d    =  0.0;
-      x_leg [YKINE_FOOT].cd   =  x_leg [YKINE_TARS].cd;
-      x_leg [YKINE_FOOT].cv   =  x_leg [YKINE_TARS].cv;
-      x_leg [YKINE_FOOT].ch   =  x_leg [YKINE_TARS].ch;
-      /*---(calc cums)-------------------*/
-      x_leg [YKINE_FOOT].cx   =  x_leg [YKINE_TARS].cx;
-      x_leg [YKINE_FOOT].cz   =  x_leg [YKINE_TARS].cz;
-      x_leg [YKINE_FOOT].cy   =  x_leg [YKINE_TARS].cy;
-      /*---(calc extras)-----------------*/
-      x_leg [YKINE_FOOT].cxz  =  x_leg [YKINE_TARS].cxz;
-      x_leg [YKINE_FOOT].fl   =  x_leg [YKINE_TARS].fl; 
-      /*---(done)------------------------*/
+   --rce;  if (a_num < 0 || a_num > YKINE_MAX_LEGS) {
+      DEBUG_YKINE_CALC   yLOG_note    ("leg number is out of range");
+      DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
+      return rce;
    }
+   /*---(test and set)-------------------*/
+   if (a_meth == YKINE_FK)  x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
+   if (a_meth == YKINE_IK)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
+   /*---(calc basics)-----------------*/
+   l    =  x_leg [YKINE_FOOT].l;
+   d    =  x_leg [YKINE_FOOT].d = -(x_leg [YKINE_PATE].d + x_leg [YKINE_TIBI].d);
+   v    =  x_leg [YKINE_FOOT].v = x_leg [YKINE_FOOT].d * DEG2RAD;
+   h    =  x_leg [YKINE_FOOT].h = 0.0;
+   x_leg [YKINE_FOOT].cd   =  0.0;
+   x_leg [YKINE_FOOT].cv   =  0.0;
+   x_leg [YKINE_FOOT].ch   =  x_leg [YKINE_TIBI].ch;
+   DEBUG_YKINE_CALC   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fcv, %6.3fch", l, d, v, h);
+   /*---(calc end coords)----------------*/
+   x    =  x_leg [YKINE_FOOT].x  = 0.0;
+   z    =  x_leg [YKINE_FOOT].z  = 0.0;
+   xz   =  x_leg [YKINE_FOOT].xz = 0.0;
+   y    =  x_leg [YKINE_FOOT].y  =  -l;
+   DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
+   /*---(calc cums)-------------------*/
+   cx = x_leg [YKINE_FOOT].cx   =  x_leg [YKINE_TIBI].cx;
+   cz = x_leg [YKINE_FOOT].cz   =  x_leg [YKINE_TIBI].cz;
+   cy = x_leg [YKINE_FOOT].cy   =  x_leg [YKINE_TIBI].cy - l;
+   x_leg [YKINE_FOOT].cxz  =  x_leg [YKINE_TIBI].xz;
+   DEBUG_YKINE_CALC   yLOG_complex ("endpoint" , "%6.1fcx, %6.1fcz, %6.1fcy", cx, cz, cy);
+   /*---(calc extras)-----------------*/
+   sl = x_leg [YKINE_FOOT].sl   =  sqrt (( x *  x) + ( z *  z) + (y * y));
+   fl = x_leg [YKINE_FOOT].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
+   DEBUG_YKINE_CALC   yLOG_complex ("lengths"  , "%6.1fsl, %6.1ffl", sl, fl);
+   /*---(add to leg values)--------------*/
+   DEBUG_YKINE_CALC   yLOG_note    ("add values to YKINE_CALC segment");
+   x_leg [YKINE_CALC].x   += x;
+   x_leg [YKINE_CALC].z   += z;
+   x_leg [YKINE_CALC].y   += y;
    /*---(complete)-----------------------*/
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -726,21 +762,26 @@ yKINE__FK_targ     (int a_num, int a_meth)
    if (a_meth == YKINE_FK)  x_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);
    if (a_meth == YKINE_IK)  x_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);
    if (a_meth == YKINE_GK)  x_leg = ((tSEG *) gk) + (a_num * YKINE_MAX_SEGS);
-   /*---(save original target)-----------*/
-   x_leg [YKINE_ORIG].x   =  x_leg [YKINE_ORIG].cx  =  x_leg [YKINE_TIBI].cx;
-   x_leg [YKINE_ORIG].z   =  x_leg [YKINE_ORIG].cz  =  x_leg [YKINE_TIBI].cz;
-   x_leg [YKINE_ORIG].y   =  x_leg [YKINE_ORIG].cy  =  x_leg [YKINE_TIBI].cy;
-   x_leg [YKINE_ORIG].xz  =  x_leg [YKINE_ORIG].cxz =  x_leg [YKINE_TIBI].cxz;
-   /*---(save adapted target)------------*/
-   x  = x_leg [YKINE_TARG].x   =  x_leg [YKINE_TARG].cx  =  x_leg [YKINE_TIBI].cx;
-   z  = x_leg [YKINE_TARG].z   =  x_leg [YKINE_TARG].cz  =  x_leg [YKINE_TIBI].cz;
-   y  = x_leg [YKINE_TARG].y   =  x_leg [YKINE_TARG].cy  =  x_leg [YKINE_TIBI].cy;
-   xz = x_leg [YKINE_TARG].xz  =  x_leg [YKINE_TARG].cxz =  x_leg [YKINE_TIBI].cxz;
+   /*---(get end-points)-----------------*/
+   x  =  x_leg [YKINE_FOOT].cx;
+   z  =  x_leg [YKINE_FOOT].cz;
+   y  =  x_leg [YKINE_FOOT].cy;
+   xz =  x_leg [YKINE_FOOT].cxz;
+   fl =  x_leg [YKINE_FOOT].fl;
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
-   /*> ch = x_leg [YKINE_TARG].h   =  x_leg [YKINE_TARG].ch  =  x_leg [YKINE_TIBI].ch;   <*/
-   /*> cv = x_leg [YKINE_TARG].v   =  x_leg [YKINE_TARG].cv  =  x_leg [YKINE_TIBI].cv;   <*/
-   x_leg [YKINE_ORIG].sl  =  x_leg [YKINE_ORIG].fl  =  x_leg [YKINE_TIBI].fl;
-   fl = x_leg [YKINE_TARG].sl  =  x_leg [YKINE_TARG].fl  =  x_leg [YKINE_TIBI].fl;
+   /*---(save original)------------------*/
+   x_leg [YKINE_ORIG].x   =  x_leg [YKINE_ORIG].cx  =  x;
+   x_leg [YKINE_ORIG].z   =  x_leg [YKINE_ORIG].cz  =  z;
+   x_leg [YKINE_ORIG].y   =  x_leg [YKINE_ORIG].cy  =  y;
+   x_leg [YKINE_ORIG].xz  =  x_leg [YKINE_ORIG].cxz =  xz;
+   x_leg [YKINE_ORIG].fl  =  x_leg [YKINE_ORIG].fl  =  fl;
+   /*---(save target)--------------------*/
+   x_leg [YKINE_TARG].x   =  x_leg [YKINE_TARG].cx  =  x;
+   x_leg [YKINE_TARG].z   =  x_leg [YKINE_TARG].cz  =  z;
+   x_leg [YKINE_TARG].y   =  x_leg [YKINE_TARG].cy  =  y;
+   x_leg [YKINE_TARG].xz  =  x_leg [YKINE_TARG].cxz =  xz;
+   x_leg [YKINE_TARG].fl  =  x_leg [YKINE_TARG].fl  =  fl;
+   /*---(save original target)-----------*/
    DEBUG_YKINE_CALC   yLOG_complex ("basics"   , "%6.3fcv, %6.3fch, %6.1ffl",  cv, ch, fl);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
@@ -955,7 +996,6 @@ yKINE__IK_adapt         (int a_leg)
    y  = x_vert * cos (x_rads);
    DEBUG_YKINE_CALC  yLOG_double  ("new z", z);
    DEBUG_YKINE_CALC  yLOG_double  ("new y", y);
-
    /*---(zero-point)---------------------*/
    x   -=  myKINE.s_xcenter;
    DEBUG_YKINE_CALC  yLOG_complex ("x-zeroed"  , "zero = %8.2lf, revs = %8.2lf", myKINE.s_xcenter, x);
@@ -1236,13 +1276,13 @@ yKINE_forward      (int a_leg, float a_femu, float a_pate, float a_tibi)
    if (rc >= 0)  rc = yKINE__femu     (a_leg, a_femu, YKINE_FK);
    if (rc >= 0)  rc = yKINE__pate     (a_leg, a_pate, YKINE_FK);
    if (rc >= 0)  rc = yKINE__tibi     (a_leg, a_tibi, YKINE_FK);
-   /*---(target setting)-----------------*/
-   if (rc >= 0)  rc = yKINE__FK_targ  (a_leg, YKINE_FK);
-   if (rc >= 0)  rc = yKINE__lowr     (a_leg, YKINE_FK);
    /*---(future)-------------------------*/
    if (rc >= 0)  rc = yKINE__meta     (a_leg);
    if (rc >= 0)  rc = yKINE__tars     (a_leg);
-   if (rc >= 0)  rc = yKINE__foot     (a_leg);
+   if (rc >= 0)  rc = yKINE__foot     (a_leg, YKINE_FK);
+   /*---(target setting)-----------------*/
+   if (rc >= 0)  rc = yKINE__FK_targ  (a_leg, YKINE_FK);
+   if (rc >= 0)  rc = yKINE__lowr     (a_leg, YKINE_FK);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
@@ -1276,7 +1316,7 @@ ykine_inverse_detail    (char a_adapt, int a_leg, float a_x, float a_z, float a_
    /*---(future)-------------------------*/
    if (rc >= 0)  rc = yKINE__meta     (a_leg);
    if (rc >= 0)  rc = yKINE__tars     (a_leg);
-   if (rc >= 0)  rc = yKINE__foot     (a_leg);
+   if (rc >= 0)  rc = yKINE__foot     (a_leg, YKINE_IK);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;

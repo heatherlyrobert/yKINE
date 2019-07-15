@@ -171,6 +171,7 @@ ykine__scrp_ik_getter   (int a_leg, char *x_str, float *x, char *z_str, float *z
    }
    /*---(det coordinates)-------------*/
    rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xp, &zp, &yp, NULL);
+   yp -= 6.3;    /* HARD CODE : REMOVE, BAD, BAD */
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
       if (rc == 0)  rc  = yPARSE_adjval   (xp, x_str, &xt);
@@ -235,6 +236,7 @@ ykine_scrp_ik           (void)
       if (ykine_servo_unfocused (x_leg, YKINE_TIBI))  continue;
       /*---(get positions)---------------*/
       if (rc >= 0)  rc = ykine__scrp_ik_getter (x_leg, x_str, &x, z_str, &z, y_str, &y);
+      DEBUG_YKINE_SCRP   yLOG_complex ("coords"    , "%8.3lfx , %8.3lfz , %8.3lfy", x, z, y);
       /*---(inverse kinematics)----------*/
       if (rc >= 0)  rc = yKINE_inverse (x_leg, x, z, y);
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);

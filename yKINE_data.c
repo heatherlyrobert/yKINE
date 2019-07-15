@@ -20,25 +20,74 @@ tLEGDATA    g_leg_data [YKINE_MAX_LEGS] = {
    {  YKINE_RA  , '-', "right anterior"    , "ra"    , "RA"    ,    0.0  },
    {  YKINE_LA  , '-', "left anterior"     , "la"    , "LA"    ,    0.0  },
    {  YKINE_LP  , '-', "left posterior"    , "lp"    , "LP"    ,    0.0  },
-   {  YKINE_TU  , '-', "turtle"            , "tu"    , "TU"    ,    0.0  },
+   {  YKINE_BEAK, '-', "beak"              , "bk"    , "BK"    ,    0.0  },
    {  -1        , '-', "-----"             , "--"    , "--"    ,    0.0  },
 };
 
 
 
+/*> tSEGDATA    g_seg_data [YKINE_MAX_SEGS] = {                                                                                                      <* 
+ *>    /+ seg-------- abbr ---full-------------- four----- caps----- move len---- min---- attn--- max---- test1-- test2-- test3-- negative-dir--+/   <* 
+ *>    {  YKINE_FOCU, '-', "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_CORE, '-', "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_THOR, '-', "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0, ""            },   <* 
+ *>    {  YKINE_COXA, '-', "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0, ""            },   <* 
+ *>    {  YKINE_TROC, '-', "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_FEMU, 'f', "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0, "clockwise"   },   <* 
+ *>    {  YKINE_PATE, 'p', "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0, "down/inward" },   <* 
+ *>    {  YKINE_TIBI, 't', "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0, "down/inward" },   <* 
+ *>    {  YKINE_META, '-', "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_TARS, '-', "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_FOOT, '-', "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_CLAW, '-', "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_MAGN, '-', "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_HOOK, '-', "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_ORIG, '-', "original"          , "orig"  , "ORIG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_TARG, '-', "target"            , "targ"  , "TARG"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_LOWR, '-', "lower_leg"         , "lowr"  , "LOWR"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  YKINE_CALC, '-', "calculation"       , "calc"  , "CALC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *>    {  -1        , '-', "-----"             , "----"  , "----"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },   <* 
+ *> };                                                                                                                                               <*/
+
+/* changes to address foot
+ *    -- it always faces target due to round shape
+ *    -- roughly one-half inch in diameter
+ *    -- 0.25in = 6.35mm, i will round down to 6.3mm
+ *
+ * remeasure tibia to be more accurrate
+ *    -- ground to center of screw 5.5in
+ *    -- 139.7mm minus foot of 6.3
+ *    -- 133.4mm
+ *
+ * remeasure patella to be more accurrate
+ *    -- between center of screws 2.5in
+ *    -- 63.5mm
+ *
+ * remeasure femu to be more accurrate
+ *    -- between center of screws 1.125in (1 and 1/8)
+ *    -- 28.6mm
+ *
+ * remeasure body to be more accurrate
+ *    -- between center of coxa screws 10.75in
+ *    -- 273mm in diameter
+ *    -- 136mm
+ *    -- coxa is fixed but 1.125in (1 and 1/8)
+ *    -- will round cox back up to tranditional 30mm
+ *
+ */
 tSEGDATA    g_seg_data [YKINE_MAX_SEGS] = {
    /* seg-------- abbr ---full-------------- four----- caps----- move len---- min---- attn--- max---- test1-- test2-- test3-- negative-dir--*/
    {  YKINE_FOCU, '-', "focus"             , "focu"  , "FOCU"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
    {  YKINE_CORE, '-', "core"              , "core"  , "CORE"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
-   {  YKINE_THOR, '-', "thorax"            , "thor"  , "THOR"  , '-',  125.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0, ""            },
+   {  YKINE_THOR, '-', "thorax"            , "thor"  , "THOR"  , '-',  106.0, -360.0,    0.0,  360.0,   75.0,   75.0,    0.0, ""            },
    {  YKINE_COXA, '-', "coxa"              , "coxa"  , "COXA"  , '-',   30.0,    0.0,    0.0,    0.0,   25.0,   30.0,    0.0, ""            },
    {  YKINE_TROC, '-', "trochanter"        , "troc"  , "TROC"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
-   {  YKINE_FEMU, 'f', "femur"             , "femu"  , "FEMU"  , 'y',   30.0,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0, "clockwise"   },
-   {  YKINE_PATE, 'p', "patella"           , "pate"  , "PATE"  , 'y',   57.0,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0, "down/inward" },
-   {  YKINE_TIBI, 't', "tibia"             , "tibi"  , "TIBI"  , 'y',  130.0,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0, "down/inward" },
+   {  YKINE_FEMU, 'f', "femur"             , "femu"  , "FEMU"  , 'y',   28.6,  -85.0,    0.0,   85.0,   25.0,   30.0,    0.0, "clockwise"   },
+   {  YKINE_PATE, 'p', "patella"           , "pate"  , "PATE"  , 'y',   63.5,  -45.0,    0.0,   90.0,   50.0,   57.0,    0.0, "down/inward" },
+   {  YKINE_TIBI, 't', "tibia"             , "tibi"  , "TIBI"  , 'y',  133.4,  -40.0,    0.0,   80.0,  100.0,  130.0,    0.0, "down/inward" },
    {  YKINE_META, '-', "metatarsus"        , "meta"  , "META"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
    {  YKINE_TARS, '-', "tarsus"            , "tars"  , "TARS"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
-   {  YKINE_FOOT, '-', "foot"              , "foot"  , "FOOT"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
+   {  YKINE_FOOT, '-', "foot"              , "foot"  , "FOOT"  , '-',    6.3,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
    {  YKINE_CLAW, '-', "claw"              , "claw"  , "CLAW"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
    {  YKINE_MAGN, '-', "magnet"            , "magn"  , "MAGN"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
    {  YKINE_HOOK, '-', "hook"              , "hook"  , "HOOK"  , '-',    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0, ""            },
@@ -264,24 +313,33 @@ yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, flo
    double      x_len       = 0.0;
    double      x_y         = 0.0;
    tSEG       *x_leg       = NULL;
+   double      x, z, y, sl, fl;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(clear)--------------------------*/
+   yKINE__wipe     (a_leg, YKINE_IK);
+   /*---(target setting)-----------------*/
+   DEBUG_YKINE_CALC   yLOG_complex ("object"    , "%1dl (%2.2s), %2ds (%4.4s), %8.3lfd", a_leg, g_leg_data [a_leg].caps, a_seg, g_seg_data [a_seg].four, a_deg);
    /*---(set the leg)--------------------*/
    x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);
    /*---(set cumulatives)----------------*/
    x_leg [a_seg].cx  = a_x;
    x_leg [a_seg].cz  = a_z;
    x_leg [a_seg].cy  = a_y;
-   x_leg [a_seg].fl  = sqrt ((a_x * a_x) + (a_z * a_z) + (a_y * a_y));
+   fl = x_leg [a_seg].fl  = sqrt ((a_x * a_x) + (a_z * a_z) + (a_y * a_y));
    x_len             = x_leg [a_seg].fl;
    x_leg [a_seg].cxz = sqrt ((x_len * x_len) - (a_y * a_y));
+   DEBUG_YKINE_CALC   yLOG_complex ("cums"      , "%8.3lfcx, %8.3lfcz, %8.3lfcy, %8.3lffl", a_z, a_z, a_y, fl);
    /*---(set individuals)----------------*/
    x_leg [a_seg].d   = a_deg;
    x_leg [a_seg].l   = a_len;
    x_leg [a_seg].sl  = a_len;
-   x_leg [a_seg].x   = a_x - x_leg [a_seg - 1].cx;
-   x_leg [a_seg].z   = a_z - x_leg [a_seg - 1].cz;
-   x_leg [a_seg].y   = a_y - x_leg [a_seg - 1].cy;
+   x  = x_leg [a_seg].x   = a_x - x_leg [a_seg - 1].cx;
+   z  = x_leg [a_seg].z   = a_z - x_leg [a_seg - 1].cz;
+   y  = x_leg [a_seg].y   = a_y - x_leg [a_seg - 1].cy;
    x_y               = x_leg [a_seg].y;
    x_leg [a_seg].xz  = sqrt ((a_len * a_len) - (x_y * x_y));
+   DEBUG_YKINE_CALC   yLOG_complex ("coords"    , "%8.3lfx , %8.3lfz , %8.3lfy , %8.3lfsl", x, z, y, a_len);
    /*---(radians)------------------------*/
    if        (a_seg <= YKINE_TROC) {
       x_leg [a_seg].cv  = x_leg [a_seg].v   = 0.0;
@@ -306,11 +364,12 @@ yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, flo
       x_leg [a_seg].ch  = x_leg [YKINE_TIBI].ch;
    }
    /*---(target)-------------------------*/
-   if (a_seg == YKINE_TIBI) {
+   if (a_seg == YKINE_FOOT) {
       yKINE__FK_targ  (a_leg, YKINE_GK);
       yKINE__lowr     (a_leg, YKINE_GK);
    }
    /*---(complete)-----------------------*/
+   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

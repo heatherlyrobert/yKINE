@@ -39,6 +39,7 @@
 #define     P_NAMESAKE  "typhoeus-terrigena (earth-born)"
 #define     P_HERITAGE  "most fearsome greek monster, last son of gaia and tartarus"
 #define     P_IMAGERY   "winged, one-hundred dragon heads, legions of viper coil tentacles"
+#define     P_REASON    "king of monsters to synchronize hundreds of limbs, sensors, and devices"
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
@@ -48,8 +49,10 @@
 #define     P_CREATED   "2009-07"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "1.0t"
-#define     P_VERTXT    "fixed repeat failing issue due to changes in verb processing"
+#define     P_VERMAJOR  "1.--, working and advancing"
+#define     P_VERMINOR  "1.0-, porting to latest arachne, yPARSE"
+#define     P_VERNUM    "1.0u"
+#define     P_VERTXT    "fixed repeat troubles with ik/fk moves.  nice."
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -320,7 +323,7 @@ char        yKINE__IK_tibi     (int  a_num);
 /*---(shared forward/inverse)------------*/
 char        yKINE__meta        (int  a_num);
 char        yKINE__tars        (int  a_num);
-char        yKINE__foot        (int  a_num);
+char        yKINE__foot        (int  a_num, int    a_meth);
 /*---(unit testing)----------------------*/
 char        yKINE__setter      (char *a_request , int a_leg, int a_seg, float a_value);
 char*       yKINE__getter      (char *a_question, int a_leg, int a_seg);
@@ -376,13 +379,8 @@ char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
 char        ykine__exact_data       (tSERVO *a_servo, float a_sec);
 
-char        ykine_gait_begin        (char  a_count);
-char        ykine_gait_update       (char  a_count);
-
-char        ykine_gait_06_beg       (void);
-char        ykine_gait_06_end       (void);
-char        ykine_gait_12_beg       (void);
-char        ykine_gait_12_end       (void);
+char        ykine_gait_beg          (void);
+char        ykine_gait_end          (void);
 
 char        ykine_scrp_walk         (int   a_repeats);
 char        ykine_scrp_turn         (int   a_repeats);

@@ -50,9 +50,9 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* verb----------- actv- servo targ---------- rel-------- call------------------- description---------------------------------------- */
    { "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
    { "tempo"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
-   { "segno"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_segno      , "mark a place in the music for later repeats"       },
-   { "repeat"       , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "repeat a particular section of movements"          },
-   { "ripetere"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, ykine_scrp_repeat     , "repeat a particular section of movements"          },
+   { "segno"        , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, ykine_scrp_segno      , "mark a place in the music for later repeats"       },
+   { "repeat"       , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, ykine_scrp_repeat     , "repeat a particular section of movements"          },
+   { "ripetere"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, ykine_scrp_repeat     , "repeat a particular section of movements"          },
    { "stanza"       , '-' , 'y' , YKINE_NONE   , YKINE_NONE, NULL                  , "mark the beginning of a particular stanza"         },
    { "passaggio"    , '-' , 'y' , YKINE_NONE   , YKINE_NONE, NULL                  , "mark the beginning of a particular passage"        },
    { "sezione"      , '-' , 'y' , YKINE_NONE   , YKINE_NONE, NULL                  , "mark the beginning of a particular section"        },
@@ -72,10 +72,10 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { "tu_pop"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "time signature for rhythm/beat"                    },
    /* ===[[ gait framework ]]====================================================*/
    /* verb----------- actv- servo targ---------- rel-------- call------------------- description---------------------------------------- */
-   { "06_GAIT_BEG"  , '-' , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "begin a 6-step gait description"                   },
-   { "06_GAIT_END"  , '-' , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "end a 6-step gait description"                     },
-   { "12_GAIT_BEG"  , '-' , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "begin a 12-step gait description"                  },
-   { "12_GAIT_END"  , '-' , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "end a 12-step gait description"                    },
+   { "gait_beg"     , 'y' , 'y' , YKINE_INVERSE, YKINE_NONE, ykine_gait_beg        , "beginning of a gait description"                   },
+   { "incipio"      , 'y' , 'y' , YKINE_INVERSE, YKINE_NONE, ykine_gait_beg        , "beginning of a gait description"                   },
+   { "gait_end"     , 'y' , 'y' , YKINE_INVERSE, YKINE_NONE, ykine_gait_end        , "end of a gait description"                         },
+   { "compleo"      , 'y' , 'y' , YKINE_INVERSE, YKINE_NONE, ykine_gait_end        , "end of a gait description"                         },
    /* ===[[ complex gaits ]]=====================================================*/
    /* verb----------- actv- servo targ---------- rel-------- call------------------- description---------------------------------------- */
    { "walk"         , '-' , '-' , YKINE_NONE   , YKINE_NONE, NULL                  , "repeat a specific number of steps"                 },
@@ -463,10 +463,11 @@ ykine_scrp_repeat       (void)
       if (x_servo->seg == YKINE_FOCU) {
          ykine__scrp_repeat (x_servo, c);
       } else if (x_servo->seg == YKINE_TIBI) {
-         for (i = 0; i < 3; ++i) {
-            ykine__scrp_repeat (x_servo, c);
-            --x_servo;
-         }
+         ykine__scrp_repeat (x_servo, c);
+         /*> for (i = 0; i < 3; ++i) {                                                <* 
+          *>    ykine__scrp_repeat (x_servo, c);                                      <* 
+          *>    --x_servo;                                                            <* 
+          *> }                                                                        <*/
       } else {
          for (i = 0; i < 3; ++i) {
             ykine__scrp_repeat (x_servo, c);

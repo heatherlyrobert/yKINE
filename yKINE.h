@@ -246,7 +246,9 @@
 #define     YKINE_LA         9
 #define     YKINE_LP        10
 /*---(special)------------------------*/
-#define     YKINE_TU        11
+#define     YKINE_BEAK      11
+#define     YKINE_CAMOF     12
+#define     YKINE_CAMOR     13
 
 
 
@@ -295,6 +297,7 @@
 
 #define     YKINE_FORWARD     'f'
 #define     YKINE_INVERSE     'i'
+#define     YKINE_CONTROL     'c'
 #define     YKINE_ORIENT      'o'
 #define     YKINE_ZERO        'z'
 

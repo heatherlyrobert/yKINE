@@ -10,15 +10,15 @@ LIB_STD    = -lm
 # all heatherly libraries used, debug versions whenever available
 LIB_MINE   = -lySTR_debug -lyPARSE_debug
 # directory for production code, no trailing slash
-INST_DIR   = 
+INST_DIR   = /usr/local/bin
 
 
 
 #===(optional)=============================================#
 # extra include directories required
-INC_MINE   = 
+INC_MINE   =
 # utilities generated, separate from main program
-NAME_UTIL  = 
+NAME_UTIL  = arac
 # libraries only for the utilities
 LIB_UTIL   = 
 
