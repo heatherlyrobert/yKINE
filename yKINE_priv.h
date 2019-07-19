@@ -50,9 +50,9 @@
 #define     P_DEPENDS   "none"
 
 #define     P_VERMAJOR  "1.--, working and advancing"
-#define     P_VERMINOR  "1.0-, porting to latest arachne, yPARSE"
-#define     P_VERNUM    "1.0u"
-#define     P_VERTXT    "fixed repeat troubles with ik/fk moves.  nice."
+#define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
+#define     P_VERNUM    "1.0a"
+#define     P_VERTXT    "tk_from is implemented and working in script"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -332,6 +332,7 @@ char        yKINE__unit_loud   (void);
 char        yKINE__unit_end    (void);
 
 
+char        ykine_verb_init         (void);
 
 char        ykine_scrp_begin        (void);
 char        ykine__scrp_prep        (void);
@@ -343,11 +344,11 @@ char        ykine_scrp_zpolar       (void);
 char        ykine_scrp_orient       (void);
 char        ykine_scrp_opolar       (void);
 
-char        ykine_scrp_ik_pure      (void);
-char        ykine_scrp_ik_from      (void);
-
-char        ykine_scrp_ik           (void);
 char        ykine_scrp_fk           (void);
+char        ykine_scrp_ik           (void);
+char        ykine_scrp_tk           (void);
+char        ykine_scrp_rk           (void);
+char        ykine_scrp_ck           (void);
 char        ykine_scrp_segno        (void);
 char        ykine_scrp_repeat       (void);
 char        ykine_scrp_exec         (void);
@@ -391,6 +392,7 @@ char        ykine_scrp_turn         (int   a_repeats);
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
 char        ykine_scrp_popverb      (void);
 char        ykine_scrp_popservo     (void);
+char        ykine_servo_list        (char *a_which);
 
 
 

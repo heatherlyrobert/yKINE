@@ -88,6 +88,8 @@ yKINE_init         (char a_type)
    DEBUG_YKINE  yLOG_value   ("scrp"      , rc);
    rc = yPARSE_init      (YPARSE_NOAUTO, ykine_scrp_popverb, YPARSE_REUSE);
    DEBUG_YKINE  yLOG_value   ("yparse"    , rc);
+   rc = ykine_verb_init  ();
+   DEBUG_YKINE  yLOG_value   ("verb"      , rc);
    /*---(complete)-----------------------*/
    DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;

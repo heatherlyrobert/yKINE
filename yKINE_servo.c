@@ -487,6 +487,8 @@ ykine_servos            (char *a_source)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_SCRP   yLOG_point   ("a_source"  , a_source);
+   /*---(clear)--------------------------*/
+   ykine_servo_prep ();
    /*---(defense)------------------------*/
    --rce;  if (a_source == NULL) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -540,6 +542,31 @@ ykine_servos            (char *a_source)
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return c;
+}
+
+char
+ykine_servo_list        (char *a_which)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
+   /*---(create a string)----------------*/
+   --rce;  if (a_which == NULL) {
+      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(create a string)----------------*/
+   for (i = 0; i < YKINE_MAX_SERVO; ++i)  a_which [i] = 0;
+   for (i = 0; i < YKINE_MAX_SERVO; ++i) {
+      if (g_servo_info [i].label [0] == 'e')  break;
+      if (g_servo_info [i].scrp == 'y') a_which [i] = g_servo_info [i].label [3];
+      else                              a_which [i] = '_';
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
 

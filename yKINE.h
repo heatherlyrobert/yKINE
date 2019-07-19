@@ -340,24 +340,25 @@ char        yKINE_servo             (char *a_source);
 char        yKINE_script            (float *a_len);
 
 
-char        yKINE_exact_all          (float  a_time);
-char        yKINE_exact              (int a_leg, int a_seg, float *a_deg, float *a_x, float *a_z, float *a_y);
+char        yKINE_exact_all         (float  a_time);
+char        yKINE_exact             (int a_leg, int a_seg, float *a_deg, float *a_x, float *a_z, float *a_y);
 
-char        yKINE_move_first         (int a_leg, int a_seg, float *a_sec, float *a_deg);
-char        yKINE_move_next          (float *a_sec  , float *a_deg);
-char        yKINE_move_prev          (float *a_sec  , float *a_deg);
-char        yKINE_move_last          (int a_leg, int a_seg, float *a_sec, float *a_deg);
-char        yKINE_move_last_servo    (int a_servo, float *a_sec, float *a_deg);
+char        yKINE_move_first        (int a_leg, int a_seg, float *a_sec, float *a_deg);
+char        yKINE_move_next         (float *a_sec  , float *a_deg);
+char        yKINE_move_prev         (float *a_sec  , float *a_deg);
+char        yKINE_move_last         (int a_leg, int a_seg, float *a_sec, float *a_deg);
+char        yKINE_move_last_servo   (int a_servo, float *a_sec, float *a_deg);
 
 char        yKINE_zero_first        (float *a_sec, float *a_x, float *a_z, float *a_y);
 char        yKINE_zero_next         (float *a_sec, float *a_x, float *a_z, float *a_y);
 char        yKINE_zero_pos          (float *a_x, float *a_z, float *a_y);
 
-char        yKINE_move_curdata (float *a_x, float *a_z, float *a_y);
-char        yKINE_servo_deg    (int     a_leg  , int     a_seg, float *a_deg);
-char        yKINE_servo_move   (int a_leg, int a_seg, char *a_label, float *a_secb, float *a_sece, float *a_dur , float *a_degb, float *a_dege, int *a_seq , int *a_line);
-char        yKINE_servo_line   (int     a_leg  , int     a_seg, float *a_x1   , float *a_z1   , float *a_y1   , float *a_x2, float *a_z2, float *a_y2);
-char        yKINE_moves_rpt    (void);
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        yKINE_move_curdata      (double *a_x, double *a_z, double *a_y);
+char        yKINE_servo_deg         (int a_leg, int a_seg, float *a_deg);
+char        yKINE_servo_move        (int a_leg, int a_seg, char *a_label, float *a_secb, float *a_sece, float *a_dur , float *a_degb, float *a_dege, int *a_seq , int *a_line);
+char        yKINE_servo_line        (int a_leg, int a_seg, float *a_x1, float *a_z1, float *a_y1, float *a_x2, float *a_z2, float *a_y2);
+char        yKINE_moves_rpt         (void);
 
 /*> char        yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count);   <*/
 

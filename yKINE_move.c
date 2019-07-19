@@ -35,7 +35,7 @@ yKINE__move_new    (void)
       ++x_tries;
    }
    DEBUG_YKINE_SCRP   yLOG_value   ("tries"     , x_tries);
-   DEBUG_YKINE_SCRP   yLOG_value   ("x_new"     , x_new);
+   DEBUG_YKINE_SCRP   yLOG_point   ("x_new"     , x_new);
    if (x_new == NULL) {
       DEBUG_YKINE_SCRP   yLOG_note    ("could not malloc a new move object");
       DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -141,6 +141,7 @@ ykine_move_create  (
    float       x, z, y;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_info    ("a_label"   , a_label);
    DEBUG_YKINE_SCRP   yLOG_char    ("a_type"    , a_type);
    DEBUG_YKINE_SCRP   yLOG_double  ("a_deg"     , a_deg);
    DEBUG_YKINE_SCRP   yLOG_double  ("a_sec"     , a_sec);
@@ -334,7 +335,9 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
       while (x_curr != NULL) {
          DEBUG_YKINE_SCRP   yLOG_value   ("line"      , x_curr->line);
          if (x_curr->type != YKINE_MOVE_NOTE) {
-            rc = yPARSE_reload (&(myKINE.s_nline), &(myKINE.s_cline), x_curr->line, a_servo->label);
+            strlcpy (x_label, a_servo->label, 3);
+            DEBUG_YKINE_SCRP   yLOG_info    ("x_label"   , x_label);
+            rc = yPARSE_reload (&(myKINE.s_nline), &(myKINE.s_cline), x_curr->line, x_label);
             DEBUG_YKINE_SCRP   yLOG_value   ("reload"    , rc);
             if (rc == 1)  rc = ykine_scrp_exec    ();
             DEBUG_YKINE_SCRP   yLOG_value   ("exec"      , rc);
@@ -1007,7 +1010,7 @@ yKINE_move_last_servo    (int a_servo, float *a_sec, float *a_deg)
 }
 
 char         /*--> retrieve data about current -----------[ ------ [ ------ ]-*/
-yKINE_move_curdata       (float *a_x, float *a_z, float *a_y)
+yKINE_move_curdata       (double *a_x, double *a_z, double *a_y)
 {
    if (s_curr == NULL)   return -1;
    if (a_x != NULL)  *a_x = s_curr->x_pos;

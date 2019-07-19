@@ -221,4 +221,29 @@ SCRP          v21  (SERVO ) verify servo finding                              
 
 
 
+#23456789-12  123  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ver  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+SCRP          v21  (SERVO ) verify servo selection                                                                                                                                          ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
+     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+
+   COND       v21  check a middle leg                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  clear marks                          ykine_servo_prep                                                                                                                  i_equal     0                                                                                                    
+     code     v21  set verb type                        - - - - - - - - - - - - -   myKINE.s_targ = YKINE_INVERSE;                                                                                                                                                                                             
+     exec     v21  call servo selection                 ykine_servos                "LM"                                                                                                  i_equal     1                                                                                                    
+     get      v21  check servos                         ykine__unit_servo           "servos"                                                                                              s_equal     SERVO servos   : ___ ___ ___ ___ __t ___ ___ ___ ___ ___ ___ _                                       
+
+   COND       v21  check all major legs                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  clear marks                          ykine_servo_prep                                                                                                                  i_equal     0                                                                                                    
+     code     v21  set verb type                        - - - - - - - - - - - - -   myKINE.s_targ = YKINE_INVERSE;                                                                                                                                                                                             
+     exec     v21  call servo selection                 ykine_servos                "AA"                                                                                                  i_equal     6                                                                                                    
+     get      v21  check servos                         ykine__unit_servo           "servos"                                                                                              s_equal     SERVO servos   : __t __t __t __t __t __t ___ ___ ___ ___ ___ _                                       
+
+   COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.012))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+
+
+
 # end-of-file
