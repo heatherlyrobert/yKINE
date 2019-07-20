@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.0a"
-#define     P_VERTXT    "tk_from is implemented and working in script"
+#define     P_VERNUM    "1.0b"
+#define     P_VERTXT    "tk_pure, tk_from are reasonably unit tested and ready to rock"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -344,11 +344,11 @@ char        ykine_scrp_zpolar       (void);
 char        ykine_scrp_orient       (void);
 char        ykine_scrp_opolar       (void);
 
-char        ykine_scrp_fk           (void);
-char        ykine_scrp_ik           (void);
-char        ykine_scrp_tk           (void);
-char        ykine_scrp_rk           (void);
-char        ykine_scrp_ck           (void);
+char        ykine_legs_fk           (void);
+char        ykine_legs_ik           (void);
+char        ykine_legs_tk           (void);
+char        ykine_legs_rk           (void);
+char        ykine_legs_ck           (void);
 char        ykine_scrp_segno        (void);
 char        ykine_scrp_repeat       (void);
 char        ykine_scrp_exec         (void);

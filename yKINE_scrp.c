@@ -28,18 +28,18 @@ struct cVERBS {
 tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ forward kinematics ]]================================================*/
    /* verb----------- actv- servo targ---------- rel-------- call------------------- description---------------------------------------- */
-   { "fk_pure"      , 'y' , 'y' , YKINE_FORWARD, YKINE_PURE,  1, ykine_scrp_fk         , "set absolute joint angles on all three joints"     },
-   { "fk_from"      , 'y' , 'y' , YKINE_FORWARD, YKINE_FROM,  1, ykine_scrp_fk         , "set relative joint angles based on last angle"     },
+   { "fk_pure"      , 'y' , 'y' , YKINE_FORWARD, YKINE_PURE,  1, ykine_legs_fk         , "set absolute joint angles on all three joints"     },
+   { "fk_from"      , 'y' , 'y' , YKINE_FORWARD, YKINE_FROM,  1, ykine_legs_fk         , "set relative joint angles based on last angle"     },
    /* ===[[ inverse kinematics ]]================================================*/
    /* verb----------- actv- servo target-------- from------- msk call------------------- description---------------------------------------- */
-   { "ik_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_scrp_ik         , "set an exact endpoint in 3d space"                 },
-   { "ik_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_scrp_ik         , "set a relative endpoint based on last position"    },
-   { "tk_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_scrp_tk         , "set an exact endpoint tangential to leg"           },
-   { "tk_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_scrp_tk         , "set relative endpoint tangential to leg"           },
-   { "ck_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_scrp_ik         , "set absolute joint angles on all three joints"     },
-   { "ck_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_scrp_ik         , "set relative joint angles based on last angle"     },
-   { "rk_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_scrp_ik         , "set absolute joint angles on all three joints"     },
-   { "rk_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_scrp_ik         , "set relative joint angles based on last angle"     },
+   { "ik_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_legs_ik         , "set an exact endpoint in 3d space"                 },
+   { "ik_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_legs_ik         , "set a relative endpoint based on last position"    },
+   { "tk_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_legs_tk         , "set an exact endpoint tangential to leg"           },
+   { "tk_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_legs_tk         , "set relative endpoint tangential to leg"           },
+   { "ck_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_legs_ck         , "set absolute joint angles on all three joints"     },
+   { "ck_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_legs_ck         , "set relative joint angles based on last angle"     },
+   { "rk_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE,  1, ykine_legs_rk         , "set absolute joint angles on all three joints"     },
+   { "rk_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM,  1, ykine_legs_rk         , "set relative joint angles based on last angle"     },
    /* ===[[ body zero-point ]]===================================================*/
    /* verb----------- actv- servo targ---------- rel-------- call------------------- description---------------------------------------- */
    { "ze_pure"      , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, -1, ykine_scrp_zero       , "set absolute body position in 3d space"            },

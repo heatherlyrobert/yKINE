@@ -19,7 +19,7 @@ PREP          v21  include the prototype headers                              
 SCRP          v21  (CALC  ) verify kinematics with right-rear single joint movements  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize global data                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_loud                                                                                                                  i_equal     0                                                                                                    
+     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
 
    GROUP      v21  military attention stance                                          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -1200,8 +1200,6 @@ SCRP          v21  (CALC  ) verify forward kinematics on LM leg (simple)      
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
-
-
 
 
 

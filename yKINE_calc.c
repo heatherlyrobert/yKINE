@@ -739,10 +739,12 @@ yKINE__foot        (int  a_num, int a_meth)
    DEBUG_YKINE_CALC   yLOG_complex ("lengths"  , "%6.1fsl, %6.1ffl", sl, fl);
    /*---(angles)-------------------------*/
    ch = atan2 (-cz, cx);
-   if (ch < 0)  ch += 2 * M_PI;
+   if (ch < 0       )  ch += 2 * M_PI;
+   if (ch > 2 * M_PI)  ch -= 2 * M_PI;
    x_leg [YKINE_FOOT].ch   = ch;
    cv = atan2 (-cy, cxz);
-   if (cv < 0)  cv += 2 * M_PI;
+   if (cv < 0       )  cv += 2 * M_PI;
+   if (cv > 2 * M_PI)  cv -= 2 * M_PI;
    x_leg [YKINE_FOOT].cv   = cv;
    DEBUG_YKINE_CALC   yLOG_complex ("endangle" , "%6.3fch, %6.3fcv", ch, cv);
    /*---(add to leg values)--------------*/
