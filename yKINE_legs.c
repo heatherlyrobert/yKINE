@@ -354,8 +354,8 @@ ykine__legs_ck_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float
    tSERVO     *x_servo     =    0;
    double      xt, zt, yt, dt, ot, tt, xz;       /* temporary coordinates     */
    float       x_full, x_diff;
-   float       x_tang, x_out, x_out2;
-   float       x_adj;
+   float       x_tang, x_out, x_out2, x_down;
+   float       x_hadj, x_vadj;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get previous)-------------------*/
@@ -364,21 +364,23 @@ ykine__legs_ck_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float
    x_full = atan2 (-zp, xp)  * RAD2DEG;
    if (x_full > 360)  x_full -= 360;
    if (x_full <   0)  x_full += 360;
-   x_diff = x_full - cp;
-   x_adj  = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   x_diff = cp - x_full;
+   x_hadj  = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   x_vadj  = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
    x_out2 = xzp;
-   x_out  = x_out2 - x_adj;
+   x_out  = x_out2 - x_hadj;
+   x_down = yp + x_vadj;
    DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.3fd, %8.2f2, %8.2fo, %8.2fy", x_full, x_diff, x_out2, x_out, yp);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
       if (rc == 0)  rc  = yPARSE_adjval   (x_diff, d_str, &dt);
       if (rc == 0)  rc  = yPARSE_adjval   (x_out , o_str, &ot);
-      if (rc == 0)  rc  = yPARSE_adjval   (yp    , y_str, &yt);
+      if (rc == 0)  rc  = yPARSE_adjval   (x_down, y_str, &yt);
    } else {
       if (rc == 0)  rc  = yPARSE_adjfrom  (x_diff, d_str, &dt);
       if (rc == 0)  rc  = yPARSE_adjfrom  (x_out , o_str, &ot);
-      if (rc == 0)  rc  = yPARSE_adjfrom  (yp    , y_str, &yt);
+      if (rc == 0)  rc  = yPARSE_adjfrom  (x_down, y_str, &yt);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
@@ -387,12 +389,15 @@ ykine__legs_ck_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float
    }
    DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3fd, %8.2fo, %8.2fy", dt, ot, yt);
    /*---(convert from cx)-------------*/
-   ot    += x_adj;
-   x_full = dt + cp;
+   ot    += x_hadj;
+   x_full = cp - dt;
+   if (x_full > 360)  x_full -= 360;
+   if (x_full <   0)  x_full += 360;
    xz     = ot;
+   DEBUG_YKINE_SCRP  yLOG_complex ("fix"       , "%8.3fd, %8.3ff, %8.2fo, %8.2ft, %8.2fxz", dt, x_full, ot, tt, xz);
    zt     = -xz * sin (x_full * DEG2RAD);
    xt     =  xz * cos (x_full * DEG2RAD);
-   DEBUG_YKINE_SCRP  yLOG_complex ("fix"       , "%8.3fd, %8.3ff, %8.2fo, %8.2ft, %8.2fxz", dt, x_full, ot, tt, xz);
+   yt    -= x_vadj;
    DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xt, zt, yt);
    /*---(save)---------------------------*/
    if (x != NULL)  *x = xt;
