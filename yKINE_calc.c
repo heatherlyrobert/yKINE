@@ -344,7 +344,7 @@ yKINE__femu        (int  a_num, float a_deg, int a_meth)
    /*---(calc cums)----------------------*/
    cx   =  x_leg [YKINE_FEMU].cx   =  x_leg [YKINE_TROC].cx + x;
    cz   =  x_leg [YKINE_FEMU].cz   =  x_leg [YKINE_TROC].cz + z;
-   cxz  = x_leg [YKINE_FEMU].cxz          =  sqrt ((cx * cx) + (cz * cz));
+   cxz  =  x_leg [YKINE_FEMU].cxz  =  sqrt ((cx * cx) + (cz * cz));
    cy   =  x_leg [YKINE_FEMU].cy   =  x_leg [YKINE_TROC].cy + y;
    DEBUG_YKINE_CALC   yLOG_complex ("endpoint" , "%6.1fcx, %6.1fcz, %6.1fcy, %6.1fcxz", cx, cz, cy, cxz);
    /*---(calc extras)--------------------*/
