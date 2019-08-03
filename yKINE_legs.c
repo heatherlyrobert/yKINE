@@ -84,6 +84,46 @@ ykine__legs_set_servo   (char a_meth, int a_leg, int a_seg, float a_deg, float a
    return 0;
 }
 
+char
+ykine__legs_ik_complete (char a_meth, int a_leg, float x, float z, float y)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   float       f, p, t;
+   float       x_pct;
+   float       xd, zd, yd;
+   float       b;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(args)---------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_complex ("coords"    , "%8.3lfx , %8.3lfz , %8.3lfy", x, z, y);
+   xd = x - xp;
+   zd = z - zp;
+   yd = y - yp;
+   DEBUG_YKINE_SCRP   yLOG_complex ("diffs"     , "%8.3lfx , %8.3lfz , %8.3lfy", xd, zd, yd);
+   /*---(inverse kinematics)----------*/
+   rc = yKINE_inverse (a_leg, x, z, y);
+   DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
+   /*---(retrieve angles)-------------*/
+   if (rc >= 0) {
+      rc = yKINE_angles   (a_leg, a_meth, NULL, &f, &p, &t);
+      DEBUG_YKINE_SCRP  yLOG_value   ("angles"    , rc);
+   } else {
+      DEBUG_YKINE_SCRP   yLOG_note    ("FAILED, using previous");
+      f = fp;
+      p = pp;
+      t = tp;
+   }
+   DEBUG_YKINE_SCRP  yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", f, p, t);
+   /*---(process moves)---------------*/
+   rc = ykine__legs_set_servo (a_meth, a_leg, YKINE_FEMU, f, b);
+   rc = ykine__legs_set_servo (a_meth, a_leg, YKINE_PATE, p, b);
+   rc = ykine__legs_set_servo (a_meth, a_leg, YKINE_TIBI, t, b);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -375,15 +415,9 @@ ykine__legs_ck_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float
    DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.3fd, %8.2f2, %8.2fo, %8.2fy", x_full, x_diff, x_out2, x_out, yp);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = yPARSE_adjval   (x_diff, d_str, &dt);
-      if (rc == 0)  rc  = yPARSE_adjval   (x_out , o_str, &ot);
-      if (rc == 0)  rc  = yPARSE_adjval   (x_down, y_str, &yt);
-   } else {
-      if (rc == 0)  rc  = yPARSE_adjfrom  (x_diff, d_str, &dt);
-      if (rc == 0)  rc  = yPARSE_adjfrom  (x_out , o_str, &ot);
-      if (rc == 0)  rc  = yPARSE_adjfrom  (x_down, y_str, &yt);
-   }
+   rc = ykine_stance_spread (myKINE.s_from, a_leg , x_diff, d_str, &dt);
+   rc = ykine_stance_radius (myKINE.s_from        , x_out , o_str, &ot);
+   rc = ykine_stance_height (myKINE.s_from        , x_down, y_str, &yt);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -455,6 +489,7 @@ ykine_legs_ck           (void)
    for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
       /*---(filter)----------------------*/
       rc = ykine_servo_find (x_leg, YKINE_TIBI);
+      if (rc < 0)  continue;
       if (x_list [rc] == '_')  continue;
       /*---(get positions)---------------*/
       rc = ykine__legs_ck_getter (x_leg, d_str, o_str, y_str, &x, &z, &y);
@@ -551,15 +586,9 @@ ykine__legs_rk_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float
    DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.3fd, %8.2fo, %8.2fy", x_full, x_diff, x_out, yp);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = yPARSE_adjval   (x_diff, d_str, &dt);
-      if (rc == 0)  rc  = yPARSE_adjval   (x_out , o_str, &ot);
-      if (rc == 0)  rc  = yPARSE_adjval   (x_down, y_str, &yt);
-   } else {
-      if (rc == 0)  rc  = yPARSE_adjfrom  (x_diff, d_str, &dt);
-      if (rc == 0)  rc  = yPARSE_adjfrom  (x_out , o_str, &ot);
-      if (rc == 0)  rc  = yPARSE_adjfrom  (x_down, y_str, &yt);
-   }
+   rc = ykine_stance_spread (myKINE.s_from, a_leg , x_diff, d_str, &dt);
+   rc = ykine_stance_radius (myKINE.s_from        , x_out , o_str, &ot);
+   rc = ykine_stance_height (myKINE.s_from        , x_down, y_str, &yt);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);

@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.0e"
-#define     P_VERTXT    "changed tk, ck, and rk to be negative/right to match fk"
+#define     P_VERNUM    "1.0f"
+#define     P_VERTXT    "updated/cleaned exact logic, fixed troubles, unit testing"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -331,6 +331,9 @@ char        yKINE__unit_quiet  (void);
 char        yKINE__unit_loud   (void);
 char        yKINE__unit_end    (void);
 
+char        ykine_exact_calc        (char a_type, float a_beg, float a_end, float a_pct, float *a_cur);
+char        ykine_exact_calc_length (float xp, float xc, float zp, float zc, float a_pct, float *l);
+char        ykine_exact_calc_polar  (float l, float d, float *x, float *z);
 
 char        ykine_verb_init         (void);
 
@@ -410,6 +413,14 @@ char        ykine_turtle_raise      (void);
 char        ykine_turtle_lower      (void);
 char        ykine_turtle_depth      (void);
 char*       ykine__unit_turtle      (char *a_question, int a_num);
+
+
+
+char        ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_verify     (void);
+
 
 
 

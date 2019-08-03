@@ -547,7 +547,7 @@ yKINE_script       (float *a_len)
       ykine__scrp_prep  ();
       /*---(parse)-----------------------*/
       rc = yPARSE_read  (&(myKINE.s_nline), &(myKINE.s_cline));
-      DEBUG_YKINE_SCRP  yLOG_value   ("read"      , rc);
+      DEBUG_YKINE_SCRP  yLOG_complex ("read"      , "%3dn, %3dc, %d", myKINE.s_nline, myKINE.s_cline, rc);
       if (feof (stdin))          break;
       if (rc <= 0)               continue;
       /*---(handle verb)-----------------*/

@@ -90,6 +90,7 @@ yKINE_init         (char a_type)
    DEBUG_YKINE  yLOG_value   ("yparse"    , rc);
    rc = ykine_verb_init  ();
    DEBUG_YKINE  yLOG_value   ("verb"      , rc);
+   /*> ykine_stance_verify  ();                                                       <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;
