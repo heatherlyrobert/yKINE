@@ -11,6 +11,147 @@ int         m_count;
 
 
 
+#define     ACCEL_TURTLE       0
+#define     ACCEL_SLOW         1
+#define     ACCEL_MOD          2
+#define     ACCEL_FAST         3
+#define     ACCEL_EXTRA        4
+#define     DECEL_FAST         5
+#define     DECEL_MOD          6
+#define     DECEL_SLOW         7
+#define     DECEL_TURTLE       8
+
+struct {
+   char        abbr;
+   char        label    [LEN_LABEL];
+   float       persec;
+   float       dur;
+   float       pct;
+   float       dist;
+} s_accel [10] = {
+   { 't', "turtle"     ,  2.0,  0.0,  0.0,  0.0 },
+   { 's', "slow"       ,  4.0,  0.0,  0.0,  0.0 },
+   { 'm', "moderate"   ,  8.0,  0.0,  0.0,  0.0 },
+   { 'f', "fast"       , 12.0,  0.0,  0.0,  0.0 },
+   { 'x', "extra fast" , 16.0,  0.0,  0.0,  0.0 },
+   { 'f', "fast"       , 12.0,  0.0,  0.0,  0.0 },
+   { 'm', "moderate"   ,  8.0,  0.0,  0.0,  0.0 },
+   { 's', "slow"       ,  4.0,  0.0,  0.0,  0.0 },
+   { 't', "turtle"     ,  2.0,  0.0,  0.0,  0.0 },
+};
+
+char
+ykine_accel_clear  (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        i           =    0;
+   /*---(clear)--------------------------*/
+   for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {
+      s_accel [i].dur  = 0.0;
+      s_accel [i].pct  = 0.0;
+      s_accel [i].dist = 0.0;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+ykine_accel_calc   (char a_max, char a_level, char a_accel, char a_decel, float a_step, float *a_rem)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   float       x_persec    =  0.0;
+   char        x_maxes     [LEN_LABEL] = "tsmfx";
+   int         x_max       =    0;
+   float       a           =  0.0;
+   /*---(defense)------------------------*/
+   x_max    = strchr (x_maxes, a_max) - x_maxes;
+   /*> printf ("%c, %d, %d\n", a_max, x_max, a_level);                                <*/
+   if (a_level > x_max)  return 0;
+   if (*a_rem <= 0.0) {
+      *a_rem = 0.0;
+      return 0;
+   }
+   /*---(prepare)------------------------*/
+   x_persec = s_accel [a_level].persec;
+   /*---(acceleration)-------------------*/
+   if (a_accel == '[' && *a_rem > 0.0 && a_level < ACCEL_EXTRA) {
+      if (*a_rem < x_persec)   *a_rem -= s_accel [0 + a_level].dist = *a_rem;
+      else                     *a_rem -= s_accel [0 + a_level].dist = x_persec;
+      /*> s_accel [0 + a_level].dur  = a_step;                                        <*/
+   }
+   /*---(deceleration)-------------------*/
+   if (a_decel == ']' && *a_rem > 0.0 && a_level < ACCEL_EXTRA) {
+      if (*a_rem < x_persec)   *a_rem -= s_accel [8 - a_level].dist = *a_rem;
+      else                     *a_rem -= s_accel [8 - a_level].dist = x_persec;
+      /*> s_accel [8 - a_level].dur  = a_step;                                        <*/
+   }
+   /*---(left over)----------------------*/
+   if (x_max == a_level && *a_rem > 0.0) {
+      s_accel [8 - a_level].dist += *a_rem;
+      *a_rem = 0.0;
+   }
+   /*---(wrap up)------------------------*/
+   if (*a_rem < 0.0)  *a_rem = 0.0;
+   if (s_accel [0 + a_level].dist > 0.0) {
+      a = (s_accel [0 + a_level].dist / x_persec) * a_step;
+      s_accel [0 + a_level].dur = trunc (a * 10) / 10;
+      if (s_accel [0 + a_level].dur < 0.1) s_accel [0 + a_level].dur = 0.1;
+   }
+   if (s_accel [8 - a_level].dist > 0.0) {
+      a = (s_accel [8 - a_level].dist / x_persec) * a_step;
+      s_accel [8 - a_level].dur = trunc (a * 10) / 10;
+      if (s_accel [8 - a_level].dur < 0.1) s_accel [8 - a_level].dur = 0.1;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+char
+ykine_accel             (float xb, float zb, float yb, float xe, float ze, float ye, char a_speed, char a_accel, char a_decel)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       xd, zd, yd;
+   float       x_dist, x_total, x_cum;
+   float       x_step      =  1.0;
+   char        x_speed;
+   int         i           =    0;
+   /*---(init)---------------------------*/
+   ykine_accel_clear ();
+   /*---(defense)------------------------*/
+   --rce;  if (strchr ("<["        , a_accel) == NULL)  return rce;
+   --rce;  if (strchr ("tsmfxTSMFX", a_speed) == NULL)  return rce;
+   --rce;  if (strchr ("]>"        , a_decel) == NULL)  return rce;
+   /*---(prepare)------------------------*/
+   x_speed = tolower (a_speed);
+   if (x_speed != a_speed)  x_step = 0.5;
+   xd     = xe - xb;
+   zd     = ze - zb;
+   yd     = ye - yb;
+   x_total = x_dist = sqrt ((xd * xd) + (zd * zd) + (yd * yd));
+   /*---(fill)---------------------------*/
+   ykine_accel_calc (a_speed, 0, a_accel, a_decel, x_step, &x_dist);
+   ykine_accel_calc (a_speed, 1, a_accel, a_decel, x_step, &x_dist);
+   ykine_accel_calc (a_speed, 2, a_accel, a_decel, x_step, &x_dist);
+   ykine_accel_calc (a_speed, 3, a_accel, a_decel, x_step, &x_dist);
+   ykine_accel_calc (a_speed, 4, a_accel, a_decel, x_step, &x_dist);
+   /*---(percents)-----------------------*/
+   x_cum = 0.0;
+   if (x_total > 0.0) {
+      for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {
+         if (s_accel [i].dist == 0.0)  continue;
+         s_accel [i].pct = x_cum += s_accel [i].dist / x_total;
+      }
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+
+
+
 /*====================------------------------------------====================*/
 /*===----                       memory allocation                      ----===*/
 /*====================------------------------------------====================*/
@@ -1225,6 +1366,7 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
    int         x_pos       =    0;
+   char        t           [LEN_LABEL];
    char        x_msg       [LEN_STR  ];
    tSERVO     *x_servo     = NULL;
    tMOVE      *x_move      = NULL;
@@ -1280,6 +1422,33 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    }
    else if (strcmp (a_question, "exact"   ) == 0) {
       sprintf (ykine__unit_answer, "MOVE exact     : %c %8.1lfd, %8.1lfx, %8.1lfz, %8.1lfy", x_servo->exact, x_servo->deg, x_servo->xexp, x_servo->zexp, x_servo->yexp);
+   }
+   else if (strcmp (a_question, "accel_dist") == 0) {
+      strlcpy (x_msg, "", LEN_STR);
+      for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {
+         if (s_accel [i].dist == 0.0)  strlcpy (t, "  -.-", LEN_LABEL);
+         else                          sprintf (t, " %4.1f", s_accel [i].dist);
+         strlcat  (x_msg, t, LEN_STR);
+      }
+      sprintf (ykine__unit_answer, "MOVE accel dist:%s", x_msg);
+   }
+   else if (strcmp (a_question, "accel_durs") == 0) {
+      strlcpy (x_msg, "", LEN_STR);
+      for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {
+         if (s_accel [i].dur  == 0.0)  strlcpy (t, "  -.-", LEN_LABEL);
+         else                          sprintf (t, " %4.1f", s_accel [i].dur);
+         strlcat  (x_msg, t, LEN_STR);
+      }
+      sprintf (ykine__unit_answer, "MOVE accel durs:%s", x_msg);
+   }
+   else if (strcmp (a_question, "accel_cums") == 0) {
+      strlcpy (x_msg, "", LEN_STR);
+      for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {
+         if (s_accel [i].pct  == 0.0)  strlcpy (t, " -.--", LEN_LABEL);
+         else                          sprintf (t, " %4.2f", s_accel [i].pct);
+         strlcat  (x_msg, t, LEN_STR);
+      }
+      sprintf (ykine__unit_answer, "MOVE accel cums:%s", x_msg);
    }
    /*---(complete)-----------------------*/
    return ykine__unit_answer;

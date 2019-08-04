@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.0f"
-#define     P_VERTXT    "updated/cleaned exact logic, fixed troubles, unit testing"
+#define     P_VERNUM    "1.1g"
+#define     P_VERTXT    "movement acceleration calculations complete and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -371,6 +371,9 @@ char        ykine_servos            (char *a_source);
 char*       ykine__unit_servo       (char *a_question);
 
 
+char        ykine_accel_clear       (void);
+char        ykine_accel_calc        (char a_max, char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
+char        ykine_accel             (float xb, float zb, float yb, float xe, float ze, float ye, char a_speed, char a_accel, char a_decel);
 char        ykine_move_create       (char a_type, tSERVO *a_servo, char *a_label, int a_line, float a_deg, float a_sec);
 char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
