@@ -194,8 +194,6 @@ static tHEIGHT s_heights [MAX_HEIGHTS] = {
 
 static char s_verify  [MAX_RADIUS];
 
-
-
 char
 ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry, double *a_result)
 {

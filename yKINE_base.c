@@ -91,6 +91,7 @@ yKINE_init         (char a_type)
    rc = ykine_verb_init  ();
    DEBUG_YKINE  yLOG_value   ("verb"      , rc);
    /*> ykine_stance_verify  ();                                                       <*/
+   myKINE.s_pace  = YKINE_PACE;
    /*---(complete)-----------------------*/
    DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;
@@ -279,9 +280,9 @@ yKINE__unit_quiet  (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 yKINE__unit_loud   (void)
 {
-   char       *x_args [7]  = { "yKINE_unit" , "@@kitchen", "@@ykine", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp", "@@yparse" };
-   yURG_logger (7, x_args);
-   yURG_urgs   (7, x_args);
+   char       *x_args [8]  = { "yKINE_unit" , "@@kitchen", "@@ykine", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp", "@@ykine_move", "@@yparse" };
+   yURG_logger (8, x_args);
+   yURG_urgs   (8, x_args);
    DEBUG_YKINE  yLOG_info     ("yKINE" , yKINE_version   ());
    return 0;
 }

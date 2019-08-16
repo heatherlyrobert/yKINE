@@ -6,6 +6,11 @@
 
 
 
+static char     s_accel     [LEN_LABEL];
+static double   b     =  0.0;    /* traditional duration                      */
+
+
+
 /*====================------------------------------------====================*/
 /*===----                     zero-point movements                     ----===*/
 /*====================------------------------------------====================*/
@@ -57,8 +62,8 @@ ykine_scrp_zero         (void)
    tSERVO     *x_servo     =    0;
    float       d, s        =  0.0;
    float       l           =  0.0;
-   double      b, x, y, z  =  0.0;
-   float       xp, zp, yp;                       /* previous coordinates      */
+   double      xe, ze, ye;
+   float       xb, zb, yb;                       /* previous coordinates      */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(servo)--------------------------*/
@@ -68,40 +73,52 @@ ykine_scrp_zero         (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get duration)----------------*/
-   rc  = yPARSE_popval (0.0, &b);
+   /*---(check accel)-----------------*/
+   yPARSE_top      (s_accel);
+   DEBUG_YKINE_SCRP  yLOG_info    ("s_accel"   , s_accel);
+   rc  = ykine_accel_dur (s_accel);
+   DEBUG_YKINE_SCRP  yLOG_value   ("accel_dur" , rc);
+   /*---(check normal)----------------*/
+   yPARSE_popval (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
+   if (rc < 0)  strlcpy (s_accel, "", LEN_LABEL);
+   else         b = -1.0;
    /*---(det coordinates)-------------*/
-   rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xp, &zp, &yp, NULL);
+   rc = ykine_move_savedloc  (x_servo, NULL, NULL, &xb, &zb, &yb, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = yPARSE_popval   (xp, &x);
-      if (rc == 0)  rc  = yPARSE_popval   (zp, &z);
-      if (rc == 0)  rc  = yPARSE_popval   (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popval   (xb, &xe);
+      if (rc == 0)  rc  = yPARSE_popval   (zb, &ze);
+      if (rc == 0)  rc  = yPARSE_popval   (yb, &ye);
    } else {
-      if (rc == 0)  rc  = yPARSE_popfrom  (xp, &x);
-      if (rc == 0)  rc  = yPARSE_popfrom  (zp, &z);
-      if (rc == 0)  rc  = yPARSE_popfrom  (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popfrom  (xb, &xe);
+      if (rc == 0)  rc  = yPARSE_popfrom  (zb, &ze);
+      if (rc == 0)  rc  = yPARSE_popfrom  (yb, &ye);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
-   /*---(caclulate polar)-------------*/
-   rc = ykine__scrp_zero_deg  (x, z, &d, &l);
-   DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
+   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xe, ze, ye);
    /*---(process moves)---------------*/
-   s = b * x_servo->pace;
-   DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
-   if (myKINE.s_hidden != 'y')  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, d, s);
-   DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
-   if (rc == 0)  rc = ykine_move_addloc (x_servo, x, z, y);
-   DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
-   --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   if (b < 0)  {
+      ykine_accel_body      (s_accel, xb, zb, yb, xe, ze, ye);
+   } else {
+      /*---(caclulate polar)-------------*/
+      rc = ykine__scrp_zero_deg  (xe, ze, &d, &l);
+      DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
+      /*---(process moves)---------------*/
+      s = b * x_servo->pace;
+      DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
+      if (myKINE.s_hidden != 'y')  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, d, s);
+      DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
+      if (rc == 0)  rc = ykine_move_addloc (x_servo, xe, ze, ye);
+      DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
+      --rce;  if (rc <  0) {
+         DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);

@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1g"
-#define     P_VERTXT    "movement acceleration calculations complete and unit tested"
+#define     P_VERNUM    "1.1h"
+#define     P_VERTXT    "accelerated leg and zero-point movements tested and working on eva"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -139,10 +139,12 @@ struct cLOCAL {
    char        s_verb      [LEN_LABEL];     /* script line verb               */
    char        s_hidden;                    /* a hidden action/move           */
    int         s_iverb;                     /* index of verb                  */
+   char        s_style;                     /* linear vs polar                */
    char        s_servo;                     /* verb needs a servo specifier   */
    char        s_targ;                      /* leg/seg targeting override     */
    char        s_from;                      /* pure vs from                   */
    int         s_count;
+   float       s_pace;                      /* global pace                    */
    float       s_beats;
    float       s_secs;
    float       s_femu;
@@ -163,6 +165,7 @@ struct cLOCAL {
    /*---(done)--------------*/
 };
 tLOCAL      myKINE;
+#define   YKINE_PACE  0.10
 
 
 
@@ -301,6 +304,30 @@ extern    tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinemati
 extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinematics        */
 
 
+#define     ACCEL_TURTLE       0
+#define     ACCEL_SLOW         1
+#define     ACCEL_MOD          2
+#define     ACCEL_FAST         3
+#define     ACCEL_EXTRA        4
+#define     DECEL_FAST         5
+#define     DECEL_MOD          6
+#define     DECEL_SLOW         7
+#define     DECEL_TURTLE       8
+
+typedef struct cACCEL tACCEL;
+struct cACCEL {
+   char        abbr;
+   char        label    [LEN_LABEL];
+   float       persec;
+   float       dur;
+   float       pct;
+   float       dist;
+};
+extern tACCEL g_accel_info [10];
+
+
+
+
 
 /*---(setup)-----------------------------*/
 char        yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type);
@@ -372,8 +399,14 @@ char*       ykine__unit_servo       (char *a_question);
 
 
 char        ykine_accel_clear       (void);
-char        ykine_accel_calc        (char a_max, char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
-char        ykine_accel             (float xb, float zb, float yb, float xe, float ze, float ye, char a_speed, char a_accel, char a_decel);
+char        ykine_accel_level       (char a_max, char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
+char        ykine_accel_calc        (float xb, float zb, float yb, float xe, float ze, float ye, char a_speed, char a_accel, char a_decel);
+char        ykine_accel_dur         (char *a_dur);
+char        ykine_noaccel_servo     (tSERVO *a_servo, float s, float d, float x, float z, float y);
+char        ykine_accel_body        (char *a_dur, float xb, float zb, float yb, float xe, float ze, float ye);
+char        ykine_accel_leg         (char a_meth, int a_leg, char *a_dur);
+char*       ykine__unit_accel       (char *a_question, int a_num);
+
 char        ykine_move_create       (char a_type, tSERVO *a_servo, char *a_label, int a_line, float a_deg, float a_sec);
 char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);

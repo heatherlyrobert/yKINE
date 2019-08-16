@@ -224,10 +224,13 @@
 
 
 /*---(methods)------------------------*/
-#define     YKINE_MAX_METH   5
+#define     YKINE_MAX_METH  10
 #define     YKINE_FK         0
 #define     YKINE_IK         1
 #define     YKINE_GK         2
+#define     YKINE_TK         3
+#define     YKINE_RK         4
+#define     YKINE_CK         5
 
 
 
@@ -302,6 +305,9 @@
 #define     YKINE_ORIENT      'o'
 #define     YKINE_ZERO        'z'
 
+
+#define     YKINE_LINEAR      'l'
+#define     YKINE_POLAR       'p'
 
 char*       yKINE_version      (void);
 char        yKINE_init         (char a_type);
