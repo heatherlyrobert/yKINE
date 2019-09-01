@@ -43,16 +43,16 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { "rk_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM, YKINE_POLAR ,  1, ykine_legs_rk         , "set relative joint angles based on last angle"     },
    /* ===[[ body zero-point ]]===================================================*/
    /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "ze_pure"      , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, ykine_scrp_zero       , "set absolute body position in 3d space"            },
-   { "ze_from"      , 'y' , '-' , YKINE_ZERO   , YKINE_FROM, YKINE_LINEAR, -1, ykine_scrp_zero       , "set relative body position based on last position" },
-   { "zp_pure"      , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_POLAR , -1, ykine_scrp_zpolar     , "set relative body position based on last position" },
-   { "zp_from"      , 'y' , '-' , YKINE_ZERO   , YKINE_FROM, YKINE_POLAR , -1, ykine_scrp_zpolar     , "set relative body position based on last position" },
+   { "ze_pure"      , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_zero       , "set absolute body position in 3d space"            },
+   { "ze_from"      , 'y' , '-' , YKINE_ZERO   , YKINE_FROM, YKINE_LINEAR, -1, ykine_body_zero       , "set relative body position based on last position" },
+   { "zp_pure"      , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_POLAR , -1, ykine_body_zpolar     , "set relative body position based on last position" },
+   { "zp_from"      , 'y' , '-' , YKINE_ZERO   , YKINE_FROM, YKINE_POLAR , -1, ykine_body_zpolar     , "set relative body position based on last position" },
    /* ===[[ body orientation ]]==================================================*/
    /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "or_pure"      , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_scrp_orient     , "set absolute body orientation angles"              },
-   { "or_from"      , 'y' , '-' , YKINE_ORIENT , YKINE_FROM, YKINE_LINEAR, -1, ykine_scrp_orient     , "set relative body orientation from last position"  },
-   { "op_pure"      , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_scrp_opolar     , "set relative body position based on last position" },
-   { "op_from"      , 'y' , '-' , YKINE_ORIENT , YKINE_FROM, YKINE_POLAR , -1, ykine_scrp_opolar     , "set relative body position based on last position" },
+   { "or_pure"      , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_orient     , "set absolute body orientation angles"              },
+   { "or_from"      , 'y' , '-' , YKINE_ORIENT , YKINE_FROM, YKINE_LINEAR, -1, ykine_body_orient     , "set relative body orientation from last position"  },
+   { "op_pure"      , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
+   { "op_from"      , 'y' , '-' , YKINE_ORIENT , YKINE_FROM, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
    /* ===[[ music notation ]]====================================================*/
    /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },

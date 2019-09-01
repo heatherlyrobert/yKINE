@@ -492,6 +492,33 @@ ykine_move_savedloc     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, 
 }
 
 char
+ykine_move_savedcurr    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_spoint  (a_move);
+   --rce;  if (a_move == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(return data)--------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_move->line);
+   DEBUG_YKINE_SCRP   yLOG_snote   (a_move->label);
+   if (a_deg != NULL)  *a_deg = a_move->degs;
+   if (x     != NULL)  *x     = a_move->x_pos;
+   if (z     != NULL)  *z     = a_move->z_pos;
+   if (y     != NULL)  *y     = a_move->y_pos;
+   if (xz    != NULL)  *xz    = a_move->xz_len;
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", a_move->secs, a_move->degs, a_move->x_pos, a_move->z_pos, a_move->y_pos, a_move->xz_len);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
 ykine_move_savedprev    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -684,6 +711,28 @@ ykine_exact_calc_polar  (float l, float d, float *x, float *z)
    return 0;
 }
 
+/*> char                                                                                               <* 
+ *> ykine_legs_ik_exact     (tMOVE *a_curr, float a_sec, float *dc, float *xc, float *zc, float *yc)   <* 
+ *> {                                                                                                  <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                        <* 
+ *>    float       sb, db, xb, zb, yb;                                                                 <* 
+ *>    float       se, de, xe, ze, ye;                                                                 <* 
+ *>    float       x_range, x_pct;                                                                     <* 
+ *>    /+---(collect data)-------------------+/                                                        <* 
+ *>    ykine_move_savedprev (a_curr, &sb, &db, &xb, &zb, &yb, NULL);                                   <* 
+ *>    ykine_move_savedcurr (a_curr, &se, &de, &xe, &ze, &ye, NULL);                                   <* 
+ *>    /+---(figure percent)-----------------+/                                                        <* 
+ *>    x_range = se - sb;                                                                              <* 
+ *>    if (x_range == 0.0)  x_pct   = 0.0;                                                             <* 
+ *>    else                 x_pct   = (a_sec - sb) / x_range;                                          <* 
+ *>    /+---(calculate)----------------------+/                                                        <* 
+ *>    ykine_exact_calc ('d', dp, dc, x_pct, &dc);                                                     <* 
+ *>    ykine_exact_calc ('-', xp, xc, x_pct, &xc);                                                     <* 
+ *>    ykine_exact_calc ('-', zp, zc, x_pct, &zc);                                                     <* 
+ *>    ykine_exact_calc ('-', yb, ye, x_pct, &yc);                                                     <* 
+ *>    /+---(complete)-----------------------+/                                                        <* 
+ *>    return 0;                                                                                       <* 
+ *> }                                                                                                  <*/
 
 char         /*--> calc the current deg for a servo ------[ ------ [ ------ ]-*/
 ykine__exact_data        (tSERVO *a_servo, float a_sec)
@@ -1244,14 +1293,17 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
          return ykine__unit_answer;
       }
       /*---(get move)--------------------*/
-      x_move = x_servo->head;
-      if (x_move  == NULL) {
-         sprintf  (ykine__unit_answer, "MOVE unit      : no moves for this servo");
-         return ykine__unit_answer;
-      }
-      for (i = 0; i < a_cnt; ++i) {
-         if (x_move == NULL)  break;
-         x_move = x_move->s_next;
+      if (a_cnt < 0)  x_move = x_servo->tail;
+      else {
+         x_move = x_servo->head;
+         if (x_move  == NULL) {
+            sprintf  (ykine__unit_answer, "MOVE unit      : no moves for this servo");
+            return ykine__unit_answer;
+         }
+         for (i = 0; i < a_cnt; ++i) {
+            if (x_move == NULL)  break;
+            x_move = x_move->s_next;
+         }
       }
       if (x_move == NULL) {
          sprintf  (ykine__unit_answer, "MOVE unit      : past end of moves");

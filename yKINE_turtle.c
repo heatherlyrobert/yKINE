@@ -185,7 +185,7 @@ ykine_turtle_home       (void)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_scrp_zero ();
+   rc = ykine_body_zero ();
    DEBUG_YKINE_SCRP  yLOG_point   ("run"       , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -236,7 +236,7 @@ ykine_turtle_goto       (void)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_scrp_zero ();
+   rc = ykine_body_zero ();
    DEBUG_YKINE_SCRP  yLOG_point   ("run"       , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -283,7 +283,7 @@ ykine_turtle_raise      (void)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_scrp_zero ();
+   rc = ykine_body_zero ();
    DEBUG_YKINE_SCRP  yLOG_point   ("run"       , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -330,7 +330,7 @@ ykine_turtle_lower      (void)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_scrp_zero ();
+   rc = ykine_body_zero ();
    DEBUG_YKINE_SCRP  yLOG_point   ("run"       , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -447,7 +447,7 @@ ykine_turtle_move       (void)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_scrp_zero ();
+   rc = ykine_body_zero ();
    DEBUG_YKINE_SCRP  yLOG_point   ("run"       , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);

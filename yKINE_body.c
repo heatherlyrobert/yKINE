@@ -6,8 +6,11 @@
 
 
 
-static char     s_accel     [LEN_LABEL];
-static double   b     =  0.0;    /* traditional duration                      */
+static tSERVO  *s_servo   = NULL;
+static char     s_accel     [LEN_LABEL] = "";
+static double   b, s;               /* input and adjusted durations           */
+static float    yb, pb, rb, db, tb; /* begin  yaw, pitch, roll, dir, and tilt */
+static double   ye, pe, re, de, te; /* end    yaw, pitch, roll, dir, and tilt */
 
 
 
@@ -17,44 +20,54 @@ static double   b     =  0.0;    /* traditional duration                      */
 static void      o___ZERO____________________o (void) {;}
 
 char
-ykine__scrp_zero_deg    (float a_xpos, float a_zpos, float *a_deg, float *a_len)
+ykine_body_pos2polar    (float a_xpos, float a_zpos, float *a_deg, float *a_len)
 {
    /*---(locals)-----------+-----+-----+-*/
    float       r           = 0.0;
    float       d           = 0.0;
    float       l           = 0.0;
-   r = atan2f (a_xpos, -a_zpos);
+   /*---(fix degree)---------------------*/
+   r = atan2 (-a_zpos, a_xpos);
    d = r * RAD2DEG;
+   d = round (d * 10.0) / 10.0;
+   while (d <    0.0)   d += 360.0;
+   while (d >  360.0)   d -= 360.0;
+   /*---(fix length)---------------------*/
    l = sqrt ((a_xpos * a_xpos) + (a_zpos * a_zpos));
-   if (d <    0.0)   d  = 360.0 + d;
-   if (d >  360.0)   d  = d - 360.0;
-   if (l ==   0.0)   d  = 0.0;
+   l = round (l * 10.0) / 10.0;
+   if (l < 0.1 && l > -0.1)   d = l = 0.0;
+   /*---(save results)-------------------*/
    if (a_deg  != NULL)  *a_deg  = d;
    if (a_len  != NULL)  *a_len  = l;
+   /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-ykine__scrp_zero_pos    (float a_deg, float a_len, float *a_xpos, float *a_zpos)
+ykine_body_polar2pos    (float a_deg, float a_len, float *a_xpos, float *a_zpos)
 {
    /*---(locals)-----------+-----+-----+-*/
    float       x           = 0.0;
    float       z           = 0.0;
-   if (a_deg <    0.0)   a_deg  = 360.0 + a_deg;
-   if (a_deg >  360.0)   a_deg  = a_deg - 360.0;
+   /*---(fix degree)---------------------*/
+   while (a_deg <    0.0)   a_deg += 360.0;
+   while (a_deg >  360.0)   a_deg -= 360.0;
+   /*---(set coordinates)----------------*/
    x =  a_len * cos (a_deg * DEG2RAD);
-   z =  a_len * sin (a_deg * DEG2RAD);
-   if      (a_deg <=  90.0)  z *= -1;
-   else if (a_deg <= 180.0)  x *= -1;
-   else if (a_deg <= 270.0)  z *= -1;
-   else                      x *= -1;
+   z = -a_len * sin (a_deg * DEG2RAD);
+   x = round (x * 10.0) / 10.0;
+   z = round (z * 10.0) / 10.0;
+   if (x < 0.1 && x > -0.1)   x = 0.0;
+   if (z < 0.1 && z > -0.1)   z = 0.0;
+   /*---(save results)-------------------*/
    if (a_xpos != NULL)  *a_xpos = x;
    if (a_zpos != NULL)  *a_zpos = z;
+   /*---(complete)-----------------------*/
    return 0;
 }
 
 char         /*--> handle body centering -----------------[ ------ [ ------ ]-*/
-ykine_scrp_zero         (void)
+ykine_body_zero         (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -103,13 +116,13 @@ ykine_scrp_zero         (void)
    DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xe, ze, ye);
    /*---(process moves)---------------*/
    if (b < 0)  {
-      ykine_accel_body      (s_accel, xb, zb, yb, xe, ze, ye);
+      ykine_accel_zero      (s_accel, xb, zb, yb, xe, ze, ye);
    } else {
       /*---(caclulate polar)-------------*/
-      rc = ykine__scrp_zero_deg  (xe, ze, &d, &l);
+      rc = ykine_body_pos2polar  (xe, ze, &d, &l);
       DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
       /*---(process moves)---------------*/
-      s = b * x_servo->pace;
+      s = b * myKINE.s_pace;
       DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
       if (myKINE.s_hidden != 'y')  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, d, s);
       DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
@@ -126,16 +139,16 @@ ykine_scrp_zero         (void)
 }
 
 char         /*--> handle body centering -----------------[ ------ [ ------ ]-*/
-ykine_scrp_zpolar       (void)
+ykine_body_zpolar       (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   double      b, d, l, y  =  0.0;
    float       s           =  0.0;
-   float       x , z;                            /* current coordinates       */
-   float       dp, lp, yp;                       /* previous coordinates      */
+   float       db, lb, yb;                       /* previous coordinates      */
+   double      de, le, ye;                       /* current coordinates       */
+   float       xe, ze;                           /* current coordinates       */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(servo)--------------------------*/
@@ -145,42 +158,57 @@ ykine_scrp_zpolar       (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get duration)----------------*/
-   rc  = yPARSE_popval   (0.0, &b);
+   /*---(check accel)-----------------*/
+   yPARSE_top      (s_accel);
+   DEBUG_YKINE_SCRP  yLOG_info    ("s_accel"   , s_accel);
+   rc  = ykine_accel_dur (s_accel);
+   DEBUG_YKINE_SCRP  yLOG_value   ("accel_dur" , rc);
+   /*---(check normal)----------------*/
+   yPARSE_popval (0.0, &b);
    DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
+   if (rc < 0)  strlcpy (s_accel, "", LEN_LABEL);
+   else         b = -1.0;
    /*---(det coordinates)-------------*/
-   rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, &yp, &lp);
+   rc = ykine_move_savedloc  (x_servo, NULL, &db, NULL, NULL, &yb, &lb);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = yPARSE_popval   (dp, &d);
-      if (rc == 0)  rc  = yPARSE_popval   (lp, &l);
-      if (rc == 0)  rc  = yPARSE_popval   (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popval   (db, &de);
+      if (rc == 0)  rc  = yPARSE_popval   (lb, &le);
+      if (rc == 0)  rc  = yPARSE_popval   (yb, &ye);
    } else {
-      if (rc == 0)  rc  = yPARSE_popfrom  (dp, &d);
-      if (rc == 0)  rc  = yPARSE_popfrom  (lp, &l);
-      if (rc == 0)  rc  = yPARSE_popfrom  (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popfrom  (db, &de);
+      if (rc == 0)  rc  = yPARSE_popfrom  (lb, &le);
+      if (rc == 0)  rc  = yPARSE_popfrom  (yb, &ye);
    }
    DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   if (d <    0.0)   d  = 360.0 + d;
-   if (d >  360.0)   d  = d - 360.0;
-   DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
+   if (de <    0.0)   de  = 360.0 + de;
+   if (de >  360.0)   de  = de - 360.0;
+   DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", de, le);
    /*---(caclulate end)---------------*/
-   rc = ykine__scrp_zero_pos  (d, l, &x, &z);
-   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
+   rc = ykine_body_polar2pos  (de, le, &xe, &ze);
+   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xe, ze, ye);
    /*---(process moves)---------------*/
-   s = b * x_servo->pace;
-   DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
-   rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, d, s);
-   DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
-   if (rc == 0)  rc = ykine_move_addloc (x_servo, x, z, y);
-   DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
-   --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   if (b < 0)  {
+      ykine_accel_zpolar    (s_accel, db, lb, yb, de, le, ye);
+   } else {
+      /*---(caclulate polar)-------------*/
+      rc = ykine_body_pos2polar  (xe, ze, &de, &le);
+      DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", de, le);
+      /*---(process moves)---------------*/
+      s = b * myKINE.s_pace;
+      DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
+      if (myKINE.s_hidden != 'y')  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, de, s);
+      DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
+      if (rc == 0)  rc = ykine_move_addloc (x_servo, xe, ze, ye);
+      DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
+      --rce;  if (rc <  0) {
+         DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -194,153 +222,284 @@ ykine_scrp_zpolar       (void)
 /*====================------------------------------------====================*/
 static void      o___ORIENT__________________o (void) {;}
 
-char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
-ykine__scrp_orient_adjust   (int a_seg, float *a_deg)
+char         /*--> check orientation limits --------------[ ------ [ ------ ]-*/
+ykine_body_orient_valid (float y, float p, float r)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(test yaw)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sdouble (y);
+   --rce;  if (y > 40.0 || y < -40.0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("yaw out of range");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(test pitch)---------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sdouble (p);
+   --rce;  if (p > 30.0 || p < -30.0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("pitch out of range");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(test roll)----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sdouble (r);
+   --rce;  if (r > 30.0 || r < -30.0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("roll out of range");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_body_orient_prep  (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   tSERVO     *x_servo     =    0;
-   double      d           =  0.0;
-   float       dp          =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(servo)--------------------------*/
-   x_servo = ykine_servo_pointer (YKINE_BODY, a_seg);
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
-   --rce;  if (x_servo ==  NULL) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   /*---(check accel)-----------------*/
+   yPARSE_top      (s_accel);
+   DEBUG_YKINE_SCRP  yLOG_info    ("s_accel"   , s_accel);
+   rc  = ykine_accel_dur (s_accel);
+   DEBUG_YKINE_SCRP  yLOG_value   ("accel_dur" , rc);
+   /*---(check normal)----------------*/
+   yPARSE_popval (0.0, &b);
+   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
+   if (rc < 0) {
+      strlcpy (s_accel, "", LEN_LABEL);
+      s = b * myKINE.s_pace;
    }
-   /*---(det coordinates)-------------*/
-   rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, NULL, NULL);
-   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = yPARSE_popval   (dp, &d);
-   } else {
-      if (rc == 0)  rc  = yPARSE_popfrom  (dp, &d);
-   }
-   DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
-   --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_YKINE_SCRP  yLOG_double  ("deg"       , d);
-   /*---(return)-------------------------*/
-   *a_deg = d;
+   else         s = b = -1.0;
+   DEBUG_YKINE_SCRP  yLOG_complex ("timing"    , "%-6.6s, %8.2fb, %8.2fs", s_accel, b, s);
+   rc = 0;
+   /*---(get existing)-------------------*/
+   s_servo = ykine_servo_pointer (YKINE_BODY, YKINE_YAW  );
+   if (rc == 0)  rc = ykine_move_savedloc  (s_servo + 0, NULL, &yb, NULL, NULL, NULL, NULL);
+   if (rc == 0)  rc = ykine_move_savedloc  (s_servo + 1, NULL, &pb, NULL, NULL, NULL, NULL);
+   if (rc == 0)  rc = ykine_move_savedloc  (s_servo + 2, NULL, &rb, NULL, NULL, NULL, NULL);
+   /*---(reporting)-------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.2fy, %8.2fp, %8.2fr", yb, pb, rb);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
-char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
-ykine__scrp_orient_servo    (int a_seg, float a_deg, float a_beat)
+char
+ykine_body_orient_wrap  (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   tSERVO     *x_servo     =    0;
-   double      s           =  0.0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(servo)--------------------------*/
-   x_servo = ykine_servo_pointer (YKINE_BODY, a_seg);
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
-   --rce;  if (x_servo ==  NULL) {
+   float       x, z, y, l;
+   /*---(reporting)-------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.2fy, %8.2fp, %8.2fr", ye, pe, re);
+   /*---(check limits)----------------*/
+   rc = ykine_body_orient_valid (ye, pe, re);
+   DEBUG_YKINE_SCRP  yLOG_value   ("limits"    , rc);
+   --rce;  if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(calculate)----------------------*/
-   s = a_beat * x_servo->pace;
-   if (rc == 0)  rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo, myKINE.s_verb, myKINE.s_cline, a_deg, s);
-   --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   /*---(process normal)--------------*/
+   if (b < 0)  {
+      ykine_accel_orient    (s_accel, yb, pb, rb, ye, pe, re);
+   }
+   /*---(process accelerated)---------*/
+   else {
+      ykine_move_create (YKINE_MOVE_SERVO, s_servo + 0, myKINE.s_verb, myKINE.s_cline, ye, s);
+      ykine_move_create (YKINE_MOVE_SERVO, s_servo + 1, myKINE.s_verb, myKINE.s_cline, pe, s);
+      ykine_move_create (YKINE_MOVE_SERVO, s_servo + 2, myKINE.s_verb, myKINE.s_cline, re, s);
+      ykine_body_orient2xyz (ye, pe, re, &x, &z, &y, &l);
+      ykine_move_addloc (s_servo + 2, x, z, y);
    }
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> convert orientation to dir/tilt -------[ ------ [ ------ ]-*/
+ykine_body_orient2tilt  (float p, float r, float *d, float *t)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   float       x_len       =    0;
+   float       x_dir       =    0;
+   /*---(calculate)----------------------*/
+   x_len = sqrt ((p * p) + (r * r));
+   x_dir = RAD2DEG * atan2 (r, p);
+   /*---(fix and round)------------------*/
+   x_len = round (x_len * 10.0) / 10.0;
+   x_dir = round (x_dir * 10.0) / 10.0;
+   while (x_dir <= -180.0)   x_dir += 360.0;
+   while (x_dir >   180.0)   x_dir -= 360.0;
+   /*---(save returns)-------------------*/
+   if (d != NULL)  *d = x_dir;
+   if (t != NULL)  *t = x_len;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+float
+ykine_round_val     (float a)
+{
+   a = round (a * 10.0) / 10.0;
+   if (a > -0.1 && a < 0.1)  a = 0.0;
+   return a;
+}
+
+float
+ykine_round_deg     (float a)
+{
+   a = round (a * 10.0) / 10.0;
+   if (a > -0.1 && a < 0.1)  a = 0.0;
+   while (a <= -180.0)   a += 360.0;
+   while (a >   180.0)   a -= 360.0;
+   return a;
+}
+
+char         /*--> convert dir/tilt to orientation -------[ ------ [ ------ ]-*/
+ykine_body_tilt2orient  (float d, float t, float *p, float *r)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   float       x_pitch     =    0;
+   float       x_roll      =    0;
+   /*---(calculate)----------------------*/
+   x_pitch =  t * cos (d * DEG2RAD);
+   x_roll  =  t * sin (d * DEG2RAD);
+   /*---(fix and round)------------------*/
+   x_pitch = round (x_pitch * 10.0) / 10.0;
+   x_roll  = round (x_roll  * 10.0) / 10.0;
+   if (x_pitch > -0.1 && x_pitch < 0.1)  x_pitch = 0.0;
+   if (x_roll  > -0.1 && x_roll  < 0.1)  x_roll  = 0.0;
+   while (x_pitch <= -180.0)   x_pitch += 360.0;
+   while (x_pitch >   180.0)   x_pitch -= 360.0;
+   while (x_roll  <= -180.0)   x_roll  += 360.0;
+   while (x_roll  >   180.0)   x_roll  -= 360.0;
+   /*---(save returns)-------------------*/
+   if (p != NULL)  *p = x_pitch;
+   if (r != NULL)  *r = x_roll;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char         /*--> convert orientation into position -----[ ------ [ ------ ]-*/
+ykine_body_orient2xyz   (float a_yaw, float a_pitch, float a_roll, float *a_x, float *a_z, float *a_y, float *a_l)
+{  /*---(design notes)-------------------*/
+   /*  returns highest point on body, so y is always returned positive.
+    *  yaw, pitch, and roll ranges must be checked *before* this function.
+    */
+   /*---(locals)-----------+-----+-----+-*/
+   float       h, a, d, da, t, x, z, y, l;
+   /*---(convert)------------------------*/
+   ykine_body_orient2tilt (a_pitch, a_roll, &d, &t);
+   da  = 90.0 - (d + a_yaw);
+   /*> printf ("%8.2fy, %8.2fp, %8.2fr, %8.2fd, %8.2ft, %8.2fda\n", a_yaw, a_pitch, a_roll, d, t, da);   <*/
+   /*---(vertical)-----------------------*/
+   h   = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);
+   y   = ykine_round_val ( h * sin (t  * DEG2RAD));
+   /*> printf ("           %8.2fh, %8.2fy\n", h, y);                                  <*/
+   /*---(horizontal)---------------------*/
+   h   = h * cos (t * DEG2RAD);
+   x   = ykine_round_val ( h * cos (da * DEG2RAD));
+   z   = ykine_round_val (-h * sin (da * DEG2RAD));
+   /*---(length as check)----------------*/
+   l   = ykine_round_val (sqrt ((x * x) + (z * z) + (y * y)));
+   /*> printf ("           %8.2fh, %8.2fx, %8.2fz, %8.2fl\n", h, x, z, l);            <*/
+   /*---(save returns)-------------------*/
+   if (a_x != NULL)  *a_x  = x;
+   if (a_z != NULL)  *a_z  = z;
+   if (a_y != NULL)  *a_y  = y;
+   if (a_l != NULL)  *a_l  = l;
+   /*---(complete)-----------------------*/
    return 0;
 }
 
 char         /*--> handle forward verbs ------------------[ ------ [ ------ ]-*/
-ykine_scrp_orient       (void)
+ykine_body_orient       (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   double      b           =  0.0;
-   float       f, p, t;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(timing)-------------------------*/
-   rc  = yPARSE_popval   (0.0, &b);
-   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
-   /*---(adjust angles)---------------*/
-   rc = ykine__scrp_orient_adjust (YKINE_YAW  , &f);
-   rc = ykine__scrp_orient_adjust (YKINE_PITCH, &p);
-   rc = ykine__scrp_orient_adjust (YKINE_ROLL , &t);
+   /*---(prepare)---------------------*/
+   rc = ykine_body_orient_prep ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("prepare"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(update values)------------------*/
+   if (myKINE.s_from == YKINE_PURE) {
+      if (rc == 0)  rc  = yPARSE_popval   (yb, &ye);
+      if (rc == 0)  rc  = yPARSE_popval   (pb, &pe);
+      if (rc == 0)  rc  = yPARSE_popval   (rb, &re);
+   } else {
+      if (rc == 0)  rc  = yPARSE_popfrom  (yb, &ye);
+      if (rc == 0)  rc  = yPARSE_popfrom  (pb, &pe);
+      if (rc == 0)  rc  = yPARSE_popfrom  (rb, &re);
+   }
    /*---(process moves)---------------*/
-   rc = ykine__scrp_orient_servo  (YKINE_YAW  , f, b);
-   rc = ykine__scrp_orient_servo  (YKINE_PITCH, p, b);
-   rc = ykine__scrp_orient_servo  (YKINE_ROLL , t, b);
+   rc = ykine_body_orient_wrap ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("wrap"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char         /*--> handle body centering -----------------[ ------ [ ------ ]-*/
-ykine_scrp_opolar       (void)
+ykine_body_opolar       (void)
 {
-   /*---(locals)-----------+-----------+-*/
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   tSERVO     *x_servo     =    0;
-   double      b, d, y     =  0.0;
-   float       x , z;                            /* current coordinates       */
-   float       dp, lp, yp;                       /* previous coordinates      */
-   float       p, t;
+   double      x_dir, x_tilt;
+   float       x_pitch, x_roll;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(servo)--------------------------*/
-   x_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
-   --rce;  if (x_servo ==  NULL) {
+   /*---(prepare)---------------------*/
+   rc = ykine_body_orient_prep ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("prepare"   , rc);
+   --rce;  if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(get duration)----------------*/
-   rc  = yPARSE_popval   (0.0, &b);
-   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
-   /*---(det coordinates)-------------*/
-   rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, &yp, &lp);
-   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
+   /*---(convert to dir/tilt)------------*/
+   rc = ykine_body_orient2tilt (pb, rb, &db, &tb);
+   DEBUG_YKINE_SCRP  yLOG_complex ("converted" , "%8.2fd, %8.2ft", db, tb);
+   /*---(update values)------------------*/
    if (myKINE.s_from == YKINE_PURE) {
-      if (rc == 0)  rc  = yPARSE_popval   (dp, &d);
-      if (rc == 0)  rc  = yPARSE_popval   (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popval   (yb, &ye);
+      if (rc == 0)  rc  = yPARSE_popval   (db, &x_dir);
+      if (rc == 0)  rc  = yPARSE_popval   (tb, &x_tilt);
    } else {
-      if (rc == 0)  rc  = yPARSE_popfrom  (dp, &d);
-      if (rc == 0)  rc  = yPARSE_popfrom  (yp, &y);
+      if (rc == 0)  rc  = yPARSE_popfrom  (yb, &ye);
+      if (rc == 0)  rc  = yPARSE_popfrom  (db, &x_dir);
+      if (rc == 0)  rc  = yPARSE_popfrom  (tb, &x_tilt);
    }
-   DEBUG_YKINE_SCRP  yLOG_value   ("queue"     , rc);
-   --rce;  if (rc <  0) {
+   de = x_dir;
+   te = x_tilt;
+   DEBUG_YKINE_SCRP  yLOG_complex ("updated"   , "%8.2fy, %8.2fd, %8.2ft", ye, de, te);
+   /*---(convert back to pitch/roll)-----*/
+   rc = ykine_body_tilt2orient  (de, te, &x_pitch, &x_roll);
+   pe = x_pitch;
+   re = x_roll;
+   DEBUG_YKINE_SCRP  yLOG_complex ("converted" , "%8.2fp, %8.2fr", pe, re);
+   /*---(process moves)---------------*/
+   rc = ykine_body_orient_wrap ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("wrap"      , rc);
+   --rce;  if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP  yLOG_complex ("deg/y"     , "%8.2fd, %8.2fy", d, y);
-   /*---(caclulate end)---------------*/
-   rc = ykine__scrp_zero_pos  (d, 1.0, &x, &z);
-   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
-   p  = x * y;
-   t  = z * y;
-   if      (d <=  90.0)  t *= -1.0;
-   else if (d <= 180.0)  p *= -1.0;
-   else if (d <= 270.0)  t *= -1.0;
-   else                  p *= -1.0;
-   DEBUG_YKINE_SCRP  yLOG_complex ("orient"    , "%8.2fp, %8.2ft", p, t);
-   /*---(process moves)---------------*/
-   rc = ykine__scrp_orient_servo  (YKINE_YAW  , 0.0, b);
-   rc = ykine__scrp_orient_servo  (YKINE_PITCH, p  , b);
-   rc = ykine__scrp_orient_servo  (YKINE_ROLL , t  , b);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;

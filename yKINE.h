@@ -308,6 +308,9 @@
 
 #define     YKINE_LINEAR      'l'
 #define     YKINE_POLAR       'p'
+#define     YKINE_ZPOLAR      'z'
+#define     YKINE_OPOLAR      'z'
+#define     YKINE_MAX         'm'
 
 char*       yKINE_version      (void);
 char        yKINE_init         (char a_type);
@@ -366,6 +369,12 @@ char        yKINE_servo_deg         (int a_leg, int a_seg, float *a_deg);
 char        yKINE_servo_move        (int a_leg, int a_seg, char *a_label, float *a_secb, float *a_sece, float *a_dur , float *a_degb, float *a_dege, int *a_seq , int *a_line);
 char        yKINE_servo_line        (int a_leg, int a_seg, float *a_x1, float *a_z1, float *a_y1, float *a_x2, float *a_z2, float *a_y2);
 char        yKINE_moves_rpt         (void);
+
+
+char        yKINE_xz2hex            (float x, float z, int *c, int *r);
+char        yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o);
+char        yKINE_hex2xz            (int c, int r, float *x, float *z);
+
 
 /*> char        yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count);   <*/
 
