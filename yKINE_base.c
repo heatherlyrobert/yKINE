@@ -219,35 +219,41 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
    }
    /*---(forward kinematics)------------------------------*/
    else if (strcmp(a_question, "FK_seg_angle"     ) == 0) {
-      sprintf(ykine__unit_answer, "FK-%-7.7s ang :%8.1fd,%8.3fv,%8.3fh", 
-            fk [a_leg][a_seg].n ,
-            fk [a_leg][a_seg].d , fk [a_leg][a_seg].cv, fk [a_leg][a_seg].ch);
+      sprintf(ykine__unit_answer, "FK-%-7.7s ang : %6.1fd,%6.1fcd,%6.3fcv,%6.3fch,%6.3ffv,%6.3ffh", 
+            fk [a_leg][a_seg].n , fk [a_leg][a_seg].d , fk [a_leg][a_seg].cd,
+            fk [a_leg][a_seg].cv, fk [a_leg][a_seg].ch,
+            fk [a_leg][a_seg].fv, fk [a_leg][a_seg].fh);
    }
    else if (strcmp(a_question, "FK_seg_size"      ) == 0) {
-      sprintf(ykine__unit_answer, "FK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+      sprintf(ykine__unit_answer, "FK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy,%8.1fxz", 
             fk [a_leg][a_seg].n , fk [a_leg][a_seg].l ,
-            fk [a_leg][a_seg].x , fk [a_leg][a_seg].z , fk [a_leg][a_seg].y);
+            fk [a_leg][a_seg].x , fk [a_leg][a_seg].z ,
+            fk [a_leg][a_seg].y , fk [a_leg][a_seg].xz);
    }
    else if (strcmp(a_question, "FK_seg_end"       ) == 0) {
-      sprintf(ykine__unit_answer, "FK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+      sprintf(ykine__unit_answer, "FK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy,%8.1fxz", 
             fk [a_leg][a_seg].n , fk [a_leg][a_seg].fl,
-            fk [a_leg][a_seg].cx, fk [a_leg][a_seg].cz, fk [a_leg][a_seg].cy);
+            fk [a_leg][a_seg].cx, fk [a_leg][a_seg].cz,
+            fk [a_leg][a_seg].cy, fk [a_leg][a_seg].cxz);
    }
    /*---(inverse kinematics)------------------------------*/
    else if (strcmp (a_question, "IK_seg_angle"     ) == 0) {
-      sprintf(ykine__unit_answer, "IK-%-7.7s ang :%8.1fd,%8.3fv,%8.3fh", 
-            ik [a_leg][a_seg].n ,
-            ik [a_leg][a_seg].d , ik [a_leg][a_seg].cv, ik [a_leg][a_seg].ch);
+      sprintf(ykine__unit_answer, "IK-%-7.7s ang : %6.1fd,%6.1fcd,%6.3fcv,%6.3fch,%6.3ffv,%6.3ffh", 
+            ik [a_leg][a_seg].n , ik [a_leg][a_seg].d , ik [a_leg][a_seg].cd,
+            ik [a_leg][a_seg].cv, ik [a_leg][a_seg].ch,
+            ik [a_leg][a_seg].fv, ik [a_leg][a_seg].fh);
    }
    else if (strcmp (a_question, "IK_seg_size"      ) == 0) {
-      sprintf(ykine__unit_answer, "IK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+      sprintf(ykine__unit_answer, "IK-%-7.7s siz :%8.1fm,%8.1fx,%8.1fz,%8.1fy,%8.1fxz", 
             ik [a_leg][a_seg].n , ik [a_leg][a_seg].l ,
-            ik [a_leg][a_seg].x , ik [a_leg][a_seg].z , ik [a_leg][a_seg].y);
+            ik [a_leg][a_seg].x , ik [a_leg][a_seg].z ,
+            ik [a_leg][a_seg].y , ik [a_leg][a_seg].xz);
    }
    else if (strcmp (a_question, "IK_seg_end"       ) == 0) {
-      sprintf(ykine__unit_answer, "IK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy", 
+      sprintf(ykine__unit_answer, "IK-%-7.7s end :%8.1fm,%8.1fx,%8.1fz,%8.1fy,%8.1fxz", 
             ik [a_leg][a_seg].n , ik [a_leg][a_seg].fl,
-            ik [a_leg][a_seg].cx, ik [a_leg][a_seg].cz, ik [a_leg][a_seg].cy);
+            ik [a_leg][a_seg].cx, ik [a_leg][a_seg].cz,
+            ik [a_leg][a_seg].cy, ik [a_leg][a_seg].cxz);
    }
    else if (strcmp (a_question, "IK_angles"    ) == 0) {
       sprintf(ykine__unit_answer, "IK-%-2.2s/angles   : %8.1fc, %8.1ff, %8.1fp, %8.1ft", 

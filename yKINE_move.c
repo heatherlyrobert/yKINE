@@ -564,6 +564,30 @@ ykine_move_savedprev    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, fl
 /*====================------------------------------------====================*/
 static void      o___CURRENT_________________o (void) {;}
 
+char
+ykine_move_fake_begin   (float db, float sb, float xb, float zb, float yb, float ob)
+{
+   myKINE.db = db;
+   myKINE.sb = sb;
+   myKINE.xb = xb;
+   myKINE.zb = zb;
+   myKINE.yb = yb;
+   myKINE.ob = ob;
+   return 0;
+}
+
+char
+ykine_move_fake_end     (float de, float se, float xe, float ze, float ye, float oe)
+{
+   myKINE.de = de;
+   myKINE.se = se;
+   myKINE.xe = xe;
+   myKINE.ze = ze;
+   myKINE.ye = ye;
+   myKINE.oe = oe;
+   return 0;
+}
+
 char         /*--> identify the current move -------------[ ------ [ ------ ]-*/
 ykine__exact_check       (tMOVE *a_curr, float a_sec)
 {
@@ -711,28 +735,21 @@ ykine_exact_calc_polar  (float l, float d, float *x, float *z)
    return 0;
 }
 
-/*> char                                                                                               <* 
- *> ykine_legs_ik_exact     (tMOVE *a_curr, float a_sec, float *dc, float *xc, float *zc, float *yc)   <* 
- *> {                                                                                                  <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                        <* 
- *>    float       sb, db, xb, zb, yb;                                                                 <* 
- *>    float       se, de, xe, ze, ye;                                                                 <* 
- *>    float       x_range, x_pct;                                                                     <* 
- *>    /+---(collect data)-------------------+/                                                        <* 
- *>    ykine_move_savedprev (a_curr, &sb, &db, &xb, &zb, &yb, NULL);                                   <* 
- *>    ykine_move_savedcurr (a_curr, &se, &de, &xe, &ze, &ye, NULL);                                   <* 
- *>    /+---(figure percent)-----------------+/                                                        <* 
- *>    x_range = se - sb;                                                                              <* 
- *>    if (x_range == 0.0)  x_pct   = 0.0;                                                             <* 
- *>    else                 x_pct   = (a_sec - sb) / x_range;                                          <* 
- *>    /+---(calculate)----------------------+/                                                        <* 
- *>    ykine_exact_calc ('d', dp, dc, x_pct, &dc);                                                     <* 
- *>    ykine_exact_calc ('-', xp, xc, x_pct, &xc);                                                     <* 
- *>    ykine_exact_calc ('-', zp, zc, x_pct, &zc);                                                     <* 
- *>    ykine_exact_calc ('-', yb, ye, x_pct, &yc);                                                     <* 
- *>    /+---(complete)-----------------------+/                                                        <* 
- *>    return 0;                                                                                       <* 
- *> }                                                                                                  <*/
+char
+ykine_move_context      (tMOVE *a_curr, float a_sec)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   float       x_range     =    0;
+   /*---(collect data)-------------------*/
+   ykine_move_savedprev (a_curr, &myKINE.sb, &myKINE.db, &myKINE.xb, &myKINE.zb, &myKINE.yb, NULL);
+   ykine_move_savedcurr (a_curr, &myKINE.se, &myKINE.de, &myKINE.xe, &myKINE.ze, &myKINE.ye, NULL);
+   /*---(figure percent)-----------------*/
+   x_range = myKINE.se - myKINE.sb;
+   if (x_range == 0.0)  myKINE.pct   = 0.0;
+   else                 myKINE.pct   = (a_sec - myKINE.sb) / x_range;
+   /*---(complete)-----------------------*/
+   return 0;
+}
 
 char         /*--> calc the current deg for a servo ------[ ------ [ ------ ]-*/
 ykine__exact_data        (tSERVO *a_servo, float a_sec)
@@ -772,7 +789,7 @@ ykine__exact_data        (tSERVO *a_servo, float a_sec)
    if (x_range == 0.0)  x_pct   = 0.0;
    else                 x_pct   = (a_sec - sp) / x_range;
    DEBUG_YKINE_EXACT  yLOG_complex ("percent"   , "%8.2fb, %8.2fe, %8.2fr, %8.2fp", sp, sc, x_range, x_pct);
-   ykine_exact_calc ('d', dp, dc, x_pct, &(a_servo->deg));
+   ykine_exact_calc ('-', dp, dc, x_pct, &(a_servo->deg));
    DEBUG_YKINE_EXACT  yLOG_complex ("degrees"   , "%8.2fb, %8.2fe, %8.2fc", dp, dc, a_servo->deg);
    ykine_exact_calc ('-', yp, yc, x_pct, &(a_servo->yexp));
    if (strncmp (x_curr->label, "zp_", 3) == 0) {
@@ -1348,6 +1365,9 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    }
    else if (strcmp (a_question, "exact"   ) == 0) {
       sprintf (ykine__unit_answer, "MOVE exact     : %c %8.1lfd, %8.1lfx, %8.1lfz, %8.1lfy", x_servo->exact, x_servo->deg, x_servo->xexp, x_servo->zexp, x_servo->yexp);
+   }
+   else if (strcmp (a_question, "calc"    ) == 0) {
+      sprintf (ykine__unit_answer, "MOVE calc curr : %4.2fp, %8.2fd, %8.1fx, %8.1fz, %8.1fy", myKINE.pct, myKINE.dc, myKINE.xc, myKINE.zc, myKINE.yc);
    }
    /*> else if (strcmp (a_question, "accel_dist") == 0) {                                  <* 
     *>    strlcpy (x_msg, "", LEN_STR);                                                    <* 

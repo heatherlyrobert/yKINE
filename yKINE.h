@@ -212,6 +212,67 @@
 */
 
 
+/*
+ *
+ * all direct motor control is done using joint angles (fpt)
+ *    -- fpt means the three joint angles of femur, patella, and tibia
+ *    -- signals are sent to each motor to inticate an exact destination angle
+ *
+ * forward kinematic (FK)
+ *    -- set the joint angles (fpt) which results in the location (xzy)
+ *    -- simpliest, but simplistic and mostly not useful
+ *    -- good for initial setups
+ *    -- FK moves follow a direct linear movement, no curving
+ *
+ * inverse kinematics (IK)
+ *    -- set the location (xzy) which results in the joint angles (fpt)
+ *    -- complex mathmatics, but the most useful
+ *    -- but, requires a lot of prework to designate endpoints
+ *    -- can use front-ends of CK, RK, TK, and NK to simplify
+ *    -- IK moves follow a direct linear movement, no curving
+ *
+ * neighborhood kinematics (NK)
+ *    -- uses xzy location relative to military stance to drive IK
+ *    -- xzy are normal, but relative to military
+ *    -- really useful for steps and gaits
+ *    -- NK moves follow a direct linear movement, no curving
+ *
+ * tangent kinematics (TK)
+ *    -- uses tangent (oty) to get to xzy then uses IK
+ *    -- o is distance inward (neg) or outward (pos) from military stance
+ *    -- t is tangent distance clockwise (neg) or counter-clockwise (pos)
+ *    -- y is the normal y
+ *    -- forgot use-case when in details, think its useful
+ *    -- TK moves follow a direct linear movement, no curving
+ *
+ * center-polar kinematics (CK)
+ *    -- uses polar notation (doy) to get to xzy then uses IK
+ *    -- d is the angle difference to endpoint relative to thorax (left pos)
+ *    -- o is distance inward (neg) or outward (pos) from military stance
+ *    -- y is the normal y
+ *    -- really useful for turning and spinning
+ *    -- CK moves curve on d changes, but are linear on other two
+ *
+ * relative-polar kinematics (RK)
+ *    -- uses polar notation (doy) to get to xzy then uses IK
+ *    -- d is the angle difference for femur relative to military (left pos)
+ *    -- o is distance inward (neg) or outward (pos) from military stance
+ *    -- y is the normal y
+ *    -- really useful for setting up stances
+ *    -- RK moves curve on d changes, but are linear on other two
+ *
+ * step-polar kinematics (SK)
+ *    -- uses polar notation (doy) to get to xzy then uses IK
+ *    -- d is the angle difference from zero for reference (left pos)
+ *    -- o is distance inward (neg) or outward (pos) from military stance
+ *    -- y is the normal y
+ *    -- really useful for steps and gaits
+ *    -- SK moves curve on d changes, but are linear on other two
+ *
+ *
+ */
+
+
 
 /*===[[ HEADER GUARD ]]===================================*/
 #ifndef yKINE
@@ -223,14 +284,21 @@
 
 
 
-/*---(methods)------------------------*/
+/*---(method/verbs)-------------------*/
 #define     YKINE_MAX_METH  10
 #define     YKINE_FK         0
 #define     YKINE_IK         1
 #define     YKINE_GK         2
+
 #define     YKINE_TK         3
 #define     YKINE_RK         4
 #define     YKINE_CK         5
+#define     YKINE_NK         6
+#define     YKINE_SK         7
+#define     YKINE_ZE         8
+#define     YKINE_ZP         9
+#define     YKINE_OR        10
+#define     YKINE_OP        11
 
 
 
@@ -336,9 +404,9 @@ float       yKINE_segattn           (char a_seg);
 float       yKINE_segmax            (char a_seg);
 
 /*---(dynamic datae accessors)--------*/
-char        yKINE_endpoint          (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
-char        yKINE_segment           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
-char        yKINE_angle             (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_v, float *a_h);
+char        yKINE_endpoint          (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz);
+char        yKINE_segment           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz);
+char        yKINE_angle             (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_cd, float *a_len, float *a_cv, float *a_ch, float *a_fv, float *a_fh);
 char        yKINE_enddiff           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
 char        yKINE_segdiff           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
 char        yKINE_angles            (char a_leg, char a_meth, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi);

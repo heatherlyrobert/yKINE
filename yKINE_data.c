@@ -126,7 +126,7 @@ float    yKINE_segmax       (char a_seg)    { return g_seg_data [a_seg].max;  }
 static void      o___DYNAMIC_________________o (void) {;};
 
 char
-yKINE_endpoint     (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
+yKINE_endpoint     (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -142,12 +142,13 @@ yKINE_endpoint     (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    if (a_x    != NULL)  *a_x    = x_leg [a_seg].cx;
    if (a_z    != NULL)  *a_z    = x_leg [a_seg].cz;
    if (a_y    != NULL)  *a_y    = x_leg [a_seg].cy;
+   if (a_xz   != NULL)  *a_xz   = x_leg [a_seg].cxz;
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-yKINE_segment      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y)
+yKINE_segment      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -163,12 +164,13 @@ yKINE_segment      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    if (a_x    != NULL)  *a_x    = x_leg [a_seg].x;
    if (a_z    != NULL)  *a_z    = x_leg [a_seg].z;
    if (a_y    != NULL)  *a_y    = x_leg [a_seg].y;
+   if (a_xz   != NULL)  *a_xz   = x_leg [a_seg].xz;
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-yKINE_angle        (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_v, float *a_h)
+yKINE_angle        (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_cd, float *a_len, float *a_cv, float *a_ch, float *a_fv, float *a_fh)
 {
    /*---(locals)-----------+-----------+-*/
    tSEG       *x_leg       = NULL;
@@ -180,9 +182,12 @@ yKINE_angle        (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    }
    /*---(return actuals)-----------------*/
    if (a_deg  != NULL)  *a_deg  = x_leg [a_seg].d;
+   if (a_cd   != NULL)  *a_cd   = x_leg [a_seg].cd;
    if (a_len  != NULL)  *a_len  = x_leg [a_seg].l;
-   if (a_v    != NULL)  *a_v    = x_leg [a_seg].cv;
-   if (a_h    != NULL)  *a_h    = x_leg [a_seg].ch;
+   if (a_cv   != NULL)  *a_cv   = x_leg [a_seg].cv;
+   if (a_ch   != NULL)  *a_ch   = x_leg [a_seg].ch;
+   if (a_fv   != NULL)  *a_fv   = x_leg [a_seg].fv;
+   if (a_fh   != NULL)  *a_fh   = x_leg [a_seg].fh;
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -296,80 +301,6 @@ yKINE__setter      (char *a_request, int a_leg, int a_seg, float a_value)
       fk [a_leg][a_seg].d = a_value;
       gk [a_leg][a_seg].d = a_value;
    }
-   return 0;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                       opengl actuals                         ----===*/
-/*====================------------------------------------====================*/
-static void      o___OPENGL__________________o (void) {;};
-
-char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
-yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
-{
-   /*---(locals)-----------+-----------+-*/
-   double      x_len       = 0.0;
-   double      x_y         = 0.0;
-   tSEG       *x_leg       = NULL;
-   double      x, z, y, sl, fl;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
-   /*---(clear)--------------------------*/
-   yKINE__wipe     (a_leg, YKINE_IK);
-   /*---(target setting)-----------------*/
-   DEBUG_YKINE_CALC   yLOG_complex ("object"    , "%1dl (%2.2s), %2ds (%4.4s), %8.3lfd", a_leg, g_leg_data [a_leg].caps, a_seg, g_seg_data [a_seg].four, a_deg);
-   /*---(set the leg)--------------------*/
-   x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);
-   /*---(set cumulatives)----------------*/
-   x_leg [a_seg].cx  = a_x;
-   x_leg [a_seg].cz  = a_z;
-   x_leg [a_seg].cy  = a_y;
-   fl = x_leg [a_seg].fl  = sqrt ((a_x * a_x) + (a_z * a_z) + (a_y * a_y));
-   x_len             = x_leg [a_seg].fl;
-   x_leg [a_seg].cxz = sqrt ((x_len * x_len) - (a_y * a_y));
-   DEBUG_YKINE_CALC   yLOG_complex ("cums"      , "%8.3lfcx, %8.3lfcz, %8.3lfcy, %8.3lffl", a_z, a_z, a_y, fl);
-   /*---(set individuals)----------------*/
-   x_leg [a_seg].d   = a_deg;
-   x_leg [a_seg].l   = a_len;
-   x_leg [a_seg].sl  = a_len;
-   x  = x_leg [a_seg].x   = a_x - x_leg [a_seg - 1].cx;
-   z  = x_leg [a_seg].z   = a_z - x_leg [a_seg - 1].cz;
-   y  = x_leg [a_seg].y   = a_y - x_leg [a_seg - 1].cy;
-   x_y               = x_leg [a_seg].y;
-   x_leg [a_seg].xz  = sqrt ((a_len * a_len) - (x_y * x_y));
-   DEBUG_YKINE_CALC   yLOG_complex ("coords"    , "%8.3lfx , %8.3lfz , %8.3lfy , %8.3lfsl", x, z, y, a_len);
-   /*---(radians)------------------------*/
-   if        (a_seg <= YKINE_TROC) {
-      x_leg [a_seg].cv  = x_leg [a_seg].v   = 0.0;
-      x_leg [a_seg].ch  = x_leg [a_seg].h   = a_deg * DEG2RAD;
-   } else if (a_seg == YKINE_FEMU) {
-      x_leg [a_seg].cv  = x_leg [a_seg].v   = 0.0;
-      x_leg [a_seg].h   = a_deg * DEG2RAD;
-      x_leg [a_seg].ch  = x_leg [YKINE_FEMU].h   + x_leg [YKINE_TROC].ch;
-   } else if (a_seg == YKINE_PATE) {
-      x_leg [a_seg].cv  = x_leg [a_seg].v   = -a_deg * DEG2RAD;
-      x_leg [a_seg].h   = 0.0;
-      x_leg [a_seg].ch  = x_leg [YKINE_FEMU].ch;
-   } else if (a_seg == YKINE_TIBI) {
-      x_leg [a_seg].v   = (90.0 - a_deg) * DEG2RAD;
-      x_leg [a_seg].cv  = x_leg [YKINE_TIBI].v   + x_leg [YKINE_PATE].cv;
-      x_leg [a_seg].h   = 0.0;
-      x_leg [a_seg].ch  = x_leg [YKINE_FEMU].ch;
-   } else if (a_seg <= YKINE_FOOT) {
-      x_leg [a_seg].v   = 0.0;
-      x_leg [a_seg].cv  = x_leg [YKINE_TIBI].cv;
-      x_leg [a_seg].h   = 0.0;
-      x_leg [a_seg].ch  = x_leg [YKINE_TIBI].ch;
-   }
-   /*---(target)-------------------------*/
-   if (a_seg == YKINE_FOOT) {
-      yKINE__FK_targ  (a_leg, YKINE_GK);
-      yKINE__lowr     (a_leg, YKINE_GK);
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

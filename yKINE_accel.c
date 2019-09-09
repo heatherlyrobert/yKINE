@@ -103,7 +103,7 @@ ykine_accel_level  (char a_max, char a_level, char a_accel, char a_decel, float 
 }
 
 char         /*--> manage acceleration process -----------[ ------ [ ------ ]-*/
-ykine_accel_calc        (char a_meth, float xb, float zb, float yb, float xe, float ze, float ye, char a_speed, char a_accel, char a_decel)
+ykine_accel_calc        (char a_meth, char a_speed, char a_accel, char a_decel)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -114,28 +114,39 @@ ykine_accel_calc        (char a_meth, float xb, float zb, float yb, float xe, fl
    int         i           =    0;
    /*---(init)---------------------------*/
    ykine_accel_clear ();
-   /*---(prepare)------------------------*/
+   /*---(prepare speed)------------------*/
    x_speed = tolower (a_speed);
    if (x_speed != a_speed)  x_step = 0.5;
-   if (a_meth == YKINE_LINEAR) {
-      xd       = xe - xb;
-      zd       = ze - zb;
-      yd       = ye - yb;
-      x_total  = x_dist = sqrt ((xd * xd) + (zd * zd) + (yd * yd));
-   } else if (a_meth == YKINE_ZPOLAR) {
-      dd       = ((xe - xb) / 360.0) * 2.0 * 3.1415927 * ((zb + ze) / 2.0);
-      yd       = ye - yb;
-      ld       = ze - zb;
-      x_total  = x_dist = sqrt ((dd * dd) + (ld * ld) + (yd * yd));
-   } else if (a_meth == YKINE_OPOLAR) {
-      x_radius = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);
-      xd       = ((xe - xb) / 360.0) * 2.0 * 3.1415927 * x_radius;
-      zd       = ((ze - zb) / 360.0) * 2.0 * 3.1415927 * x_radius;
-      yd       = ((ye - yb) / 360.0) * 2.0 * 3.1415927 * x_radius;
-      x_total  = x_dist = sqrt ((xd * xd) + (zd * zd) + (yd * yd));
-   } else {
-      return rce;
+   /*---(prepare distance)---------------*/
+   switch (a_meth) {
+   case YKINE_ZE :
+   case YKINE_IK : case YKINE_TK : case YKINE_NK : case YKINE_SK :
+      ykine_legs_dist_linear  ('f', &x_total);
+      break;
+   case YKINE_CK : case YKINE_RK :
+      ykine_legs_dist_polar   ('f', &x_total);
+      break;
    }
+   x_dist = x_total;
+   /*> if (a_meth == YKINE_LINEAR) {                                                  <* 
+    *>    xd       = xe - xb;                                                         <* 
+    *>    zd       = ze - zb;                                                         <* 
+    *>    yd       = ye - yb;                                                         <* 
+    *>    x_total  = x_dist = sqrt ((xd * xd) + (zd * zd) + (yd * yd));               <* 
+    *> } else if (a_meth == YKINE_ZPOLAR) {                                           <* 
+    *>    dd       = ((xe - xb) / 360.0) * 2.0 * 3.1415927 * ((zb + ze) / 2.0);       <* 
+    *>    yd       = ye - yb;                                                         <* 
+    *>    ld       = ze - zb;                                                         <* 
+    *>    x_total  = x_dist = sqrt ((dd * dd) + (ld * ld) + (yd * yd));               <* 
+    *> } else if (a_meth == YKINE_OPOLAR) {                                           <* 
+    *>    x_radius = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);           <* 
+    *>    xd       = ((xe - xb) / 360.0) * 2.0 * 3.1415927 * x_radius;                <* 
+    *>    zd       = ((ze - zb) / 360.0) * 2.0 * 3.1415927 * x_radius;                <* 
+    *>    yd       = ((ye - yb) / 360.0) * 2.0 * 3.1415927 * x_radius;                <* 
+    *>    x_total  = x_dist = sqrt ((xd * xd) + (zd * zd) + (yd * yd));               <* 
+    *> } else {                                                                       <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(fill)---------------------------*/
    ykine_accel_level (a_speed, 0, a_accel, a_decel, x_step, &x_dist);
    ykine_accel_level (a_speed, 1, a_accel, a_decel, x_step, &x_dist);
@@ -221,7 +232,7 @@ ykine_accel_zero        (char *a_dur, float xb, float zb, float yb, float xe, fl
    DEBUG_YKINE_MOVE   yLOG_complex ("before"    , "%8.2fx, %8.2fz, %8.2fy", xb, zb, yb);
    DEBUG_YKINE_MOVE   yLOG_complex ("after"     , "%8.2fx, %8.2fz, %8.2fy", xe, ze, ye);
    /*---(calculate)----------------------*/
-   rc = ykine_accel_calc (YKINE_LINEAR, xb, zb, yb, xe, ze, ye, a_dur [1], a_dur [0], a_dur [2]);
+   /*> rc = ykine_accel_calc (YKINE_LINEAR, xb, zb, yb, xe, ze, ye, a_dur [1], a_dur [0], a_dur [2]);   <*/
    --rce;  if (rc <  0) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -277,7 +288,7 @@ ykine_accel_zpolar      (char *a_dur, float db, float lb, float yb, float de, fl
    ykine_body_polar2pos  (de, le, &xe, &ze);
    DEBUG_YKINE_MOVE   yLOG_complex ("after"     , "%8.2fdir, %8.2flen, %8.2fx, %8.2fz, %8.2fy", de, le, xe, ze, ye);
    /*---(calculate)----------------------*/
-   rc = ykine_accel_calc (YKINE_ZPOLAR, db, lb, yb, de, le, ye, a_dur [1], a_dur [0], a_dur [2]);
+   /*> rc = ykine_accel_calc (YKINE_ZPOLAR, db, lb, yb, de, le, ye, a_dur [1], a_dur [0], a_dur [2]);   <*/
    --rce;  if (rc <  0) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -330,7 +341,7 @@ ykine_accel_orient      (char *a_dur, float yb, float pb, float rb, float ye, fl
    DEBUG_YKINE_MOVE   yLOG_complex ("before"    , "%8.2fy, %8.2fp, %8.2fr", yb, pb, rb);
    DEBUG_YKINE_MOVE   yLOG_complex ("after"     , "%8.2fy, %8.2fp, %8.2fr", ye, pe, re);
    /*---(calculate)----------------------*/
-   rc = ykine_accel_calc (YKINE_LINEAR, yb, pb, rb, ye, pe, re, a_dur [1], a_dur [0], a_dur [2]);
+   /*> rc = ykine_accel_calc (YKINE_LINEAR, yb, pb, rb, ye, pe, re, a_dur [1], a_dur [0], a_dur [2]);   <*/
    --rce;  if (rc <  0) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -389,7 +400,7 @@ ykine_accel_opolar      (char *a_dur, float yb, float db, float tb, float ye, fl
    /*---(calculate)----------------------*/
    ykine_body_tilt2orient (db, tb, &pb, &rb);
    ykine_body_tilt2orient (de, te, &pe, &re);
-   rc = ykine_accel_calc (YKINE_OPOLAR, yb, pb, rb, ye, pe, re, a_dur [1], a_dur [0], a_dur [2]);
+   /*> rc = ykine_accel_calc (YKINE_OPOLAR, yb, pb, rb, ye, pe, re, a_dur [1], a_dur [0], a_dur [2]);   <*/
    --rce;  if (rc <  0) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -454,12 +465,12 @@ ykine_accel_leg         (char a_meth, int a_leg, char *a_dur)
    ykine_move_savedloc (x_servo, NULL, &db, &xb, &zb, &yb, NULL);
    DEBUG_YKINE_MOVE   yLOG_complex ("before"    , "%8.2fd, %8.2fx, %8.2fz, %8.2fy", db, xb, zb, yb);
    /*---(get after values)---------------*/
-   rc  = yKINE_endpoint    (a_leg, YKINE_TIBI, a_meth, &de, NULL, &xe, &ze, &ye);
+   rc  = yKINE_endpoint    (a_leg, YKINE_TIBI, a_meth, &de, NULL, &xe, &ze, &ye, NULL);
    rc  = yKINE_angles      (a_leg, a_meth, &ce, &fe, &pe, &te);
    de  = te;
    DEBUG_YKINE_MOVE   yLOG_complex ("after"     , "%8.2fd, %8.2fx, %8.2fz, %8.2fy", de, xe, ze, ye);
    /*---(calculate)----------------------*/
-   rc = ykine_accel_calc (YKINE_LINEAR, xb, zb, yb, xe, ze, ye, a_dur [1], a_dur [0], a_dur [2]);
+   /*> rc = ykine_accel_calc (YKINE_LINEAR, xb, zb, yb, xe, ze, ye, a_dur [1], a_dur [0], a_dur [2]);   <*/
    --rce;  if (rc <  0) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -497,10 +508,10 @@ ykine_accel_leg         (char a_meth, int a_leg, char *a_dur)
       rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo - 0, myKINE.s_verb, myKINE.s_cline, t, g_accel_info [i].dur * myKINE.s_pace);
       rc = ykine_move_addloc (x_servo, x, z, y);
       rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo - 1, myKINE.s_verb, myKINE.s_cline, p, g_accel_info [i].dur * myKINE.s_pace);
-      rc = yKINE_endpoint    (a_leg, YKINE_PATE, YKINE_IK, NULL, NULL, &x, &z, &y);
+      rc = yKINE_endpoint    (a_leg, YKINE_PATE, YKINE_IK, NULL, NULL, &x, &z, &y, NULL);
       rc = ykine_move_addloc (x_servo - 1, x, z, y);
       rc = ykine_move_create (YKINE_MOVE_SERVO, x_servo - 2, myKINE.s_verb, myKINE.s_cline, f, g_accel_info [i].dur * myKINE.s_pace);
-      rc = yKINE_endpoint    (a_leg, YKINE_FEMU, YKINE_IK, NULL, NULL, &x, &z, &y);
+      rc = yKINE_endpoint    (a_leg, YKINE_FEMU, YKINE_IK, NULL, NULL, &x, &z, &y, NULL);
       rc = ykine_move_addloc (x_servo - 2, x, z, y);
       /*---(done)------------------------*/
    }

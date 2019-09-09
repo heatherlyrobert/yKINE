@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1i"
-#define     P_VERTXT    "improved/fixed hexagon conversion routines"
+#define     P_VERNUM    "1.1j"
+#define     P_VERTXT    "simplified calculations and unit tested single joint moves"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -162,6 +162,11 @@ struct cLOCAL {
    float       s_yaw;
    float       s_roll;
    float       s_pitch;
+   /*---(moves)-------------*/
+   float       db, sb, xb, zb, xzb, yb, ob;
+   float       de, se, xe, ze, xze, ye, oe, le;
+   float       dp, sp, xp, zp, xzp, yp, op;
+   float       dc, sc, xc, zc, xzc, yc, oc, lc, pct;
    /*---(done)--------------*/
 };
 tLOCAL      myKINE;
@@ -288,6 +293,7 @@ struct cSEG {
    float     h, v;                /* leg segment orientation in radians       */
    float     cd;                  /* cum joint angle                          */
    float     ch, cv;              /* cum segment orientation in radians       */
+   float     fh, fv;              /* full orientations in radians             */
    /*---(flags)--------------------------*/
    char      u;                   /* leg underneath body switch               */
    /*---(coordinates)--------------------*/
@@ -330,27 +336,28 @@ extern tACCEL g_accel_info [10];
 
 
 /*---(setup)-----------------------------*/
+char        yKINE__setleg      (int a_num, int a_meth);
+char        yKINE__unsetleg    (void);
 char        yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type);
 /*---(shared forward/inverse)------------*/
-char        yKINE__thor        (int  a_num);
-char        yKINE__coxa        (int  a_num);
-char        yKINE__troc        (int  a_num);
+char        yKINE__thor        (void);
+char        yKINE__coxa        (void);
+char        yKINE__troc        (void);
 /*---(forward kinematics)----------------*/
-float       yKINE__femu_path   (int  a_leg, float a_deg, int a_meth);
-char        yKINE__femu        (int  a_num, float a_deg, int a_meth);
-char        yKINE__pate        (int  a_num, float a_deg, int a_meth);
-char        yKINE__tibi        (int  a_num, float a_deg, int a_meth);
-char        yKINE__lowr        (int  a_num, int    a_meth);
-char        yKINE__FK_targ     (int  a_num, int    a_meth);
+char        yKINE__femu        (float a_deg);
+char        yKINE__pate        (float a_deg);
+char        yKINE__tibi        (float a_deg);
+char        yKINE__lowr        (void);
+char        yKINE__FK_targ     (void);
 /*---(inverse kinematics)----------------*/
-char        yKINE__IK_targ     (int  a_num, float a_x, float a_z, float a_y);
-char        yKINE__IK_femu     (int  a_num);
-char        yKINE__IK_pate     (int  a_num);
-char        yKINE__IK_tibi     (int  a_num);
+char        yKINE__IK_targ     (float a_x, float a_z, float a_y);
+char        yKINE__IK_femu     (void);
+char        yKINE__IK_pate     (void);
+char        yKINE__IK_tibi     (void);
 /*---(shared forward/inverse)------------*/
-char        yKINE__meta        (int  a_num);
-char        yKINE__tars        (int  a_num);
-char        yKINE__foot        (int  a_num, int    a_meth);
+char        yKINE__meta        (void);
+char        yKINE__tars        (void);
+char        yKINE__foot        (void);
 /*---(unit testing)----------------------*/
 char        yKINE__setter      (char *a_request , int a_leg, int a_seg, float a_value);
 char*       yKINE__getter      (char *a_question, int a_leg, int a_seg);
@@ -380,11 +387,28 @@ char        ykine_body_tilt2orient  (float d, float t, float *p, float *r);
 char        ykine_body_orient       (void);
 char        ykine_body_opolar       (void);
 
+/*---(shared)-------------------------*/
+char        ykine_legs_dist_linear  (char t, float *l);
+char        ykine_legs_dist_polar   (char t, float *l);
+char        ykine_legs_exact_linear (float p);
+char        ykine_legs_exact_polar  (float p);
+/*---(forward)------------------------*/
 char        ykine_legs_fk           (void);
+/*---(inverse)------------------------*/
 char        ykine_legs_ik           (void);
+/*---(tangent)------------------------*/
+char        ykine_legs_tk_dist      (float *l);
+char        ykine_legs_tk_exact     (float p);
 char        ykine_legs_tk           (void);
+/*---(relative)-----------------------*/
 char        ykine_legs_rk           (void);
+/*---(center)-------------------------*/
 char        ykine_legs_ck           (void);
+/*---(neighborhood)-------------------*/
+/*---(step)---------------------------*/
+char        ykine_leg_accel         (char a_meth, int a_leg, char *a_dur);
+
+
 char        ykine_scrp_segno        (void);
 char        ykine_scrp_repeat       (void);
 char        ykine_scrp_exec         (void);
@@ -405,8 +429,8 @@ char*       ykine__unit_servo       (char *a_question);
 
 
 char        ykine_accel_clear       (void);
-char        ykine_accel_level       (char a_max, char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
-char        ykine_accel_calc        (char a_meth, float xb, float zb, float yb, float xe, float ze, float ye, char a_speed, char a_accel, char a_decel);
+char        ykine_accel_level       (char a_max , char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
+char        ykine_accel_calc        (char a_meth, char a_speed, char a_accel, char a_decel);
 char        ykine_accel_dur         (char *a_dur);
 char        ykine_noaccel_servo     (tSERVO *a_servo, float s, float d, float x, float z, float y);
 char        ykine_accel_zero        (char *a_dur, float xb, float zb, float yb, float xe, float ze, float ye);
@@ -424,6 +448,8 @@ char        ykine_move_clear_servo  (tSERVO *a_servo);
 char        ykine_move_savedloc     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char        ykine_move_savedcurr    (tMOVE  *a_move , float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char        ykine_move_savedprev    (tMOVE  *a_move , float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
+char        ykine_move_fake_begin   (float db, float sb, float xb, float zb, float yb, float ob);
+char        ykine_move_fake_end     (float de, float se, float xe, float ze, float ye, float oe);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
