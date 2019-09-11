@@ -35,75 +35,75 @@ static tSPREAD s_spreads [MAX_SPREADS] = {
 
 
 #define   MAX_RADIUS     100
-typedef struct cRADIUS  tRADIUS;
-struct  cRADIUS {
-   char        abbr;
-   char        name        [LEN_LABEL];
-   float       out;
-};
-static tRADIUS s_radius [MAX_RADIUS ] = {
-   /* 1     12345678901234567890      RR   RM   RF   LF   LM   LR  */
-   { '0'   , "-"                   , 25.4 * -7.5  },
-   { '1'   , "-"                   , 25.4 * -7.25 },
-   { '2'   , "-"                   , 25.4 * -7.0  },
-   { '3'   , "-"                   , 25.4 * -6.75 },
-   { '4'   , "-"                   , 25.4 * -6.5  },
-   { '5'   , "-"                   , 25.4 * -6.25 },
-   { 'a'   , "-"                   , 25.4 * -6.0  },
-   { 'A'   , "-"                   , 25.4 * -5.75 },
-   { 'b'   , "-"                   , 25.4 * -5.5  },
-   { 'B'   , "-"                   , 25.4 * -5.25 },
-   { 'c'   , "-"                   , 25.4 * -5.0  },
-   { 'C'   , "-"                   , 25.4 * -4.75 },
-   { 'd'   , "-"                   , 25.4 * -4.5  },
-   { 'D'   , "-"                   , 25.4 * -4.25 },
-   { 'e'   , "-"                   , 25.4 * -4.0  },
-   { 'E'   , "-"                   , 25.4 * -3.75 },
-   { 'f'   , "femu"                , 25.4 * -3.5  },
-   { 'F'   , "-"                   , 25.4 * -3.25 },
-   { 'g'   , "-"                   , 25.4 * -3.0  },
-   { 'G'   , "-"                   , 25.4 * -2.75 },
-   { 'h'   , "-"                   , 25.4 * -2.5  },
-   { 'H'   , "-"                   , 25.4 * -2.25 },
-   { 'i'   , "-"                   , 25.4 * -2.0  },
-   { 'I'   , "-"                   , 25.4 * -1.75 },
-   { 'j'   , "-"                   , 25.4 * -1.5  },
-   { 'J'   , "-"                   , 25.4 * -1.25 },
-   { 'k'   , "-"                   , 25.4 * -1.0  },
-   { 'K'   , "-"                   , 25.4 * -0.75 },
-   { 'l'   , "-"                   , 25.4 * -0.5  },
-   { 'L'   , "-"                   , 25.4 * -0.25 },
-   { 'm'   , "military"            , 25.4 *  0.0  },
-   { 'M'   , "-"                   , 25.4 *  0.25 },
-   { 'n'   , "-"                   , 25.4 *  0.5  },
-   { 'N'   , "-"                   , 25.4 *  0.75 },
-   { 'o'   , "-"                   , 25.4 *  1.0  },
-   { 'O'   , "-"                   , 25.4 *  1.25 },
-   { 'p'   , "-"                   , 25.4 *  1.5  },
-   { 'P'   , "-"                   , 25.4 *  1.75 },
-   { 'q'   , "-"                   , 25.4 *  2.0  },
-   { 'Q'   , "-"                   , 25.4 *  2.25 },
-   { 'r'   , "-"                   , 25.4 *  2.5  },
-   { 'R'   , "-"                   , 25.4 *  2.75 },
-   { 's'   , "-"                   , 25.4 *  3.0  },
-   { 'S'   , "-"                   , 25.4 *  3.25 },
-   { 't'   , "reaching"            , 25.4 *  3.5  },
-   { 'T'   , "-"                   , 25.4 *  3.75 },
-   { 'u'   , "-"                   , 25.4 *  4.0  },
-   { 'U'   , "-"                   , 25.4 *  4.25 },
-   { 'v'   , "-"                   , 25.4 *  4.5  },
-   { 'V'   , "-"                   , 25.4 *  4.75 },
-   { 'w'   , "-"                   , 25.4 *  5.0  },
-   { 'W'   , "-"                   , 25.4 *  5.25 },
-   { 'x'   , "-"                   , 25.4 *  5.5  },
-   { 'X'   , "-"                   , 25.4 *  5.75 },
-   { 'y'   , "-"                   , 25.4 *  6.0  },
-   { 'Y'   , "-"                   , 25.4 *  6.25 },
-   { 'z'   , "-"                   , 25.4 *  6.5  },
-   { 'Z'   , "-"                   , 25.4 *  6.75 },
-   { '>'   , "farthest"            , 25.4 *  7.0  },
-   { 0     , NULL                  , 0.0          },
-};
+/*> typedef struct cRADIUS  tRADIUS;                                                  <* 
+ *> struct  cRADIUS {                                                                 <* 
+ *>    char        abbr;                                                              <* 
+ *>    char        name        [LEN_LABEL];                                           <* 
+ *>    float       out;                                                               <* 
+ *> };                                                                                <* 
+ *> static tRADIUS s_radius [MAX_RADIUS ] = {                                         <* 
+ *>    /+ 1     12345678901234567890      RR   RM   RF   LF   LM   LR  +/             <* 
+ *>    { '0'   , "-"                   , 25.4 * -7.5  },                              <* 
+ *>    { '1'   , "-"                   , 25.4 * -7.25 },                              <* 
+ *>    { '2'   , "-"                   , 25.4 * -7.0  },                              <* 
+ *>    { '3'   , "-"                   , 25.4 * -6.75 },                              <* 
+ *>    { '4'   , "-"                   , 25.4 * -6.5  },                              <* 
+ *>    { '5'   , "-"                   , 25.4 * -6.25 },                              <* 
+ *>    { 'a'   , "-"                   , 25.4 * -6.0  },                              <* 
+ *>    { 'A'   , "-"                   , 25.4 * -5.75 },                              <* 
+ *>    { 'b'   , "-"                   , 25.4 * -5.5  },                              <* 
+ *>    { 'B'   , "-"                   , 25.4 * -5.25 },                              <* 
+ *>    { 'c'   , "-"                   , 25.4 * -5.0  },                              <* 
+ *>    { 'C'   , "-"                   , 25.4 * -4.75 },                              <* 
+ *>    { 'd'   , "-"                   , 25.4 * -4.5  },                              <* 
+ *>    { 'D'   , "-"                   , 25.4 * -4.25 },                              <* 
+ *>    { 'e'   , "-"                   , 25.4 * -4.0  },                              <* 
+ *>    { 'E'   , "-"                   , 25.4 * -3.75 },                              <* 
+ *>    { 'f'   , "femu"                , 25.4 * -3.5  },                              <* 
+ *>    { 'F'   , "-"                   , 25.4 * -3.25 },                              <* 
+ *>    { 'g'   , "-"                   , 25.4 * -3.0  },                              <* 
+ *>    { 'G'   , "-"                   , 25.4 * -2.75 },                              <* 
+ *>    { 'h'   , "-"                   , 25.4 * -2.5  },                              <* 
+ *>    { 'H'   , "-"                   , 25.4 * -2.25 },                              <* 
+ *>    { 'i'   , "-"                   , 25.4 * -2.0  },                              <* 
+ *>    { 'I'   , "-"                   , 25.4 * -1.75 },                              <* 
+ *>    { 'j'   , "-"                   , 25.4 * -1.5  },                              <* 
+ *>    { 'J'   , "-"                   , 25.4 * -1.25 },                              <* 
+ *>    { 'k'   , "-"                   , 25.4 * -1.0  },                              <* 
+ *>    { 'K'   , "-"                   , 25.4 * -0.75 },                              <* 
+ *>    { 'l'   , "-"                   , 25.4 * -0.5  },                              <* 
+ *>    { 'L'   , "-"                   , 25.4 * -0.25 },                              <* 
+ *>    { 'm'   , "military"            , 25.4 *  0.0  },                              <* 
+ *>    { 'M'   , "-"                   , 25.4 *  0.25 },                              <* 
+ *>    { 'n'   , "-"                   , 25.4 *  0.5  },                              <* 
+ *>    { 'N'   , "-"                   , 25.4 *  0.75 },                              <* 
+ *>    { 'o'   , "-"                   , 25.4 *  1.0  },                              <* 
+ *>    { 'O'   , "-"                   , 25.4 *  1.25 },                              <* 
+ *>    { 'p'   , "-"                   , 25.4 *  1.5  },                              <* 
+ *>    { 'P'   , "-"                   , 25.4 *  1.75 },                              <* 
+ *>    { 'q'   , "-"                   , 25.4 *  2.0  },                              <* 
+ *>    { 'Q'   , "-"                   , 25.4 *  2.25 },                              <* 
+ *>    { 'r'   , "-"                   , 25.4 *  2.5  },                              <* 
+ *>    { 'R'   , "-"                   , 25.4 *  2.75 },                              <* 
+ *>    { 's'   , "-"                   , 25.4 *  3.0  },                              <* 
+ *>    { 'S'   , "-"                   , 25.4 *  3.25 },                              <* 
+ *>    { 't'   , "reaching"            , 25.4 *  3.5  },                              <* 
+ *>    { 'T'   , "-"                   , 25.4 *  3.75 },                              <* 
+ *>    { 'u'   , "-"                   , 25.4 *  4.0  },                              <* 
+ *>    { 'U'   , "-"                   , 25.4 *  4.25 },                              <* 
+ *>    { 'v'   , "-"                   , 25.4 *  4.5  },                              <* 
+ *>    { 'V'   , "-"                   , 25.4 *  4.75 },                              <* 
+ *>    { 'w'   , "-"                   , 25.4 *  5.0  },                              <* 
+ *>    { 'W'   , "-"                   , 25.4 *  5.25 },                              <* 
+ *>    { 'x'   , "-"                   , 25.4 *  5.5  },                              <* 
+ *>    { 'X'   , "-"                   , 25.4 *  5.75 },                              <* 
+ *>    { 'y'   , "-"                   , 25.4 *  6.0  },                              <* 
+ *>    { 'Y'   , "-"                   , 25.4 *  6.25 },                              <* 
+ *>    { 'z'   , "-"                   , 25.4 *  6.5  },                              <* 
+ *>    { 'Z'   , "-"                   , 25.4 *  6.75 },                              <* 
+ *>    { '>'   , "farthest"            , 25.4 *  7.0  },                              <* 
+ *>    { 0     , NULL                  , 0.0          },                              <* 
+ *> };                                                                                <*/
 
 
 
@@ -195,6 +195,7 @@ static tHEIGHT s_heights [MAX_HEIGHTS] = {
 
 
 static char s_verify  [MAX_RADIUS];
+#define    INCH2MM     25.400
 
 char
 ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry, double *a_result)
@@ -215,23 +216,23 @@ ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry,
    --a_leg;
    /*---(search)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_info    ("a_entry"   , a_entry);
-   for (i = 0; i < MAX_SPREADS; ++i) {
-      if (s_spreads [i].terse     == NULL)                 break;
-      if (s_spreads [i].terse [0] == '·')                  break;
+   for (i = 0; i < MAX_RADIUS; ++i) {
+      if (s_spreads [i].terse [0] == '\0')            break;
+      if (s_spreads [i].terse [0] == '·')             break;
       DEBUG_YKINE_SCRP   yLOG_info    ("checking"  , s_spreads [i].terse);
-      if (s_spreads [i].terse [0] == '-')                  continue;
-      if (s_spreads [i].terse [0] != a_entry [0])          continue;
-      if (strcmp (s_spreads [i].terse, a_entry) != 0)      continue;
+      if (s_spreads [i].terse [0] != a_entry [0])     continue;
+      if (strcmp (s_spreads [i].terse, a_entry) != 0) continue;
       n = i;
       DEBUG_YKINE_SCRP   yLOG_value   ("found"     , n);
       break;
    }
    /*---(literal)------------------------*/
    if (n >= 0) {
-      DEBUG_YKINE_SCRP   yLOG_value   ("source"    , s_spreads [n].femu [a_leg]);
+      DEBUG_YKINE_SCRP   yLOG_info    ("source"    , s_spreads [n].name);
       if (a_result != NULL)  *a_result = s_spreads [n].femu [a_leg];
       DEBUG_YKINE_SCRP   yLOG_value   ("literal"   , *a_result);
    }
+
    /*---(absolute)-----------------------*/
    else if (a_from == YKINE_PURE) {
       rc  = yPARSE_adjval   (a_start, a_entry, a_result);
@@ -252,47 +253,111 @@ ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry,
    return rc;
 } 
 
-char
+char         /*-> outward xz distance from military position --[--.---.---.--]*/
 ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_result)
-{
+{  /*---(design notes)-------------------*/
+   /*
+    * actual shortcut grid is from center in inches (groups of 25.4mm).  so,
+    * the result compared to military position, which is not exact in inches,
+    * will not fall on exact 25.4mm increments.
+    *
+    * shortcuts are [a-z] going from 3" to 16" outward in 1/2" from center
+    * optional suffixes are ' for +1/4", + for +1/8", and - for -1/8"
+    */
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    char        n           =   -1;
    int         i           =    0;
+   int         x_len       =    0;
+   char        x_short     =  '·';
+   char        x_suffix    =  '·';
+   char       *x_lower     = "abcdefghijklmnopqrstuvwxyz";
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(search)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_info    ("a_entry"   , a_entry);
-   for (i = 0; i < MAX_RADIUS; ++i) {
-      if (s_radius  [i].abbr == NULL)                 break;
-      if (s_radius  [i].abbr == '·')                  break;
-      DEBUG_YKINE_SCRP   yLOG_char    ("checking"  , s_radius  [i].abbr);
-      if (s_radius  [i].abbr == '-')                  continue;
-      if (s_radius  [i].abbr != a_entry [0])          continue;
-      n = i;
-      DEBUG_YKINE_SCRP   yLOG_value   ("found"     , n);
-      break;
+   x_len  = strlen (a_entry);
+   DEBUG_YKINE_SCRP   yLOG_complex ("a_entry"   , "%d:%s", x_len, a_entry);
+   /*---(check shortcut)-----------------*/
+   if (x_len == 1) {
+      if (strchr (x_lower, a_entry [0]) != NULL)  x_short = a_entry [0];
+      else if (a_entry [0] == '>')              { x_short = 'w'; x_suffix = '-'; }
+      else if (a_entry [0] == '<')                x_short = 'a';
+   } else if (x_len == 2) {
+      if (strchr (x_lower, a_entry [0]) != NULL) {
+         if (strchr ("·+-'", a_entry [1]) != NULL) {
+            x_short  = a_entry [0];
+            x_suffix = a_entry [1];
+         }
+      }
    }
-   /*---(literal)------------------------*/
-   if (n >= 0) {
-      DEBUG_YKINE_SCRP   yLOG_value   ("source"    , s_radius  [n].out);
-      if (a_result != NULL)  *a_result = s_radius  [n].out;
-      DEBUG_YKINE_SCRP   yLOG_value   ("literal"   , *a_result);
+   /*---(shortcut)-----------------------*/
+   if (x_short != '·') {
+      if (a_result != NULL) {
+         *a_result = (((x_short - 'a') / 2.0) + 3.0) * INCH2MM;
+         switch (x_suffix) {
+         case '-' :  *a_result -= INCH2MM * 0.125;  break;
+         case '+' :  *a_result += INCH2MM * 0.125;  break;
+         case '\'':  *a_result += INCH2MM * 0.250;  break;
+         }
+      }
+      DEBUG_YKINE_SCRP   yLOG_double  ("shortcut"  , *a_result);
+      *a_result -= yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+      DEBUG_YKINE_SCRP   yLOG_double  ("adjusted"  , *a_result);
    }
    /*---(absolute)-----------------------*/
    else if (a_from == YKINE_PURE) {
       rc  = yPARSE_adjval   (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_value   ("pure"      , *a_result);
+      DEBUG_YKINE_SCRP   yLOG_double  ("pure"      , *a_result);
    }
    /*---(relative)-----------------------*/
    else {
       rc  = yPARSE_adjfrom  (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_value   ("from"      , *a_result);
+      DEBUG_YKINE_SCRP   yLOG_double  ("from"      , *a_result);
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return rc;
 } 
+
+char
+ykine_stance_radius_head (int *n, char *a_short)
+{
+   a_short [0]  = 'a';
+   a_short [1]  = '·';
+   a_short [2]  = '\0';
+   *n = 0;
+   return 0;
+}
+
+char
+ykine_stance_radius_next (int *n, char *a_short)
+{
+   a_short [2]  = '\0';
+   if (a_short [0] < 'a' || a_short [0] > 'z')    return -1;
+   if (a_short [1] == '\0') a_short [1] = '·';
+   if (strchr ("-·+'", a_short [1]) == NULL)      return -3;
+   if (a_short [0] == 'z' && a_short [1] == '·')  return -4;
+   switch (a_short [1]) {
+   case '-'  : a_short [1] = '·';   break;
+   case '·'  : a_short [1] = '+';   break;
+   case '+'  : a_short [1] = '\'';  break;
+   case '\'' : a_short [0] += 1; a_short [1] = '-';  break;
+   }
+   ++(*n);
+   return 0;
+}
+
+int
+ykine_stance_radius_max  (void)
+{
+   char       rcs          =    0;
+   int        n            =    0;
+   char       x_short      [LEN_LABEL];
+   rcs = ykine_stance_radius_head (&n, x_short);
+   while (rcs >= 0) {
+      rcs = ykine_stance_radius_next (&n, x_short);
+   }
+   return ++n;
+}
 
 char
 ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_result)
@@ -349,46 +414,21 @@ char
 ykine_stance_verify_radius (char a_leg)
 {
    char        rc;
+   char        rcs;
    int         i;
-   double      xt, zt, yt, dt, ot, tt, xz;       /* temporary coordinates     */
+   float       xt, zt, yt, dt, ot, tt, xz;       /* temporary coordinates     */
    float       f, p, t;
    float       x_full, x_diff;
    float       xi, zi, xo, zo;
-   for (i = 0; i < MAX_RADIUS; ++i) {
-      if (s_radius  [i].abbr == NULL)                 break;
-      if (s_radius  [i].abbr == '·')                  break;
-      sprintf (o_str, "%c", s_radius [i].abbr);
-      /*---(calc inner triangle)---------*/
-      xi      =  s_hadji * cos (cp * DEG2RAD);
-      zi      = -s_hadji * sin (cp * DEG2RAD);
-      DEBUG_YKINE_SCRP  yLOG_complex ("inner"     , "%8.2fh, %8.2fx, %8.2fz", s_hadji, xi, zi);
-      /*---(prepare constants)-----------*/
-      ykine_stance_spread (myKINE.s_from, a_leg, 0.0   , d_str, &dt);
-      ykine_stance_radius (myKINE.s_from       , 0.0   , o_str, &ot);
-      ykine_stance_height (myKINE.s_from       , 0.0   , y_str, &yt);
-      DEBUG_YKINE_SCRP  yLOG_complex ("values"    , "%8.3fd, %8.2fo, %8.2fy", dt, ot, yt);
-      /*---(convert from cx)-------------*/
-      ot    += s_hadjo;
-      x_full = cp + dt;
-      if (x_full > 360)  x_full -= 360;
-      if (x_full <   0)  x_full += 360;
-      /*---(convert from rk)-------------*/
-      /*> x_full = cp - dt;                                                              <*/
-      xz     = ot;
-      xo     =  xz * cos (x_full * DEG2RAD);
-      zo     = -xz * sin (x_full * DEG2RAD);
-      DEBUG_YKINE_SCRP  yLOG_complex ("fix_out"   , "%8.3fd, %8.3ff, %8.2fo, %8.2fxo, %8.2fzo", dt, x_full, ot, zo, zo);
-      xt     = xi + xo;
-      zt     = zi + zo;
-      yt    -= s_vadj;
+   rcs = ykine_stance_radius_head (&i, o_str);
+   while (rcs >= 0) {
+      rc = ykine__legs_rk_getter (a_leg, d_str, o_str, y_str, &xt, &zt, &yt);
       DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xt, zt, yt);
       /*---(check ik)--------------------*/
       rc = yKINE_inverse (a_leg, xt, zt, yt);
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
-      if (rc <  0)    continue;
-      /*---(retrieve angles)-------------*/
-      rc = yKINE_angles   (a_leg, YKINE_IK, NULL, &f, &p, &t);
-      s_verify [i] = 'y';
+      if (rc >= 0)   s_verify [i] = '¬';
+      rcs = ykine_stance_radius_next (&i, o_str);
    }
    return 0;
 }
@@ -396,27 +436,27 @@ ykine_stance_verify_radius (char a_leg)
 char
 ykine_stance_verify_leg    (char a_leg)
 {
-   int         i;
+   char        rcs         =    0;
+   int         i           =    0;
+   char        x_short     [LEN_LABEL];
    /*---(clear)--------------------------*/
-   for (i = 0; i < MAX_RADIUS; ++i)    s_verify [i] = NULL;
-   for (i = 0; i < MAX_RADIUS; ++i) {
-      if (s_radius [i].abbr == NULL)   break;
-      if      (strcmp (y_str, "attn") == 0)   s_verify [i] = '-';
-      else if (strcmp (y_str, "max" ) == 0)   s_verify [i] = '´';
-      else if (strcmp (y_str, "flat") == 0)   s_verify [i] = '=';
-      else if (strcmp (y_str, "zero") == 0)   s_verify [i] = '´';
-      else if (strcmp (y_str, "back") == 0)   s_verify [i] = '-';
-      else if (s_radius [i].abbr == 'f')      s_verify [i] = '|';
-      else if (s_radius [i].abbr == 'm')      s_verify [i] = '¨';
-      else if (s_radius [i].abbr == 't')      s_verify [i] = '|';
-      else                                    s_verify [i] = '·';
+   rcs = ykine_stance_radius_head (&i, x_short);
+   while (rcs >= 0) {
+      if      (strcmp (y_str, "attn") == 0)        s_verify [i] = '-';
+      else if (strcmp (y_str, "max" ) == 0)        s_verify [i] = '´';
+      else if (strcmp (y_str, "flat") == 0)        s_verify [i] = '=';
+      else if (strcmp (y_str, "zero") == 0)        s_verify [i] = '´';
+      else if (strcmp (y_str, "back") == 0)        s_verify [i] = '-';
+      else if (strcmp (x_short, "f·") == 0)        s_verify [i] = '|';
+      else if (strcmp (x_short, "m·") == 0)        s_verify [i] = '¨';
+      else if (strcmp (x_short, "t·") == 0)        s_verify [i] = '|';
+      else                                         s_verify [i] = '·';
+      rcs = ykine_stance_radius_next (&i, x_short);
    }
+   s_verify [++i] = '\0';
    /*---(print)--------------------------*/
    ykine_stance_verify_radius (a_leg);
-   for (i = 0; i < MAX_RADIUS; ++i) {
-      if (s_verify [i] == NULL)  break;
-      printf ("%c ", s_verify [i]);
-   }
+   printf ("   %s", s_verify);
    return 0;
 }
 
@@ -459,8 +499,10 @@ ykine_stance_verify_spread (void)
 char
 ykine_stance_verify     (void)
 {
+   char        rcs         =    0;
    int         i, j, k;
    char        t           [LEN_LABEL];
+   char        x_short     [LEN_LABEL];
    /*---(prepare constants)-----------*/
    /*> s_hadj  = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);   <*/
    s_hadji = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);
@@ -472,15 +514,18 @@ ykine_stance_verify     (void)
       if (s_spreads [i].terse [0] == '-')                  continue;
       strlcpy (d_str, s_spreads [i].terse, LEN_LABEL);
       sprintf (t, "%s configuration", d_str);
-      printf ("\n%-20.20s ==================================================================================================================\n", t);
-      printf ("terse a  ---y---  ");
+      printf ("\n%-20.20s =====================================================================================================\n", t);
+      printf ("terse a  ---y---     ");
       for (k = YKINE_RR; k <= YKINE_LR; ++k) {
-         for (j = 0; j < MAX_RADIUS; ++j) {
-            if      (s_radius [j].abbr == NULL)   break;
-            else if (s_radius [j].abbr == '·')    break;
-            else if (s_radius [j].abbr <= '9')    printf ("- ");
-            else if (s_radius [j].abbr == tolower (s_radius [j].abbr))  printf ("%c ", s_radius [j].abbr);
-            else  printf ("- ");
+         /*---(clear)--------------------------*/
+         rcs = ykine_stance_radius_head (&j, x_short);
+         while (rcs >= 0) {
+            switch (x_short [1]) {
+            case '+' :  case '-' :  printf  (" ");               break;
+            case '·' :              printf  ("%c", x_short [0]); break;
+            case '\'':              printf  ("'");               break;
+            }
+            rcs = ykine_stance_radius_next (&j, x_short);
          }
          printf ("   ");
          break;   /* TURNS OUT ALL LEGS ARE THE SAME */

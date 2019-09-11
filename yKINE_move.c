@@ -453,6 +453,12 @@ ykine_move_savedloc     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, 
    tMOVE      *x_tail      = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   if (a_sec != NULL)  *a_sec = 0.0;
+   if (a_deg != NULL)  *a_deg = 0.0;
+   if (x     != NULL)  *x     = 0.0;
+   if (z     != NULL)  *z     = 0.0;
+   if (y     != NULL)  *y     = 0.0;
+   if (xz    != NULL)  *xz    = 0.0;
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_spoint  (a_servo);
    --rce;  if (a_servo == NULL) {
@@ -465,12 +471,6 @@ ykine_move_savedloc     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, 
    /*---(if none)------------------------*/
    if (x_tail == NULL) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("none, so returning zeros");
-      if (a_sec != NULL)  *a_sec = 0.0;
-      if (a_deg != NULL)  *a_deg = 0.0;
-      if (x     != NULL)  *x     = 0.0;
-      if (z     != NULL)  *z     = 0.0;
-      if (y     != NULL)  *y     = 0.0;
-      if (xz    != NULL)  *xz    = 0.0;
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       DEBUG_YKINE_SCRP   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
    }
@@ -498,6 +498,11 @@ ykine_move_savedcurr    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, fl
    char        rce         =  -10;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   if (a_deg != NULL)  *a_deg = 0.0;
+   if (x     != NULL)  *x     = 0.0;
+   if (z     != NULL)  *z     = 0.0;
+   if (y     != NULL)  *y     = 0.0;
+   if (xz    != NULL)  *xz    = 0.0;
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_spoint  (a_move);
    --rce;  if (a_move == NULL) {
@@ -526,6 +531,11 @@ ykine_move_savedprev    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, fl
    tMOVE      *x_prev      = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   if (a_deg != NULL)  *a_deg = 0.0;
+   if (x     != NULL)  *x     = 0.0;
+   if (z     != NULL)  *z     = 0.0;
+   if (y     != NULL)  *y     = 0.0;
+   if (xz    != NULL)  *xz    = 0.0;
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_spoint  (a_move);
    --rce;  if (a_move == NULL) {
