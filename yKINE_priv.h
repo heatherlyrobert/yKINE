@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1l"
-#define     P_VERTXT    "broke out ik/ck and ik/rk conversions for testing and reuse"
+#define     P_VERNUM    "1.1m"
+#define     P_VERTXT    "broke out ik/tk conversion for testing and reuse"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
