@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1m"
-#define     P_VERTXT    "broke out ik/tk conversion for testing and reuse"
+#define     P_VERNUM    "1.1n"
+#define     P_VERTXT    "broke out ik/sk conversion for testing and reuse"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -413,6 +413,8 @@ char        ykine_legs_tk           (void);
 /*---(neighborhood)-------------------*/
 char        ykine_legs_nk           (void);
 /*---(step)---------------------------*/
+char        ykine_legs_ik2sk        (float a_coxa, float x, float z, float *d, float *o);
+char        ykine_legs_sk2ik        (float a_coxa, float d, float o, float *x, float *z);
 char        ykine_legs_sk           (void);
 /*---(step)---------------------------*/
 char        ykine_leg_accel         (char a_meth, int a_leg, char *a_dur);
