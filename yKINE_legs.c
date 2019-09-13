@@ -173,6 +173,15 @@ ykine__legs_ik_complete (char a_meth, int a_leg, float x, float z, float y)
    return 0;
 }
 
+char
+ykine__legs_degfix      (float *d)
+{
+   while (*d >  180.0)  *d -= 360.0;
+   while (*d < -180.0)  *d += 360.0;
+   if (*d > -0.001 && *d < 0.001)  *d = 0.000;
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -255,8 +264,11 @@ ykine_legs_exact_polar  (float p)
    /*---(calculate)----------------------*/
    myKINE.pct = p;
    ykine_exact_calc ('d', myKINE.db, myKINE.de, p, &myKINE.dc);
+   DEBUG_YKINE_MOVE   yLOG_complex ("polar_d"   , "%8.2fb, %8.2fe, %8.2fc", myKINE.db, myKINE.de, myKINE.dc);
    ykine_exact_calc ('-', myKINE.ob, myKINE.oe, p, &myKINE.oc);
+   DEBUG_YKINE_MOVE   yLOG_complex ("polar_o"   , "%8.2fb, %8.2fe, %8.2fc", myKINE.ob, myKINE.oe, myKINE.oc);
    ykine_exact_calc ('-', myKINE.yb, myKINE.ye, p, &myKINE.yc);
+   DEBUG_YKINE_MOVE   yLOG_complex ("polar_y"   , "%8.2fb, %8.2fe, %8.2fc", myKINE.yb, myKINE.ye, myKINE.yc);
    DEBUG_YKINE_MOVE   yLOG_complex ("polar"     , "%8.2fd, %8.2fo, %8.2fy", myKINE.dc, myKINE.oc, myKINE.yc);
    /*---(complete)-----------------------*/
    return 0;
@@ -365,12 +377,77 @@ static void      o___CK_MOVES________________o (void) {;}
  *  turning and circling.
  *
  *   d  = from center relative to thorax
- *   xz = distance along that angle
+ *   xz = distance from military neutral
  *   y  = height as usual
  *
  *  will support both ck_pure and ck_from
  *
  */
+
+char
+ykine_legs_ik2ck        (float a_coxa, float x, float z, float *d, float *o)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       dxz, xz;
+   float       x_full;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("values"    , "%8.2fc, %8.2fx, %8.2fz", a_coxa, x, z);
+   DEBUG_YKINE_SCRP  yLOG_complex ("pointers"  , "%pd, %po", d, o);
+   --rce;  if (d == NULL || o == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare constants)-----------*/
+   dxz     = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   /*---(calc angle)------------------*/
+   *d     = atan2 (-z, x)  * RAD2DEG - a_coxa;
+   ykine__legs_degfix (d);
+   /*---(calc outward dist)--------------*/
+   xz     = sqrt ((x * x) + (z * z));
+   *o      = xz - dxz;
+   if (*o > -0.001 && *o < 0.001)  *o = 0.000;
+   /*---(report)-------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.2fdxz, %8.3ff, %8.3fd, %8.2fo", dxz, x_full, *d, *o);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_legs_ck2ik        (float a_coxa, float d, float o, float *x, float *z)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       dxz;
+   float       xz;
+   float       x_full;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("values"    , "%8.2fc, %8.2fd, %8.2fo", a_coxa, d, o);
+   DEBUG_YKINE_SCRP  yLOG_complex ("pointers"  , "%px, %pz", x, z);
+   --rce;  if (x == NULL || z == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare constants)-----------*/
+   dxz     = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   /*---(convert from rk)-------------*/
+   x_full = a_coxa + d;
+   xz     = o + dxz;
+   DEBUG_YKINE_SCRP  yLOG_complex ("calcs"     , "%8.2fdxz, %8.2fd, %8.2fxz", dxz, x_full, xz);
+   /*---(save)---------------------------*/
+   *x     =  xz * cos (x_full * DEG2RAD);
+   *z     = -xz * sin (x_full * DEG2RAD);
+   if (*z > -0.001 && *z < 0.001)  *z = 0.000;
+   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz", *x, *z);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 char  /*--> save relative ck based move -----------[ ------ [ ------ ]-*/
 ykine__legs_ck_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float *x, float *z, float *y)
@@ -379,54 +456,30 @@ ykine__legs_ck_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   double      xt, zt, yt, dt, ot, tt, xz;       /* temporary coordinates     */
-   float       x_full, x_diff;
-   float       x_tang, x_out, x_out2, x_down;
-   float       x_hadj, x_vadj;
+   float       db, ob, yb;                  /* previous/begin values          */
+   double      de, oe, ye;                  /* updated/ending values          */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get previous)-------------------*/
    ykine__legs_get_prev (a_leg);
-   /*---(prepare constants)-----------*/
-   x_hadj  = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
-   x_vadj  = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
    /*---(convert to ck)---------------*/
-   x_full  = atan2 (-myKINE.zb, myKINE.xb)  * RAD2DEG;
-   if (x_full > 360)  x_full -= 360;
-   if (x_full <   0)  x_full += 360;
-   /*> x_diff  = coxab - x_full;                                                         <*/
-   x_diff  = x_full - coxab;
-   x_out2  = myKINE.xzb;
-   x_out   = x_out2 - x_hadj;
-   x_down  = myKINE.yb + x_vadj;
-   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.3fd, %8.2f2, %8.2fo, %8.2fy", x_full, x_diff, x_out2, x_out, myKINE.yb);
+   ykine_legs_ik2ck (coxab, myKINE.xb, myKINE.zb, &db, &ob);
+   yb      = myKINE.yb;
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3fd, %8.2fo, %8.2fy", db, ob, myKINE.yb);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_spread (myKINE.s_from, a_leg , x_diff, d_str, &dt);
-   rc = ykine_stance_radius (myKINE.s_from        , x_out , o_str, &ot);
-   rc = ykine_stance_height (myKINE.s_from        , x_down, y_str, &yt);
+   rc = ykine_stance_spread  (myKINE.s_from, a_leg , db, d_str, &de);
+   rc = ykine_stance_radius  (myKINE.s_from        , ob, o_str, &oe);
+   rc = ykine_stance_legdrop (myKINE.s_from        , yb, y_str, &ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3fd, %8.2fo, %8.2fy", dt, ot, yt);
+   DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3fd, %8.2fo, %8.2fy", de, oe, ye);
    /*---(convert from cx)-------------*/
-   ot    += x_hadj;
-   /*> x_full = coxab - dt;                                                              <*/
-   x_full = coxab + dt;
-   if (x_full > 360)  x_full -= 360;
-   if (x_full <   0)  x_full += 360;
-   xz     = ot;
-   DEBUG_YKINE_SCRP  yLOG_complex ("fix"       , "%8.3fd, %8.3ff, %8.2fo, %8.2ft, %8.2fxz", dt, x_full, ot, tt, xz);
-   zt     = -xz * sin (x_full * DEG2RAD);
-   xt     =  xz * cos (x_full * DEG2RAD);
-   yt    -= x_vadj;
-   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xt, zt, yt);
-   /*---(save)---------------------------*/
-   if (x != NULL)  *x = xt;
-   if (z != NULL)  *z = zt;
-   if (y != NULL)  *y = yt;
+   ykine_legs_ck2ik (coxab, de, oe, x, z);
+   if (y != NULL)  *y = ye;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -443,12 +496,94 @@ static void      o___RK_MOVES________________o (void) {;}
  *  limited use, but very useful to change leg positions and stances.
  *
  *   d  = degree for femur
- *   xz = distance along that angle
+ *   xz = distance from military neutral
  *   y  = height as usual
  *
  *  will support both rk_pure and rk_from
  *
  */
+
+char
+ykine_legs_ik2rk        (float a_coxa, float x, float z, float *d, float *o)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       dxzi, dxzo;
+   float       xi, zi, xo, zo;
+   float       x_full;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("values"    , "%8.2fc, %8.2fx, %8.2fz", a_coxa, x, z);
+   DEBUG_YKINE_SCRP  yLOG_complex ("pointers"  , "%pd, %po", d, o);
+   --rce;  if (d == NULL || o == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare constants)-----------*/
+   dxzi    = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);
+   dxzo    = yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   /*---(calc inner triangle)---------*/
+   xi      =  dxzi * cos (a_coxa * DEG2RAD);
+   zi      = -dxzi * sin (a_coxa * DEG2RAD);
+   DEBUG_YKINE_SCRP  yLOG_complex ("inner"     , "%8.2fdzxi, %8.2fxi, %8.2fzi", dxzi, xi, zi);
+   /*---(calc outer triangle)---------*/
+   xo      = x - xi;
+   zo      = z - zi;
+   DEBUG_YKINE_SCRP  yLOG_complex ("outer"     , "%8.2fxb, %8.2fzb, %8.2fxo, %8.2fzo", x, z, xo, zo);
+   /*---(calc angles)-----------------*/
+   *d      = atan2 (-zo, xo)  * RAD2DEG - a_coxa;
+   ykine__legs_degfix (d);
+   /*---(save)---------------------------*/
+   *o      = sqrt ((xo * xo) + (zo * zo)) - dxzo;
+   if (*o > -0.001 && *o < 0.001)  *o = 0.000;
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.2fdxzo, %8.3ff, %8.3fd, %8.2fo", dxzo, x_full, *d, *o);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_legs_rk2ik        (float a_coxa, float d, float o, float *x, float *z)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       dxzi, dxzo;
+   float       xi, zi, xo, zo, xz;
+   float       x_full;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("values"    , "%8.2fc, %8.2fd, %8.2fo", a_coxa, d, o);
+   DEBUG_YKINE_SCRP  yLOG_complex ("pointers"  , "%px, %pz", x, z);
+   --rce;  if (x == NULL || z == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare constants)-----------*/
+   dxzi     = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);
+   dxzo     = yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   /*---(calc inner triangle)---------*/
+   xi      =  dxzi * cos (a_coxa * DEG2RAD);
+   zi      = -dxzi * sin (a_coxa * DEG2RAD);
+   DEBUG_YKINE_SCRP  yLOG_complex ("inner"     , "%8.2fdxzi, %8.2fx, %8.2fz", dxzi, xi, zi);
+   /*---(convert from rk)-------------*/
+   x_full = a_coxa + d;
+   if (x_full > 360)  x_full -= 360;
+   if (x_full <   0)  x_full += 360;
+   xz     = o + dxzo;
+   xo     =  xz * cos (x_full * DEG2RAD);
+   zo     = -xz * sin (x_full * DEG2RAD);
+   DEBUG_YKINE_SCRP  yLOG_complex ("outer"     , "%8.2fdxzo, %8.2fd, %8.2fxz, %8.2fxo, %8.2fzo", dxzo, x_full, xz, xo, zo);
+   /*---(save)---------------------------*/
+   *x     = xi + xo;
+   *z     = zi + zo;
+   if (*z > -0.001 && *z < 0.001)  *z = 0.000;
+   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz", *x, *z);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 char  /*--> save relative ck based move -----------[ ------ [ ------ ]-*/
 ykine__legs_rk_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float *x, float *z, float *y)
@@ -456,68 +591,33 @@ ykine__legs_rk_getter   (int a_leg, char *d_str, char *o_str, char *y_str, float
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
-   tSERVO     *x_servo     =    0;
-   double      xt, zt, yt, dt, ot, tt, xz;       /* temporary coordinates     */
-   float       x_full, x_diff;
-   float       x_tang, x_out, x_out2, x_down;
-   float       x_hadji, x_hadjo, x_vadj;
-   float       xi, zi, xo, zo;
+   float       db, ob, yb;                  /* previous/begin values          */
+   double      de, oe, ye;                  /* updated/ending values          */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(get previous)-------------------*/
+   /*---(prepare)------------------------*/
+   if (x != NULL)  *x = 0.0;
+   if (z != NULL)  *z = 0.0;
+   if (y != NULL)  *y = 0.0;
+   /*---(prepare)---------------------*/
    ykine__legs_get_prev (a_leg);
-   /*---(prepare constants)-----------*/
-   x_hadji = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);
-   x_hadjo = yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
-   x_vadj  = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
-   /*---(calc inner triangle)---------*/
-   xi      =  x_hadji * cos (coxab * DEG2RAD);
-   zi      = -x_hadji * sin (coxab * DEG2RAD);
-   DEBUG_YKINE_SCRP  yLOG_complex ("inner"     , "%8.2fh, %8.2fx, %8.2fz", x_hadji, xi, zi);
-   /*---(calc outer triangle)---------*/
-   xo      = myKINE.xb - xi;
-   zo      = myKINE.zb - zi;
-   x_out2  = sqrt ((xo * xo) + (zo * zo));
-   x_out   = x_out2 - x_hadjo;
-   DEBUG_YKINE_SCRP  yLOG_complex ("outer"     , "%8.2fx, %8.2fz, %8.2f2, %8.2fa, %8.2fo", xo, zo, x_out2, x_hadjo, x_out);
-   /*---(calc angles)-----------------*/
-   x_full  = atan2 (-zo, xo)  * RAD2DEG;
-   if (x_full > 360)  x_full -= 360;
-   if (x_full <   0)  x_full += 360;
-   /*> x_diff  = coxab - x_full;                                                         <*/
-   x_diff  = x_full - coxab;
-   /*---(adjust ypos)-----------------*/
-   x_down  = myKINE.yb + x_vadj;
-   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.3fd, %8.2fo, %8.2fy", x_full, x_diff, x_out, myKINE.yb);
+   ykine_legs_ik2rk (coxab, myKINE.xb, myKINE.zb, &db, &ob);
+   yb      = myKINE.yb;
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3fd, %8.2fo, %8.2fy", db, ob, myKINE.yb);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_spread (myKINE.s_from, a_leg , x_diff, d_str, &dt);
-   rc = ykine_stance_radius (myKINE.s_from        , x_out , o_str, &ot);
-   rc = ykine_stance_height (myKINE.s_from        , x_down, y_str, &yt);
+   rc = ykine_stance_spread  (myKINE.s_from, a_leg , db, d_str, &de);
+   rc = ykine_stance_radius  (myKINE.s_from        , ob, o_str, &oe);
+   rc = ykine_stance_legdrop (myKINE.s_from        , yb, y_str, &ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3fd, %8.2fo, %8.2fy", dt, ot, yt);
+   DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3fd, %8.2fo, %8.2fy", de, oe, ye);
    /*---(convert from rk)-------------*/
-   ot    += x_hadjo;
-   /*> x_full = coxab - dt;                                                              <*/
-   x_full = coxab + dt;
-   if (x_full > 360)  x_full -= 360;
-   if (x_full <   0)  x_full += 360;
-   xz     = ot;
-   xo     =  xz * cos (x_full * DEG2RAD);
-   zo     = -xz * sin (x_full * DEG2RAD);
-   DEBUG_YKINE_SCRP  yLOG_complex ("fix_out"   , "%8.3fd, %8.3ff, %8.2fo, %8.2fxo, %8.2fzo", dt, x_full, ot, zo, zo);
-   xt     = xi + xo;
-   zt     = zi + zo;
-   yt    -= x_vadj;
-   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xt, zt, yt);
-   /*---(save)---------------------------*/
-   if (x != NULL)  *x = xt;
-   if (z != NULL)  *z = zt;
-   if (y != NULL)  *y = yt;
+   ykine_legs_rk2ik (coxab, de, oe, x, z);
+   if (y != NULL)  *y = ye;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -610,6 +710,75 @@ static void      o___TK_MOVES________________o (void) {;}
  *  will support both tk_pure and tk_from
  *
  */
+
+char
+ykine_legs_ik2tk        (float a_coxa, float x, float z, float *o, float *t)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       dxz, xz;
+   float       x_full;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("values"    , "%8.2fc, %8.2fx, %8.2fz", a_coxa, x, z);
+   DEBUG_YKINE_SCRP  yLOG_complex ("pointers"  , "%po, %pt", o, t);
+   --rce;  if (o == NULL || t == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare constants)-----------*/
+   dxz     = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   /*---(calc angle)------------------*/
+   x_full = a_coxa - atan2 (-z, x)  * RAD2DEG;
+   ykine__legs_degfix (&x_full);
+   xz     = sqrt ((x * x) + (z * z));
+   DEBUG_YKINE_SCRP  yLOG_complex ("calcs"     , "%8.2fdxz, %8.2fd, %8.2fxz", dxz, x_full, xz);
+   /*---(calc distances)--------------*/
+   *o =  xz * cos (x_full * DEG2RAD) - dxz;
+   if (*o > -0.001 && *o < 0.001)  *o = 0.000;
+   *t = -xz * sin (x_full * DEG2RAD);
+   if (*t > -0.001 && *t < 0.001)  *t = 0.000;
+   DEBUG_YKINE_SCRP  yLOG_complex ("distance"  , "%8.2fo, %8.2ft", *o, *t);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_legs_tk2ik        (float a_coxa, float o, float t, float *x, float *z)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       dxz, xz;
+   float       x_full;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)---------------------*/
+   DEBUG_YKINE_SCRP  yLOG_complex ("values"    , "%8.2fc, %8.2fo, %8.2ft", a_coxa, o, t);
+   DEBUG_YKINE_SCRP  yLOG_complex ("pointers"  , "%px, %pz", x, z);
+   --rce;  if (x == NULL || z == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare constants)-----------*/
+   dxz    = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
+   /*---(calc angle)------------------*/
+   o     += dxz;
+   x_full = a_coxa + atan2 (t, o) * RAD2DEG;
+   ykine__legs_degfix (&x_full);
+   xz     = sqrt ((o * o) + (t * t));
+   DEBUG_YKINE_SCRP  yLOG_complex ("calcs"     , "%8.2fdxz, %8.2fd, %8.2fxz", dxz, x_full, xz);
+   /*---(calc position)---------------*/
+   *x     =  xz * cos (x_full * DEG2RAD);
+   if (*x > -0.001 && *x < 0.001)  *x = 0.000;
+   *z     = -xz * sin (x_full * DEG2RAD);
+   if (*z > -0.001 && *z < 0.001)  *z = 0.000;
+   DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz", *x, *z);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 char  /*--> save relative tk based move -----------[ ------ [ ------ ]-*/
 ykine__legs_tk_getter   (int a_leg, char *o_str, char *t_str, char *y_str, float *x, float *z, float *y)
@@ -785,7 +954,7 @@ ykine__legs_ik_driver    (char a_meth)
          ykine_legs_dist_polar  ('f', NULL);
          break;
       }
-      DEBUG_YKINE_SCRP  yLOG_value   ("distance"  , myKINE.le);
+      DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , myKINE.le);
       /*---(process moves)---------------*/
       if (b < 0)  {
          ykine_leg_accel       (a_meth, x_leg, s_accel);
@@ -849,7 +1018,8 @@ ykine_leg_accel         (char a_meth, int a_leg, char *a_dur)
          break;
       }
       /*---(inverse on small move)-------*/
-      rc = yKINE_inverse (a_leg, myKINE.xc, myKINE.zc, myKINE.yc - 6.3);
+      /*> rc = yKINE_inverse (a_leg, myKINE.xc, myKINE.zc, myKINE.yc - 6.3);          <*/
+      rc = yKINE_inverse (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
       if (rc <  0) {
          DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rc);

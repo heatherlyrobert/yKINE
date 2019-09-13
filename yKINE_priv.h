@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1k"
-#define     P_VERTXT    "lots of fixes for legs and body"
+#define     P_VERNUM    "1.1l"
+#define     P_VERTXT    "broke out ik/ck and ik/rk conversions for testing and reuse"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -396,15 +396,24 @@ char        ykine_legs_exact_polar  (float p);
 char        ykine_legs_fk           (void);
 /*---(inverse)------------------------*/
 char        ykine_legs_ik           (void);
+/*---(relative)-----------------------*/
+char        ykine_legs_ik2rk        (float a_coxa, float x, float z, float *d, float *o);
+char        ykine_legs_rk2ik        (float a_coxa, float d, float o, float *x, float *z);
+char        ykine_legs_rk           (void);
+/*---(center)-------------------------*/
+char        ykine_legs_ik2ck        (float a_coxa, float x, float z, float *d, float *o);
+char        ykine_legs_ck2ik        (float a_coxa, float d, float o, float *x, float *z);
+char        ykine_legs_ck           (void);
 /*---(tangent)------------------------*/
 char        ykine_legs_tk_dist      (float *l);
 char        ykine_legs_tk_exact     (float p);
+char        ykine_legs_ik2tk        (float a_coxa, float x, float z, float *o, float *t);
+char        ykine_legs_tk2ik        (float a_coxa, float o, float t, float *x, float *z);
 char        ykine_legs_tk           (void);
-/*---(relative)-----------------------*/
-char        ykine_legs_rk           (void);
-/*---(center)-------------------------*/
-char        ykine_legs_ck           (void);
 /*---(neighborhood)-------------------*/
+char        ykine_legs_nk           (void);
+/*---(step)---------------------------*/
+char        ykine_legs_sk           (void);
 /*---(step)---------------------------*/
 char        ykine_leg_accel         (char a_meth, int a_leg, char *a_dur);
 
@@ -491,6 +500,7 @@ char*       ykine__unit_turtle      (char *a_question, int a_num);
 char        ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry, double *a_result);
 char        ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_result);
 char        ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_legdrop    (char a_from, double a_start, char *a_entry, double *a_result);
 char        ykine_stance_verify     (void);
 
 

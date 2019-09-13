@@ -8,194 +8,44 @@ struct  cSPREAD {
    char        terse       [LEN_TERSE];
    char        name        [LEN_LABEL];
    int         femu        [6];
+   char        desc        [LEN_DESC];
 };
 static tSPREAD s_spreads [MAX_SPREADS] = {
    /* 12       12345678901234567890      RR   RM   RF   LF   LM   LR  */
-   { "star" , "starfish"            , {   0,   0,   0,   0,   0,   0 } },
-   { "king" , "king_crab"           , {  30,   0, -30,  30,   0, -30 } },
-   { "seal" , "seal"                , { -30,   0,  30, -30,   0,  30 } },
-   { "puff" , "pufferfish"          , { -15, -25, -45,  45,  25,  15 } },
-   { "lobs" , "lobster"             , {   0,   0,   0,   0,   0,   0 } },
-   { "tri"  , "tristar"             , {  30, -30,  30, -30,  30, -30 } },
-   { "naul" , "nautilus_left"       , {  45,  45,  45,  45,  45,  45 } },
-   { "naur" , "nautilus_right"      , { -45, -45, -45, -45, -45, -45 } },
-   { "coul" , "conch_left"          , {  80,  80,  80,  80,  80,  80 } },
-   { "cour" , "conch_right"         , { -80, -80, -80, -80, -80, -80 } },
-   { "blue" , "blue_crab"           , {  45,   0, -45,  45,   0, -45 } },
-   { "ghost", "ghost_crab"          , {  60,   0, -60,  60,   0, -60 } },
-   { "eye"  , "the_eye"             , {  80,   0, -80,  80,   0, -80 } },
-   { "cutt" , "cuttlefish"          , {  40,   0, -80,  80,   0, -40 } },
-   { "manta", "manta_ray"           , { -40,   0, -75,  75,   0,  40 } },
-   { "angel", "snow_angel"          , { -45,  20, -40,  40, -20,  45 } },
-   { "turt" , "sea_turtle"          , { -30, -85, -85,  85,  85,  30 } },
-   { "urch" , "urchin"              , {   0,   0,   0,   0,   0,   0 } },
+   { "star" , "starfish"            , {   0,   0,   0,   0,   0,   0 } , "completely balanced and even radial spread"     },
+   { "king" , "king_crab"           , {  30,   0, -30,  30,   0, -30 } , "big sideways legs crab spread"                  },
+   { "blue" , "blue_crab"           , {  45,   0, -45,  45,   0, -45 } , "traditional sideways crab leg configuration"    },
+   { "ghost", "ghost_crab"          , {  60,   0, -60,  60,   0, -60 } , "all legs sideways giving narrowest profile"     },
+   { "tri"  , "tristar"             , {  30, -30,  30, -30,  30, -30 } , "three groups of parallel legs at even spread"   },
+   { "naul" , "nautilus_left"       , {  45,  45,  45,  45,  45,  45 } , "legs all loosely radially curled to the left"   },
+   { "naur" , "nautilus_right"      , { -45, -45, -45, -45, -45, -45 } , "legs all loosely radially curled to the right"  },
+   { "coul" , "conch_left"          , {  80,  80,  80,  80,  80,  80 } , "legs all tightly radially curled to the left"   },
+   { "cour" , "conch_right"         , { -80, -80, -80, -80, -80, -80 } , "legs all tightly radially curled to the right"  },
+   { "eye"  , "the_eye"             , {  80,   0, -80,  80,   0, -80 } , "two groups of tightly grouped legs at each side"},
+   { "cutt" , "cuttlefish"          , {  40,   0, -80,  80,   0, -40 } , "transition stance"                              },
+   { "manta", "manta_ray"           , { -40,   0, -75,  75,   0,  40 } , "three groups of legs in a t-shape"              },
+   { "angel", "snow_angel"          , { -45,  20, -40,  40, -20,  45 } , "three groups of legs in a y-shape"              },
+   { "turt" , "sea_turtle"          , { -30, -85, -85,  85,  85,  30 } , "pour legs back and front to out to sides"       },
+   { "seal" , "seal"                , { -30,   0,  30, -30,   0,  30 } , "two legs fore/back, one each to sides"          },
+   { "puff" , "pufferfish"          , { -15, -25, -45,  45,  25,  15 } , "wide leg spread, but open in front for access"  },
    { "····" , NULL                  , {   0,   0,   0,   0,   0,   0 } },
 };
 
 
 
-#define   MAX_RADIUS     100
-/*> typedef struct cRADIUS  tRADIUS;                                                  <* 
- *> struct  cRADIUS {                                                                 <* 
- *>    char        abbr;                                                              <* 
- *>    char        name        [LEN_LABEL];                                           <* 
- *>    float       out;                                                               <* 
- *> };                                                                                <* 
- *> static tRADIUS s_radius [MAX_RADIUS ] = {                                         <* 
- *>    /+ 1     12345678901234567890      RR   RM   RF   LF   LM   LR  +/             <* 
- *>    { '0'   , "-"                   , 25.4 * -7.5  },                              <* 
- *>    { '1'   , "-"                   , 25.4 * -7.25 },                              <* 
- *>    { '2'   , "-"                   , 25.4 * -7.0  },                              <* 
- *>    { '3'   , "-"                   , 25.4 * -6.75 },                              <* 
- *>    { '4'   , "-"                   , 25.4 * -6.5  },                              <* 
- *>    { '5'   , "-"                   , 25.4 * -6.25 },                              <* 
- *>    { 'a'   , "-"                   , 25.4 * -6.0  },                              <* 
- *>    { 'A'   , "-"                   , 25.4 * -5.75 },                              <* 
- *>    { 'b'   , "-"                   , 25.4 * -5.5  },                              <* 
- *>    { 'B'   , "-"                   , 25.4 * -5.25 },                              <* 
- *>    { 'c'   , "-"                   , 25.4 * -5.0  },                              <* 
- *>    { 'C'   , "-"                   , 25.4 * -4.75 },                              <* 
- *>    { 'd'   , "-"                   , 25.4 * -4.5  },                              <* 
- *>    { 'D'   , "-"                   , 25.4 * -4.25 },                              <* 
- *>    { 'e'   , "-"                   , 25.4 * -4.0  },                              <* 
- *>    { 'E'   , "-"                   , 25.4 * -3.75 },                              <* 
- *>    { 'f'   , "femu"                , 25.4 * -3.5  },                              <* 
- *>    { 'F'   , "-"                   , 25.4 * -3.25 },                              <* 
- *>    { 'g'   , "-"                   , 25.4 * -3.0  },                              <* 
- *>    { 'G'   , "-"                   , 25.4 * -2.75 },                              <* 
- *>    { 'h'   , "-"                   , 25.4 * -2.5  },                              <* 
- *>    { 'H'   , "-"                   , 25.4 * -2.25 },                              <* 
- *>    { 'i'   , "-"                   , 25.4 * -2.0  },                              <* 
- *>    { 'I'   , "-"                   , 25.4 * -1.75 },                              <* 
- *>    { 'j'   , "-"                   , 25.4 * -1.5  },                              <* 
- *>    { 'J'   , "-"                   , 25.4 * -1.25 },                              <* 
- *>    { 'k'   , "-"                   , 25.4 * -1.0  },                              <* 
- *>    { 'K'   , "-"                   , 25.4 * -0.75 },                              <* 
- *>    { 'l'   , "-"                   , 25.4 * -0.5  },                              <* 
- *>    { 'L'   , "-"                   , 25.4 * -0.25 },                              <* 
- *>    { 'm'   , "military"            , 25.4 *  0.0  },                              <* 
- *>    { 'M'   , "-"                   , 25.4 *  0.25 },                              <* 
- *>    { 'n'   , "-"                   , 25.4 *  0.5  },                              <* 
- *>    { 'N'   , "-"                   , 25.4 *  0.75 },                              <* 
- *>    { 'o'   , "-"                   , 25.4 *  1.0  },                              <* 
- *>    { 'O'   , "-"                   , 25.4 *  1.25 },                              <* 
- *>    { 'p'   , "-"                   , 25.4 *  1.5  },                              <* 
- *>    { 'P'   , "-"                   , 25.4 *  1.75 },                              <* 
- *>    { 'q'   , "-"                   , 25.4 *  2.0  },                              <* 
- *>    { 'Q'   , "-"                   , 25.4 *  2.25 },                              <* 
- *>    { 'r'   , "-"                   , 25.4 *  2.5  },                              <* 
- *>    { 'R'   , "-"                   , 25.4 *  2.75 },                              <* 
- *>    { 's'   , "-"                   , 25.4 *  3.0  },                              <* 
- *>    { 'S'   , "-"                   , 25.4 *  3.25 },                              <* 
- *>    { 't'   , "reaching"            , 25.4 *  3.5  },                              <* 
- *>    { 'T'   , "-"                   , 25.4 *  3.75 },                              <* 
- *>    { 'u'   , "-"                   , 25.4 *  4.0  },                              <* 
- *>    { 'U'   , "-"                   , 25.4 *  4.25 },                              <* 
- *>    { 'v'   , "-"                   , 25.4 *  4.5  },                              <* 
- *>    { 'V'   , "-"                   , 25.4 *  4.75 },                              <* 
- *>    { 'w'   , "-"                   , 25.4 *  5.0  },                              <* 
- *>    { 'W'   , "-"                   , 25.4 *  5.25 },                              <* 
- *>    { 'x'   , "-"                   , 25.4 *  5.5  },                              <* 
- *>    { 'X'   , "-"                   , 25.4 *  5.75 },                              <* 
- *>    { 'y'   , "-"                   , 25.4 *  6.0  },                              <* 
- *>    { 'Y'   , "-"                   , 25.4 *  6.25 },                              <* 
- *>    { 'z'   , "-"                   , 25.4 *  6.5  },                              <* 
- *>    { 'Z'   , "-"                   , 25.4 *  6.75 },                              <* 
- *>    { '>'   , "farthest"            , 25.4 *  7.0  },                              <* 
- *>    { 0     , NULL                  , 0.0          },                              <* 
- *> };                                                                                <*/
+#define   MAX_VERIFY     200
+static char s_verify  [MAX_VERIFY];
 
 
 
-#define   MAX_HEIGHTS    100
-typedef struct cHEIGHT  tHEIGHT;
-struct  cHEIGHT {
-   char        abbr;
-   char        terse       [LEN_TERSE];
-   char        name        [LEN_LABEL];
-   float       y;
-};
-static tHEIGHT s_heights [MAX_HEIGHTS] = {
-   /* 1       12345678901234567890       */
-   { '^', "-40-" , "-"                   , 25.4 * -3.0  },
-   { 'Z', "-30-" , "-"                   , 25.4 * -2.75 },
-   { 'z', "-20-" , "-"                   , 25.4 * -2.5  },
-   { 'Y', "-10-" , "-"                   , 25.4 * -2.25 },
-   { 'y', "-10-" , "-"                   , 25.4 * -2.0  },
-   { 'X', "-00-" , "-"                   , 25.4 * -1.75 },
-   { 'x', "over" , "overwatch"           , 25.4 * -1.5  },
-   { 'W', "-11-" , "-"                   , 25.4 * -1.25 },
-   { 'w', "towr" , "tower"               , 25.4 * -1.0  },
-   { 'V', "-22-" , "-"                   , 25.4 * -0.75 },
-   { 'v', "high" , "high"                , 25.4 * -0.5  },
-   { 'U', "-33-" , "-"                   , 25.4 * -0.25 },
-   { 'u', "attn" , "attention"           , 25.4 *  0.0  },
-   { 'T', "-44-" , "-"                   , 25.4 *  0.25 },
-   { 't', "-aa-" , "-"                   , 25.4 *  0.5  },
-   { 'S', "-a2-" , "-"                   , 25.4 *  0.75 },
-   { 's', "max"  , "max flex"            , 25.4 *  1.0  },
-   { 'R', "-b2-" , "-"                   , 25.4 *  1.25 },
-   { 'r', "-cc-" , "-"                   , 25.4 *  1.5  },
-   { 'Q', "-c2-" , "-"                   , 25.4 *  1.75 },
-   { 'q', "easy" , "easy/relaxed"        , 25.4 *  2.0  },
-   { 'P', "-55-" , "-"                   , 25.4 *  2.25 },
-   { 'p', "low"  , "low to ground"       , 25.4 *  2.5  },
-   { 'O', "-66-" , "-"                   , 25.4 *  2.75 },
-   { 'o', "rub"  , "just clearing"       , 25.4 *  3.0  },
-   { 'N', "-77-" , "-"                   , 25.4 *  3.25 },
-   { 'n', "flat" , "flat/grounded"       , 25.4 *  3.5  },
-   { 'M', "-88-" , "-"                   , 25.4 *  3.75 },
-   { 'm', "-dd-" , "-"                   , 25.4 *  4.0  },
-   { 'L', "-d2-" , "-"                   , 25.4 *  4.25 },
-   { 'l', "-ee-" , "-"                   , 25.4 *  4.5  },
-   { 'K', "-e2-" , "-"                   , 25.4 *  4.75 },
-   { 'k', "-ff-" , "-"                   , 25.4 *  5.0  },
-   { 'J', "-f2-" , "-"                   , 25.4 *  5.25 },
-   { 'j', "zero" , "thorax/coxz"         , 25.4 *  5.5  },
-   { 'I', "-f3-" , "-"                   , 25.4 *  5.75 },
-   { 'i', "-hh-" , "-"                   , 25.4 *  6.0  },
-   { 'H', "-h2-" , "-"                   , 25.4 *  6.25 },
-   { 'h', "back" , "over its back"       , 25.4 *  6.5  },
-   { 'G', "-h3-" , "-"                   , 25.4 *  6.75 },
-   { 'g', "-jj-" , "-"                   , 25.4 *  7.0  },
-   { 'F', "-j2-" , "-"                   , 25.4 *  7.25 },
-   { 'f', "-kk-" , "-"                   , 25.4 *  7.5  },
-   { 'E', "-k2-" , "-"                   , 25.4 *  7.75 },
-   { 'e', "-ll-" , "-"                   , 25.4 *  8.0  },
-   { 'D', "-l2-" , "-"                   , 25.4 *  8.25 },
-   { 'd', "-mm-" , "-"                   , 25.4 *  8.5  },
-   { 'C', "-m2-" , "-"                   , 25.4 *  8.75 },
-   { 'c', "-nn-" , "-"                   , 25.4 *  9.0  },
-   { 'B', "-n2-" , "-"                   , 25.4 *  9.25 },
-   { 'b', "-oo-" , "-"                   , 25.4 *  9.5  },
-   { 'A', "-o2-" , "-"                   , 25.4 *  9.75 },
-   { 'a', "-pp-" , "-"                   , 25.4 * 10.0  },
-   { '-', "-p2-" , "-"                   , 25.4 * 10.25 },
-   { 'è', "-qq-" , "-"                   , 25.4 * 10.5  },
-   { 'é', "-q2-" , "-"                   , 25.4 * 10.75 },
-   { 'ê', "-rr-" , "-"                   , 25.4 * 11.0  },
-   { 'ë', "-r2-" , "-"                   , 25.4 * 11.25 },
-   { 'ì', "-ss-" , "-"                   , 25.4 * 11.5  },
-   { 'í', "-s2-" , "-"                   , 25.4 * 11.75 },
-   { 'î', "-tt-" , "-"                   , 25.4 * 12.0  },
-   { 'ï', "-t2-" , "-"                   , 25.4 * 12.25 },
-   { 'ð', "-uu-" , "-"                   , 25.4 * 12.5  },
-   { 'ñ', "-u2-" , "-"                   , 25.4 * 12.75 },
-   { 'ò', "-vv-" , "-"                   , 25.4 * 13.0  },
-   { 'ó', "-v2-" , "-"                   , 25.4 * 13.25 },
-   { 'ô', "-ww-" , "-"                   , 25.4 * 13.5  },
-   { 'õ', "-w2-" , "-"                   , 25.4 * 13.75 },
-   { 'ö', "-xx-" , "-"                   , 25.4 * 14.0  },
-   { '÷', "-x2-" , "-"                   , 25.4 * 14.25 },
-   { 'ø', "-yy-" , "-"                   , 25.4 * 14.5  },
-   { 'ù', "-y2-" , "-"                   , 25.4 * 14.75 },
-   { 'ú', "-zz-" , "-"                   , 25.4 * 15.0  },
-   { '·', "····" , NULL                  , 0.0          },
-};
-
-
-static char s_verify  [MAX_RADIUS];
 #define    INCH2MM     25.400
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       leg spread/patterns                    ----===*/
+/*====================------------------------------------====================*/
+static void      o___SPREAD__________________o (void) {;}
 
 char
 ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry, double *a_result)
@@ -216,7 +66,7 @@ ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry,
    --a_leg;
    /*---(search)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_info    ("a_entry"   , a_entry);
-   for (i = 0; i < MAX_RADIUS; ++i) {
+   for (i = 0; i < MAX_SPREADS; ++i) {
       if (s_spreads [i].terse [0] == '\0')            break;
       if (s_spreads [i].terse [0] == '·')             break;
       DEBUG_YKINE_SCRP   yLOG_info    ("checking"  , s_spreads [i].terse);
@@ -253,6 +103,13 @@ ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry,
    return rc;
 } 
 
+
+
+/*====================------------------------------------====================*/
+/*===----                       leg distance/radius                    ----===*/
+/*====================------------------------------------====================*/
+static void      o___RADIUS__________________o (void) {;}
+
 char         /*-> outward xz distance from military position --[--.---.---.--]*/
 ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_result)
 {  /*---(design notes)-------------------*/
@@ -279,7 +136,7 @@ ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_r
    /*---(check shortcut)-----------------*/
    if (x_len == 1) {
       if (strchr (x_lower, a_entry [0]) != NULL)  x_short = a_entry [0];
-      else if (a_entry [0] == '>')              { x_short = 'w'; x_suffix = '-'; }
+      else if (a_entry [0] == '>')              { x_short = 'w'; x_suffix = '+'; }
       else if (a_entry [0] == '<')                x_short = 'a';
    } else if (x_len == 2) {
       if (strchr (x_lower, a_entry [0]) != NULL) {
@@ -359,6 +216,13 @@ ykine_stance_radius_max  (void)
    return ++n;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                         body heights                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___HEIGHT__________________o (void) {;}
+
 char
 ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_result)
 {
@@ -366,26 +230,44 @@ ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_r
    char        rc          =    0;
    char        n           =   -1;
    int         i           =    0;
+   int         x_len       =    0;
+   char        x_short     =  '·';
+   char        x_suffix    =  '·';
+   char       *x_lower     = "abcdefghijklmnopqrstuvwxyz";
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(search)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_info    ("a_entry"   , a_entry);
-   for (i = 0; i < MAX_HEIGHTS; ++i) {
-      if (s_heights [i].terse     == NULL)                 break;
-      if (s_heights [i].terse [0] == '·')                  break;
-      DEBUG_YKINE_SCRP   yLOG_info    ("checking"  , s_heights [i].terse);
-      /*> if (s_heights [i].terse [0] == '-')                  continue;              <*/
-      if (s_heights [i].terse [0] != a_entry [0])          continue;
-      if (strcmp (s_heights [i].terse, a_entry) != 0)      continue;
-      n = i;
-      DEBUG_YKINE_SCRP   yLOG_value   ("found"     , n);
-      break;
+   x_len  = strlen (a_entry);
+   DEBUG_YKINE_SCRP   yLOG_complex ("a_entry"   , "%d:%s", x_len, a_entry);
+   /*---(check shortcut)-----------------*/
+   if (x_len == 1) {
+      if (strchr (x_lower, a_entry [0]) != NULL)  x_short = a_entry [0];
+   } else if (x_len == 2) {
+      if (strchr (x_lower, a_entry [0]) != NULL) {
+         if (strchr ("·+-'", a_entry [1]) != NULL) {
+            x_short  = a_entry [0];
+            x_suffix = a_entry [1];
+         }
+      }
+   } else if (x_len == 4) {
+      if      (strcmp ("over", a_entry) == 0)  { x_short = 'x'; x_suffix = '·'; }
+      else if (strcmp ("towr", a_entry) == 0)  { x_short = 'w'; x_suffix = '·'; }
+      else if (strcmp ("high", a_entry) == 0)  { x_short = 'v'; x_suffix = '·'; }
+      else if (strcmp ("attn", a_entry) == 0)  { x_short = 'u'; x_suffix = '·'; }
+      else if (strcmp ("flex", a_entry) == 0)  { x_short = 's'; x_suffix = '·'; }
+      else if (strcmp ("easy", a_entry) == 0)  { x_short = 'q'; x_suffix = '·'; }
+      else if (strcmp ("flat", a_entry) == 0)  { x_short = 'n'; x_suffix = '·'; }
    }
-   /*---(literal)------------------------*/
-   if (n >= 0) {
-      DEBUG_YKINE_SCRP   yLOG_value   ("source"    , s_heights [n].y);
-      if (a_result != NULL)  *a_result = s_heights [n].y;
-      DEBUG_YKINE_SCRP   yLOG_value   ("literal"   , *a_result);
+   /*---(shortcut)-----------------------*/
+   if (x_short != '·') {
+      if (a_result != NULL) {
+         *a_result = ((x_short - 'j') / 2.0) * INCH2MM;
+         switch (x_suffix) {
+         case '-' :  *a_result -= INCH2MM * 0.125;  break;
+         case '+' :  *a_result += INCH2MM * 0.125;  break;
+         case '\'':  *a_result += INCH2MM * 0.250;  break;
+         }
+      }
+      DEBUG_YKINE_SCRP   yLOG_double  ("shortcut"  , *a_result);
    }
    /*---(absolute)-----------------------*/
    else if (a_from == YKINE_PURE) {
@@ -402,7 +284,134 @@ ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_r
    return rc;
 } 
 
+char
+ykine_stance_height_head (int *n, char *a_short)
+{
+   return ykine_stance_radius_head (n, a_short);
+}
 
+char
+ykine_stance_height_next (int *n, char *a_short)
+{
+   return ykine_stance_radius_next (n, a_short);
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      distance of leg drop                    ----===*/
+/*====================------------------------------------====================*/
+static void      o___LEGDROP_________________o (void) {;}
+
+char
+ykine_stance_legdrop    (char a_from, double a_start, char *a_entry, double *a_result)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   char        n           =   -1;
+   int         i           =    0;
+   int         x_len       =    0;
+   char        x_short     =  '·';
+   char        x_suffix    =  '·';
+   char       *x_upper     = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+   char       *x_lower     = "abcdefghijklmnopqrstuvwxyz";
+   int         x_sign      =    1;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   x_len  = strlen (a_entry);
+   DEBUG_YKINE_SCRP   yLOG_complex ("a_entry"   , "%d:%s", x_len, a_entry);
+   /*---(check shortcut)-----------------*/
+   if (x_len == 1) {
+      if      (strchr (x_lower, a_entry [0]) != NULL) {
+         x_short  = a_entry [0];
+         x_sign   = -1;
+      } else if (strchr (x_upper, a_entry [0]) != NULL) {
+         x_short  = tolower (a_entry [0]);
+         x_sign   = +1;
+      }
+   } else if (x_len == 2) {
+      if      (strchr (x_lower, a_entry [0]) != NULL) {
+         if (strchr ("·+-'", a_entry [1]) != NULL) {
+            x_short  = a_entry [0];
+            x_sign   = -1;
+            x_suffix = a_entry [1];
+         }
+      } else if (strchr (x_upper, a_entry [0]) != NULL) {
+         if (strchr ("·+-'", a_entry [1]) != NULL) {
+            x_short  = tolower (a_entry [0]);
+            x_sign   = +1;
+            x_suffix = a_entry [1];
+         }
+      }
+   } else if (x_len == 4) {
+      if      (strcmp ("zero", a_entry) == 0)  { x_short = 'a'; x_suffix = '·'; }
+   }
+   /*---(shortcut)-----------------------*/
+   if (x_short != '·') {
+      if (a_result != NULL) {
+         *a_result = ((x_short - 'a') / 2.0) * INCH2MM * x_sign;
+         switch (x_suffix) {
+         case '-' :  *a_result -= INCH2MM * 0.125;  break;
+         case '+' :  *a_result += INCH2MM * 0.125;  break;
+         case '\'':  *a_result += INCH2MM * 0.250;  break;
+         }
+      }
+      DEBUG_YKINE_SCRP   yLOG_double  ("shortcut"  , *a_result);
+   }
+   /*---(absolute)-----------------------*/
+   else if (a_from == YKINE_PURE) {
+      rc  = yPARSE_adjval   (a_start, a_entry, a_result);
+      DEBUG_YKINE_SCRP   yLOG_value   ("pure"      , *a_result);
+   }
+   /*---(relative)-----------------------*/
+   else {
+      rc  = yPARSE_adjfrom  (a_start, a_entry, a_result);
+      DEBUG_YKINE_SCRP   yLOG_value   ("from"      , *a_result);
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return rc;
+} 
+
+char
+ykine_stance_legdrop_head (int *n, char *a_short)
+{
+   a_short [0]  = 'Z';
+   a_short [1]  = '·';
+   a_short [2]  = '\0';
+   *n = 0;
+   return 0;
+}
+
+char
+ykine_stance_legdrop_next (int *n, char *a_short)
+{
+   a_short [2]  = '\0';
+   if (a_short [0] < 'A' || (a_short [0] > 'Z' && a_short [0] < 'a') || a_short [0] > 'z')    return -1;
+   if (a_short [1] == '\0') a_short [1] = '·';
+   if (strchr ("-·+'", a_short [1]) == NULL)      return -3;
+   if (a_short [0] == 'z' && a_short [1] == '·')  return -4;
+   switch (a_short [1]) {
+   case '\'' : a_short [1] = '+';   break;
+   case '+'  : a_short [1] = '·';   break;
+   case '·'  : a_short [1] = '-';   break;
+   case '-'  :
+               if (a_short [0] == toupper (a_short [0]))  a_short [0] -= 1;
+               else                                       a_short [0] += 1;
+               a_short [1] = '\'';
+               break;
+   }
+   if (a_short [0] == 'A' && a_short [1] == '\'')  a_short [0] = 'a';
+   ++(*n);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                verifying legal leg positions                 ----===*/
+/*====================------------------------------------====================*/
+static void      o___VERIFY__________________o (void) {;}
 
 static float       s_hadji, s_hadjo, s_vadj;
 static char        d_str       [LEN_LABEL];
@@ -423,9 +432,11 @@ ykine_stance_verify_radius (char a_leg)
    rcs = ykine_stance_radius_head (&i, o_str);
    while (rcs >= 0) {
       rc = ykine__legs_rk_getter (a_leg, d_str, o_str, y_str, &xt, &zt, &yt);
+      /*> yt += s_vadj;                                                               <*/
       DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xt, zt, yt);
       /*---(check ik)--------------------*/
       rc = yKINE_inverse (a_leg, xt, zt, yt);
+      /*> printf ("%-10.10sd, %-10.10so, %-10.10sy     pos %8.2fx, %8.2fz, %8.2fy     rc %4d\n", d_str, o_str, y_str, xt, zt, yt, rc);   <*/
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
       if (rc >= 0)   s_verify [i] = '¬';
       rcs = ykine_stance_radius_next (&i, o_str);
@@ -442,11 +453,7 @@ ykine_stance_verify_leg    (char a_leg)
    /*---(clear)--------------------------*/
    rcs = ykine_stance_radius_head (&i, x_short);
    while (rcs >= 0) {
-      if      (strcmp (y_str, "attn") == 0)        s_verify [i] = '-';
-      else if (strcmp (y_str, "max" ) == 0)        s_verify [i] = '´';
-      else if (strcmp (y_str, "flat") == 0)        s_verify [i] = '=';
-      else if (strcmp (y_str, "zero") == 0)        s_verify [i] = '´';
-      else if (strcmp (y_str, "back") == 0)        s_verify [i] = '-';
+      if      (strcmp (y_str  , "a·") == 0)        s_verify [i] = '´';
       else if (strcmp (x_short, "f·") == 0)        s_verify [i] = '|';
       else if (strcmp (x_short, "m·") == 0)        s_verify [i] = '¨';
       else if (strcmp (x_short, "t·") == 0)        s_verify [i] = '|';
@@ -456,7 +463,7 @@ ykine_stance_verify_leg    (char a_leg)
    s_verify [++i] = '\0';
    /*---(print)--------------------------*/
    ykine_stance_verify_radius (a_leg);
-   printf ("   %s", s_verify);
+   printf ("%s", s_verify);
    return 0;
 }
 
@@ -477,24 +484,38 @@ ykine_stance_verify_height (void)
 char
 ykine_stance_verify_spread (void)
 {
-   int         i;
-   for (i = 0; i < MAX_HEIGHTS; ++i) {
-      if (s_heights [i].terse     == NULL)                 break;
-      if (s_heights [i].terse [0] == '·')                  break;
-      strlcpy (y_str, s_heights [i].terse, LEN_LABEL);
-      if (s_heights [i].terse [0] != '-')  printf ("%-5.5s ", s_heights [i].terse);
-      else                                 printf ("%-5.5s ", " "                );
-      if (s_heights [i].abbr == tolower (s_heights [i].abbr)) {
-         printf ("%c %8.2f  ", s_heights [i].abbr, s_heights [i].y);
-      }  else if (s_heights [i].abbr < 0) {
-         printf ("%c %8.2f  ", s_heights [i].abbr, s_heights [i].y);
-      } else {
-         printf ("%c %8.2f  ", '-'               , s_heights [i].y);
+   char        rcs         =    0;
+   int         i           =    0;
+   rcs = ykine_stance_legdrop_head (&i, y_str);
+   y_str [0] = 'S';
+   while (rcs >= 0) {
+      if (strchr ("tuvwxyz", y_str [0]) != NULL)  break;
+      switch (y_str [1]) {
+      case '+' :  case '-' :
+         break;
+      case '·' :
+         printf  ("%c ", y_str [0]);
+         ykine_stance_verify_height ();
+         break;
+      case '\'':
+         printf  ("' ");
+         ykine_stance_verify_height ();
+         break;
       }
-      ykine_stance_verify_height ();
+      rcs = ykine_stance_legdrop_next (&i, y_str);
    }
    return 0;
 }
+
+/*> char                                                                              <* 
+ *> ykine_stance_verify_clear (void)                                                  <* 
+ *> {                                                                                 <* 
+ *>    for (y = 0; y < MAX_VERIFY; ++y) {                                             <* 
+ *>       for (x = 0; x < MAX_VERIFY; ++x) {                                          <* 
+ *>          s_verify [y][x] = '·';                                                   <* 
+ *>       }                                                                           <* 
+ *>    }                                                                              <* 
+ *> }                                                                                 <*/
 
 char
 ykine_stance_verify     (void)
@@ -514,8 +535,8 @@ ykine_stance_verify     (void)
       if (s_spreads [i].terse [0] == '-')                  continue;
       strlcpy (d_str, s_spreads [i].terse, LEN_LABEL);
       sprintf (t, "%s configuration", d_str);
-      printf ("\n%-20.20s =====================================================================================================\n", t);
-      printf ("terse a  ---y---     ");
+      printf ("\n%-20.20s ==================================================================================\n", t);
+      printf ("  ");
       for (k = YKINE_RR; k <= YKINE_LR; ++k) {
          /*---(clear)--------------------------*/
          rcs = ykine_stance_radius_head (&j, x_short);
