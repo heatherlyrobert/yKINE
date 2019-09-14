@@ -442,6 +442,10 @@ char        yKINE_moves_rpt         (void);
 char        yKINE_xz2hex            (float x, float z, int *c, int *r);
 char        yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o);
 char        yKINE_hex2xz            (int c, int r, float *x, float *z);
+char        yKINE_verify_rc         (int a_row, int a_col);
+float       yKINE_height            (char *a_entry);
+float       yKINE_radius            (char *a_entry);
+float       yKINE_scale             (char *a_entry);
 
 
 /*> char        yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count);   <*/

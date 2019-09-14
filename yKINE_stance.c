@@ -34,7 +34,7 @@ static tSPREAD s_spreads [MAX_SPREADS] = {
 
 
 #define   MAX_VERIFY     200
-static char s_verify  [MAX_VERIFY];
+static char s_verify  [MAX_VERIFY][MAX_VERIFY];
 
 
 
@@ -203,17 +203,12 @@ ykine_stance_radius_next (int *n, char *a_short)
    return 0;
 }
 
-int
-ykine_stance_radius_max  (void)
+float
+yKINE_radius         (char *a_entry)
 {
-   char       rcs          =    0;
-   int        n            =    0;
-   char       x_short      [LEN_LABEL];
-   rcs = ykine_stance_radius_head (&n, x_short);
-   while (rcs >= 0) {
-      rcs = ykine_stance_radius_next (&n, x_short);
-   }
-   return ++n;
+   double     x_val;
+   ykine_stance_radius (YKINE_PURE, 0.0, a_entry, &x_val);
+   return x_val;
 }
 
 
@@ -296,6 +291,14 @@ ykine_stance_height_next (int *n, char *a_short)
    return ykine_stance_radius_next (n, a_short);
 }
 
+float
+yKINE_height         (char *a_entry)
+{
+   double     x_val;
+   ykine_stance_height (YKINE_PURE, 0.0, a_entry, &x_val);
+   return x_val;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -304,7 +307,7 @@ ykine_stance_height_next (int *n, char *a_short)
 static void      o___LEGDROP_________________o (void) {;}
 
 char
-ykine_stance_legdrop    (char a_from, double a_start, char *a_entry, double *a_result)
+ykine_stance_scale      (char a_from, double a_start, char *a_entry, double *a_result)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
@@ -374,7 +377,7 @@ ykine_stance_legdrop    (char a_from, double a_start, char *a_entry, double *a_r
 } 
 
 char
-ykine_stance_legdrop_head (int *n, char *a_short)
+ykine_stance_scale_head   (int *n, char *a_short)
 {
    a_short [0]  = 'Z';
    a_short [1]  = '·';
@@ -384,7 +387,7 @@ ykine_stance_legdrop_head (int *n, char *a_short)
 }
 
 char
-ykine_stance_legdrop_next (int *n, char *a_short)
+ykine_stance_scale_next   (int *n, char *a_short)
 {
    a_short [2]  = '\0';
    if (a_short [0] < 'A' || (a_short [0] > 'Z' && a_short [0] < 'a') || a_short [0] > 'z')    return -1;
@@ -406,6 +409,14 @@ ykine_stance_legdrop_next (int *n, char *a_short)
    return 0;
 }
 
+float
+yKINE_scale          (char *a_entry)
+{
+   double     x_val;
+   ykine_stance_scale  (YKINE_PURE, 0.0, a_entry, &x_val);
+   return x_val;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -413,150 +424,100 @@ ykine_stance_legdrop_next (int *n, char *a_short)
 /*====================------------------------------------====================*/
 static void      o___VERIFY__________________o (void) {;}
 
-static float       s_hadji, s_hadjo, s_vadj;
 static char        d_str       [LEN_LABEL];
 static char        o_str       [LEN_LABEL];
 static char        y_str       [LEN_LABEL];
-static float       cp;
+static int         s_row;
+static int         s_col;
 
 char
 ykine_stance_verify_radius (char a_leg)
 {
    char        rc;
    char        rcs;
-   int         i;
-   float       xt, zt, yt, dt, ot, tt, xz;       /* temporary coordinates     */
-   float       f, p, t;
-   float       x_full, x_diff;
-   float       xi, zi, xo, zo;
-   rcs = ykine_stance_radius_head (&i, o_str);
+   float       x, z, y;                       /* temporary coordinates     */
+   /*---(background)---------------------*/
+   rcs = ykine_stance_radius_head (&s_col, o_str);
    while (rcs >= 0) {
-      rc = ykine__legs_rk_getter (a_leg, d_str, o_str, y_str, &xt, &zt, &yt);
-      /*> yt += s_vadj;                                                               <*/
-      DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", xt, zt, yt);
+      if      (strcmp (y_str, "a·") == 0)        s_verify [s_row][s_col] = '´';
+      else if (strcmp (o_str, "f·") == 0)        s_verify [s_row][s_col] = '|';
+      else if (strcmp (o_str, "m·") == 0)        s_verify [s_row][s_col] = '¨';
+      else if (strcmp (o_str, "t·") == 0)        s_verify [s_row][s_col] = '|';
+      else                                       s_verify [s_row][s_col] = '·';
+      rcs = ykine_stance_radius_next (&s_col, o_str);
+   }
+   /*---(values)-------------------------*/
+   rcs = ykine_stance_radius_head (&s_col, o_str);
+   while (rcs >= 0) {
+      rc = ykine__legs_rk_getter (a_leg, d_str, o_str, y_str, &x, &z, &y);
+      DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
       /*---(check ik)--------------------*/
-      rc = yKINE_inverse (a_leg, xt, zt, yt);
-      /*> printf ("%-10.10sd, %-10.10so, %-10.10sy     pos %8.2fx, %8.2fz, %8.2fy     rc %4d\n", d_str, o_str, y_str, xt, zt, yt, rc);   <*/
+      rc = yKINE_inverse (a_leg, x, z, y);
+      /*> printf ("%-10.10sd, %-10.10so, %-10.10sy     pos %8.2fx, %8.2fz, %8.2fy     rc %4d\n", d_str, o_str, y_str, x, z, y, rc);   <*/
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
-      if (rc >= 0)   s_verify [i] = '¬';
-      rcs = ykine_stance_radius_next (&i, o_str);
+      if (rc >= 0)   s_verify [s_row][s_col] = '¬';
+      rcs = ykine_stance_radius_next (&s_col, o_str);
+   }
+   s_verify [s_row][++s_col] = '\0';
+   switch (y_str [1]) {
+   case '·' : case '\'':  printf ("%s\n", s_verify [s_row]);  break;
    }
    return 0;
 }
-
-char
-ykine_stance_verify_leg    (char a_leg)
-{
-   char        rcs         =    0;
-   int         i           =    0;
-   char        x_short     [LEN_LABEL];
-   /*---(clear)--------------------------*/
-   rcs = ykine_stance_radius_head (&i, x_short);
-   while (rcs >= 0) {
-      if      (strcmp (y_str  , "a·") == 0)        s_verify [i] = '´';
-      else if (strcmp (x_short, "f·") == 0)        s_verify [i] = '|';
-      else if (strcmp (x_short, "m·") == 0)        s_verify [i] = '¨';
-      else if (strcmp (x_short, "t·") == 0)        s_verify [i] = '|';
-      else                                         s_verify [i] = '·';
-      rcs = ykine_stance_radius_next (&i, x_short);
-   }
-   s_verify [++i] = '\0';
-   /*---(print)--------------------------*/
-   ykine_stance_verify_radius (a_leg);
-   printf ("%s", s_verify);
-   return 0;
-}
-
-char
-ykine_stance_verify_height (void)
-{
-   int         i;
-   for (i = YKINE_RR; i <= YKINE_LR; ++i) {
-      cp  = yKINE_legdeg (i);
-      ykine_stance_verify_leg    (i);
-      printf ("   ");
-      break;   /* TURNS OUT ALL LEGS ARE THE SAME */
-   }
-   printf ("\n");
-   return 0;
-}
-
-char
-ykine_stance_verify_spread (void)
-{
-   char        rcs         =    0;
-   int         i           =    0;
-   rcs = ykine_stance_legdrop_head (&i, y_str);
-   y_str [0] = 'S';
-   while (rcs >= 0) {
-      if (strchr ("tuvwxyz", y_str [0]) != NULL)  break;
-      switch (y_str [1]) {
-      case '+' :  case '-' :
-         break;
-      case '·' :
-         printf  ("%c ", y_str [0]);
-         ykine_stance_verify_height ();
-         break;
-      case '\'':
-         printf  ("' ");
-         ykine_stance_verify_height ();
-         break;
-      }
-      rcs = ykine_stance_legdrop_next (&i, y_str);
-   }
-   return 0;
-}
-
-/*> char                                                                              <* 
- *> ykine_stance_verify_clear (void)                                                  <* 
- *> {                                                                                 <* 
- *>    for (y = 0; y < MAX_VERIFY; ++y) {                                             <* 
- *>       for (x = 0; x < MAX_VERIFY; ++x) {                                          <* 
- *>          s_verify [y][x] = '·';                                                   <* 
- *>       }                                                                           <* 
- *>    }                                                                              <* 
- *> }                                                                                 <*/
 
 char
 ykine_stance_verify     (void)
 {
    char        rcs         =    0;
-   int         i, j, k;
    char        t           [LEN_LABEL];
-   char        x_short     [LEN_LABEL];
-   /*---(prepare constants)-----------*/
-   /*> s_hadj  = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);   <*/
-   s_hadji = yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA);
-   s_hadjo = yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
-   s_vadj  = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
-   for (i = 0; i < MAX_SPREADS; ++i) {
-      if (s_spreads [i].terse     == NULL)                 break;
-      if (s_spreads [i].terse [0] == '·')                  break;
-      if (s_spreads [i].terse [0] == '-')                  continue;
-      strlcpy (d_str, s_spreads [i].terse, LEN_LABEL);
-      sprintf (t, "%s configuration", d_str);
-      printf ("\n%-20.20s ==================================================================================\n", t);
-      printf ("  ");
-      for (k = YKINE_RR; k <= YKINE_LR; ++k) {
-         /*---(clear)--------------------------*/
-         rcs = ykine_stance_radius_head (&j, x_short);
-         while (rcs >= 0) {
-            switch (x_short [1]) {
-            case '+' :  case '-' :  printf  (" ");               break;
-            case '·' :              printf  ("%c", x_short [0]); break;
-            case '\'':              printf  ("'");               break;
-            }
-            rcs = ykine_stance_radius_next (&j, x_short);
-         }
-         printf ("   ");
-         break;   /* TURNS OUT ALL LEGS ARE THE SAME */
+   int         i;
+   /*---(clear)-----------------------*/
+   for (s_row = 0; s_row < MAX_VERIFY; ++s_row) {
+      for (s_col = 0; s_col < MAX_VERIFY; ++s_col) {
+         s_verify [s_row][s_col] = '·';
       }
-      printf ("\n");
-      ykine_stance_verify_spread ();
-      break;  /* TURNS OUT ONLY ONE PATTERN  */
    }
+   /*---(header)----------------------*/
+   strcpy (d_str, "star");
+   sprintf (t, "%s configuration", d_str);
+   printf ("\n%-20.20s ==================================================================================\n", t);
+   printf ("  ");
+   rcs = ykine_stance_radius_head (&s_col, y_str);
+   while (rcs >= 0) {
+      switch (y_str [1]) {
+      case '+' :  case '-' :  printf  (" ");             break;
+      case '·' :              printf  ("%c", y_str [0]); break;
+      case '\'':              printf  ("'");             break;
+      }
+      rcs = ykine_stance_radius_next (&s_col, y_str);
+   }
+   printf ("\n");
+   /*---(run)-------------------------*/
+   rcs = ykine_stance_scale_head (&s_row, y_str);
+   while (rcs >= 0) {
+      switch (y_str [1]) {
+      case '·' :   printf  ("%c ", y_str [0]);  break;
+      case '\'':   printf  ("' ");              break;
+      }
+      ykine_stance_verify_radius    (YKINE_RR);
+      rcs = ykine_stance_scale_next   (&s_row, y_str);
+   }
+   /*---(complete)-----------------------*/
    return 0;
 }
+
+char
+yKINE_verify_rc            (int a_row, int a_col)
+{
+   return s_verify [a_row][a_col];
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                    hex converions                            ----===*/
+/*====================------------------------------------====================*/
+static void      o___HEXAGONAL_______________o (void) {;}
 
 #define    MM2COL      25.400
 #define    MM2ROW      29.328
