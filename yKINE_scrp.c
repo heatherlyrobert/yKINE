@@ -26,7 +26,7 @@ struct cVERBS {
    char        style;                       /* normal (xzy) vs polar (dly)    */
    char        mask;                        /* masked field for yPARSE reload */
    char        (*call)     (void);          /* function pointer               */
-   char        desc        [LEN_STR  ];     /* english description            */
+   char        desc        [LEN_HUND ];     /* english description            */
 };
 tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ forward kinematics ]]================================================*/
@@ -42,12 +42,12 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { YKINE_NK  , "nk"   , "neighbor"     , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_nk         , "set exact endpoint relative to military"           },
    /* ===[[ body zero-point ]]===================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { -1        , "ze"   , "zero"         , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_zero       , "set absolute body position in 3d space"            },
-   { -1        , "zp"   , "zpolar"       , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_POLAR , -1, ykine_body_zpolar     , "set relative body position based on last position" },
+   { YKINE_ZE  , "ze"   , "zero"         , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_zero       , "set absolute body position in 3d space"            },
+   { YKINE_ZP  , "zp"   , "zpolar"       , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_POLAR , -1, ykine_body_zpolar     , "set relative body position based on last position" },
    /* ===[[ body orientation ]]==================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { -1        , "or"   , "orient"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_orient     , "set absolute body orientation angles"              },
-   { -1        , "op"   , "opolor"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
+   { YKINE_OR  , "or"   , "orient"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_orient     , "set absolute body orientation angles"              },
+   { YKINE_OP  , "op"   , "opolor"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
    /* ===[[ music notation ]]====================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "metr" , "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
@@ -83,7 +83,8 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { -1        , "walk" , "walk"         , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
    { -1        , "circ" , "circle"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
    /* done-------------------*/
-   { -1        , NULL   , NULL           , 0   , 0   , 0            , 0         , 0           , -1, NULL                  , NULL                                                },
+   { YKINE_NOOP, "--"   , "empty"        , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, "-"                   , NULL                                                },
+   { -1        , NULL   , NULL           ,  0  ,  0  , -1           , -1        , -1          , -1, NULL                  , NULL                                                },
 };
 
 
@@ -146,7 +147,7 @@ ykine_verb_init         (void)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    for (i = 0; i < MAX_VERBS; ++i) {
-      if (s_verb_info [i].name [0] == NULL)  break;
+      if (s_verb_info [i].name  [0] == NULL) break;
       if (s_verb_info [i].active   != 'y' )  continue;
       DEBUG_YKINE_SCRP   yLOG_info    ("verb"      , s_verb_info [i].name);
       yPARSE_handler ('·', s_verb_info [i].name, 0.0, "", s_verb_info [i].mask, NULL, NULL, "", "", s_verb_info [i].desc);
@@ -212,6 +213,37 @@ ykine__scrp_prep   (void)
    return 0;
 }
 
+char         /*--> return verb info based on code --------[ ------ [ ------ ]-*/
+ykine_scrp_by_code      (char a_code, char *a_terse, char *a_name, char *a_desc)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_schar   (a_code);
+   --rce;  if (a_code < 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(by-terse)-----------------------*/
+   for (i = 0; i < MAX_VERBS; ++i) {
+      if (s_verb_info [i].name  [0] == NULL)    break;
+      if (s_verb_info [i].active != 'y')        continue;
+      if (a_code  != s_verb_info [i].code)      continue;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
+      if (a_terse != NULL)  strlcpy (a_terse, s_verb_info [i].terse, LEN_LABEL);
+      if (a_name  != NULL)  strlcpy (a_name , s_verb_info [i].name , LEN_LABEL);
+      if (a_desc  != NULL)  strlcpy (a_desc , s_verb_info [i].desc , LEN_HUND );
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(complete)-----------------------*/
+   --rce;
+   DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+   return rce;
+}
+
 char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
 ykine_scrp_verb         (char *a_char)
 {
@@ -232,6 +264,7 @@ ykine_scrp_verb         (char *a_char)
    DEBUG_YKINE_SCRP   yLOG_snote   (a_char);
    /*---(by-terse)-----------------------*/
    for (i = 0; i < MAX_VERBS; ++i) {
+      if (s_verb_info [i].name  [0] == NULL)             break;
       if (s_verb_info [i].active != 'y')                 continue;
       if (a_char [0] != s_verb_info [i].terse  [0])      continue;
       if (strcmp (a_char, s_verb_info [i].terse) != 0)   continue;
@@ -242,6 +275,7 @@ ykine_scrp_verb         (char *a_char)
    /*---(by-name)------------------------*/
    if (x_index < 0) {
       for (i = 0; i < MAX_VERBS; ++i) {
+         if (s_verb_info [i].name  [0] == NULL)             break;
          if (s_verb_info [i].active != 'y')                 continue;
          if (a_char [0] != s_verb_info [i].name  [0])       continue;
          if (strcmp (a_char, s_verb_info [i].name) != 0)    continue;
@@ -437,13 +471,13 @@ ykine_scrp_segno        (void)
       if (x_servo == NULL)      continue;
       if (x_servo->seg == YKINE_FOCU) {
          DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-         rc = ykine_move_create (YKINE_MOVE_NOTE, YKINE_NONE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
+         rc = ykine_move_create (x_servo, YKINE_NOTE, YKINE_NONE, "segno", myKINE.s_cline, 0.0, 0.0);
          x_servo->segni [x_servo->nsegno] = x_servo->tail;
          ++(x_servo->nsegno);
       } else if (x_servo->seg == YKINE_TIBI) {
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-            rc = ykine_move_create (YKINE_MOVE_NOTE, YKINE_NONE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
+            rc = ykine_move_create (x_servo, YKINE_NOTE, YKINE_NONE, "segno", myKINE.s_cline, 0.0, 0.0);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             --x_servo;
@@ -451,7 +485,7 @@ ykine_scrp_segno        (void)
       } else {
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-            ykine_move_create (YKINE_MOVE_NOTE, YKINE_NONE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
+            ykine_move_create (x_servo, YKINE_NOTE, YKINE_NONE, "segno", myKINE.s_cline, 0.0, 0.0);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             ++x_servo;

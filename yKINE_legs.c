@@ -85,11 +85,11 @@ ykine__legs_get_prev    (int a_leg)
    /*---(get previous)-------------------*/
    coxab  = yKINE_legdeg (a_leg);
    x_servo = ykine_servo_pointer (a_leg, YKINE_FEMU);
-   rc  = ykine_move_savedloc  (x_servo, NULL, &femub, NULL, NULL, NULL, NULL);
+   rc  = ykine_move_savedtail  (x_servo, NULL, &femub, NULL, NULL, NULL, NULL);
    x_servo = ykine_servo_pointer (a_leg, YKINE_PATE);
-   rc  = ykine_move_savedloc  (x_servo, NULL, &pateb, NULL, NULL, NULL, NULL);
+   rc  = ykine_move_savedtail  (x_servo, NULL, &pateb, NULL, NULL, NULL, NULL);
    x_servo = ykine_servo_pointer (a_leg, YKINE_TIBI);
-   rc  = ykine_move_savedloc  (x_servo, NULL, &tibib, &myKINE.xb, &myKINE.zb, &myKINE.yb, &myKINE.xzb);
+   rc  = ykine_move_savedtail  (x_servo, NULL, &tibib, &myKINE.xb, &myKINE.zb, &myKINE.yb, &myKINE.xzb);
    /*---(adjust for foot)----------------*/
    myKINE.yb -= yKINE_seglen (YKINE_FOOT);
    /*---(report)-------------------------*/
@@ -122,7 +122,7 @@ ykine__legs_set_servo   (char a_verb, int a_leg, int a_seg, float a_deg, float a
    /*---(calculate)----------------------*/
    s = a_beat * x_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
-   rc = ykine_move_create (YKINE_MOVE_SERVO, a_verb, x_servo, myKINE.s_verb, myKINE.s_cline, a_deg, s);
+   rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_verb, myKINE.s_cline, a_deg, s);
    if (a_verb == YKINE_FK)  x_meth = YKINE_FK;
    rc = yKINE_endpoint    (a_leg, a_seg, x_meth, NULL, NULL, &x, &z, &y, NULL);
    DEBUG_YKINE_SCRP   yLOG_complex ("updated"   , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
@@ -178,7 +178,7 @@ ykine__legs_fk_getter       (int a_leg, int a_seg, char *a_entry, float *a_deg)
       return rce;
    }
    /*---(get values)------------------*/
-   rc = ykine_move_savedloc  (x_servo, NULL, &dp, NULL, NULL, NULL, NULL);
+   rc = ykine_move_savedtail  (x_servo, NULL, &dp, NULL, NULL, NULL, NULL);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    if (myKINE.s_from == YKINE_PURE) {
       if (rc == 0)  rc  = yPARSE_adjval   (dp, a_entry, &d);

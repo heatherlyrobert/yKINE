@@ -60,14 +60,14 @@ ykine_gait__begin       (char a_scrp)
          yKINE_move_curdata     (&x_xpos, &x_zpos, &x_ypos);
          DEBUG_YKINE_SCRP   yLOG_double   ("last deg"  , x_deg);
          /*---(write header note)-----------*/
-         ykine_move_create (YKINE_MOVE_NOTE , YKINE_NONE, g_servo_info + x_servo, "incipio"      , myKINE.s_nline, 0.0  , 0.0);
+         ykine_move_create (g_servo_info + x_servo, YKINE_NOTE , YKINE_NONE, "incipio"      , myKINE.s_nline, 0.0  , 0.0);
          /*---(write header placeholders)---*/
          ykine_move_addloc (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);
-         ykine_move_create (YKINE_MOVE_WAIT , YKINE_NONE, g_servo_info + x_servo, "wait for turn", myKINE.s_nline, x_deg, 3.0);
+         ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, "wait for turn", myKINE.s_nline, x_deg, 3.0);
          ykine_move_addloc (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);
-         ykine_move_create (YKINE_MOVE_SERVO, YKINE_NONE, g_servo_info + x_servo, "up to neutral", myKINE.s_nline, 0.0  , 0.5);
-         ykine_move_create (YKINE_MOVE_SERVO, YKINE_NONE, g_servo_info + x_servo, "step to first", myKINE.s_nline, 0.0  , 0.5);
-         ykine_move_create (YKINE_MOVE_WAIT , YKINE_NONE, g_servo_info + x_servo, "wait for legs", myKINE.s_nline, 0.0  , 3.0);
+         ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, "up to neutral", myKINE.s_nline, 0.0  , 0.5);
+         ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, "step to first", myKINE.s_nline, 0.0  , 0.5);
+         ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, "wait for legs", myKINE.s_nline, 0.0  , 3.0);
          /*---(save end of header)----------*/
          DEBUG_YKINE_SCRP   yLOG_point    ("saved"     , g_servo_info [x_servo].tail);
          s_gait_begin [x_servo] = g_servo_info [x_servo].tail;
@@ -146,10 +146,10 @@ yKINE__gait_roll     (int a_servo, int a_order, int a_count)
       /*---(prepare for delete)----*/
       x_next  = x_curr->s_next;
       /*---(add dup to end)--------*/
-      ykine_move_create (YKINE_MOVE_SERVO, YKINE_NONE, x_servo , "extended", x_curr->line, x_curr->degs, x_curr->dur);
+      ykine_move_create (x_servo , YKINE_SERVO, YKINE_NONE, "extended", x_curr->line, x_curr->degs, x_curr->dur);
       ykine_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
       /*---(delete current)--------*/
-      ykine_move_delete (x_curr);
+      ykine_move_delete (&x_curr);
       /*---(go to next)------------*/
       x_curr = x_next;
       DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
@@ -303,15 +303,15 @@ yKINE__gait_add_tail      (int a_servo, int a_order)
    DEBUG_YKINE_SCRP  yLOG_point   ("x_curr"    , x_curr);
    x_servo = s_gait_begin [a_servo]->servo;;
    /*---(add tail)-----------------------*/
-   ykine_move_create (YKINE_MOVE_WAIT , YKINE_NONE, x_servo , "wait for turn", -1     , x_curr->degs  , a_order * 0.500);
+   ykine_move_create (x_servo , YKINE_WAIT , YKINE_NONE, "wait for turn", -1     , x_curr->degs  , a_order * 0.500);
    ykine_move_addloc (x_servo, x_curr->x_pos, x_curr->z_pos, x_curr->y_pos);
-   ykine_move_create (YKINE_MOVE_SERVO, YKINE_NONE, x_servo , "up to neutral", -1           , s_neud          , 0.500           );
+   ykine_move_create (x_servo , YKINE_SERVO, YKINE_NONE, "up to neutral", -1           , s_neud          , 0.500           );
    ykine_move_addloc (x_servo, s_neux, s_neuz, s_neuy);
-   ykine_move_create (YKINE_MOVE_SERVO, YKINE_NONE, x_servo , "back down"    , -1           , s_inid          , 0.500           );
+   ykine_move_create (x_servo , YKINE_SERVO, YKINE_NONE, "back down"    , -1           , s_inid          , 0.500           );
    ykine_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
-   ykine_move_create (YKINE_MOVE_WAIT , YKINE_NONE, x_servo , "wait all legs", -1       , s_inid          , (5 - a_order) * 0.500);
+   ykine_move_create (x_servo , YKINE_WAIT , YKINE_NONE, "wait all legs", -1       , s_inid          , (5 - a_order) * 0.500);
    ykine_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
-   ykine_move_create (YKINE_MOVE_NOTE , YKINE_NONE, x_servo , "compleo"      , myKINE.s_nline, 0.0, 0.0);
+   ykine_move_create (x_servo , YKINE_NOTE , YKINE_NONE, "compleo"      , myKINE.s_nline, 0.0, 0.0);
    ykine_move_addloc (x_servo, s_inix, s_iniz, s_iniy);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);

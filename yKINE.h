@@ -292,14 +292,16 @@
 #define     YKINE_GK         2
 
 #define     YKINE_TK         3
-#define     YKINE_RK         4
-#define     YKINE_CK         5
-#define     YKINE_NK         6
-#define     YKINE_SK         7
+#define     YKINE_CK         4
+#define     YKINE_RK         5
+#define     YKINE_SK         6
+#define     YKINE_NK         7
 #define     YKINE_ZE         8
 #define     YKINE_ZP         9
 #define     YKINE_OR        10
 #define     YKINE_OP        11
+
+#define     YKINE_NOOP      99
 
 
 
@@ -354,14 +356,16 @@
 /*---(servos)-------------------------*/
 #define     YKINE_MAX_SERVO   64
 
-#define     YKINE_MOVE_NULL   '-'
-#define     YKINE_MOVE_SERVO  's'
-#define     YKINE_MOVE_WAIT   'w'
-#define     YKINE_MOVE_INIT   'i'
-#define     YKINE_MOVE_NOTE   'n'
-#define     YKINE_MOVE_DEL    'x'
-#define     YKINE_MOVE_MARK   '#'
-#define     YKINE_MOVE_TEMPO  '>'
+
+#define     YKINE_NULL      '-'
+#define     YKINE_SERVO     's'
+#define     YKINE_WAIT      'w'
+#define     YKINE_INIT      'i'
+#define     YKINE_NOTE      'n'
+#define     YKINE_DEL       'x'
+#define     YKINE_MARK      '#'
+#define     YKINE_TEMPO     '>'
+
 
 #define     YKINE_NONE        '-'
 #define     YKINE_FROM        'f'

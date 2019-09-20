@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1q"
-#define     P_VERTXT    "simplified exact logic has been unit tested"
+#define     P_VERNUM    "1.1r"
+#define     P_VERTXT    "cleaned up moves functions, added defenses, and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -470,12 +470,19 @@ char        ykine_accel_opolar      (char *a_dur, float yb, float db, float pb, 
 char        ykine_accel_leg         (char a_verb, int a_leg, char *a_dur);
 char*       ykine__unit_accel       (char *a_question, int a_num);
 
-char        ykine_move_create       (char a_type, char a_verb, tSERVO *a_servo, char *a_label, int a_line, float a_deg, float a_sec);
+
+
+/*===[[ YKINE_move.c ]]=======================================================*/
+/*---(malloc)-------------------------*/
+char        ykine__move_new         (tMOVE **a_move);
+char        ykine__move_free        (tMOVE **a_move);
+
+char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, char *a_label, int a_line, float a_deg, float a_sec);
 char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
-char        ykine_move_delete       (tMOVE *a_move);
+char        ykine_move_delete       (tMOVE **a_move);
 char        ykine_move_clear_servo  (tSERVO *a_servo);
-char        ykine_move_savedloc     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
+char        ykine_move_savedtail     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char        ykine_move_savedcurr    (tMOVE  *a_move , float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char        ykine_move_savedprev    (tMOVE  *a_move , float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
@@ -490,6 +497,7 @@ char        ykine_scrp_turn         (int   a_repeats);
 
 /*===[[ YKINE_queue.c ]]======================================================*/
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
+char        ykine_scrp_by_code      (char a_code, char *a_terse, char *a_name, char *a_desc);
 char        ykine_scrp_popverb      (void);
 char        ykine_scrp_popservo     (void);
 char        ykine_servo_list        (char *a_which);
