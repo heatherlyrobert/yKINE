@@ -459,9 +459,9 @@ ykine_stance_verify_radius (char a_leg)
       rcs = ykine_stance_radius_next (&s_col, o_str);
    }
    s_verify [s_row][++s_col] = '\0';
-   switch (y_str [1]) {
-   case '·' : case '\'':  printf ("%s\n", s_verify [s_row]);  break;
-   }
+   /*> switch (y_str [1]) {                                                           <* 
+    *> case '·' : case '\'':  printf ("%s\n", s_verify [s_row]);  break;              <* 
+    *> }                                                                              <*/
    return 0;
 }
 
@@ -479,26 +479,26 @@ ykine_stance_verify     (void)
    }
    /*---(header)----------------------*/
    strcpy (d_str, "star");
-   sprintf (t, "%s configuration", d_str);
-   printf ("\n%-20.20s ==================================================================================\n", t);
-   printf ("  ");
-   rcs = ykine_stance_radius_head (&s_col, y_str);
-   while (rcs >= 0) {
-      switch (y_str [1]) {
-      case '+' :  case '-' :  printf  (" ");             break;
-      case '·' :              printf  ("%c", y_str [0]); break;
-      case '\'':              printf  ("'");             break;
-      }
-      rcs = ykine_stance_radius_next (&s_col, y_str);
-   }
-   printf ("\n");
+   /*> sprintf (t, "%s configuration", d_str);                                                                          <* 
+    *> printf ("\n%-20.20s ==================================================================================\n", t);   <* 
+    *> printf ("  ");                                                                                                   <*/
+   /*> rcs = ykine_stance_radius_head (&s_col, y_str);                                <* 
+    *> while (rcs >= 0) {                                                             <* 
+    *>    switch (y_str [1]) {                                                        <* 
+    *>    case '+' :  case '-' :  printf  (" ");             break;                   <* 
+    *>    case '·' :              printf  ("%c", y_str [0]); break;                   <* 
+    *>    case '\'':              printf  ("'");             break;                   <* 
+    *>    }                                                                           <* 
+    *>    rcs = ykine_stance_radius_next (&s_col, y_str);                             <* 
+    *> }                                                                              <* 
+    *> printf ("\n");                                                                 <*/
    /*---(run)-------------------------*/
    rcs = ykine_stance_scale_head (&s_row, y_str);
    while (rcs >= 0) {
-      switch (y_str [1]) {
-      case '·' :   printf  ("%c ", y_str [0]);  break;
-      case '\'':   printf  ("' ");              break;
-      }
+      /*> switch (y_str [1]) {                                                        <* 
+       *> case '·' :   printf  ("%c ", y_str [0]);  break;                            <* 
+       *> case '\'':   printf  ("' ");              break;                            <* 
+       *> }                                                                           <*/
       ykine_stance_verify_radius    (YKINE_RR);
       rcs = ykine_stance_scale_next   (&s_row, y_str);
    }

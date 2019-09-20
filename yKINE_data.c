@@ -135,6 +135,7 @@ yKINE_endpoint     (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   default        : return -1; break;
    }
    /*---(return actuals)-----------------*/
    if (a_deg  != NULL)  *a_deg  = x_leg [a_seg].d;

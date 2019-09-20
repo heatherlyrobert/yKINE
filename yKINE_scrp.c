@@ -16,6 +16,8 @@
 #define    MAX_VERBS       100
 typedef    struct  cVERBS  tVERBS;
 struct cVERBS {
+   char        code;                        /* ref id of verb                 */
+   char        terse       [LEN_LABEL];     /* short, common name             */
    char        name        [LEN_LABEL];     /* full verb name                 */
    char        active;                      /* allowed for use                */
    char        servo;                       /* has a servo specifier field    */
@@ -28,67 +30,60 @@ struct cVERBS {
 };
 tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ forward kinematics ]]================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "fk_pure"      , 'y' , 'y' , YKINE_FORWARD, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_fk         , "set absolute joint angles on all three joints"     },
-   { "fk_from"      , 'y' , 'y' , YKINE_FORWARD, YKINE_FROM, YKINE_LINEAR,  1, ykine_legs_fk         , "set relative joint angles based on last angle"     },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { YKINE_FK  , "fk"   , "forward"      , 'y' , 'y' , YKINE_FORWARD, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_fk         , "set absolute joint angles on all three joints"     },
    /* ===[[ inverse kinematics ]]================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "ik_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_ik         , "set an exact endpoint in 3d space"                 },
-   { "ik_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM, YKINE_LINEAR,  1, ykine_legs_ik         , "set a relative endpoint based on last position"    },
-   { "tk_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_tk         , "set an exact endpoint tangential to leg"           },
-   { "tk_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM, YKINE_LINEAR,  1, ykine_legs_tk         , "set relative endpoint tangential to leg"           },
-   { "ck_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_POLAR ,  1, ykine_legs_ck         , "set absolute joint angles on all three joints"     },
-   { "ck_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM, YKINE_POLAR ,  1, ykine_legs_ck         , "set relative joint angles based on last angle"     },
-   { "rk_pure"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_POLAR ,  1, ykine_legs_rk         , "set absolute joint angles on all three joints"     },
-   { "rk_from"      , 'y' , 'y' , YKINE_INVERSE, YKINE_FROM, YKINE_POLAR ,  1, ykine_legs_rk         , "set relative joint angles based on last angle"     },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { YKINE_IK  , "ik"   , "inverse"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_ik         , "set an exact endpoint in 3d space"                 },
+   { YKINE_TK  , "tk"   , "tangent"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_tk         , "set an exact endpoint tangential to leg"           },
+   { YKINE_CK  , "ck"   , "center"       , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_POLAR ,  1, ykine_legs_ck         , "set absolute joint angles on all three joints"     },
+   { YKINE_RK  , "rk"   , "radial"       , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_POLAR ,  1, ykine_legs_rk         , "set absolute joint angles on all three joints"     },
+   { YKINE_SK  , "sk"   , "step"         , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_POLAR ,  1, ykine_legs_sk         , "set absolute joint angles on all three joints"     },
+   { YKINE_NK  , "nk"   , "neighbor"     , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_nk         , "set exact endpoint relative to military"           },
    /* ===[[ body zero-point ]]===================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "ze_pure"      , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_zero       , "set absolute body position in 3d space"            },
-   { "ze_from"      , 'y' , '-' , YKINE_ZERO   , YKINE_FROM, YKINE_LINEAR, -1, ykine_body_zero       , "set relative body position based on last position" },
-   { "zp_pure"      , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_POLAR , -1, ykine_body_zpolar     , "set relative body position based on last position" },
-   { "zp_from"      , 'y' , '-' , YKINE_ZERO   , YKINE_FROM, YKINE_POLAR , -1, ykine_body_zpolar     , "set relative body position based on last position" },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { -1        , "ze"   , "zero"         , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_zero       , "set absolute body position in 3d space"            },
+   { -1        , "zp"   , "zpolar"       , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_POLAR , -1, ykine_body_zpolar     , "set relative body position based on last position" },
    /* ===[[ body orientation ]]==================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "or_pure"      , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_orient     , "set absolute body orientation angles"              },
-   { "or_from"      , 'y' , '-' , YKINE_ORIENT , YKINE_FROM, YKINE_LINEAR, -1, ykine_body_orient     , "set relative body orientation from last position"  },
-   { "op_pure"      , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
-   { "op_from"      , 'y' , '-' , YKINE_ORIENT , YKINE_FROM, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { -1        , "or"   , "orient"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_orient     , "set absolute body orientation angles"              },
+   { -1        , "op"   , "opolor"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
    /* ===[[ music notation ]]====================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
-   { "tempo"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
-   { "segno"        , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_segno      , "mark a place in the music for later repeats"       },
-   { "repeat"       , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "repeat a particular section of movements"          },
-   { "ripetere"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "repeat a particular section of movements"          },
-   { "stanza"       , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular stanza"         },
-   { "passaggio"    , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular passage"        },
-   { "sezione"      , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular section"        },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { -1        , "metr" , "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
+   { -1        , "tmpo" , "tempo"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
+   { -1        , "segn" , "segno"        , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_segno      , "mark a place in the music for later repeats"       },
+   { -1        , "rept" , "repeat"       , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "repeat a particular section of movements"          },
+   { -1        , "rept" , "ripetere"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "repeat a particular section of movements"          },
+   { -1        , "stnz" , "stanza"       , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular stanza"         },
+   { -1        , "pass" , "passaggio"    , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular passage"        },
+   { -1        , "sezi" , "sezione"      , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular section"        },
    /* ===[[ turtle graphics ]]===================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "tu_speed"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_speed    , "set the speed of the turtle movement"              },
-   { "tu_wait"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_wait     , "stop action for a specific period"                 },
-   { "tu_home"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_home     , "move the turtle to 0x, 0z at the same height"      },
-   { "tu_move"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_move     , "move the turtle on existing direction"             },
-   { "tu_goto"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_goto     , "time signature for rhythm/beat"                    },
-   { "tu_head"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_head     , "change the absolute direction of the turtle"       },
-   { "tu_turn"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_turn     , "adjust the direction of the turtle from current"   },
-   { "tu_lower"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_lower    , "time signature for rhythm/beat"                    },
-   { "tu_raise"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_raise    , "time signature for rhythm/beat"                    },
-   { "tu_depth"     , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
-   { "tu_push"      , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
-   { "tu_pop"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { -1        , "tsped", "tu_speed"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_speed    , "set the speed of the turtle movement"              },
+   { -1        , "twait", "tu_wait"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_wait     , "stop action for a specific period"                 },
+   { -1        , "thome", "tu_home"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_home     , "move the turtle to 0x, 0z at the same height"      },
+   { -1        , "tmove", "tu_move"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_move     , "move the turtle on existing direction"             },
+   { -1        , "tgoto", "tu_goto"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_goto     , "time signature for rhythm/beat"                    },
+   { -1        , "thead", "tu_head"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_head     , "change the absolute direction of the turtle"       },
+   { -1        , "tturn", "tu_turn"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_turn     , "adjust the direction of the turtle from current"   },
+   { -1        , "tlowr", "tu_lower"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_lower    , "time signature for rhythm/beat"                    },
+   { -1        , "trais", "tu_raise"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_raise    , "time signature for rhythm/beat"                    },
+   { -1        , "tdpth", "tu_depth"     , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
+   { -1        , "tpush", "tu_push"      , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
+   { -1        , "tpopp", "tu_pop"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
    /* ===[[ gait framework ]]====================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "gait_beg"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_beg        , "beginning of a gait description"                   },
-   { "incipio"      , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_beg        , "beginning of a gait description"                   },
-   { "gait_end"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_end        , "end of a gait description"                         },
-   { "compleo"      , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_end        , "end of a gait description"                         },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { -1        , "incp" , "gait_beg"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_beg        , "beginning of a gait description"                   },
+   { -1        , "incp" , "incipio"      , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_beg        , "beginning of a gait description"                   },
+   { -1        , "comp" , "gait_end"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_end        , "end of a gait description"                         },
+   { -1        , "comp" , "compleo"      , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_end        , "end of a gait description"                         },
    /* ===[[ complex gaits ]]=====================================================*/
-   /* verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { "walk"         , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
-   { "circle"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
+   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   { -1        , "walk" , "walk"         , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
+   { -1        , "circ" , "circle"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
    /* done-------------------*/
-   { NULL           , 0   , 0   , 0            , 0         , 0           , -1, NULL                  , NULL                                                },
+   { -1        , NULL   , NULL           , 0   , 0   , 0            , 0         , 0           , -1, NULL                  , NULL                                                },
 };
 
 
@@ -235,15 +230,27 @@ ykine_scrp_verb         (char *a_char)
       return rce;
    }
    DEBUG_YKINE_SCRP   yLOG_snote   (a_char);
-   /*---(cycle)--------------------------*/
+   /*---(by-terse)-----------------------*/
    for (i = 0; i < MAX_VERBS; ++i) {
       if (s_verb_info [i].active != 'y')                 continue;
-      if (a_char [0] != s_verb_info [i].name  [0])       continue;
-      if (strcmp (a_char, s_verb_info [i].name) != 0)    continue;
+      if (a_char [0] != s_verb_info [i].terse  [0])      continue;
+      if (strcmp (a_char, s_verb_info [i].terse) != 0)   continue;
       DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
       x_index = i;
       break;
    }
+   /*---(by-name)------------------------*/
+   if (x_index < 0) {
+      for (i = 0; i < MAX_VERBS; ++i) {
+         if (s_verb_info [i].active != 'y')                 continue;
+         if (a_char [0] != s_verb_info [i].name  [0])       continue;
+         if (strcmp (a_char, s_verb_info [i].name) != 0)    continue;
+         DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
+         x_index = i;
+         break;
+      }
+   }
+   /*---(error)--------------------------*/
    --rce;  if (x_index <  0) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("not found");
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
@@ -430,13 +437,13 @@ ykine_scrp_segno        (void)
       if (x_servo == NULL)      continue;
       if (x_servo->seg == YKINE_FOCU) {
          DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-         rc = ykine_move_create (YKINE_MOVE_NOTE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
+         rc = ykine_move_create (YKINE_MOVE_NOTE, YKINE_NONE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
          x_servo->segni [x_servo->nsegno] = x_servo->tail;
          ++(x_servo->nsegno);
       } else if (x_servo->seg == YKINE_TIBI) {
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-            rc = ykine_move_create (YKINE_MOVE_NOTE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
+            rc = ykine_move_create (YKINE_MOVE_NOTE, YKINE_NONE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             --x_servo;
@@ -444,7 +451,7 @@ ykine_scrp_segno        (void)
       } else {
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-            ykine_move_create (YKINE_MOVE_NOTE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
+            ykine_move_create (YKINE_MOVE_NOTE, YKINE_NONE, x_servo, "segno", myKINE.s_cline, 0.0, 0.0);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             ++x_servo;

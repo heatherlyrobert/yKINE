@@ -286,6 +286,7 @@
 
 /*---(method/verbs)-------------------*/
 #define     YKINE_MAX_METH  10
+
 #define     YKINE_FK         0
 #define     YKINE_IK         1
 #define     YKINE_GK         2
@@ -420,6 +421,7 @@ char        yKINE_script            (float *a_len);
 
 char        yKINE_exact_all         (float  a_time);
 char        yKINE_exact             (int a_leg, int a_seg, float *a_deg, float *a_x, float *a_z, float *a_y);
+char        yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, float *z, float *y);
 
 char        yKINE_move_first        (int a_leg, int a_seg, float *a_sec, float *a_deg);
 char        yKINE_move_next         (float *a_sec  , float *a_deg);
