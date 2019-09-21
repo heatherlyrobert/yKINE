@@ -437,6 +437,19 @@ yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, flo
    /*---(header)-------------------------*/
    DEBUG_YKINE_EXACT  yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_EXACT  yLOG_value   ("a_leg"     , a_leg);
+   /*---(initialize)---------------------*/
+   if (x     != NULL)  *x     = 0.0;
+   if (z     != NULL)  *z     = 0.0;
+   if (y     != NULL)  *y     = 0.0;
+   if (f     != NULL)  *f     = 0.0;
+   if (p     != NULL)  *p     = 0.0;
+   if (t     != NULL)  *t     = 0.0;
+   if (xr    != NULL)  *xr    = 0.0;
+   if (zr    != NULL)  *zr    = 0.0;
+   if (yr    != NULL)  *yr    = 0.0;
+   if (fr    != NULL)  *fr    = 0.0;
+   if (pr    != NULL)  *pr    = 0.0;
+   if (tr    != NULL)  *tr    = 0.0;
    /*---(beg and end points)-------------*/
    ykine_exact_context (a_leg);
    /*---(calc percent)-------------------*/
@@ -446,6 +459,8 @@ yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, flo
    /*---(calc current endpoint)----------*/
    switch (myKINE.vb) {
    case YKINE_FK :
+      ykine_exact_pct_xzy     (x_pct);
+      break;
    case YKINE_IK : case YKINE_TK : case YKINE_NK :
       ykine_exact_pct_xzy     (x_pct);
       break;
@@ -463,10 +478,18 @@ yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, flo
    if (p     != NULL)  *p     = myKINE.pc;
    if (t     != NULL)  *t     = myKINE.tc;
    /*---(inverse kinematics)-------------*/
-   myKINE.rcc = yKINE_inverse_adapt (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);
-   --rce;  if (rc < 0)  return rce;
-   rc = yKINE_endpoint (a_leg, YKINE_FOOT, YKINE_IK, NULL, NULL, &myKINE.xc, &myKINE.zc, &myKINE.yc, NULL);
-   rc = yKINE_angles   (a_leg, YKINE_IK, NULL, &myKINE.fc, &myKINE.pc, &myKINE.tc);
+   if (myKINE.vb == YKINE_FK) {
+      myKINE.rcc = yKINE_forward       (a_leg, myKINE.fc, myKINE.pc, myKINE.tc);
+      yKINE_endpoint (a_leg, YKINE_FOOT, YKINE_FK, NULL, NULL, &myKINE.xc, &myKINE.zc, &myKINE.yc, NULL);
+   } else {
+      myKINE.rcc = yKINE_inverse_adapt (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);
+      /*> yKINE_endpoint (a_leg, YKINE_FOOT, YKINE_IK, NULL, NULL, &myKINE.xc, &myKINE.zc, &myKINE.yc, NULL);   <*/
+      yKINE_angles   (a_leg, YKINE_IK, NULL, &myKINE.fc, &myKINE.pc, &myKINE.tc);
+   }
+   --rce;  if (myKINE.rcc < 0)  {
+      DEBUG_YKINE_EXACT  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(save revised endpoint)----------*/
    if (xr    != NULL)  *xr    = myKINE.xc;
    if (zr    != NULL)  *zr    = myKINE.zc;
