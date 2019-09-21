@@ -425,7 +425,7 @@ char        yKINE_script            (float *a_len);
 
 char        yKINE_exact_all         (float  a_time);
 char        yKINE_exact             (int a_leg, int a_seg, float *a_deg, float *a_x, float *a_z, float *a_y);
-char        yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, float *z, float *y);
+char        yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
 
 char        yKINE_move_first        (int a_leg, int a_seg, float *a_sec, float *a_deg);
 char        yKINE_move_next         (float *a_sec  , float *a_deg);

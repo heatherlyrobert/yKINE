@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1r"
-#define     P_VERTXT    "cleaned up moves functions, added defenses, and unit tested"
+#define     P_VERNUM    "1.1s"
+#define     P_VERTXT    "built, debugged, and unit tested exact leg access"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
