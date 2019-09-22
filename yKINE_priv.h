@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1t"
-#define     P_VERTXT    "completed integration and fixes for better exact logic to drive ticker"
+#define     P_VERNUM    "1.1u"
+#define     P_VERTXT    "build error-read for scripts to create moves to show trouble"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -372,8 +372,10 @@ char        yKINE__unit_end    (void);
 char        ykine_exact_calc        (char a_type, float a_beg, float a_end, float a_pct, float *a_cur);
 float       ykine_exact_dist_xzy    (void);
 float       ykine_exact_dist_doy    (void);
+char        ykine_exact_dist_route  (char a_verb);
 char        ykine_exact_pct_xzy     (float p);
-char        ykine_exact_pct_doy     (char a_verb, int a_leg, float p);
+char        ykine_exact_pct_doy     (char a_verb, char a_leg, float p);
+char        ykine_exact_pct_route   (char a_verb, char a_leg, float a_pct);
 
 char        ykine_exact_calc_length (float xp, float xc, float zp, float zc, float a_pct, float *l);
 char        ykine_exact_calc_polar  (float l, float d, float *x, float *z);
@@ -409,6 +411,7 @@ char        ykine_body_orient       (void);
 char        ykine_body_opolar       (void);
 
 /*---(shared)-------------------------*/
+char        ykine_legs_complete     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_accel, char *a_label);
 /*---(forward)------------------------*/
 char        ykine_legs_fk           (void);
 /*---(inverse)------------------------*/
@@ -436,7 +439,7 @@ char        ykine_legs_ik2sk        (float a_coxa, float x, float z, float *d, f
 char        ykine_legs_sk2ik        (float a_coxa, float d, float o, float *x, float *z);
 char        ykine_legs_sk           (void);
 /*---(step)---------------------------*/
-char        ykine_leg_accel         (char a_meth, int a_leg, char *a_dur);
+char        ykine_legs_partial      (char a_verb, char a_leg, char a_ik);
 
 
 char        ykine_scrp_segno        (void);
@@ -467,7 +470,8 @@ char        ykine_accel_zero        (char *a_dur, float xb, float zb, float yb, 
 char        ykine_accel_zpolar      (char *a_dur, float db, float lb, float yb, float de, float le, float ye);
 char        ykine_accel_orient      (char *a_dur, float yb, float pb, float rb, float ye, float pe, float re);
 char        ykine_accel_opolar      (char *a_dur, float yb, float db, float pb, float ye, float de, float pe);
-char        ykine_accel_leg         (char a_verb, int a_leg, char *a_dur);
+char        ykine_accel_leg_OLD     (char a_verb, int a_leg, char *a_dur);
+char        ykine_accel_leg         (char a_meth, int a_leg, char *a_dur);
 char*       ykine__unit_accel       (char *a_question, int a_num);
 
 

@@ -301,6 +301,8 @@
 #define     YKINE_OR        10
 #define     YKINE_OP        11
 
+#define     YKINE_BODE      66
+#define     YKINE_LEGE      67
 #define     YKINE_NOOP      99
 
 

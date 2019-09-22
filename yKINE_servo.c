@@ -521,6 +521,7 @@ ykine_servos            (char *a_source)
    /*---(cycle)--------------------------*/
    for (i = 0; i < s_nside; ++i) {
       for (j = 0; j < s_nrank; ++j) {
+         DEBUG_YKINE_SCRP  yLOG_complex ("current"   , "%d/%c %d/%c", i, s_sides [i], j, s_ranks [j]);
          rc = ykine_servo_format (s_sides [i], s_ranks [j], x_label);
          DEBUG_YKINE_SCRP  yLOG_value   ("format"    , rc);
          DEBUG_YKINE_SCRP  yLOG_info    ("x_label"   , x_label);

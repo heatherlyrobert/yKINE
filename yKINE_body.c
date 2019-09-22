@@ -221,10 +221,11 @@ ykine__body_zero_driver (char a_verb)
    }
    DEBUG_YKINE_SCRP   yLOG_complex ("coords"    , "%8.3lfx , %8.3lfz , %8.3lfy", myKINE.xe, myKINE.ze, myKINE.ye);
    /*---(get distance)----------------*/
-   switch (a_verb) {
-   case YKINE_ZE : ykine_exact_dist_xzy   (); break;
-   case YKINE_ZP : ykine_exact_dist_doy   (); break;
-   }
+   ykine_exact_dist_route (a_verb);
+   /*> switch (a_verb) {                                                              <* 
+    *> case YKINE_ZE : ykine_exact_dist_xzy   (); break;                              <* 
+    *> case YKINE_ZP : ykine_exact_dist_doy   (); break;                              <* 
+    *> }                                                                              <*/
    DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , myKINE.le);
    /*---(process moves)---------------*/
    if (b < 0)  {
