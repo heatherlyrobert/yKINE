@@ -297,7 +297,7 @@
 #define     YKINE_SK         6
 #define     YKINE_NK         7
 #define     YKINE_ZE         8
-#define     YKINE_ZP         9
+#define     YKINE_PO         9
 #define     YKINE_OR        10
 #define     YKINE_OP        11
 
@@ -426,7 +426,6 @@ char        yKINE_script            (float *a_len);
 
 
 char        yKINE_exact_all         (float  a_time);
-char        yKINE_exact             (int a_leg, int a_seg, float *a_deg, float *a_x, float *a_z, float *a_y);
 char        yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
 
 char        yKINE_move_first        (int a_leg, int a_seg, float *a_sec, float *a_deg);

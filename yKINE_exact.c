@@ -95,7 +95,7 @@ ykine_exact_dist_route  (char a_verb)
    case YKINE_ZE :
       x_total = ykine_exact_dist_xzy    ();
       break;
-   case YKINE_ZP :
+   case YKINE_PO :
       x_total = ykine_exact_dist_doy    ();
       break;
    case YKINE_FK :
@@ -366,6 +366,7 @@ ykine_move_getservos    (char a_leg, char a_seg, tMOVE **a_curr, tMOVE **a_prev)
 char
 ykine_move_copyout      (tMOVE *a_move, float *d, float *s, float *x, float *z, float *y, float *xz)
 {
+   /*---(defaults)-----------------------*/
    if (a_move == NULL) {
       if (d  != NULL)  *d  = 0.0;
       if (s  != NULL)  *s  = 0.0;
@@ -375,12 +376,16 @@ ykine_move_copyout      (tMOVE *a_move, float *d, float *s, float *x, float *z, 
       if (xz != NULL)  *xz = 0.0;
       return 0;
    }
+   /*---(good move)----------------------*/
    if (d  != NULL)  *d  = a_move->degs;
    if (s  != NULL)  *s  = a_move->secs;
    if (x  != NULL)  *x  = a_move->x_pos;
    if (z  != NULL)  *z  = a_move->z_pos;
-   if (y  != NULL)  *y  = a_move->y_pos - yKINE_seglen (YKINE_FOOT);
+   if (y  != NULL)  *y  = a_move->y_pos;
    if (xz != NULL)  *xz = a_move->xz_len;
+   /*---(leg correction)-----------------*/
+   if (y != NULL && a_move->servo->leg != YKINE_BODY)  *y -= yKINE_seglen (YKINE_FOOT);
+   /*---(complete)-----------------------*/
    return 0;
 }
 
@@ -483,7 +488,7 @@ yKINE_exact_body        (float *x, float *z, float *y, float *a_yaw, float *a_pi
    /*---(calc current endpoint)----------*/
    switch (myKINE.vb) {
    case YKINE_ZE : ykine_exact_pct_xzy     (x_pct);  break;
-   case YKINE_ZP : ykine_exact_pct_xzy     (x_pct);  break;
+   case YKINE_PO : ykine_exact_pct_xzy     (x_pct);  break;
    }
    /*---(save current endpoint)----------*/
    if (x     != NULL)  *x     = myKINE.xc;

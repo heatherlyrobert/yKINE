@@ -205,7 +205,7 @@ ykine_accel_dur         (char *a_dur)
 char
 ykine_noaccel_servo     (tSERVO *a_servo, float s, float d, float x, float z, float y)
 {
-   ykine_move_create (a_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, d, s);
+   ykine_move_create (a_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, d, s);
    ykine_move_addloc (a_servo, x, z, y);
    return 0;
 }
@@ -253,7 +253,7 @@ ykine_accel_zero        (char *a_dur, float xb, float zb, float yb, float xe, fl
       DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
       /*---(create moves)----------------*/
       if (myKINE.s_hidden != 'y') {
-         rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, d, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, d, g_accel_info [i].dur * myKINE.s_pace);
          rc = ykine_move_addloc (x_servo, x, z, y);
       }
       /*---(done)------------------------*/
@@ -308,7 +308,7 @@ ykine_accel_zpolar      (char *a_dur, float db, float lb, float yb, float de, fl
       DEBUG_YKINE_MOVE   yLOG_complex ("position"  , "%8.2fd, %8.2fl, %8.2fx, %8.2fz, %8.2fy", d, l, x, z, y);
       /*---(create moves)----------------*/
       if (myKINE.s_hidden != 'y') {
-         rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, d, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, d, g_accel_info [i].dur * myKINE.s_pace);
          rc = ykine_move_addloc (x_servo, x, z, y);
       }
       /*---(done)------------------------*/
@@ -359,9 +359,9 @@ ykine_accel_orient      (char *a_dur, float yb, float pb, float rb, float ye, fl
       DEBUG_YKINE_MOVE   yLOG_complex ("position"  , "%8.2fy, %8.2fp, %8.2fr", x_yaw, x_pitch, x_roll);
       /*---(create moves)----------------*/
       if (myKINE.s_hidden != 'y') {
-         rc = ykine_move_create (x_servo + 0, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, x_yaw, g_accel_info [i].dur * myKINE.s_pace);
-         rc = ykine_move_create (x_servo + 1, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, x_pitch, g_accel_info [i].dur * myKINE.s_pace);
-         rc = ykine_move_create (x_servo + 2, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, x_roll, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo + 0, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, x_yaw, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo + 1, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, x_pitch, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo + 2, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, x_roll, g_accel_info [i].dur * myKINE.s_pace);
          ykine_body_orient2xyz (x_yaw, x_pitch, x_roll, &x, &z, &y, &l);
          ykine_move_addloc (x_servo + 2, x, z, y);
       }
@@ -428,9 +428,9 @@ ykine_accel_opolar      (char *a_dur, float yb, float db, float tb, float ye, fl
       /*> DEBUG_YKINE_MOVE   yLOG_complex ("angles"    , "%8.2fy, %8.2fp, %8.2fr", x_yaw, x_pitch, x_roll);   <*/
       /*---(create moves)----------------*/
       if (myKINE.s_hidden != 'y') {
-         rc = ykine_move_create (x_servo + 0, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, y, g_accel_info [i].dur * myKINE.s_pace);
-         rc = ykine_move_create (x_servo + 1, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, p, g_accel_info [i].dur * myKINE.s_pace);
-         rc = ykine_move_create (x_servo + 2, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, r, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo + 0, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, y, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo + 1, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, p, g_accel_info [i].dur * myKINE.s_pace);
+         rc = ykine_move_create (x_servo + 2, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, r, g_accel_info [i].dur * myKINE.s_pace);
       }
       /*---(done)------------------------*/
    }
@@ -508,12 +508,12 @@ ykine_accel_leg_OLD     (char a_verb, int a_leg, char *a_dur)
       yKINE_angles   (a_leg, x_meth, NULL, &f, &p, &t);
       DEBUG_YKINE_MOVE   yLOG_complex ("angles"    , "%8.3ff, %8.3fp, %8.3ft", f, p, t);
       /*---(create moves)----------------*/
-      rc = ykine_move_create (x_servo - 0, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, t, g_accel_info [i].dur * myKINE.s_pace);
+      rc = ykine_move_create (x_servo - 0, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, t, g_accel_info [i].dur * myKINE.s_pace);
       rc = ykine_move_addloc (x_servo, x, z, y);
-      rc = ykine_move_create (x_servo - 1, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, p, g_accel_info [i].dur * myKINE.s_pace);
+      rc = ykine_move_create (x_servo - 1, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, p, g_accel_info [i].dur * myKINE.s_pace);
       rc = yKINE_endpoint    (a_leg, YKINE_PATE, x_meth, NULL, NULL, &x, &z, &y, NULL);
       rc = ykine_move_addloc (x_servo - 1, x, z, y);
-      rc = ykine_move_create (x_servo - 2, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, f, g_accel_info [i].dur * myKINE.s_pace);
+      rc = ykine_move_create (x_servo - 2, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, f, g_accel_info [i].dur * myKINE.s_pace);
       rc = yKINE_endpoint    (a_leg, YKINE_FEMU, x_meth, NULL, NULL, &x, &z, &y, NULL);
       rc = ykine_move_addloc (x_servo - 2, x, z, y);
       /*---(done)------------------------*/
@@ -536,7 +536,8 @@ ykine_accel_leg         (char a_verb, int a_leg, char *a_dur)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   float       x_pct;
+   float       x_pct       =  0.0;
+   float       x_dur       =  0.0;
    int         i           =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
@@ -554,8 +555,11 @@ ykine_accel_leg         (char a_verb, int a_leg, char *a_dur)
       DEBUG_YKINE_MOVE   yLOG_complex ("level"     , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist, g_accel_info [i].dur, g_accel_info [i].pct);
       if (g_accel_info [i].dist < 0.1)   continue;
       x_pct = g_accel_info [i].pct;
+      x_dur = g_accel_info [i].dur;
       rc = ykine_exact_pct_route (a_verb, a_leg, x_pct);
+      DEBUG_YKINE_MOVE   yLOG_complex ("level2"    , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist, g_accel_info [i].dur, g_accel_info [i].pct);
       rc = ykine_legs_partial    (a_verb, a_leg, 's');
+      DEBUG_YKINE_MOVE   yLOG_complex ("level3"    , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist, g_accel_info [i].dur, g_accel_info [i].pct);
       /*---(set current)-----------------*/
       /*> switch (a_verb) {                                                           <* 
        *> case YKINE_FK :                                                             <* 
@@ -592,9 +596,11 @@ ykine_accel_leg         (char a_verb, int a_leg, char *a_dur)
       /*> yKINE_angles   (a_leg, YKINE_IK, &coxac, &femuc, &patec, &tibic);           <*/
       /*> DEBUG_YKINE_MOVE   yLOG_complex ("angles"    , "%8.3fc, %8.3ff, %8.3fp, %8.3ft", coxac, femuc, patec, tibic);   <*/
       /*---(create moves)----------------*/
-      ykine__legs_set_servo (a_verb, a_leg, YKINE_FEMU, myKINE.fc, g_accel_info [i].dur * myKINE.s_pace);
-      ykine__legs_set_servo (a_verb, a_leg, YKINE_PATE, myKINE.pc, g_accel_info [i].dur * myKINE.s_pace);
-      ykine__legs_set_servo (a_verb, a_leg, YKINE_TIBI, myKINE.tc, g_accel_info [i].dur * myKINE.s_pace);
+      DEBUG_YKINE_MOVE   yLOG_complex ("level4"    , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist, g_accel_info [i].dur, g_accel_info [i].pct);
+      ykine_legs_set_servo (a_verb, a_leg, YKINE_FEMU, myKINE.fc, x_dur);
+      DEBUG_YKINE_MOVE   yLOG_complex ("level5"    , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist, g_accel_info [i].dur, g_accel_info [i].pct);
+      ykine_legs_set_servo (a_verb, a_leg, YKINE_PATE, myKINE.pc, x_dur);
+      ykine_legs_set_servo (a_verb, a_leg, YKINE_TIBI, myKINE.tc, x_dur);
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/

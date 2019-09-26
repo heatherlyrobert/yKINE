@@ -50,9 +50,9 @@
 #define     P_DEPENDS   "none"
 
 #define     P_VERMAJOR  "1.--, working and advancing"
-#define     P_VERMINOR  "1.1-, implement stances and enabling new leg verbs"
-#define     P_VERNUM    "1.1u"
-#define     P_VERTXT    "build error-read for scripts to create moves to show trouble"
+#define     P_VERMINOR  "1.1-, simplifying and combining verbs"
+#define     P_VERNUM    "1.2a"
+#define     P_VERTXT    "used new leg logic to drive body zero and polar"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -163,7 +163,10 @@ struct cLOCAL {
    float       s_roll;
    float       s_pitch;
    /*---(moves)-------------*/
-   char        leg;
+   char        leg;                         /* current leg for move           */
+   double      b;                           /* current moves beats            */
+   char        accel       [LEN_LABEL];     /* current accel string           */
+   char        servos      [LEN_HUND];      /* current servo focus list       */
    char        vb, ov, rcc;
    float       db, sb, xb, zb, xzb, yb, ob, cb, fb, pb, tb;
    float       de, se, xe, ze, xze, ye, oe, ce, fe, pe, te, le;
@@ -184,33 +187,36 @@ typedef     struct      cSERVO      tSERVO;
 
 struct      cMOVE {
    /*---(keys)--------------*/
-   int         seq;
-   char        type;
-   char        verb;
-   tSERVO     *servo;
-   char        label       [LEN_LABEL];
-   int         line;
+   int         seq;                         /* natural order of creation      */
+   char        type;                        /* type of move -- servo, note, ..*/
+   char        verb;                        /* input verb                     */
+   tSERVO     *servo;                       /* servo pointer for move         */
+   int         line;                        /* line from input file           */
+   char        label       [LEN_LABEL];     /* label from input line          */
+   char        note;                        /* special note to help classify  */
    /*---(timing)------------*/
-   float       dur;
-   float       secs;
-   int         other;
+   float       dur;                         /* duration of move               */
+   float       secs;                        /* end time of move               */
+   int         other;                       /* ¢ identify repeat moves ?      */
    /*---(angle)-------------*/
-   float       degs;
+   float       degs;                        /* end servo degrees              */
    /*---(position)----------*/
-   float       x_pos;
-   float       z_pos;
-   float       y_pos;
-   float       xz_len;
+   float       x_pos;                       /* end x position                 */
+   float       z_pos;                       /* end z position                 */
+   float       y_pos;                       /* end y position                 */
+   float       xz_len;                      /* end xz length from center      */
    /*---(linked-lists)------*/
-   tMOVE      *m_prev;
-   tMOVE      *m_next;
-   tMOVE      *s_prev;
-   tMOVE      *s_next;
+   tMOVE      *m_prev;                      /* prev in all moves list         */
+   tMOVE      *m_next;                      /* next in all moves list         */
+   tMOVE      *s_prev;                      /* prev move for servo            */
+   tMOVE      *s_next;                      /* next move for servo            */
    /*---(done)--------------*/
 };
 extern      tMOVE      *m_head;
 extern      tMOVE      *m_tail;
 extern      int         m_count;
+
+
 
 struct cSERVO {
    /*---(overall)------------------------*/
@@ -399,10 +405,12 @@ char        ykine__scrp_prep        (void);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
 char        ykine_scrp_verb         (char *a_char);
 
+char        ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y);
 char        ykine_body_xz2zp        (float a_xpos, float a_zpos, float *a_deg, float *a_len);
 char        ykine_body_zp2xz        (float a_deg, float a_len, float *a_xpos, float *a_zpos);
+char        ykine_body_po_getter    (char *d_str, char *o_str, char *y_str, float *x, float *z, float *y);
 char        ykine_body_zero         (void);
-char        ykine_body_zpolar       (void);
+char        ykine_body_polar        (void);
 char        ykine_body_orient_valid (float y, float p, float r);
 char        ykine_body_pr2dt        (float p, float r, float *d, float *t);
 char        ykine_body_orient2xyz   (float a_yaw, float a_pitch, float a_roll, float *a_x, float *a_z, float *a_y, float *a_l);
@@ -411,7 +419,10 @@ char        ykine_body_orient       (void);
 char        ykine_body_opolar       (void);
 
 /*---(shared)-------------------------*/
-char        ykine_legs_complete     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_accel, char *a_label);
+char        ykine_legs_prepservos   (char a_verb);
+char        ykine_legs_complete     (char a_verb, char a_leg, float b, char *a_accel, char *a_label);
+char        ykine_legs_get_prev     (int a_leg);
+char        ykine_legs_set_servo    (char a_verb, int a_leg, int a_seg, float a_deg, float a_beat);
 /*---(forward)------------------------*/
 char        ykine_legs_fk           (void);
 /*---(inverse)------------------------*/
@@ -439,6 +450,7 @@ char        ykine_legs_ik2sk        (float a_coxa, float x, float z, float *d, f
 char        ykine_legs_sk2ik        (float a_coxa, float d, float o, float *x, float *z);
 char        ykine_legs_sk           (void);
 /*---(step)---------------------------*/
+char        ykine_legs_driver       (char a_verb);
 char        ykine_legs_partial      (char a_verb, char a_leg, char a_ik);
 
 
@@ -481,7 +493,7 @@ char*       ykine__unit_accel       (char *a_question, int a_num);
 char        ykine__move_new         (tMOVE **a_move);
 char        ykine__move_free        (tMOVE **a_move);
 
-char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, char *a_label, int a_line, float a_deg, float a_sec);
+char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, int a_line, char *a_label, char a_note, float a_deg, float a_sec);
 char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
 char        ykine_move_delete       (tMOVE **a_move);

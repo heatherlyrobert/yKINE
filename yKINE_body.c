@@ -119,7 +119,7 @@ ykine__body_zero_prep   (char *a_one, char *a_two, char *a_thr)
 }
 
 char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
-ykine__body_ze_getter   (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y)
+ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -127,8 +127,9 @@ ykine__body_ze_getter   (char *x_str, char *z_str, char *y_str, float *x, float 
    double      xe, ze, ye;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get previous)-------------------*/
+   ykine_legs_get_prev (YKINE_BODY);
    /*---(calculate)-------------------*/
-   DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
    rc = ykine_stance_scale   (myKINE.s_from        , myKINE.xb, x_str, &xe);
    rc = ykine_stance_scale   (myKINE.s_from        , myKINE.zb, z_str, &ze);
    rc = ykine_stance_scale   (myKINE.s_from        , myKINE.yb, y_str, &ye);
@@ -148,7 +149,7 @@ ykine__body_ze_getter   (char *x_str, char *z_str, char *y_str, float *x, float 
 }
 
 char  /*--> save relative ck based move -----------[ ------ [ ------ ]-*/
-ykine__body_zp_getter   (char *d_str, char *o_str, char *y_str, float *x, float *z, float *y)
+ykine_body_po_getter   (char *d_str, char *o_str, char *y_str, float *x, float *z, float *y)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -158,6 +159,8 @@ ykine__body_zp_getter   (char *d_str, char *o_str, char *y_str, float *x, float 
    double      de, oe, ye;                  /* updated/ending values          */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get previous)-------------------*/
+   ykine_legs_get_prev (YKINE_BODY);
    /*---(convert to ck)---------------*/
    ykine_body_xz2zp (myKINE.xb, myKINE.zb, &db, &ob);
    yb      = myKINE.yb;
@@ -205,8 +208,8 @@ ykine__body_zero_driver (char a_verb)
    }
    /*---(get positions)---------------*/
    switch (a_verb) {
-   case YKINE_ZE :  rc = ykine__body_ze_getter (x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
-   case YKINE_ZP :  rc = ykine__body_ze_getter (x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
+   case YKINE_ZE :  rc = ykine_body_ze_getter (x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
+   case YKINE_PO :  rc = ykine_body_po_getter (x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
    default       :
                     DEBUG_YKINE_SCRP   yLOG_note    ("FAILED, verb type not known");
                     DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -224,7 +227,7 @@ ykine__body_zero_driver (char a_verb)
    ykine_exact_dist_route (a_verb);
    /*> switch (a_verb) {                                                              <* 
     *> case YKINE_ZE : ykine_exact_dist_xzy   (); break;                              <* 
-    *> case YKINE_ZP : ykine_exact_dist_doy   (); break;                              <* 
+    *> case YKINE_PO : ykine_exact_dist_doy   (); break;                              <* 
     *> }                                                                              <*/
    DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , myKINE.le);
    /*---(process moves)---------------*/
@@ -237,7 +240,7 @@ ykine__body_zero_driver (char a_verb)
       /*---(process moves)---------------*/
       s = b * myKINE.s_pace;
       DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
-      if (myKINE.s_hidden != 'y')  rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, d, s);
+      if (myKINE.s_hidden != 'y')  rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, d, s);
       DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
       if (rc == 0)  rc = ykine_move_addloc (x_servo, xe, ze, ye);
       DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);
@@ -255,13 +258,14 @@ ykine__body_zero_driver (char a_verb)
 char         /*--> handle body centering -----------------[ ------ [ ------ ]-*/
 ykine_body_zero         (void)
 {
-   return ykine__body_zero_driver (YKINE_ZE);
+   /*> return ykine__body_zero_driver (YKINE_ZE);                                     <*/
+   return ykine_legs_driver (YKINE_ZE);
 }
 
 char         /*--> handle body centering -----------------[ ------ [ ------ ]-*/
-ykine_body_zpolar       (void)
+ykine_body_polar        (void)
 {
-   return ykine__body_zero_driver (YKINE_ZP);
+   return ykine_legs_driver (YKINE_PO);
 }
 
 /*> char         /+--> handle body centering -----------------[ ------ [ ------ ]-+/                                                          <* 
@@ -322,7 +326,7 @@ ykine_body_zpolar       (void)
  *>       /+---(process moves)---------------+/                                                                                               <* 
  *>       s = b * myKINE.s_pace;                                                                                                              <* 
  *>       DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);                                                                                   <* 
- *>       if (myKINE.s_hidden != 'y')  rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, d, s);   <* 
+ *>       if (myKINE.s_hidden != 'y')  rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, d, s);   <* 
  *>       DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);                                                                                  <* 
  *>       if (rc == 0)  rc = ykine_move_addloc (x_servo, xe, ze, ye);                                                                         <* 
  *>       DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);                                                                                  <* 
@@ -337,7 +341,7 @@ ykine_body_zpolar       (void)
  *> }                                                                                                                                         <*/
 
 /*> char         /+--> handle body centering -----------------[ ------ [ ------ ]-+/                                                           <* 
- *> ykine_body_zpolar       (void)                                                                                                             <* 
+ *> ykine_body_polar        (void)                                                                                                             <* 
  *> {                                                                                                                                          <* 
  *>    /+---(locals)-----------+-----------+-+/                                                                                                <* 
  *>    char        rce         =  -10;               /+ return code for errors    +/                                                           <* 
@@ -399,7 +403,7 @@ ykine_body_zpolar       (void)
  *>       /+---(process moves)---------------+/                                                                                                <* 
  *>       s = b * myKINE.s_pace;                                                                                                               <* 
  *>       DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);                                                                                    <* 
- *>       if (myKINE.s_hidden != 'y')  rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, de, s);   <* 
+ *>       if (myKINE.s_hidden != 'y')  rc = ykine_move_create (x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, de, s);   <* 
  *>       DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);                                                                                   <* 
  *>       if (rc == 0)  rc = ykine_move_addloc (x_servo, xe, ze, ye);                                                                          <* 
  *>       DEBUG_YKINE_SCRP  yLOG_value   ("addloc"    , rc);                                                                                   <* 
@@ -511,9 +515,9 @@ ykine_body_orient_wrap  (void)
    }
    /*---(process accelerated)---------*/
    else {
-      ykine_move_create (s_servo + 0, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, ye, s);
-      ykine_move_create (s_servo + 1, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, pe, s);
-      ykine_move_create (s_servo + 2, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, re, s);
+      ykine_move_create (s_servo + 0, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, ye, s);
+      ykine_move_create (s_servo + 1, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, pe, s);
+      ykine_move_create (s_servo + 2, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, re, s);
       ykine_body_orient2xyz (ye, pe, re, &x, &z, &y, &l);
       ykine_move_addloc (s_servo + 2, x, z, y);
    }

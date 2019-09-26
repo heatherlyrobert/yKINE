@@ -135,7 +135,7 @@ ykine_turtle_wait       (void)
    s = b * s_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(save header)-----------------*/
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, s);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -173,7 +173,7 @@ ykine_turtle_home       (void)
    s = b * s_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(save header)-----------------*/
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, s);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, 0.0, 0.0, =)", b);
@@ -224,7 +224,7 @@ ykine_turtle_goto       (void)
    s = b * s_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(save header)-----------------*/
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, s);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, %6.1f, %6.1f, =)", b, x, z);
@@ -271,7 +271,7 @@ ykine_turtle_raise      (void)
    s = b * s_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(save header)-----------------*/
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, s);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
@@ -318,7 +318,7 @@ ykine_turtle_lower      (void)
    s = b * s_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(save header)-----------------*/
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, s);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
@@ -365,7 +365,7 @@ ykine_turtle_head       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
    /*---(update turtle)---------------*/
    s_head  = d;
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, 0.0);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, 0.0);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -398,7 +398,7 @@ ykine_turtle_turn       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
    /*---(update turtle)---------------*/
    s_head  = d;
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, 0.0);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, 0.0);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -435,7 +435,7 @@ ykine_turtle_move       (void)
    s = b * s_servo->pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s"         , s);
    /*---(save header)-----------------*/
-   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_verb, myKINE.s_cline, 0.0, s);
+   rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
    sprintf (x_recd, "ze_pure (%6.1f, %6.1f, %6.1f, =)", b, s_x + x, s_z + z);
