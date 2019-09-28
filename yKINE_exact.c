@@ -497,7 +497,7 @@ yKINE_exact_body        (float *x, float *z, float *y, float *a_yaw, float *a_pi
    /*---(calc current angles)------------*/
    switch (myKINE.ov) {
    case YKINE_OR : ykine_exact_pct_xzy     (x_pct);  break;
-   case YKINE_OP : ykine_exact_pct_xzy     (x_pct);  break;
+   case YKINE_TI : ykine_exact_pct_xzy     (x_pct);  break;
    }
    /*---(save current endpoint)----------*/
    if (a_yaw != NULL)  *a_yaw = myKINE.fc;

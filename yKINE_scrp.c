@@ -47,7 +47,7 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ body orientation ]]==================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { YKINE_OR  , "or"   , "orient"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_orient     , "set absolute body orientation angles"              },
-   { YKINE_OP  , "op"   , "opolor"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_opolar     , "set relative body position based on last position" },
+   { YKINE_TI  , "ti"   , "tilt"         , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_tilt       , "set relative body position based on last position" },
    /* ===[[ music notation ]]====================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "metr" , "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },

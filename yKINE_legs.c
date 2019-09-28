@@ -24,7 +24,7 @@ ykine_legs_prepservos   (char a_verb)
    case YKINE_ZE : case YKINE_PO :
       rc = ykine_servos ("zz");
       break;
-   case YKINE_OR : case YKINE_OP :
+   case YKINE_OR : case YKINE_TI :
       rc = ykine_servos ("oo");
       break;
    default :
@@ -980,8 +980,10 @@ ykine_legs_driver    (char a_verb)
    switch (a_verb) {
    case YKINE_FK :                 x_seg = YKINE_FEMU;  break;
    case YKINE_ZE : case YKINE_PO : x_seg = YKINE_FOCU;  break;
+   case YKINE_OR : case YKINE_TI : x_seg = YKINE_YAW;   break;
    default       :                 x_seg = YKINE_TIBI;  break;
    }
+   DEBUG_YKINE_SCRP   yLOG_value   ("x_seg"     , x_seg);
    /*---(process)------------------------*/
    for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
       /*---(filter)----------------------*/
@@ -992,6 +994,8 @@ ykine_legs_driver    (char a_verb)
       switch (a_verb) {
       case YKINE_ZE :  rc = ykine_body_ze_getter  (       x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
       case YKINE_PO :  rc = ykine_body_po_getter  (       x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
+      case YKINE_OR :  rc = ykine_body_or_getter  (       x_one, x_two, x_thr, &myKINE.fe, &myKINE.pe, &myKINE.te);  break;
+      case YKINE_TI :  rc = ykine_body_ti_getter  (       x_one, x_two, x_thr, &myKINE.fe, &myKINE.pe, &myKINE.te);  break;
       case YKINE_FK :  rc = ykine__legs_fk_getter (x_leg, x_one, x_two, x_thr, &myKINE.fe, &myKINE.pe, &myKINE.te);  break;
       case YKINE_IK :  rc = ykine__legs_ik_getter (x_leg, x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
       case YKINE_CK :  rc = ykine__legs_ck_getter (x_leg, x_one, x_two, x_thr, &myKINE.xe, &myKINE.ze, &myKINE.ye);  break;
@@ -1010,7 +1014,7 @@ ykine_legs_driver    (char a_verb)
       /*---(inverse kinematics)----------*/
       switch (a_verb) {
       case YKINE_ZE : case YKINE_PO :  rc = 0;  break;
-      case YKINE_OR : case YKINE_OP :  rc = 0;  break;
+      case YKINE_OR : case YKINE_TI :  rc = 0;  break;
       case YKINE_FK :  rc = yKINE_forward (x_leg, myKINE.fe, myKINE.pe, myKINE.te);
       default       :  rc = yKINE_inverse (x_leg, myKINE.xe, myKINE.ze, myKINE.ye);
       }
@@ -1019,7 +1023,7 @@ ykine_legs_driver    (char a_verb)
       /*---(retrieve angles)-------------*/
       switch (a_verb) {
       case YKINE_ZE : case YKINE_PO :  rc = 0;  break;
-      case YKINE_OR : case YKINE_OP :  rc = 0;  break;
+      case YKINE_OR : case YKINE_TI :  rc = 0;  break;
       case YKINE_FK :  rc = yKINE_endpoint (x_leg, YKINE_FOOT, YKINE_FK, NULL, NULL, &myKINE.xe, &myKINE.ze, &myKINE.ye, NULL);
       default       :  rc = yKINE_angles   (x_leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
       }

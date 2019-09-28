@@ -249,7 +249,7 @@ ykine_accel_zero        (char *a_dur, float xb, float zb, float yb, float xe, fl
       ykine_exact_calc ('-', yb, ye, x_pct, &y);
       DEBUG_YKINE_MOVE   yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
       /*---(caclulate polar)-------------*/
-      rc = ykine_body_xz2zp      (xe, ze, &d, &l);
+      rc = ykine_body_xz2po      (xe, ze, &d, &l);
       DEBUG_YKINE_SCRP  yLOG_complex ("deg/len"   , "%8.2fd, %8.2fl", d, l);
       /*---(create moves)----------------*/
       if (myKINE.s_hidden != 'y') {
@@ -284,9 +284,9 @@ ykine_accel_zpolar      (char *a_dur, float db, float lb, float yb, float de, fl
       return rce;
    }
    /*---(get before values)--------------*/
-   ykine_body_zp2xz      (db, lb, &xb, &zb);
+   ykine_body_po2xz      (db, lb, &xb, &zb);
    DEBUG_YKINE_MOVE   yLOG_complex ("before"    , "%8.2fdir, %8.2flen, %8.2fx, %8.2fz, %8.2fy", db, lb, xb, zb, yb);
-   ykine_body_zp2xz      (de, le, &xe, &ze);
+   ykine_body_po2xz      (de, le, &xe, &ze);
    DEBUG_YKINE_MOVE   yLOG_complex ("after"     , "%8.2fdir, %8.2flen, %8.2fx, %8.2fz, %8.2fy", de, le, xe, ze, ye);
    /*---(calculate)----------------------*/
    /*> rc = ykine_accel_calc (YKINE_ZPOLAR, db, lb, yb, de, le, ye, a_dur [1], a_dur [0], a_dur [2]);   <*/
@@ -304,7 +304,7 @@ ykine_accel_zpolar      (char *a_dur, float db, float lb, float yb, float de, fl
       ykine_exact_calc ('-', lb, le, x_pct, &l);
       ykine_exact_calc ('-', yb, ye, x_pct, &y);
       /*---(caclulate polar)-------------*/
-      rc = ykine_body_zp2xz      (d, l, &x, &z);
+      rc = ykine_body_po2xz      (d, l, &x, &z);
       DEBUG_YKINE_MOVE   yLOG_complex ("position"  , "%8.2fd, %8.2fl, %8.2fx, %8.2fz, %8.2fy", d, l, x, z, y);
       /*---(create moves)----------------*/
       if (myKINE.s_hidden != 'y') {
@@ -362,7 +362,7 @@ ykine_accel_orient      (char *a_dur, float yb, float pb, float rb, float ye, fl
          rc = ykine_move_create (x_servo + 0, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, x_yaw, g_accel_info [i].dur * myKINE.s_pace);
          rc = ykine_move_create (x_servo + 1, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, x_pitch, g_accel_info [i].dur * myKINE.s_pace);
          rc = ykine_move_create (x_servo + 2, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, x_roll, g_accel_info [i].dur * myKINE.s_pace);
-         ykine_body_orient2xyz (x_yaw, x_pitch, x_roll, &x, &z, &y, &l);
+         ykine_body_ypr2xzy    (x_yaw, x_pitch, x_roll, &x, &z, &y, &l);
          ykine_move_addloc (x_servo + 2, x, z, y);
       }
       /*---(done)------------------------*/
@@ -399,8 +399,8 @@ ykine_accel_opolar      (char *a_dur, float yb, float db, float tb, float ye, fl
    DEBUG_YKINE_MOVE   yLOG_complex ("before"    , "%8.2fy, %8.2fd, %8.2ft", yb, db, tb);
    DEBUG_YKINE_MOVE   yLOG_complex ("after"     , "%8.2fy, %8.2fd, %8.2ft", ye, de, te);
    /*---(calculate)----------------------*/
-   ykine_body_dt2pr       (db, tb, &pb, &rb);
-   ykine_body_dt2pr       (de, te, &pe, &re);
+   ykine_body_ti2pr       (db, tb, &pb, &rb);
+   ykine_body_ti2pr       (de, te, &pe, &re);
    /*> rc = ykine_accel_calc (YKINE_OPOLAR, yb, pb, rb, ye, pe, re, a_dur [1], a_dur [0], a_dur [2]);   <*/
    --rce;  if (rc <  0) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
@@ -424,7 +424,7 @@ ykine_accel_opolar      (char *a_dur, float yb, float db, float tb, float ye, fl
       ykine_exact_calc ('-', rb, re, x_pct, &r);
       DEBUG_YKINE_MOVE   yLOG_complex ("position"  , "%8.2fy, %8.2fp, %8.2fr", y, p, r);
       /*> x_yaw    =  y;                                                              <*/
-      /*> ykine_body_dt2pr       (d, t, &x_pitch, &x_roll);                           <*/
+      /*> ykine_body_ti2pr       (d, t, &x_pitch, &x_roll);                           <*/
       /*> DEBUG_YKINE_MOVE   yLOG_complex ("angles"    , "%8.2fy, %8.2fp, %8.2fr", x_yaw, x_pitch, x_roll);   <*/
       /*---(create moves)----------------*/
       if (myKINE.s_hidden != 'y') {

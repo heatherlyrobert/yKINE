@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2a"
-#define     P_VERTXT    "used new leg logic to drive body zero and polar"
+#define     P_VERNUM    "1.2b"
+#define     P_VERTXT    "used new leg logic to drive body orient and its polar"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -406,17 +406,17 @@ char*       ykine__unit_scrp        (char *a_question, int a_num);
 char        ykine_scrp_verb         (char *a_char);
 
 char        ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y);
-char        ykine_body_xz2zp        (float a_xpos, float a_zpos, float *a_deg, float *a_len);
-char        ykine_body_zp2xz        (float a_deg, float a_len, float *a_xpos, float *a_zpos);
+char        ykine_body_xz2po        (float a_xpos, float a_zpos, float *a_deg, float *a_len);
+char        ykine_body_po2xz        (float a_deg, float a_len, float *a_xpos, float *a_zpos);
 char        ykine_body_po_getter    (char *d_str, char *o_str, char *y_str, float *x, float *z, float *y);
 char        ykine_body_zero         (void);
 char        ykine_body_polar        (void);
 char        ykine_body_orient_valid (float y, float p, float r);
-char        ykine_body_pr2dt        (float p, float r, float *d, float *t);
-char        ykine_body_orient2xyz   (float a_yaw, float a_pitch, float a_roll, float *a_x, float *a_z, float *a_y, float *a_l);
-char        ykine_body_dt2pr        (float d, float t, float *p, float *r);
+char        ykine_body_ypr2xzy      (float a_yaw, float a_pitch, float a_roll, float *a_x, float *a_z, float *a_y, float *a_l);
 char        ykine_body_orient       (void);
-char        ykine_body_opolar       (void);
+char        ykine_body_pr2ti        (float p, float r, float *d, float *t);
+char        ykine_body_ti2pr        (float d, float t, float *p, float *r);
+char        ykine_body_tilt         (void);
 
 /*---(shared)-------------------------*/
 char        ykine_legs_prepservos   (char a_verb);
