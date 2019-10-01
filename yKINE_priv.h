@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2b"
-#define     P_VERTXT    "used new leg logic to drive body orient and its polar"
+#define     P_VERNUM    "1.2c"
+#define     P_VERTXT    "unit testing up to date on zero, polar, orient, and tilt"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -378,9 +378,11 @@ char        yKINE__unit_end    (void);
 char        ykine_exact_calc        (char a_type, float a_beg, float a_end, float a_pct, float *a_cur);
 float       ykine_exact_dist_xzy    (void);
 float       ykine_exact_dist_doy    (void);
+float       ykine_exact_dist_ypr    (void);
 char        ykine_exact_dist_route  (char a_verb);
 char        ykine_exact_pct_xzy     (float p);
 char        ykine_exact_pct_doy     (char a_verb, char a_leg, float p);
+char        ykine_exact_pct_ypr     (float p);
 char        ykine_exact_pct_route   (char a_verb, char a_leg, float a_pct);
 
 char        ykine_exact_calc_length (float xp, float xc, float zp, float zc, float a_pct, float *l);
@@ -391,6 +393,8 @@ char        ykine_exact_context     (char a_leg);
 
 char        ykine_exact_fake_beg    (float db, float sb, float xb, float zb, float yb, float ob);
 char        ykine_exact_fake_end    (float de, float se, float xe, float ze, float ye, float oe);
+char        ykine_exact_fake_abeg   (float sb, float cb, float fb, float pb, float tb);
+char        ykine_exact_fake_aend   (float se, float ce, float fe, float pe, float te);
 char*       ykine__exact_unit       (char *a_question, int a_cnt);
 
 char        ykine__exact_data       (tSERVO *a_servo, float a_sec);
@@ -420,9 +424,9 @@ char        ykine_body_tilt         (void);
 
 /*---(shared)-------------------------*/
 char        ykine_legs_prepservos   (char a_verb);
-char        ykine_legs_complete     (char a_verb, char a_leg, float b, char *a_accel, char *a_label);
 char        ykine_legs_get_prev     (int a_leg);
-char        ykine_legs_set_servo    (char a_verb, int a_leg, int a_seg, float a_deg, float a_beat);
+char        ykine_legs_set_servo    (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label);
+char        ykine_legs_complete     (char a_verb, char a_leg, float b, char *a_accel, char *a_label);
 /*---(forward)------------------------*/
 char        ykine_legs_fk           (void);
 /*---(inverse)------------------------*/
@@ -477,13 +481,6 @@ char        ykine_accel_clear       (void);
 char        ykine_accel_level       (char a_max , char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
 char        ykine_accel_calc        (char a_meth, char a_speed, char a_accel, char a_decel);
 char        ykine_accel_dur         (char *a_dur);
-char        ykine_noaccel_servo     (tSERVO *a_servo, float s, float d, float x, float z, float y);
-char        ykine_accel_zero        (char *a_dur, float xb, float zb, float yb, float xe, float ze, float ye);
-char        ykine_accel_zpolar      (char *a_dur, float db, float lb, float yb, float de, float le, float ye);
-char        ykine_accel_orient      (char *a_dur, float yb, float pb, float rb, float ye, float pe, float re);
-char        ykine_accel_opolar      (char *a_dur, float yb, float db, float pb, float ye, float de, float pe);
-char        ykine_accel_leg_OLD     (char a_verb, int a_leg, char *a_dur);
-char        ykine_accel_leg         (char a_meth, int a_leg, char *a_dur);
 char*       ykine__unit_accel       (char *a_question, int a_num);
 
 

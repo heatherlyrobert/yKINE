@@ -103,29 +103,30 @@ ykine_body_po_getter   (char *d_str, char *o_str, char *y_str, float *x, float *
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
    tSERVO     *x_servo     =    0;
-   float       db, ob, yb;                  /* previous/begin values          */
    double      de, oe, ye;                  /* updated/ending values          */
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get previous)-------------------*/
    ykine_legs_get_prev (YKINE_BODY);
-   /*---(convert to ck)---------------*/
-   ykine_body_xz2po (myKINE.xb, myKINE.zb, &db, &ob);
-   yb      = myKINE.yb;
-   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3fd, %8.2fo, %8.2fy", db, ob, myKINE.yb);
+   /*---(convert to po)---------------*/
+   ykine_body_xz2po (myKINE.xb, myKINE.zb, &myKINE.db, &myKINE.ob);
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3fd, %8.2fo, %8.2fy", myKINE.db, myKINE.ob, myKINE.yb);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_scale   (myKINE.s_from, db, d_str, &de);
-   rc = ykine_stance_scale   (myKINE.s_from, ob, o_str, &oe);
-   rc = ykine_stance_scale   (myKINE.s_from, yb, y_str, &ye);
+   rc = ykine_stance_scale   (myKINE.s_from, myKINE.db, d_str, &de);
+   rc = ykine_stance_scale   (myKINE.s_from, myKINE.ob, o_str, &oe);
+   rc = ykine_stance_scale   (myKINE.s_from, myKINE.yb, y_str, &ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3fd, %8.2fo, %8.2fy", de, oe, ye);
-   /*---(convert from cx)-------------*/
-   ykine_body_po2xz (de, oe, x, z);
+   /*---(save off)--------------------*/
+   myKINE.de = de;
+   myKINE.oe = oe;
+   /*---(convert from po)-------------*/
+   ykine_body_po2xz (myKINE.de, myKINE.oe, x, z);
    if (y != NULL)  *y = ye;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);

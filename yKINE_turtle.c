@@ -176,7 +176,7 @@ ykine_turtle_home       (void)
    rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
-   sprintf (x_recd, "ze_pure (%3.1f, 0.0, 0.0, =)", b);
+   sprintf (x_recd, "zero    (%3.1f, 0.0, 0.0, =)", b);
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
    myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
@@ -227,7 +227,7 @@ ykine_turtle_goto       (void)
    rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
-   sprintf (x_recd, "ze_pure (%3.1f, %6.1f, %6.1f, =)", b, x, z);
+   sprintf (x_recd, "zero    (%3.1f, %6.1f, %6.1f, =)", b, x, z);
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
    myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
@@ -274,7 +274,7 @@ ykine_turtle_raise      (void)
    rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
-   sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
+   sprintf (x_recd, "zero    (%3.1f, =, =, %6.1f)", b, y);
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
    myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
@@ -321,7 +321,7 @@ ykine_turtle_lower      (void)
    rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
-   sprintf (x_recd, "ze_pure (%3.1f, =, =, %6.1f)", b, y);
+   sprintf (x_recd, "zero    (%3.1f, =, =, %6.1f)", b, y);
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
    myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
@@ -438,7 +438,7 @@ ykine_turtle_move       (void)
    rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, s);
    DEBUG_YKINE_SCRP  yLOG_value   ("create"    , rc);
    /*---(queue up action)-------------*/
-   sprintf (x_recd, "ze_pure (%6.1f, %6.1f, %6.1f, =)", b, s_x + x, s_z + z);
+   sprintf (x_recd, "zero    (%6.1f, %6.1f, %6.1f, =)", b, s_x + x, s_z + z);
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
    myKINE.s_hidden = 'y';
    DEBUG_YKINE_SCRP  yLOG_point   ("parse"     , rc);
