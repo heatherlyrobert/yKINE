@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2c"
-#define     P_VERTXT    "unit testing up to date on zero, polar, orient, and tilt"
+#define     P_VERNUM    "1.2d"
+#define     P_VERTXT    "passages and sections working and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -164,6 +164,9 @@ struct cLOCAL {
    float       s_pitch;
    /*---(moves)-------------*/
    char        leg;                         /* current leg for move           */
+   char        exact;                       /* current move fully completed   */
+   char        label       [LEN_LABEL];     /* current move label             */
+   char        cell;                        /* current move cell note         */
    double      b;                           /* current moves beats            */
    char        accel       [LEN_LABEL];     /* current accel string           */
    char        servos      [LEN_HUND];      /* current servo focus list       */
@@ -193,7 +196,7 @@ struct      cMOVE {
    tSERVO     *servo;                       /* servo pointer for move         */
    int         line;                        /* line from input file           */
    char        label       [LEN_LABEL];     /* label from input line          */
-   char        note;                        /* special note to help classify  */
+   char        cell;                        /* for grouping into cells        */
    /*---(timing)------------*/
    float       dur;                         /* duration of move               */
    float       secs;                        /* end time of move               */
@@ -389,7 +392,7 @@ char        ykine_exact_calc_length (float xp, float xc, float zp, float zc, flo
 char        ykine_exact_calc_polar  (float l, float d, float *x, float *z);
 char        ykine__exact_check      (tMOVE *a_curr, float a_sec);
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
-char        ykine_exact_context     (char a_leg);
+char        ykine_exact_context     (char a_leg, float a_margin);
 
 char        ykine_exact_fake_beg    (float db, float sb, float xb, float zb, float yb, float ob);
 char        ykine_exact_fake_end    (float de, float se, float xe, float ze, float ye, float oe);
@@ -408,6 +411,7 @@ char        ykine_scrp_begin        (void);
 char        ykine__scrp_prep        (void);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
 char        ykine_scrp_verb         (char *a_char);
+char        ykine_scrp_section      (void);
 
 char        ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y);
 char        ykine_body_xz2po        (float a_xpos, float a_zpos, float *a_deg, float *a_len);
@@ -425,7 +429,7 @@ char        ykine_body_tilt         (void);
 /*---(shared)-------------------------*/
 char        ykine_legs_prepservos   (char a_verb);
 char        ykine_legs_get_prev     (int a_leg);
-char        ykine_legs_set_servo    (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label);
+char        ykine_legs_set_servo    (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell);
 char        ykine_legs_complete     (char a_verb, char a_leg, float b, char *a_accel, char *a_label);
 /*---(forward)------------------------*/
 char        ykine_legs_fk           (void);
@@ -490,7 +494,7 @@ char*       ykine__unit_accel       (char *a_question, int a_num);
 char        ykine__move_new         (tMOVE **a_move);
 char        ykine__move_free        (tMOVE **a_move);
 
-char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, int a_line, char *a_label, char a_note, float a_deg, float a_sec);
+char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, int a_line, char *a_label, char a_cell, float a_deg, float a_sec);
 char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
 char        ykine_move_delete       (tMOVE **a_move);

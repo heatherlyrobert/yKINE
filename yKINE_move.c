@@ -66,7 +66,7 @@ ykine__move_new    (tMOVE **a_move)
    x_new->servo   = NULL;
    x_new->line    = 0;
    strlcpy (x_new->label, "", LEN_LABEL);
-   x_new->note    = '-';
+   x_new->cell    = '-';
    /*---(position)-----------------------*/
    DEBUG_YKINE_MOVE   yLOG_snote   ("pos");
    x_new->degs    =  0.0f;
@@ -164,7 +164,7 @@ ykine_move_create  (
       char        a_verb      ,   /* verb used for servo operation            */
       int         a_line      ,   /* source line                              */
       char       *a_label     ,   /* step label                               */
-      char        a_note      ,   /* not for special marking                  */
+      char        a_cell      ,   /* for grouping into cells                  */
       float       a_deg       ,   /* end position                             */
       float       a_sec       )   /* duration                                 */
 {
@@ -205,6 +205,7 @@ ykine_move_create  (
    x_move->verb     = a_verb;
    x_move->servo    = a_servo;
    if (a_label != NULL)  strlcpy (x_move->label, a_label, LEN_LABEL);
+   x_move->cell     = a_cell;
    x_move->line     = a_line;
    x_move->degs     = a_deg;
    x_move->dur      = a_sec;
@@ -1090,7 +1091,7 @@ yKINE_moves_rpt    (void)
          /*---(keys)---------------------*/
          printf ("   %4d  %c  %-15.15s  %-15.15s  %4d  %c",
                x_move->seq, x_move->type, x_verb, x_move->label,
-               x_move->line, x_move->note);
+               x_move->line, x_move->cell);
          /*---(timing)-------------------*/
          if (x_move->dur == 0.0)       printf ("      -.--");
          else                          printf ("  %8.2lf"  , x_move->dur);
@@ -1200,7 +1201,7 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    else if (strcmp (a_question, "m_last"  ) == 0) {
       x_move = m_tail;
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", -1, '-', -1, "-", '-', "-", 0.0, 0.0);
-      else                 sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->note, x_move->label, x_move->secs, x_move->degs);
+      else                 sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->degs);
    }
    else if (strcmp (a_question, "m_loc"   ) == 0) {
       x_move = m_tail;

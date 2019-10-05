@@ -258,7 +258,7 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
    else if (strcmp (a_question, "IK_angles"    ) == 0) {
       sprintf(ykine__unit_answer, "IK-%-2.2s/angles   : %8.1fc, %8.1ff, %8.1fp, %8.1ft", 
             ik [a_leg][a_seg].n ,
-            ik [a_leg][YKINE_COXA].d, ik [a_leg][YKINE_FEMU].d,
+            ik [a_leg][YKINE_THOR].d, ik [a_leg][YKINE_FEMU].d,
             ik [a_leg][YKINE_PATE].d, ik [a_leg][YKINE_TIBI].d);
    }
    else if (strcmp (a_question, "IK_final") == 0) {

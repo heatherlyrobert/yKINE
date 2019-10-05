@@ -295,7 +295,7 @@ yKINE__thor        (void)
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(save basics)-----------------*/
    l     =  s_leg [YKINE_THOR].l;                        /* set during yKINE__clear */
-   d     =  s_leg [YKINE_THOR].cd   =  s_leg [YKINE_THOR].d;   /* set during yKINE__clear */
+   d     =  s_leg [YKINE_THOR].cd   =  s_leg [YKINE_THOR].d;
    v     =  s_leg [YKINE_THOR].v    =  s_leg [YKINE_THOR].cv  =  0.0f;
    h     =  s_leg [YKINE_THOR].h    =  s_leg [YKINE_THOR].ch  =  d * DEG2RAD;
    DEBUG_YKINE_CALC   yLOG_complex ("basics"   , "%6.1fm , %6.1fd , %6.3fv , %6.3fh ", l, d, v, h);
@@ -783,6 +783,8 @@ yKINE__IK_adapt         (void)
    y       =  s_leg [YKINE_TARG].y;
    xz      =  s_leg [YKINE_TARG].xz;
    fl      =  s_leg [YKINE_TARG].fl;
+   DEBUG_YKINE_CALC   yLOG_complex ("zero"     , "%8.2fx , %8.2fz , %8.2fy",  myKINE.s_xcenter,  myKINE.s_zcenter,  myKINE.s_ycenter);
+   DEBUG_YKINE_CALC   yLOG_complex ("orient"   , "%8.2ff , %8.2fp , %8.2ft",  myKINE.s_yaw    ,  myKINE.s_pitch  ,  myKINE.s_roll   );
    DEBUG_YKINE_CALC   yLOG_complex ("original" , "%8.2fx , %8.2fz , %8.2fy , %8.2fxz, %8.2ffl",  x,  z,  y, xz, fl);
    /*---(yaw)----------------------------*/
    DEBUG_YKINE_CALC  yLOG_note    ("yaw calcs");

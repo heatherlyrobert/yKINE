@@ -301,14 +301,28 @@
 #define     YKINE_OR        10
 #define     YKINE_TI        11
 
+
+/*---(minor)--------------------------*/
+#define     YKINE_SEGN      40
+#define     YKINE_REPT      41
+#define     YKINE_PHRA      42
+#define     YKINE_STZA      43
+/*---(major)--------------------------*/
+#define     YKINE_PASS      50
+#define     YKINE_SECT      51
+/*---(external)-----------------------*/
+#define     YKINE_SONG      55
+/*---(errors)-------------------------*/
 #define     YKINE_BODE      66
 #define     YKINE_LEGE      67
+/*---(special)------------------------*/
 #define     YKINE_NOOP      99
 
 
 
 /*---(overall)------------------------*/
 #define     YKINE_MAX_LEGS  15       /* all possible legs      */
+#define     YKINE_CENTER    -1
 #define     YKINE_BODY       0
 /*---(big legs)-----------------------*/
 #define     YKINE_RR         1
@@ -426,7 +440,7 @@ char        yKINE_script            (float *a_len);
 
 
 char        yKINE_exact_all         (float  a_time);
-char        yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
+char        yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_label, char *a_cell, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
 
 char        yKINE_move_first        (int a_leg, int a_seg, float *a_sec, float *a_deg);
 char        yKINE_move_next         (float *a_sec  , float *a_deg);

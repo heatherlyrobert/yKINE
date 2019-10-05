@@ -52,12 +52,17 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "metr" , "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
    { -1        , "tmpo" , "tempo"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
-   { -1        , "segn" , "segno"        , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_segno      , "mark a place in the music for later repeats"       },
-   { -1        , "rept" , "repeat"       , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "repeat a particular section of movements"          },
-   { -1        , "rept" , "ripetere"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "repeat a particular section of movements"          },
-   { -1        , "stnz" , "stanza"       , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular stanza"         },
-   { -1        , "pass" , "passaggio"    , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular passage"        },
-   { -1        , "sezi" , "sezione"      , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark the beginning of a particular section"        },
+   /* ===[[ flow control ]]======================================================*/
+   { YKINE_SEGN, "segn" , "segno"        , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_segno      , "flow control beginning of a repeat group"          },
+   { YKINE_REPT, "rept" , "ripetere"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "flow control ending of a repeat group"             },
+   /* ===[[ minor/partial sync points ]]=========================================*/
+   { YKINE_PHRA, "phra" , "frase"        , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark level 1 (smallest) partial/minor sync point"  },
+   { YKINE_STZA, "stnz" , "stanza"       , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "mark level 2 (largest) partial/minor sync point"   },
+   /* ===[[ major/full sync points ]]============================================*/
+   { YKINE_PASS, "pass" , "passaggio"    , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark level 3 (smallest) full/major sync point"     },
+   { YKINE_SECT, "sect" , "sezione"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark level 4 (largest) full/major sync point"      },
+   /* ===[[ external ]]==========================================================*/
+   { YKINE_SONG, "song" , "song"         , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "insert external script to allow reuse"             },
    /* ===[[ turtle graphics ]]===================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "tsp"  , "tu_speed"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_speed    , "set the speed of the turtle movement"              },
@@ -82,10 +87,11 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "walk" , "walk"         , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
    { -1        , "circ" , "circle"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
-   /* done-------------------*/
+   /* ===[[ special ]]===========================================================*/
    { YKINE_BODE, "e/bod", "error_body"   , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, "-"                   , "verb not understood"                               },
    { YKINE_LEGE, "e/leg", "error_legs"   , 'y' , '-' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, "-"                   , "verb not understood"                               },
-   { YKINE_NOOP, "n/a"  , "empty"        , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, "-"                   , "nothing to do"                                     },
+   { YKINE_NOOP, "noop" , "empty"        , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, "-"                   , "nothing to do"                                     },
+   /* done-------------------*/
    { -1        , NULL   , NULL           ,  0  ,  0  , -1           , -1        , -1          , -1, NULL                  , NULL                                                },
 };
 
@@ -133,6 +139,15 @@ tGAIT       s_gait_info [MAX_GAITS] = {
       /*------------------*/ /* y */   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0},
 };
 
+#define     MAX_HINTS       676
+static struct cHINTS {
+   int         line;
+   char       *label;
+   float       secs;
+} s_hints [MAX_HINTS];
+static char s_major   = 'a';
+static char s_minor   = 'a';
+
 
 
 /*====================------------------------------------====================*/
@@ -148,12 +163,23 @@ ykine_verb_init         (void)
    int         i           =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(verbs)--------------------------*/
    for (i = 0; i < MAX_VERBS; ++i) {
       if (s_verb_info [i].name  [0] == NULL) break;
       if (s_verb_info [i].active   != 'y' )  continue;
       DEBUG_YKINE_SCRP   yLOG_info    ("verb"      , s_verb_info [i].name);
       yPARSE_handler ('·', s_verb_info [i].name, 0.0, "", s_verb_info [i].mask, NULL, NULL, "", "", s_verb_info [i].desc);
    }
+   /*---(hints)--------------------------*/
+   for (i = 0; i < MAX_HINTS; ++i) {
+      s_hints [i].major = '-';
+      s_hints [i].minor = '-';
+      s_hints [i].line  = -1;;
+      s_hints [i].label = NULL;
+      s_hints [i].secs  = -1.0;
+   }
+   s_nhint = 0;
+   /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -543,6 +569,86 @@ ykine_scrp_repeat       (void)
       DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
       ykine_move_repeat (x_servo, c);
    }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       synchronizations                       ----===*/
+/*====================------------------------------------====================*/
+static void      o___SECTION_________________o (void) {;}
+
+char
+ykine_scrp_section      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   int         i           =    0;
+   char        x_label     [LEN_LABEL];
+   tSERVO     *x_servo     = NULL;
+   tMOVE      *x_tail      = NULL;
+   float       x_max       =  0.0;
+   float       x_dur       =  0.0;
+   char        x_leg       =    0;
+   char        x_seg       =    0;
+   float       d, x, z, y;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get label)----------------------*/
+   rc = yPARSE_popstr    (x_label);
+   DEBUG_YKINE_SCRP  yLOG_complex ("a_label"   , "%3d, %s", rc, x_label);
+   if (strcmp (x_label, "-") == 0)   strlcpy (x_label, "", LEN_LABEL);
+   /*---(find max)-----------------------*/
+   for (i = 0; i < YKINE_MAX_SERVO; ++i) {
+      /*---(filter)--------------*/
+      if (g_servo_info [i].label [0] == 'e')   break;
+      x_tail = g_servo_info [i].tail;
+      if (x_tail == NULL)         continue;
+      if (x_tail->secs <= x_max)  continue;
+      /*---(new max)-------------*/
+      DEBUG_YKINE_SCRP   yLOG_complex ("found"     , "%-10.10s, %6.1f", g_servo_info [i].label, x_tail->secs);
+      x_max = x_tail->secs;
+      /*---(done)----------------*/
+   }
+   /*---(check nothing)------------------*/
+   DEBUG_YKINE_SCRP   yLOG_double  ("x_max"     , x_max);
+   if (x_max < 0.1) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("nothing to do");
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(fill-out)-----------------------*/
+   for (i = 0; i < YKINE_MAX_SERVO; ++i) {
+      /*---(filter)--------------*/
+      if (g_servo_info [i].label [0] == 'e')   break;
+      x_servo = &(g_servo_info [i]);
+      x_leg   = x_servo->leg;
+      x_seg   = x_servo->seg;
+      x_tail  = x_servo->tail;
+      /*---(check for first)-----*/
+      if (x_tail == NULL) {
+         x_dur = x_max;
+         d = x = z = y = 0.0;
+      }
+      /*---(handle ongoing)------*/
+      else {
+         if (x_tail->secs >= x_max)  continue;
+         x_dur   = x_max - x_tail->secs;
+         d       = x_tail->degs;
+         x       = x_tail->x_pos;
+         z       = x_tail->z_pos;
+         y       = x_tail->y_pos;
+      }
+      /*---(add filler)----------*/
+      DEBUG_YKINE_SCRP   yLOG_complex ("adding"    , "%-10.10s, %6.1fs", x_servo->label, x_dur);
+      ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, -1, "filler", YKINE_NONE, d, x_dur);
+      ykine_move_addloc (x_servo, x, z, y);
+      /*---(done)----------------*/
+   }
+   /*---(add section)--------------------*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;

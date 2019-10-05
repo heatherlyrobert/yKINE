@@ -393,7 +393,7 @@ ykine__exact_find       (tSERVO *a_servo, float a_sec)
 }
 
 char
-ykine_move_getservos    (char a_leg, char a_seg, tMOVE **a_curr, tMOVE **a_prev)
+ykine_move_getservos    (char a_leg, char a_seg, tMOVE **a_curr, tMOVE **a_prev, char *a_exact)
 {
    /*---(locals)-----------+-----+-----+-*/
    tSERVO     *x_servo     =    0;
@@ -412,6 +412,10 @@ ykine_move_getservos    (char a_leg, char a_seg, tMOVE **a_curr, tMOVE **a_prev)
    }
    DEBUG_YKINE_EXACT  yLOG_point   ("*a_curr"   , *a_curr);
    DEBUG_YKINE_EXACT  yLOG_point   ("*a_prev"   , *a_prev);
+   if (a_exact != NULL) {
+      if (x_servo->exact == 'y')  *a_exact = 'y';
+      else                        *a_exact = '-';
+   }
    /*---complete)------------------------*/
    DEBUG_YKINE_EXACT  yLOG_exit    (__FUNCTION__);
    return 0;
@@ -444,55 +448,67 @@ ykine_move_copyout      (tMOVE *a_move, float *d, float *s, float *x, float *z, 
 }
 
 char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
-ykine_exact_context     (char a_leg)
+ykine_exact_context     (char a_leg, float a_margin)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    tMOVE      *x_curr      = NULL;
    tMOVE      *x_prev      = NULL;
    /*---(wipe)---------------------------*/
+   myKINE.exact = myKINE.cell  = '-';
+   myKINE.label [0] = '\0';
    myKINE.sb = myKINE.db = myKINE.cb = myKINE.fb = myKINE.pb = myKINE.tb = myKINE.xb = myKINE.zb = myKINE.yb = myKINE.xzb = myKINE.ob = 0.0;
    myKINE.sc = myKINE.dc = myKINE.cc = myKINE.fc = myKINE.pc = myKINE.tc = myKINE.xc = myKINE.zc = myKINE.yc = myKINE.xzc = myKINE.oc = 0.0;
    myKINE.se = myKINE.de = myKINE.ce = myKINE.fe = myKINE.pe = myKINE.te = myKINE.xe = myKINE.ze = myKINE.ye = myKINE.xze = myKINE.oe = 0.0;
-   /*---(body/coxa)----------------------*/
-   if (a_leg == YKINE_BODY) {
-      ykine_move_getservos (a_leg , YKINE_FOCU , &x_curr, &x_prev);
-      ykine_move_copyout   (x_prev, NULL      , NULL      , &myKINE.xb, &myKINE.zb, &myKINE.yb, &myKINE.xzb);
-      ykine_move_copyout   (x_curr, NULL      , NULL      , &myKINE.xe, &myKINE.ze, &myKINE.ye, &myKINE.xze);
-      if (x_curr != NULL)  myKINE.ov  = x_curr->verb;
-      else                 myKINE.ov  = -1;
+   /*---(zero point)---------------------*/
+   if (a_leg == YKINE_CENTER) {
+      ykine_move_getservos (YKINE_BODY, YKINE_FOCU , &x_curr, &x_prev, &myKINE.exact);
+      ykine_move_copyout   (x_prev, NULL      , &myKINE.sb, &myKINE.xb, &myKINE.zb, &myKINE.yb, &myKINE.xzb);
+      ykine_move_copyout   (x_curr, NULL      , &myKINE.se, &myKINE.xe, &myKINE.ze, &myKINE.ye, &myKINE.xze);
    }
-   /*---(femur/yaw)----------------------*/
-   ykine_move_getservos (a_leg , YKINE_FEMU , &x_curr, &x_prev);
-   ykine_move_copyout   (x_prev, &myKINE.fb, NULL      , NULL      , NULL      , NULL      , NULL       );
-   ykine_move_copyout   (x_curr, &myKINE.fe, NULL      , NULL      , NULL      , NULL      , NULL       );
-   if (x_curr != NULL)  ++rc;
-   /*---(patella/pitch)------------------*/
-   ykine_move_getservos (a_leg , YKINE_PATE , &x_curr, &x_prev);
-   ykine_move_copyout   (x_prev, &myKINE.pb, NULL      , NULL      , NULL      , NULL      , NULL       );
-   ykine_move_copyout   (x_curr, &myKINE.pe, NULL      , NULL      , NULL      , NULL      , NULL       );
-   if (x_curr != NULL)  ++rc;
-   /*---(tibia/roll)---------------------*/
-   ykine_move_getservos (a_leg , YKINE_TIBI , &x_curr, &x_prev);
-   if (a_leg == YKINE_BODY) {
-      ykine_move_copyout   (x_prev, &myKINE.tb, &myKINE.sb, NULL      , NULL      , NULL      , NULL       );
-      ykine_move_copyout   (x_curr, &myKINE.te, &myKINE.se, NULL      , NULL      , NULL      , NULL       );
-   } else {
-      ykine_move_copyout   (x_prev, &myKINE.tb, &myKINE.sb, &myKINE.xb, &myKINE.zb, &myKINE.yb, &myKINE.xzb);
-      ykine_move_copyout   (x_curr, &myKINE.te, &myKINE.se, &myKINE.xe, &myKINE.ze, &myKINE.ye, &myKINE.xze);
-   }
-   if (x_curr != NULL)  ++rc;
-   /*---(coxa)---------------------------*/
-   if (a_leg != YKINE_BODY && x_curr != NULL) {
-      myKINE.cb  = yKINE_legdeg (a_leg);
-      myKINE.ce  = myKINE.cb;
-   } else {
-      myKINE.cb  = 0.0;
-      myKINE.ce  = 0.0;
+   /*---(body and legs)------------------*/
+   else {
+      /*---(femur/yaw)----------------------*/
+      ykine_move_getservos (a_leg , YKINE_FEMU , &x_curr, &x_prev, NULL);
+      ykine_move_copyout   (x_prev, &myKINE.fb, NULL      , NULL      , NULL      , NULL      , NULL       );
+      ykine_move_copyout   (x_curr, &myKINE.fe, NULL      , NULL      , NULL      , NULL      , NULL       );
+      if (x_curr != NULL)  ++rc;
+      /*---(patella/pitch)------------------*/
+      ykine_move_getservos (a_leg , YKINE_PATE , &x_curr, &x_prev, NULL);
+      ykine_move_copyout   (x_prev, &myKINE.pb, NULL      , NULL      , NULL      , NULL      , NULL       );
+      ykine_move_copyout   (x_curr, &myKINE.pe, NULL      , NULL      , NULL      , NULL      , NULL       );
+      if (x_curr != NULL)  ++rc;
+      /*---(tibia/roll)---------------------*/
+      ykine_move_getservos (a_leg , YKINE_TIBI , &x_curr, &x_prev, &myKINE.exact);
+      if (a_leg == YKINE_BODY) {
+         ykine_move_copyout   (x_prev, &myKINE.tb, &myKINE.sb, NULL      , NULL      , NULL      , NULL       );
+         ykine_move_copyout   (x_curr, &myKINE.te, &myKINE.se, NULL      , NULL      , NULL      , NULL       );
+      } else {
+         ykine_move_copyout   (x_prev, &myKINE.tb, &myKINE.sb, &myKINE.xb, &myKINE.zb, &myKINE.yb, &myKINE.xzb);
+         ykine_move_copyout   (x_curr, &myKINE.te, &myKINE.se, &myKINE.xe, &myKINE.ze, &myKINE.ye, &myKINE.xze);
+      }
+      if (x_curr != NULL)  ++rc;
+      /*---(coxa)---------------------------*/
+      if (a_leg != YKINE_BODY && x_curr != NULL) {
+         myKINE.cb  = yKINE_legdeg (a_leg);
+         myKINE.ce  = myKINE.cb;
+      } else {
+         myKINE.cb  = 0.0;
+         myKINE.ce  = 0.0;
+      }
    }
    /*---(verb)---------------------------*/
    if (x_curr != NULL)  myKINE.vb  = x_curr->verb;
    else                 myKINE.vb  = -1;
+   /*---(exact)--------------------------*/
+   DEBUG_YKINE_EXACT  yLOG_complex ("beg"       , "%6.2fsc, %6.2fsb, %6.2fdi, %6.2fma, %c", s_sec, myKINE.sb, s_sec - myKINE.sb, a_margin, (s_sec - myKINE.sb <= a_margin + 0.01) ? 'y' : '-');
+   myKINE.exact = '-';
+   if (x_curr != NULL && s_sec - myKINE.sb <= a_margin + 0.01) {
+      DEBUG_YKINE_EXACT  yLOG_note    ("front end of move, copy label");
+      myKINE.exact = 'y';
+      strlcpy (myKINE.label, x_curr->label, LEN_LABEL);
+      myKINE.cell = x_curr->cell;
+   }
    /*---(report)-------------------------*/
    DEBUG_YKINE_EXACT  yLOG_value   ("verb"      , myKINE.vb);
    DEBUG_YKINE_EXACT  yLOG_complex ("b.angles"  , "%8.3fc, %8.3ff, %8.3fp, %8.3ft" , myKINE.cb, myKINE.fb, myKINE.pb, myKINE.tb);
@@ -526,43 +542,7 @@ yKINE_exact_all         (float a_sec)
 }
 
 char         /*--> set all the servos to the right time --[ ------ [ ------ ]-*/
-yKINE_exact_body        (float *x, float *z, float *y, float *a_yaw, float *a_pit, float *a_rol)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   float       x_pct       =  0.0;
-   float       x_range     =  0.0;
-   /*---(beg and end points)-------------*/
-   ykine_exact_context (YKINE_BODY);
-   /*---(calc percent)-------------------*/
-   x_range = myKINE.se - myKINE.sb;
-   if (x_range == 0.0)  x_pct   = 1.00;
-   else                 x_pct   = (s_sec - myKINE.sb) / x_range;
-   /*---(calc current endpoint)----------*/
-   switch (myKINE.vb) {
-   case YKINE_ZE : ykine_exact_pct_xzy     (x_pct);  break;
-   case YKINE_PO : ykine_exact_pct_xzy     (x_pct);  break;
-   }
-   /*---(save current endpoint)----------*/
-   if (x     != NULL)  *x     = myKINE.xc;
-   if (z     != NULL)  *z     = myKINE.zc;
-   if (y     != NULL)  *y     = myKINE.yc;
-   /*---(calc current angles)------------*/
-   switch (myKINE.ov) {
-   case YKINE_OR : ykine_exact_pct_xzy     (x_pct);  break;
-   case YKINE_TI : ykine_exact_pct_xzy     (x_pct);  break;
-   }
-   /*---(save current endpoint)----------*/
-   if (a_yaw != NULL)  *a_yaw = myKINE.fc;
-   if (a_pit != NULL)  *a_pit = myKINE.pc;
-   if (a_rol != NULL)  *a_rol = myKINE.tc;
-   /*---(complete)-----------------------*/
-   return 0;
-}
-
-char         /*--> set all the servos to the right time --[ ------ [ ------ ]-*/
-yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr)
+yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_label, char *a_cell, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -573,56 +553,68 @@ yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, flo
    DEBUG_YKINE_EXACT  yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_EXACT  yLOG_value   ("a_leg"     , a_leg);
    /*---(initialize)---------------------*/
-   if (x     != NULL)  *x     = 0.0;
-   if (z     != NULL)  *z     = 0.0;
-   if (y     != NULL)  *y     = 0.0;
-   if (f     != NULL)  *f     = 0.0;
-   if (p     != NULL)  *p     = 0.0;
-   if (t     != NULL)  *t     = 0.0;
-   if (xr    != NULL)  *xr    = 0.0;
-   if (zr    != NULL)  *zr    = 0.0;
-   if (yr    != NULL)  *yr    = 0.0;
-   if (fr    != NULL)  *fr    = 0.0;
-   if (pr    != NULL)  *pr    = 0.0;
-   if (tr    != NULL)  *tr    = 0.0;
+   if (a_exact != NULL)  *a_exact = '-';
+   if (a_label != NULL)   a_label [0] = '\0';
+   if (a_cell  != NULL)  *a_cell  = '-';
+   if (x       != NULL)  *x       = 0.0;
+   if (z       != NULL)  *z       = 0.0;
+   if (y       != NULL)  *y       = 0.0;
+   if (f       != NULL)  *f       = 0.0;
+   if (p       != NULL)  *p       = 0.0;
+   if (t       != NULL)  *t       = 0.0;
+   if (xr      != NULL)  *xr      = 0.0;
+   if (zr      != NULL)  *zr      = 0.0;
+   if (yr      != NULL)  *yr      = 0.0;
+   if (fr      != NULL)  *fr      = 0.0;
+   if (pr      != NULL)  *pr      = 0.0;
+   if (tr      != NULL)  *tr      = 0.0;
    /*---(beg and end points)-------------*/
-   ykine_exact_context (a_leg);
+   ykine_exact_context (a_leg, a_margin);
+   if (myKINE.exact == 'y') {
+      if (a_exact != NULL)  *a_exact = 'y';
+      if (a_label != NULL)  strlcpy (a_label, myKINE.label, LEN_LABEL);
+      if (a_cell  != NULL)  *a_cell  = myKINE.cell;
+   }
    /*---(calc percent)-------------------*/
    x_range = myKINE.se - myKINE.sb;
    if (x_range == 0.0)  x_pct   = 1.00;
    else                 x_pct   = (s_sec - myKINE.sb) / x_range;
+   DEBUG_YKINE_EXACT  yLOG_double  ("x_pct"     , x_pct);
    /*---(calc current endpoint)----------*/
    rc = ykine_exact_pct_route (myKINE.vb, a_leg, x_pct);
-   /*> switch (myKINE.vb) {                                                           <* 
-    *> case YKINE_FK :                                                                <* 
-    *>    ykine_exact_pct_xzy     (x_pct);                                            <* 
-    *>    break;                                                                      <* 
-    *> case YKINE_IK : case YKINE_TK : case YKINE_NK :                                <* 
-    *>    ykine_exact_pct_xzy     (x_pct);                                            <* 
-    *>    break;                                                                      <* 
-    *> case YKINE_CK : case YKINE_RK : case YKINE_SK :                                <* 
-    *>    ykine_exact_pct_doy     (myKINE.vb, a_leg, x_pct);                          <* 
-    *>    break;                                                                      <* 
-    *> }                                                                              <*/
+   DEBUG_YKINE_EXACT  yLOG_value   ("exact"     , rc);
    /*---(save current endpoint)----------*/
    if (x     != NULL)  *x     = myKINE.xc;
    if (z     != NULL)  *z     = myKINE.zc;
    if (y     != NULL)  *y     = myKINE.yc;
+   DEBUG_YKINE_EXACT  yLOG_complex ("orig pos"  , "%6.1fx, %6.1fz, %6.1fy", myKINE.xc, myKINE.zc, myKINE.yc);
+   /*---(set zero-point)-----------------*/
+   if (a_leg == YKINE_CENTER) {
+      yKINE_zero   (myKINE.xc, myKINE.zc, myKINE.yc);
+      if (xr    != NULL)  *xr    = myKINE.xc;
+      if (zr    != NULL)  *zr    = myKINE.zc;
+      if (yr    != NULL)  *yr    = myKINE.yc;
+      DEBUG_YKINE_EXACT  yLOG_exit    (__FUNCTION__);
+      return myKINE.rcc;
+   }
    /*---(save current angles)------------*/
    myKINE.cc = myKINE.cb;
    if (f     != NULL)  *f     = myKINE.fc;
    if (p     != NULL)  *p     = myKINE.pc;
    if (t     != NULL)  *t     = myKINE.tc;
+   DEBUG_YKINE_EXACT  yLOG_complex ("orig ang"  , "%6.1ff, %6.1fp, %6.1ft", myKINE.fc, myKINE.pc, myKINE.tc);
+   /*---(set orientation)----------------*/
+   if (a_leg == YKINE_BODY)  {
+      yKINE_orient (myKINE.fc, myKINE.pc, myKINE.tc);
+      if (fr    != NULL)  *fr    = myKINE.fc;
+      if (pr    != NULL)  *pr    = myKINE.pc;
+      if (tr    != NULL)  *tr    = myKINE.tc;
+      DEBUG_YKINE_EXACT  yLOG_exit    (__FUNCTION__);
+      return myKINE.rcc;
+   }
    /*---(inverse kinematics)-------------*/
    rc = ykine_legs_partial  (myKINE.vb, a_leg, 'e');
-   /*> if (myKINE.vb == YKINE_FK) {                                                                                       <* 
-    *>    myKINE.rcc = yKINE_forward       (a_leg, myKINE.fc, myKINE.pc, myKINE.tc);                                      <* 
-    *>    yKINE_endpoint (a_leg, YKINE_FOOT, YKINE_FK, NULL, NULL, &myKINE.xc, &myKINE.zc, &myKINE.yc, NULL);             <* 
-    *> } else {                                                                                                           <* 
-    *>    myKINE.rcc = yKINE_inverse_adapt (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);                                      <* 
-    *>    /+> yKINE_endpoint (a_leg, YKINE_FOOT, YKINE_IK, NULL, NULL, &myKINE.xc, &myKINE.zc, &myKINE.yc, NULL);   <+/   <* 
-    *>    yKINE_angles   (a_leg, YKINE_IK, NULL, &myKINE.fc, &myKINE.pc, &myKINE.tc);                                     <* 
-    *> }                                                                                                                  <*/
+   DEBUG_YKINE_EXACT  yLOG_value   ("partial"   , rc);
    --rce;  if (myKINE.rcc < 0)  {
       DEBUG_YKINE_EXACT  yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -631,10 +623,12 @@ yKINE_exact_leg         (char a_leg, float *f, float *p, float *t, float *x, flo
    if (xr    != NULL)  *xr    = myKINE.xc;
    if (zr    != NULL)  *zr    = myKINE.zc;
    if (yr    != NULL)  *yr    = myKINE.yc;
+   DEBUG_YKINE_EXACT  yLOG_complex ("rev pos"   , "%6.1fx, %6.1fz, %6.1fy", myKINE.xc, myKINE.zc, myKINE.yc);
    /*---(save revised angles)------------*/
    if (fr    != NULL)  *fr    = myKINE.fc;
    if (pr    != NULL)  *pr    = myKINE.pc;
    if (tr    != NULL)  *tr    = myKINE.tc;
+   DEBUG_YKINE_EXACT  yLOG_complex ("rev ang"   , "%6.1ff, %6.1fp, %6.1ft", myKINE.fc, myKINE.pc, myKINE.tc);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_EXACT  yLOG_exit    (__FUNCTION__);
    return myKINE.rcc;
