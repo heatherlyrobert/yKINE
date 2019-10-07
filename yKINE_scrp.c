@@ -61,6 +61,8 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ major/full sync points ]]============================================*/
    { YKINE_PASS, "pass" , "passaggio"    , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark level 3 (smallest) full/major sync point"     },
    { YKINE_SECT, "sect" , "sezione"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark level 4 (largest) full/major sync point"      },
+   { YKINE_PASS, "beg"  , "start"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark beginning of script"                          },
+   { YKINE_PASS, "end"  , "finish"       , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark ending of script"                             },
    /* ===[[ external ]]==========================================================*/
    { YKINE_SONG, "song" , "song"         , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "insert external script to allow reuse"             },
    /* ===[[ turtle graphics ]]===================================================*/
@@ -141,12 +143,13 @@ tGAIT       s_gait_info [MAX_GAITS] = {
 
 #define     MAX_HINTS       676
 static struct cHINTS {
+   char        major;
+   char        minor;
    int         line;
    char       *label;
    float       secs;
 } s_hints [MAX_HINTS];
-static char s_major   = 'a';
-static char s_minor   = 'a';
+static int  s_nhint   =   0;
 
 
 
@@ -170,15 +173,6 @@ ykine_verb_init         (void)
       DEBUG_YKINE_SCRP   yLOG_info    ("verb"      , s_verb_info [i].name);
       yPARSE_handler ('·', s_verb_info [i].name, 0.0, "", s_verb_info [i].mask, NULL, NULL, "", "", s_verb_info [i].desc);
    }
-   /*---(hints)--------------------------*/
-   for (i = 0; i < MAX_HINTS; ++i) {
-      s_hints [i].major = '-';
-      s_hints [i].minor = '-';
-      s_hints [i].line  = -1;;
-      s_hints [i].label = NULL;
-      s_hints [i].secs  = -1.0;
-   }
-   s_nhint = 0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -481,6 +475,21 @@ ykine_scrp_popservo     (void)
 /*====================------------------------------------====================*/
 static void      o___REPEATS_________________o (void) {;}
 
+char
+ykine_scrp_prev         (tMOVE *a_move, float *d, float *x, float *z, float *y)
+{
+   if (d != NULL)  *d = 0.0;
+   if (x != NULL)  *x = 0.0;
+   if (z != NULL)  *z = 0.0;
+   if (y != NULL)  *y = 0.0;
+   if (a_move == NULL)          return 0;
+   if (d != NULL)  *d = a_move->degs;
+   if (x != NULL)  *x = a_move->x_pos;
+   if (z != NULL)  *z = a_move->z_pos;
+   if (y != NULL)  *y = a_move->y_pos;
+   return 0;
+}
+
 char         /*--> parse a segno marker ------------------[ ------ [ ------ ]-*/
 ykine_scrp_segno        (void)
 {
@@ -491,6 +500,7 @@ ykine_scrp_segno        (void)
    int         j           =    0;
    char        x_list      [LEN_HUND];
    tSERVO     *x_servo     = NULL;
+   float       d, x, z, y;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(mark servers)----------------*/
@@ -511,13 +521,17 @@ ykine_scrp_segno        (void)
       if (x_servo == NULL)      continue;
       if (x_servo->seg == YKINE_FOCU) {
          DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-         rc = ykine_move_create (x_servo, YKINE_NOTE, YKINE_NONE, myKINE.s_cline, "segno", YKINE_NONE, 0.0, 0.0);
+         ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
+         ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", YKINE_NONE, d, 0.0);
+         ykine_move_addloc (x_servo, x, z, y);
          x_servo->segni [x_servo->nsegno] = x_servo->tail;
          ++(x_servo->nsegno);
       } else if (x_servo->seg == YKINE_TIBI) {
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-            rc = ykine_move_create (x_servo, YKINE_NOTE, YKINE_NONE, myKINE.s_cline, "segno", YKINE_NONE, 0.0, 0.0);
+            ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
+            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", YKINE_NONE, d, 0.0);
+            ykine_move_addloc (x_servo, x, z, y);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             --x_servo;
@@ -525,7 +539,9 @@ ykine_scrp_segno        (void)
       } else {
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-            ykine_move_create (x_servo, YKINE_NOTE, YKINE_NONE, myKINE.s_cline, "segno", YKINE_NONE, 0.0, 0.0);
+            ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
+            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", YKINE_NONE, d, 0.0);
+            ykine_move_addloc (x_servo, x, z, y);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             ++x_servo;
@@ -544,6 +560,7 @@ ykine_scrp_repeat       (void)
    char        rce         = -10;                /* return code for errors    */
    char        rc          = 0;
    int         i           = 0;
+   int         j           = 0;
    tSERVO     *x_servo     = NULL;
    double      c           = 0;
    char        x_list      [LEN_HUND];
@@ -565,9 +582,25 @@ ykine_scrp_repeat       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("c"         , c);
    for (i = 0; i < g_nservo; ++i) {
       if (x_list [i] == '_')  continue;
+      /*---(handle)----------------------*/
       x_servo = &(g_servo_info [i]);
-      DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-      ykine_move_repeat (x_servo, c);
+      if (x_servo == NULL)      continue;
+      if (x_servo->seg == YKINE_FOCU) {
+         DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
+         ykine_move_repeat (x_servo, c);
+      } else if (x_servo->seg == YKINE_TIBI) {
+         for (j = 0; j < 3; ++j) {
+            DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
+            ykine_move_repeat (x_servo, c);
+            --x_servo;
+         }
+      } else {
+         for (j = 0; j < 3; ++j) {
+            DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
+            ykine_move_repeat (x_servo, c);
+            ++x_servo;
+         }
+      }
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -580,6 +613,213 @@ ykine_scrp_repeat       (void)
 /*===----                       synchronizations                       ----===*/
 /*====================------------------------------------====================*/
 static void      o___SECTION_________________o (void) {;}
+
+char
+ykine_hint__purge        (char a_1st)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(hints)--------------------------*/
+   for (i = 0; i < MAX_HINTS; ++i) {
+      s_hints [i].major = '-';
+      s_hints [i].minor = '-';
+      s_hints [i].line  = -1;;
+      if (a_1st != 'y' && s_hints [i].label != NULL)  free (s_hints [i].label);
+      s_hints [i].label = NULL;
+      s_hints [i].secs  = -1.0;
+   }
+   s_nhint = 0;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_hint_init         (void)
+{
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(hints)--------------------------*/
+   ykine_hint__purge      ('y');
+   ykine_hint__new        ("reset"    , 0, "reset", 0.0);
+   ykine_hint__new        ("passaggio", 0, "start", 0.0);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_hint_reset        (void)
+{
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(hints)--------------------------*/
+   ykine_hint__purge      ('-');
+   ykine_hint__new        ("reset"    , 0, "reset", 0.0);
+   ykine_hint__new        ("passaggio", 0, "start", 0.0);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_hint_final  (float a_sec)
+{
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(hints)--------------------------*/
+   ykine_hint__new        ("finish"   , 0, "finish", a_sec);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_hint_wrap   (void)        {
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(hints)--------------------------*/
+   ykine_hint__purge      ('-');
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   static char x_major     =  'a';
+   static char x_minor     =  'a';
+   static char x_finish    =  '-';
+   char        x_label     [LEN_LABEL];
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   /*---(reset)--------------------------*/
+   if (strcmp (a_verb, "reset"  ) == 0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("resetting");
+      x_major  = 'a';
+      x_minor  = 'a';
+      x_finish = '-';
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   if (a_label != NULL)  strlcpy (x_label, a_label  , LEN_LABEL);
+   else                  strlcpy (x_label, "-"      , LEN_LABEL);
+   /*---(check hint)---------------------*/
+   DEBUG_YKINE_SCRP   yLOG_snote   (a_verb);
+   if (strcmp (a_verb, "start"  ) == 0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("start is automatic, nothing to do");
+      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   if (strcmp (a_verb, "sezione") == 0) {
+      ++x_major;
+      x_minor  = 'a';
+   }
+   if (strcmp (a_verb, "finish" ) == 0 && x_finish != 'y') {
+      x_major  = 'z';
+      x_minor  = 'z';
+      x_finish = 'y';
+      strlcpy (x_label, "finish", LEN_LABEL);
+   }
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_schar   (x_major);
+   --rce;  if (x_major > 'z' || x_major < 0) {
+      x_major = '¢';
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_schar   (x_minor);
+   --rce;  if (x_minor > 'z' || x_minor < 0) {
+      x_minor = '¢';
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   --rce;  if (x_major == 'z' && x_minor == 'z' && strcmp (a_verb, "finish") != 0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(add section)--------------------*/
+   DEBUG_YKINE_SCRP   yLOG_snote   ("add");
+   s_hints [s_nhint].major = x_major;
+   s_hints [s_nhint].minor = x_minor;
+   s_hints [s_nhint].line  = a_line;
+   s_hints [s_nhint].label = strdup (x_label);
+   s_hints [s_nhint].secs  = a_sec;
+   /*---(update minor)-------------------*/
+   ++x_minor;
+   if (x_minor > 'z' || x_minor < 0)  x_minor = '¢';
+   DEBUG_YKINE_SCRP   yLOG_schar   (x_minor);
+   /*---(update count)-------------------*/
+   ++s_nhint;
+   DEBUG_YKINE_SCRP   yLOG_sint    (s_nhint);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+yKINE_section           (char a_type, char *a_major, char *a_minor, int *a_line, char *a_label, float *a_sec)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char       rce          =  -10;
+   static int x_curr       =    0;
+   /*---(defaults)-----------------------*/
+   if (a_major != NULL)  *a_major     = '-';
+   if (a_minor != NULL)  *a_minor     = '-';
+   if (a_line  != NULL)  *a_line      = -1;
+   if (a_label != NULL)  a_label [0]  = '\0';
+   if (a_sec   != NULL)  *a_sec       = -1.0;
+   /*---(set cursor)---------------------*/
+   switch (a_type) {
+   case '['  : x_curr = 0;                   break;
+   case '<'  : --x_curr;                     break;
+   case '`'  : x_curr;                       break;
+   case '>'  : ++x_curr;                     break;
+   case ']'  : x_curr = s_nhint - 1;         break;
+   default   : return -1;
+   }
+   /*---(defense)------------------------*/
+   --rce;  if (x_curr <  0      ) {
+      x_curr = 0;
+      return rce;
+   }
+   --rce;  if (x_curr >= s_nhint) {
+      x_curr = s_nhint - 1;
+      return rce;
+   }
+   /*---(populate)-----------------------*/
+   if (a_major != NULL)  *a_major     = s_hints [x_curr].major;
+   if (a_minor != NULL)  *a_minor     = s_hints [x_curr].minor;
+   if (a_line  != NULL)  *a_line      = s_hints [x_curr].line;
+   if (a_label != NULL)  strlcpy (a_label, s_hints [x_curr].label, LEN_LABEL);
+   if (a_sec   != NULL)  *a_sec       = s_hints [x_curr].secs;
+   /*---(complete)-----------------------*/
+   return 0;
+
+}
+
+char
+ykine_hint_list         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   printf ("HINT LIST\n");
+   printf ("- - -#- ---label------- -secs-\n");
+   for (i = 0; i < s_nhint; ++i) {
+      printf ("%c %c %3d %-15.15s %6.1f\n",
+            s_hints [i].major, s_hints [i].minor,
+            s_hints [i].line , s_hints [i].label,
+            s_hints [i].secs);
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
 
 char
 ykine_scrp_section      (void)
@@ -600,7 +840,7 @@ ykine_scrp_section      (void)
    /*---(get label)----------------------*/
    rc = yPARSE_popstr    (x_label);
    DEBUG_YKINE_SCRP  yLOG_complex ("a_label"   , "%3d, %s", rc, x_label);
-   if (strcmp (x_label, "-") == 0)   strlcpy (x_label, "", LEN_LABEL);
+   if (strcmp (x_label, "-") == 0)   strlcpy (x_label, "(empty)", LEN_LABEL);
    /*---(find max)-----------------------*/
    for (i = 0; i < YKINE_MAX_SERVO; ++i) {
       /*---(filter)--------------*/
@@ -644,11 +884,12 @@ ykine_scrp_section      (void)
       }
       /*---(add filler)----------*/
       DEBUG_YKINE_SCRP   yLOG_complex ("adding"    , "%-10.10s, %6.1fs", x_servo->label, x_dur);
-      ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, -1, "filler", YKINE_NONE, d, x_dur);
+      ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, -1, "", YKINE_NONE, d, x_dur);
       ykine_move_addloc (x_servo, x, z, y);
       /*---(done)----------------*/
    }
    /*---(add section)--------------------*/
+   ykine_hint__new        (myKINE.s_verb, myKINE.s_nline, x_label, x_max);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -838,6 +1079,8 @@ yKINE_script       (float *a_len)
    if (a_len != NULL)  *a_len = x_len;
    /*> printf ("so, %fs and %fs\n", x_len, myKINE.scrp_len);                          <*/
    /*> exit (1);                                                                      <*/
+   ykine_hint_final (myKINE.scrp_len);
+   ykine_hint_list  ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
    return 0;
@@ -871,6 +1114,10 @@ ykine__unit_scrp        (char *a_question, int a_num)
    }
    else if (strcmp (a_question, "positions") == 0) {
       sprintf (ykine__unit_answer, "SCRP positions : %8.3fb, %8.2fx, %8.2fz, %8.2fy", myKINE.s_beats, myKINE.s_xpos, myKINE.s_zpos, myKINE.s_ypos);
+   }
+   else if (strcmp (a_question, "passage"  ) == 0) {
+      if (a_num >= s_nhint)  sprintf (ykine__unit_answer, "SCRP passage   : --/-- - - -- --------------- ----.-");
+      else                   sprintf (ykine__unit_answer, "SCRP passage   : %2d/%2d %c %c %2d %-15.15s %6.1f", a_num + 1, s_nhint, s_hints [a_num].major, s_hints [a_num].minor, s_hints [a_num].line, s_hints [a_num].label, s_hints [a_num].secs);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;

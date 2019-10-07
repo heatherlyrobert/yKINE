@@ -286,6 +286,7 @@ ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
 {
    /*---(locals)-----------+-----------+-*/
    char        x_label     [LEN_LABEL];
+   float       d, x, z, y;
    /*---(labels)-------------------------*/
    if (a_count >= 0) {
       sprintf (x_label, "repeat %d,%d", a_segno, a_count + 1);
@@ -295,14 +296,28 @@ ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
       DEBUG_YKINE_MOVE   yLOG_note    ("ERETEPIR to be created");
    }
    /*---(moves)--------------------------*/
-   ykine_move_create (a_servo, YKINE_NOTE, YKINE_NONE, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+   ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
+   ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+   ykine_move_addloc (a_servo, x, z, y);
    if (a_servo->seg == YKINE_TIBI) {
-      ykine_move_create (a_servo - 1, YKINE_NOTE, YKINE_NONE, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
-      ykine_move_create (a_servo - 2, YKINE_NOTE, YKINE_NONE, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      --a_servo;
+      ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_addloc (a_servo, x, z, y);
+      --a_servo;
+      ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_addloc (a_servo, x, z, y);
    }
    else if (a_servo->seg == YKINE_FEMU) {
-      ykine_move_create (a_servo + 1, YKINE_NOTE, YKINE_NONE, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
-      ykine_move_create (a_servo + 2, YKINE_NOTE, YKINE_NONE, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ++a_servo;
+      ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_addloc (a_servo, x, z, y);
+      ++a_servo;
+      ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_addloc (a_servo, x, z, y);
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -1229,7 +1244,8 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_STR);
       for (i = 0; i < g_nservo; ++i) {
          if (i > 0 && i % 3 == 0)  strlcat (ykine__unit_answer, " ", LEN_STR);
-         sprintf (x_msg, "%1d", g_servo_info [i].count);
+         if (g_servo_info [i].count < 9)  sprintf (x_msg, "%c", g_servo_info [i].count + '0');
+         else                             sprintf (x_msg, "%c", g_servo_info [i].count - 10 + 'a');
          strlcat (ykine__unit_answer, x_msg, LEN_STR);
       }
    }

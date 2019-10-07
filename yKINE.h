@@ -436,6 +436,7 @@ char        yKINE_angles            (char a_leg, char a_meth, float *a_coxa, flo
 /*---rc---- -----function---------- -----parameters---------------------------*/
 char        yKINE_servo_which       (int a_seq, int *a_leg, int *a_seg);
 char        yKINE_servo             (char *a_source);
+char        yKINE_section           (char a_type, char *a_major, char *a_minor, int *a_line, char *a_label, float *a_sec);
 char        yKINE_script            (float *a_len);
 
 

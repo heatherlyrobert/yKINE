@@ -90,6 +90,8 @@ yKINE_init         (char a_type)
    DEBUG_YKINE  yLOG_value   ("yparse"    , rc);
    rc = ykine_verb_init  ();
    DEBUG_YKINE  yLOG_value   ("verb"      , rc);
+   rc = ykine_hint_init  ();
+   DEBUG_YKINE  yLOG_value   ("hint"      , rc);
    ykine_stance_verify  ();
    myKINE.s_pace  = YKINE_PACE;
    /*---(complete)-----------------------*/

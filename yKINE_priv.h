@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2d"
-#define     P_VERTXT    "passages and sections working and unit tested"
+#define     P_VERNUM    "1.2e"
+#define     P_VERTXT    "passages and sections improved and integrated with archne"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -411,6 +411,13 @@ char        ykine_scrp_begin        (void);
 char        ykine__scrp_prep        (void);
 char*       ykine__unit_scrp        (char *a_question, int a_num);
 char        ykine_scrp_verb         (char *a_char);
+char        ykine_scrp_prev         (tMOVE *a_move, float *d, float *x, float *z, float *y);
+char        ykine_hint_init         (void);
+char        ykine_hint_final        (float a_sec);
+char        ykine_hint_reset        (void);
+char        ykine_hint_wrap         (void);
+char        ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec);
+char        ykine_hint_list         (void);
 char        ykine_scrp_section      (void);
 
 char        ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y);
