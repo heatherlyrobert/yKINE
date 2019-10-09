@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2e"
-#define     P_VERTXT    "passages and sections improved and integrated with archne"
+#define     P_VERNUM    "1.2f"
+#define     P_VERTXT    "simplified and improved defenses in accelerated code"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -436,8 +436,6 @@ char        ykine_body_tilt         (void);
 /*---(shared)-------------------------*/
 char        ykine_legs_prepservos   (char a_verb);
 char        ykine_legs_get_prev     (int a_leg);
-char        ykine_legs_set_servo    (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell);
-char        ykine_legs_complete     (char a_verb, char a_leg, float b, char *a_accel, char *a_label);
 /*---(forward)------------------------*/
 char        ykine_legs_fk           (void);
 /*---(inverse)------------------------*/
@@ -488,11 +486,15 @@ char        ykine_servos            (char *a_source);
 char*       ykine__unit_servo       (char *a_question);
 
 
-char        ykine_accel_clear       (void);
-char        ykine_accel_level       (char a_max , char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
-char        ykine_accel_calc        (char a_meth, char a_speed, char a_accel, char a_decel);
-char        ykine_accel_dur         (char *a_dur);
-char*       ykine__unit_accel       (char *a_question, int a_num);
+char        ykine_accel__clear      (void);
+char        ykine_accel__level       (char a_max , char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
+char        ykine_accel_calc        (char a_meth);
+char        ykine_accel_dur         (cchar *a_dur);
+char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell);
+char        ykine_accel__zero       (char a_verb, float x, float z, float y, float a_beat, char *a_label, char a_cell);
+char        ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_cell);
+char        ykine_accel_create      (char a_verb, char a_leg, float b, char *a_accel, char *a_label);
+char*       ykine_accel__unit       (char *a_question, int a_num);
 
 
 

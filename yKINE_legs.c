@@ -123,146 +123,59 @@ ykine_legs_get_prev     (int a_leg)
    return 0;
 }
 
-char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
-ykine_legs_set_zero    (char a_verb, float x, float z, float y, float a_beat, char *a_label, char a_cell)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;               /* return code for errors    */
-   char        rc          =    0;
-   tSERVO     *x_servo     =    0;
-   float       s           =  0.0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_complex ("parms"     , "%dm, %6.2fx, %6.2fz, %6.2fy, %8.2fb", a_verb, x, z, y, a_beat);
-   /*---(servo)--------------------------*/
-   x_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
-   --rce;  if (x_servo ==  NULL) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(calculate)----------------------*/
-   s = a_beat * myKINE.s_pace;
-   DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
-   rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_cline, a_label, a_cell, 0.0, s);
-   rc = ykine_move_addloc (x_servo, x, z, y);
-   --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
 
-char  /*--> save relative ik based move -----------[ ------ [ ------ ]-*/
-ykine_legs_set_servo   (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;               /* return code for errors    */
-   char        rc          =    0;
-   tSERVO     *x_servo     =    0;
-   float       s           =  0.0;
-   float       x, y, z;
-   char        x_meth      = YKINE_IK;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_complex ("parms"     , "%dm, %dl, %ds, %8.2fd, %8.2fb, %s", a_verb, a_leg, a_seg, a_deg, a_beat, a_label);
-   /*---(servo)--------------------------*/
-   x_servo = ykine_servo_pointer (a_leg, a_seg);
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
-   --rce;  if (x_servo ==  NULL) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(calculate)----------------------*/
-   s = a_beat * myKINE.s_pace;
-   DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
-   rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_cline, a_label, a_cell, a_deg, s);
-   --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   switch (a_verb) {
-   case YKINE_OR : case YKINE_TI :
-      break;
-   default       :
-      if (a_verb == YKINE_FK)  x_meth = YKINE_FK;
-      rc = yKINE_endpoint    (a_leg, a_seg, x_meth, NULL, NULL, &x, &z, &y, NULL);
-      DEBUG_YKINE_SCRP   yLOG_complex ("updated"   , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
-      rc = ykine_move_addloc (x_servo, x, z, y);
-      break;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-ykine_legs_single       (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_cell)
-{
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(handle)-------------------------*/
-   ykine_legs_set_servo (a_verb, a_leg, YKINE_FEMU, f, b, ""     , YKINE_NONE);
-   ykine_legs_set_servo (a_verb, a_leg, YKINE_PATE, p, b, ""     , YKINE_NONE);
-   ykine_legs_set_servo (a_verb, a_leg, YKINE_TIBI, t, b, a_label, a_cell);
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-ykine_legs_complete     (char a_verb, char a_leg, float b, char *a_accel, char *a_label)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;               /* return code for errors    */
-   char        rc          =    0;
-   int         i           =    0;
-   float       x_pct       =  0.0;
-   float       x_dur       =  0.0;
-   char        x_label     [LEN_LABEL];
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(normal)-------------------------*/
-   if (b >= 0)  {
-      DEBUG_YKINE_SCRP   yLOG_note    ("normal move");
-      if (a_verb == YKINE_ZE || a_verb == YKINE_PO) {
-         ykine_legs_set_zero  (a_verb, myKINE.xe, myKINE.ze, myKINE.ye, b, a_label, YKINE_NONE);
-      } else {
-         ykine_legs_single    (a_verb, a_leg, myKINE.fe, myKINE.pe, myKINE.te, b, a_label, YKINE_NONE);
-      }
-   }
-   /*---(accelerated)--------------------*/
-   else {
-      DEBUG_YKINE_SCRP   yLOG_note    ("accelerated move");
-      /*> ykine_accel_leg       (a_verb, a_leg, a_accel);                             <*/
-      rc = ykine_accel_calc (a_verb, a_accel [1], a_accel [0], a_accel [2]);
-      --rce;  if (rc <  0) {
-         DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-      for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {
-         DEBUG_YKINE_MOVE   yLOG_complex ("level"     , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist, g_accel_info [i].dur, g_accel_info [i].pct);
-         if (g_accel_info [i].dist < 0.1)   continue;
-         if (i == ACCEL_TURTLE)  strlcpy (x_label, a_label, LEN_LABEL);
-         else                    strlcpy (x_label, ""     , LEN_LABEL);
-         x_pct = g_accel_info [i].pct;
-         x_dur = g_accel_info [i].dur;
-         rc = ykine_exact_pct_route (a_verb, a_leg, x_pct);
-         rc = ykine_legs_partial    (a_verb, a_leg, 's');
-         if (a_verb == YKINE_ZE || a_verb == YKINE_PO) {
-            ykine_legs_set_zero  (a_verb, myKINE.xc, myKINE.zc, myKINE.yc, x_dur, x_label, g_accel_info [i].abbr);
-         } else {
-            ykine_legs_single    (a_verb, a_leg, myKINE.fc, myKINE.pc, myKINE.tc, x_dur, x_label, g_accel_info [i].abbr);
-         }
-         /*---(done)------------------------*/
-      }
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
+/*> char                                                                                                                                                                            <* 
+ *> ykine_legs_complete     (char a_verb, char a_leg, float b, char *a_accel, char *a_label)                                                                                        <* 
+ *> {                                                                                                                                                                               <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                                                                                                     <* 
+ *>    char        rce         =  -10;               /+ return code for errors    +/                                                                                                <* 
+ *>    char        rc          =    0;                                                                                                                                              <* 
+ *>    int         i           =    0;                                                                                                                                              <* 
+ *>    float       x_pct       =  0.0;                                                                                                                                              <* 
+ *>    float       x_dur       =  0.0;                                                                                                                                              <* 
+ *>    char        x_label     [LEN_LABEL];                                                                                                                                         <* 
+ *>    /+---(header)-------------------------+/                                                                                                                                     <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                                                                                                              <* 
+ *>    /+---(normal)-------------------------+/                                                                                                                                     <* 
+ *>    if (b >= 0)  {                                                                                                                                                               <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("normal move");                                                                                                                          <* 
+ *>       if (a_verb == YKINE_ZE || a_verb == YKINE_PO) {                                                                                                                           <* 
+ *>          ykine_legs_set_zero  (a_verb, myKINE.xe, myKINE.ze, myKINE.ye, b, a_label, YKINE_NONE);                                                                                <* 
+ *>       } else {                                                                                                                                                                  <* 
+ *>          ykine_legs_single    (a_verb, a_leg, myKINE.fe, myKINE.pe, myKINE.te, b, a_label, YKINE_NONE);                                                                         <* 
+ *>       }                                                                                                                                                                         <* 
+ *>    }                                                                                                                                                                            <* 
+ *>    /+---(accelerated)--------------------+/                                                                                                                                     <* 
+ *>    else {                                                                                                                                                                       <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_note    ("accelerated move");                                                                                                                     <* 
+ *>       /+> ykine_accel_leg       (a_verb, a_leg, a_accel);                             <+/                                                                                       <* 
+ *>       /+> rc = ykine_accel_calc (a_verb, a_accel [1], a_accel [0], a_accel [2]);      <+/                                                                                       <* 
+ *>       rc = ykine_accel_calc (a_verb);                                                                                                                                           <* 
+ *>       --rce;  if (rc <  0) {                                                                                                                                                    <* 
+ *>          DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);                                                                                                                   <* 
+ *>          return rce;                                                                                                                                                            <* 
+ *>       }                                                                                                                                                                         <* 
+ *>       for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {                                                                                                                          <* 
+ *>          DEBUG_YKINE_MOVE   yLOG_complex ("level"     , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist, g_accel_info [i].dur, g_accel_info [i].pct);   <* 
+ *>          if (g_accel_info [i].dist < 0.1)   continue;                                                                                                                           <* 
+ *>          if (i == ACCEL_TURTLE)  strlcpy (x_label, a_label, LEN_LABEL);                                                                                                         <* 
+ *>          else                    strlcpy (x_label, ""     , LEN_LABEL);                                                                                                         <* 
+ *>          x_pct = g_accel_info [i].pct;                                                                                                                                          <* 
+ *>          x_dur = g_accel_info [i].dur;                                                                                                                                          <* 
+ *>          rc = ykine_exact_pct_route (a_verb, a_leg, x_pct);                                                                                                                     <* 
+ *>          rc = ykine_legs_partial    (a_verb, a_leg, 's');                                                                                                                       <* 
+ *>          if (a_verb == YKINE_ZE || a_verb == YKINE_PO) {                                                                                                                        <* 
+ *>             ykine_legs_set_zero  (a_verb, myKINE.xc, myKINE.zc, myKINE.yc, x_dur, x_label, g_accel_info [i].abbr);                                                              <* 
+ *>          } else {                                                                                                                                                               <* 
+ *>             ykine_legs_single    (a_verb, a_leg, myKINE.fc, myKINE.pc, myKINE.tc, x_dur, x_label, g_accel_info [i].abbr);                                                       <* 
+ *>          }                                                                                                                                                                      <* 
+ *>          /+---(done)------------------------+/                                                                                                                                  <* 
+ *>       }                                                                                                                                                                         <* 
+ *>    }                                                                                                                                                                            <* 
+ *>    /+---(complete)-----------------------+/                                                                                                                                     <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                              <* 
+ *>    return 0;                                                                                                                                                                    <* 
+ *> }                                                                                                                                                                               <*/
 
 char
 ykine__legs_degfix      (float *d)
@@ -1096,7 +1009,7 @@ ykine_legs_driver    (char a_verb)
       ykine_exact_dist_route (a_verb);
       DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , myKINE.le);
       /*---(process moves)---------------*/
-      ykine_legs_complete     (a_verb, x_leg, myKINE.b, myKINE.accel, x_label);
+      ykine_accel_create      (a_verb, x_leg, myKINE.b, myKINE.accel, x_label);
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/

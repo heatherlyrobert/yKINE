@@ -61,8 +61,8 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ major/full sync points ]]============================================*/
    { YKINE_PASS, "pass" , "passaggio"    , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark level 3 (smallest) full/major sync point"     },
    { YKINE_SECT, "sect" , "sezione"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark level 4 (largest) full/major sync point"      },
-   { YKINE_PASS, "beg"  , "start"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark beginning of script"                          },
-   { YKINE_PASS, "end"  , "finish"       , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark ending of script"                             },
+   { YKINE_PASS, "ini"  , "inizio"       , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark beginning of script"                          },
+   { YKINE_PASS, "fin"  , "finire"       , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_section    , "mark ending of script"                             },
    /* ===[[ external ]]==========================================================*/
    { YKINE_SONG, "song" , "song"         , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "insert external script to allow reuse"             },
    /* ===[[ turtle graphics ]]===================================================*/
@@ -644,8 +644,8 @@ ykine_hint_init         (void)
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(hints)--------------------------*/
    ykine_hint__purge      ('y');
-   ykine_hint__new        ("reset"    , 0, "reset", 0.0);
-   ykine_hint__new        ("passaggio", 0, "start", 0.0);
+   ykine_hint__new        ("liberare" , 0, "liberare", 0.0);
+   ykine_hint__new        ("inizio"   , 0, "inizio", 0.0);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -658,8 +658,8 @@ ykine_hint_reset        (void)
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(hints)--------------------------*/
    ykine_hint__purge      ('-');
-   ykine_hint__new        ("reset"    , 0, "reset", 0.0);
-   ykine_hint__new        ("passaggio", 0, "start", 0.0);
+   ykine_hint__new        ("liberare" , 0, "liberare", 0.0);
+   ykine_hint__new        ("inizio"   , 0, "inizio", 0.0);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -671,7 +671,7 @@ ykine_hint_final  (float a_sec)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(hints)--------------------------*/
-   ykine_hint__new        ("finish"   , 0, "finish", a_sec);
+   ykine_hint__new        ("finire"   , 0, "finire", a_sec);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -700,7 +700,7 @@ ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(reset)--------------------------*/
-   if (strcmp (a_verb, "reset"  ) == 0) {
+   if (strcmp (a_verb, "liberare") == 0) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("resetting");
       x_major  = 'a';
       x_minor  = 'a';
@@ -712,7 +712,7 @@ ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec)
    else                  strlcpy (x_label, "-"      , LEN_LABEL);
    /*---(check hint)---------------------*/
    DEBUG_YKINE_SCRP   yLOG_snote   (a_verb);
-   if (strcmp (a_verb, "start"  ) == 0) {
+   if (strcmp (a_verb, "inizio" ) == 0 && (x_major != 'a' || x_minor != 'a')) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("start is automatic, nothing to do");
       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
       return 0;
@@ -721,11 +721,11 @@ ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec)
       ++x_major;
       x_minor  = 'a';
    }
-   if (strcmp (a_verb, "finish" ) == 0 && x_finish != 'y') {
+   if (strcmp (a_verb, "finire" ) == 0 && x_finish != 'y') {
       x_major  = 'z';
       x_minor  = 'z';
       x_finish = 'y';
-      strlcpy (x_label, "finish", LEN_LABEL);
+      strlcpy (x_label, "finire", LEN_LABEL);
    }
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_schar   (x_major);
@@ -740,7 +740,7 @@ ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec)
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   --rce;  if (x_major == 'z' && x_minor == 'z' && strcmp (a_verb, "finish") != 0) {
+   --rce;  if (x_major == 'z' && x_minor == 'z' && strcmp (a_verb, "finire") != 0) {
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
@@ -986,7 +986,7 @@ ykine_scrp_crap         (void)
          x_servo = &(g_servo_info [i-0]);
          if (x_servo->tail != NULL)  t = myKINE.te = x_servo->tail->degs;
          x_leg = g_servo_info [i].leg;
-         ykine_legs_complete     (x_verb, x_leg, b, "", "error entry");
+         ykine_accel_create      (x_verb, x_leg, b, "", "error entry");
          ykine_move_addloc (x_servo, x, z, y); /* update */
       } else {
          x_servo = &(g_servo_info [i]);
