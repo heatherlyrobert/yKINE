@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2f"
-#define     P_VERTXT    "simplified and improved defenses in accelerated code"
+#define     P_VERNUM    "1.2g"
+#define     P_VERTXT    "turtle basics moved to accelerated and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -490,6 +490,7 @@ char        ykine_accel__clear      (void);
 char        ykine_accel__level       (char a_max , char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
 char        ykine_accel_calc        (char a_meth);
 char        ykine_accel_dur         (cchar *a_dur);
+char        ykine_accel_timing      (void);
 char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell);
 char        ykine_accel__zero       (char a_verb, float x, float z, float y, float a_beat, char *a_label, char a_cell);
 char        ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_cell);
@@ -532,7 +533,7 @@ char        ykine_servo_list        (char *a_which);
 
 /*===[[ YKINE_turtle.c ]]=====================================================*/
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
-char        ykine__turtle_last      (void);
+char        ykine_turtle__last      (void);
 char        ykine_turtle_speed      (void);
 char        ykine_turtle_wait       (void);
 char        ykine_turtle_home       (void);
@@ -543,7 +544,7 @@ char        ykine_turtle_turn       (void);
 char        ykine_turtle_raise      (void);
 char        ykine_turtle_lower      (void);
 char        ykine_turtle_depth      (void);
-char*       ykine__unit_turtle      (char *a_question, int a_num);
+char*       ykine_turtle__unit      (char *a_question, int a_num);
 
 
 

@@ -52,16 +52,8 @@ ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label)
    char        rc          = 0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(check accel)-----------------*/
-   yPARSE_top      (myKINE.accel);
-   DEBUG_YKINE_SCRP  yLOG_info    ("accel"     , myKINE.accel);
-   rc  = ykine_accel_dur (myKINE.accel);
-   DEBUG_YKINE_SCRP  yLOG_value   ("accel_dur" , rc);
-   /*---(check normal)----------------*/
-   yPARSE_popval (0.0, &myKINE.b);
-   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , myKINE.b);
-   if (rc < 0)  strlcpy (myKINE.accel, "", LEN_LABEL);
-   else         myKINE.b = -1.0;
+   /*---(get timing)------------------*/
+   ykine_accel_timing ();
    /*---(get positions)---------------*/
    rc = yPARSE_popstr    (a_one);
    DEBUG_YKINE_SCRP  yLOG_complex ("a_one"     , "%3d, %s", rc, a_one);

@@ -4,6 +4,29 @@
 #include    "yKINE.h"
 #include    "yKINE_priv.h"
 
+/*===[[ DESIGN NOTES ]]=======================================================*/
+
+/*  accel takes the distance and calculates a acceleration/deceleration table
+ *  to smoothly travel the length.  besides distance, three factors effect the
+ *  final table -- accel type, max speed, and decel type.
+ *
+ *     accel type      [ accel from zero, < no acceleraction required
+ *     max speed       t/turtle, s/slow, m/moderate, f/fast, x/extra fast
+ *       double time   T/turtle, S/slow, M/moderate, F/fast, X/extra fast
+ *     decel type      ] decel to zero, > no deceleration
+ *
+ *  integration
+ *     ykine_exact_dist_route    total distance calc (based on verb type)
+ *     ykine_exact_pct_route     position for percent (based on verb type)
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
 
 
 tACCEL g_accel_info [10] = {
@@ -259,6 +282,30 @@ ykine_accel_dur         (cchar *a_dur)
    return 0;
 }
 
+char
+ykine_accel_timing      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
+   /*---(check accel)-----------------*/
+   yPARSE_top      (myKINE.accel);
+   DEBUG_YKINE_SCRP  yLOG_info    ("accel"     , myKINE.accel);
+   rc  = ykine_accel_dur (myKINE.accel);
+   DEBUG_YKINE_SCRP  yLOG_value   ("accel_dur" , rc);
+   /*---(check normal)----------------*/
+   yPARSE_popval (0.0, &myKINE.b);
+   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , myKINE.b);
+   /*---(if normal)-------------------*/
+   if (rc < 0)   strlcpy (myKINE.accel, "", LEN_LABEL);
+   /*---(if accelerated)--------------*/
+   else          myKINE.b = -1.0;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -370,10 +417,13 @@ ykine_accel_create      (char a_verb, char a_leg, float a_beats, char *a_accel, 
    /*---(normal)-------------------------*/
    if (a_beats >= 0)  {
       DEBUG_YKINE_SCRP   yLOG_note    ("unaccelerated move");
-      if (a_verb == YKINE_ZE || a_verb == YKINE_PO) {
+      switch (a_verb) {
+      case YKINE_ZE : case YKINE_PO :
          ykine_accel__zero   (a_verb, myKINE.xe, myKINE.ze, myKINE.ye, a_beats, a_label, YKINE_NONE);
-      } else {
+         break;
+      default  :
          ykine_accel__single (a_verb, a_leg, myKINE.fe, myKINE.pe, myKINE.te, a_beats, a_label, YKINE_NONE);
+         break;
       }
    }
    /*---(accelerated)--------------------*/

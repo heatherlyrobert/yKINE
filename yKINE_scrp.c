@@ -67,18 +67,18 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { YKINE_SONG, "song" , "song"         , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "insert external script to allow reuse"             },
    /* ===[[ turtle graphics ]]===================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
-   { -1        , "tsp"  , "tu_speed"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_speed    , "set the speed of the turtle movement"              },
-   { -1        , "twa"  , "tu_wait"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_wait     , "stop action for a specific period"                 },
-   { -1        , "tho"  , "tu_home"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_home     , "move the turtle to 0x, 0z at the same height"      },
-   { -1        , "tmo"  , "tu_move"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_move     , "move the turtle on existing direction"             },
-   { -1        , "tgo"  , "tu_goto"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_goto     , "time signature for rhythm/beat"                    },
-   { -1        , "the"  , "tu_head"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_head     , "change the absolute direction of the turtle"       },
-   { -1        , "ttu"  , "tu_turn"      , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_turn     , "adjust the direction of the turtle from current"   },
-   { -1        , "tlo"  , "tu_lower"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_lower    , "time signature for rhythm/beat"                    },
-   { -1        , "tra"  , "tu_raise"     , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_raise    , "time signature for rhythm/beat"                    },
-   { -1        , "tde"  , "tu_depth"     , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
-   { -1        , "tpu"  , "tu_push"      , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
-   { -1        , "tpo"  , "tu_pop"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
+   { YKINE_TSP , "tsp"  , "tu_speed"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_speed    , "set the speed of the turtle movement"              },
+   { YKINE_TWA , "twa"  , "tu_wait"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_wait     , "stop action for a specific period"                 },
+   { YKINE_THM , "thm"  , "tu_home"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_home     , "move the turtle to 0x, 0z at the same height"      },
+   { YKINE_TMV , "tmv"  , "tu_move"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_move     , "move the turtle on existing direction"             },
+   { YKINE_TGO , "tgo"  , "tu_goto"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_goto     , "time signature for rhythm/beat"                    },
+   { YKINE_THE , "the"  , "tu_head"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_head     , "change the absolute direction of the turtle"       },
+   { YKINE_TTU , "ttu"  , "tu_turn"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_turn     , "adjust the direction of the turtle from current"   },
+   { YKINE_TLO , "tlo"  , "tu_lower"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_lower    , "time signature for rhythm/beat"                    },
+   { YKINE_TRA , "tra"  , "tu_raise"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_raise    , "time signature for rhythm/beat"                    },
+   { YKINE_TDE , "tde"  , "tu_depth"     , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
+   { YKINE_TPU , "tpu"  , "tu_push"      , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
+   { YKINE_TPO , "tpo"  , "tu_pop"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
    /* ===[[ gait framework ]]====================================================*/
    /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "incp" , "gait_beg"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_beg        , "beginning of a gait description"                   },
@@ -950,22 +950,15 @@ ykine_scrp_crap         (void)
       }
       yPARSE_popstr (x_servos);
    }
-   /*---(check for duration)-------------*/
-   yPARSE_top      (x_accel);
-   DEBUG_YKINE_SCRP  yLOG_info    ("x_accel"   , x_accel);
-   rc  = ykine_accel_dur (x_accel);
-   DEBUG_YKINE_SCRP  yLOG_value   ("accel_dur" , rc);
-   yPARSE_popval (0.0, &b);
-   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , b);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP  yLOG_note    ("normal duration (use value)");
-      strlcpy (x_accel, "", LEN_LABEL);
-   } else  {
-      DEBUG_YKINE_SCRP  yLOG_note    ("accelerated duration (defaulting)");
-      b = 5.0;
+   /*---(get timing)------------------*/
+   ykine_accel_timing ();
+   if (myKINE.b < 0.0)  {
+      DEBUG_YKINE_SCRP  yLOG_note    ("accelerated must convert to normal");
+      myKINE.b = 5.0;
+      strlcpy (myKINE.accel, "", LEN_LABEL);
    }
    DEBUG_YKINE_SCRP  yLOG_double  ("pace"      , myKINE.s_pace);
-   s = b * myKINE.s_pace;
+   s = myKINE.b * myKINE.s_pace;
    DEBUG_YKINE_SCRP  yLOG_double  ("s"         , s);
    /*---(get servo)-------------------*/
    for (i = 0; i < g_nservo; ++i) {
@@ -986,7 +979,7 @@ ykine_scrp_crap         (void)
          x_servo = &(g_servo_info [i-0]);
          if (x_servo->tail != NULL)  t = myKINE.te = x_servo->tail->degs;
          x_leg = g_servo_info [i].leg;
-         ykine_accel_create      (x_verb, x_leg, b, "", "error entry");
+         ykine_accel_create      (x_verb, x_leg, myKINE.b, "", "error entry");
          ykine_move_addloc (x_servo, x, z, y); /* update */
       } else {
          x_servo = &(g_servo_info [i]);
@@ -1003,20 +996,35 @@ char
 ykine_scrp_exec         (void)
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    int         rc          =    0;
    char        x_active    =  '-';
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_value   ("iverb"     , myKINE.s_iverb);
+   --rce;  if (myKINE.s_iverb < 0) {
+      DEBUG_YKINE_SCRP  yLOG_note    ("verb not found");
+      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(filter)-------------------------*/
    x_active = s_verb_info [myKINE.s_iverb].active;
    DEBUG_YKINE_SCRP  yLOG_char    ("active"    , x_active);
-   if (x_active != 'y') {
+   --rce;  if (x_active != 'y') {
       DEBUG_YKINE_SCRP  yLOG_note    ("verb not active");
-      DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
-      return 0;
+      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    /*---(run)----------------------------*/
+   DEBUG_YKINE_SCRP  yLOG_point   ("function"  , s_verb_info [myKINE.s_iverb].call);
+   if (s_verb_info [myKINE.s_iverb].call == NULL) {
+      DEBUG_YKINE_SCRP  yLOG_note    ("verb handler null");
+      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    rc = s_verb_info [myKINE.s_iverb].call ();
+   DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
    return rc;

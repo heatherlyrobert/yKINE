@@ -618,7 +618,7 @@ ykine_move_savedprev    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, fl
    } else  {
       DEBUG_YKINE_MOVE   yLOG_snote   ("no prev, use move");
       x_prev = a_move;
-      if (a_sec != NULL)  *a_sec = 0.0;
+      if (a_sec != NULL)  *a_sec = 0.0;  /* all same, exact secs zero */
    }
    DEBUG_YKINE_MOVE   yLOG_spoint  (x_prev);
    /*---(return data)--------------------*/
@@ -1150,7 +1150,7 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
    int         x_pos       =    0;
-   char        t           [LEN_LABEL];
+   char        t           [LEN_LABEL] = "";
    char        x_msg       [LEN_STR  ];
    tSERVO     *x_servo     = NULL;
    tMOVE      *x_move      = NULL;
@@ -1215,22 +1215,25 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    }
    else if (strcmp (a_question, "m_last"  ) == 0) {
       x_move = m_tail;
+      if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", -1, '-', -1, "-", '-', "-", 0.0, 0.0);
       else                 sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->degs);
    }
    else if (strcmp (a_question, "m_loc"   ) == 0) {
       x_move = m_tail;
+      if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", 0.0, 0.0, 0.0, 0.0, 0.0);
       else                 sprintf (ykine__unit_answer, "MOVE m_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos);
    }
    else if (strcmp (a_question, "s_loc"   ) == 0) {
       x_move = x_servo->tail;
+      if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE s_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", 0.0, 0.0, 0.0, 0.0, 0.0);
       else                 sprintf (ykine__unit_answer, "MOVE s_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos);
    }
    else if (strcmp (a_question, "header"  ) == 0) {
-      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE header    : --/-- - -- ----- --------s --------e --------d");
-      else                 sprintf (ykine__unit_answer, "MOVE header    : %2d/%2d %c %2d %-5.5s %8.3lfs %8.3lfe %8.3lfd", x_move->seq, x_servo->count, x_move->type, x_move->verb, t, sp, x_move->secs, x_move->dur);
+      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE header    : --/-- - -- ----- - --------s --------e --------d");
+      else                 sprintf (ykine__unit_answer, "MOVE header    : %2d/%2d %c %2d %-5.5s %c %8.3lfs %8.3lfe %8.3lfd", x_move->seq, x_servo->count, x_move->type, x_move->verb, t, x_move->cell, sp, x_move->secs, x_move->dur);
    }
    else if (strcmp (a_question, "detail"  ) == 0) {
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE detail    : --------d --------x --------z --------y --------o");

@@ -300,6 +300,19 @@
 #define     YKINE_PO         9
 #define     YKINE_OR        10
 #define     YKINE_TI        11
+#define     YKINE_TSP       12
+#define     YKINE_TWA       13
+#define     YKINE_THM       14
+#define     YKINE_TMV       15
+#define     YKINE_TGO       16
+#define     YKINE_THE       17
+#define     YKINE_TTU       18
+#define     YKINE_TLO       19
+#define     YKINE_TRA       20
+#define     YKINE_TDE       21
+#define     YKINE_TPU       22
+#define     YKINE_TPO       23
+
 
 
 /*---(minor)--------------------------*/
