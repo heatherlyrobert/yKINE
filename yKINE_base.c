@@ -92,6 +92,8 @@ yKINE_init         (char a_type)
    DEBUG_YKINE  yLOG_value   ("verb"      , rc);
    rc = ykine_hint_init  ();
    DEBUG_YKINE  yLOG_value   ("hint"      , rc);
+   rc = ykine_turtle_init    ();
+   DEBUG_YKINE  yLOG_value   ("turtle"    , rc);
    ykine_stance_verify  ();
    myKINE.s_pace  = YKINE_PACE;
    /*---(complete)-----------------------*/

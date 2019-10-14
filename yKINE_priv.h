@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2g"
-#define     P_VERTXT    "turtle basics moved to accelerated and unit tested"
+#define     P_VERNUM    "1.2h"
+#define     P_VERTXT    "turtle raise, lower, depth, and wait are working and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -533,6 +533,7 @@ char        ykine_servo_list        (char *a_which);
 
 /*===[[ YKINE_turtle.c ]]=====================================================*/
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
+char        ykine_turtle_init       (void);
 char        ykine_turtle__last      (void);
 char        ykine_turtle_speed      (void);
 char        ykine_turtle_wait       (void);

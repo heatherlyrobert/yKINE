@@ -76,7 +76,7 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { YKINE_TTU , "ttu"  , "tu_turn"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_turn     , "adjust the direction of the turtle from current"   },
    { YKINE_TLO , "tlo"  , "tu_lower"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_lower    , "time signature for rhythm/beat"                    },
    { YKINE_TRA , "tra"  , "tu_raise"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_raise    , "time signature for rhythm/beat"                    },
-   { YKINE_TDE , "tde"  , "tu_depth"     , '-' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
+   { YKINE_TDE , "tde"  , "tu_depth"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_depth    , "time signature for rhythm/beat"                    },
    { YKINE_TPU , "tpu"  , "tu_push"      , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
    { YKINE_TPO , "tpo"  , "tu_pop"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
    /* ===[[ gait framework ]]====================================================*/
