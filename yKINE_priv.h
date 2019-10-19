@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2h"
-#define     P_VERTXT    "turtle raise, lower, depth, and wait are working and unit tested"
+#define     P_VERNUM    "1.2i"
+#define     P_VERTXT    "updated and repaired all unit tests.  clean."
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -342,6 +342,11 @@ struct cACCEL {
 };
 extern tACCEL g_accel_info [10];
 
+
+
+#define    INCH2MM     25.400
+#define    MM2COL      25.400
+#define    MM2ROW      29.328
 
 
 

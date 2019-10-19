@@ -38,10 +38,6 @@ static char s_verify  [MAX_VERIFY][MAX_VERIFY];
 
 
 
-#define    INCH2MM     25.400
-
-
-
 /*====================------------------------------------====================*/
 /*===----                       leg spread/patterns                    ----===*/
 /*====================------------------------------------====================*/
@@ -519,10 +515,6 @@ yKINE_verify_rc            (int a_row, int a_col)
 /*====================------------------------------------====================*/
 static void      o___HEXAGONAL_______________o (void) {;}
 
-#define    MM2COL      25.400
-#define    MM2ROW      29.328
-/*> #define    MM2ROW      21.997                                                     <*/
-
 char
 yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
 {
@@ -532,7 +524,7 @@ yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
    int         rc          =    0;
    char        x_rig       =  '-';
    /*---(header)-------------------------*/
-   /*> printf ("%8.2fx, %8.2fz\n", x, z);                                             <*/
+   /*> printf ("%8.2fx, %8.2fz   ", x, z);                                            <*/
    /*---(set base col)-------------------*/
    x_inch = x / MM2COL;
    x_base = round (x_inch);
@@ -551,7 +543,7 @@ yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
    x_deg  = atan2 (xd, zd) * RAD2DEG;
    while (x_deg <   0.0)  x_deg += 360.0;
    while (x_deg > 360.0)  x_deg -= 360.0;
-   /*> printf ("  dir %8.2fd, %8.2fd   ", fd, x_deg);                                     <*/
+   /*> printf ("  dir %8.2fd, %8.2fd   ", fd, x_deg);                                 <*/
    if (fd >= 0.33) {
       /*---(direction)--*/
       if      (x_deg <   15)   rc =  1;
@@ -571,8 +563,6 @@ yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
    if (d != NULL)  *d = x_deg;
    if (o != NULL)  *o = fd;
    /*> printf ("--   rc %3d\n", rc);                                                  <*/
-   /*> printf ("%8.2fz, %8db, %6di, %3dm, %3dr, %3drc\n", z, x_big, x_int, x_mod, *r, rc);   <*/
-   /*> printf ("\n");                                                                 <*/
    /*---(complete)-----------------------*/
    return rc;
 }
@@ -580,7 +570,7 @@ yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
 char
 yKINE_xz2hex            (float x, float z, int *c, int *r)
 {
-   return yKINE_xz2hexdo (x, z, *c, *r, NULL, NULL);
+   return yKINE_xz2hexdo (x, z, c, r, NULL, NULL);
 }
 
 char
@@ -590,7 +580,7 @@ yKINE_hex2xz            (int c, int r, float *x, float *z)
    /*> printf ("%6dr, %6dc\n", r, c);                                                 <*/
    *x = c * MM2COL;
    *z = r * MM2ROW;
-   if (c % 2 != 0)  *z += 14.664;
+   if (c % 2 != 0)  *z -= 14.664;
    /*---(complete)-----------------------*/
    return 0;
 }
