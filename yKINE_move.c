@@ -1225,11 +1225,21 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", 0.0, 0.0, 0.0, 0.0, 0.0);
       else                 sprintf (ykine__unit_answer, "MOVE m_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos);
    }
+   else if (strcmp (a_question, "s_last"  ) == 0) {
+      x_move = x_servo->tail;
+      if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
+      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE s_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", -1, '-', -1, "-", '-', "-", 0.0, 0.0);
+      else                 sprintf (ykine__unit_answer, "MOVE s_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->degs);
+   }
    else if (strcmp (a_question, "s_loc"   ) == 0) {
       x_move = x_servo->tail;
       if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE s_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", 0.0, 0.0, 0.0, 0.0, 0.0);
       else                 sprintf (ykine__unit_answer, "MOVE s_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos);
+   }
+   else if (strcmp (a_question, "specific") == 0) {
+      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE specific  : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", -1, '-', -1, "-", '-', "-", 0.0, 0.0);
+      else                 sprintf (ykine__unit_answer, "MOVE specific  : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->degs);
    }
    else if (strcmp (a_question, "header"  ) == 0) {
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE header    : --/-- - -- ----- - --------s --------e --------d");

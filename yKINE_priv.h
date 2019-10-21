@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2i"
-#define     P_VERTXT    "updated and repaired all unit tests.  clean."
+#define     P_VERNUM    "1.2j"
+#define     P_VERTXT    "added and unit tested accelerated, but exact length moves"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -330,6 +330,7 @@ extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinemati
 #define     DECEL_MOD          6
 #define     DECEL_SLOW         7
 #define     DECEL_TURTLE       8
+#define     DECEL_NOOP         9
 
 typedef struct cACCEL tACCEL;
 struct cACCEL {
