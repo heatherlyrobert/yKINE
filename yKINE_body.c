@@ -91,6 +91,8 @@ ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float 
    if (x != NULL)  *x = xe;
    if (z != NULL)  *z = ze;
    if (y != NULL)  *y = ye;
+   myKINE.db = myKINE.de = 0.0;
+   myKINE.ob = myKINE.oe = 0.0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -299,6 +301,8 @@ ykine_body_or_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    if (f != NULL)  *f = fe;
    if (p != NULL)  *p = pe;
    if (t != NULL)  *t = te;
+   myKINE.db = myKINE.de = 0.0;
+   myKINE.ob = myKINE.oe = 0.0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -335,6 +339,8 @@ ykine_body_ti_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    rc = ykine_body_ti2pr        (de, te, &myKINE.pe, &myKINE.te);
    DEBUG_YKINE_SCRP  yLOG_complex ("converted" , "%8.2fp, %8.2fr", myKINE.pe, myKINE.te);
    if (f != NULL)  *f = fe;
+   myKINE.db = myKINE.de = 0.0;
+   myKINE.ob = myKINE.oe = 0.0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;

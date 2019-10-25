@@ -69,6 +69,8 @@ yKINE_init         (char a_type)
    int      x_seg = 0;              /* iterator         */
    /*---(header)-------------------------*/
    DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
+   yLOG_mute  ();
+   DEBUG_PROG   yLOG_unmute ();
    /*---(set body)-----------------------*/
    /*> kine_center       (0.0f, 0.0f);                                                <* 
     *> kine_height       (segs_len [YKINE_TIBI]);                                           <* 
@@ -96,6 +98,7 @@ yKINE_init         (char a_type)
    DEBUG_YKINE  yLOG_value   ("turtle"    , rc);
    ykine_stance_verify  ();
    myKINE.s_pace  = YKINE_PACE;
+   yLOG_unmute ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;

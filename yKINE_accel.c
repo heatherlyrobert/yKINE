@@ -328,6 +328,8 @@ ykine_accel_timing      (void)
    if (rc < 0)   strlcpy (myKINE.accel, "", LEN_LABEL);
    /*---(if accelerated)--------------*/
    else          myKINE.b = -1.0;
+   DEBUG_YKINE_SCRP  yLOG_info    ("accel'"    , myKINE.accel);
+   DEBUG_YKINE_SCRP  yLOG_value   ("b'"        , myKINE.b);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
    return 0;

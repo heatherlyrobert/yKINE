@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2j"
-#define     P_VERTXT    "added and unit tested accelerated, but exact length moves"
+#define     P_VERNUM    "1.2k"
+#define     P_VERTXT    "added new yLOG_mute capabilty from yLOG to cut volumn in debugging"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
