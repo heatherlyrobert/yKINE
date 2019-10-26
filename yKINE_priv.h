@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2k"
-#define     P_VERTXT    "added new yLOG_mute capabilty from yLOG to cut volumn in debugging"
+#define     P_VERNUM    "1.2l"
+#define     P_VERTXT    "added stance verb and lightly unit tested it.  cleaned up stance functions."
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -156,6 +156,7 @@ struct cLOCAL {
    float       s_1st;
    float       s_2nd;
    /*---(body)--------------*/
+   float       s_height;
    float       s_xcenter;
    float       s_zcenter;
    float       s_ycenter;
@@ -555,16 +556,17 @@ char*       ykine_turtle__unit      (char *a_question, int a_num);
 
 
 
-char        ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry, double *a_result);
-char        ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_spread     (char a_leg, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_radius     (double a_start, char *a_entry, double *a_result);
 char        ykine_stance_radius_head (int *n, char *a_short);
 char        ykine_stance_radius_next (int *n, char *a_short);
-char        ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_height     (char a_verb, double a_start, char *a_entry, double *a_result);
 char        ykine_stance_height_head (int *n, char *a_short);
 char        ykine_stance_height_next (int *n, char *a_short);
-char        ykine_stance_scale      (char a_from, double a_start, char *a_entry, double *a_result);
+char        ykine_stance_scale      (double a_start, char *a_entry, double *a_result);
 char        ykine_stance_scale_head  (int *n, char *a_short);
 char        ykine_stance_scale_next  (int *n, char *a_short);
+char        ykine_stance            (void);
 char        ykine_stance_verify     (void);
 
 

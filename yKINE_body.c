@@ -78,9 +78,9 @@ ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float 
    /*---(get previous)-------------------*/
    ykine_legs_get_prev (YKINE_BODY);
    /*---(calculate)-------------------*/
-   rc = ykine_stance_scale   (myKINE.s_from        , myKINE.xb, x_str, &xe);
-   rc = ykine_stance_scale   (myKINE.s_from        , myKINE.zb, z_str, &ze);
-   rc = ykine_stance_scale   (myKINE.s_from        , myKINE.yb, y_str, &ye);
+   rc = ykine_stance_scale   (          myKINE.xb, x_str, &xe);
+   rc = ykine_stance_scale   (          myKINE.zb, z_str, &ze);
+   rc = ykine_stance_height  (YKINE_ZE, myKINE.yb, y_str, &ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -115,9 +115,9 @@ ykine_body_po_getter   (char *d_str, char *o_str, char *y_str, float *x, float *
    DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3fd, %8.2fo, %8.2fy", myKINE.db, myKINE.ob, myKINE.yb);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_scale   (myKINE.s_from, myKINE.db, d_str, &de);
-   rc = ykine_stance_scale   (myKINE.s_from, myKINE.ob, o_str, &oe);
-   rc = ykine_stance_scale   (myKINE.s_from, myKINE.yb, y_str, &ye);
+   rc = ykine_stance_scale   (          myKINE.db, d_str, &de);
+   rc = ykine_stance_scale   (          myKINE.ob, o_str, &oe);
+   rc = ykine_stance_height  (YKINE_PO, myKINE.yb, y_str, &ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -288,9 +288,9 @@ ykine_body_or_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.2fp, %8.2ft", myKINE.fb, myKINE.pb, myKINE.tb);
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_scale   (myKINE.s_from, myKINE.fb, f_str, &fe);
-   rc = ykine_stance_scale   (myKINE.s_from, myKINE.pb, p_str, &pe);
-   rc = ykine_stance_scale   (myKINE.s_from, myKINE.tb, t_str, &te);
+   rc = ykine_stance_scale   (myKINE.fb, f_str, &fe);
+   rc = ykine_stance_scale   (myKINE.pb, p_str, &pe);
+   rc = ykine_stance_scale   (myKINE.tb, t_str, &te);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -326,9 +326,9 @@ ykine_body_ti_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    DEBUG_YKINE_SCRP  yLOG_complex ("converted" , "%8.2fd, %8.2ft", db, tb);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_scale   (myKINE.s_from, myKINE.fb, f_str, &fe);
-   rc = ykine_stance_scale   (myKINE.s_from, db       , p_str, &de);
-   rc = ykine_stance_scale   (myKINE.s_from, tb       , t_str, &te);
+   rc = ykine_stance_scale   (myKINE.fb, f_str, &fe);
+   rc = ykine_stance_scale   (db       , p_str, &de);
+   rc = ykine_stance_scale   (tb       , t_str, &te);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);

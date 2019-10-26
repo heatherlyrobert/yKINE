@@ -84,6 +84,7 @@ yKINE_init         (char a_type)
          yKINE__clear ( &(gk [x_leg][x_seg]), "gk", x_leg, x_seg, a_type);
       }
    }
+   myKINE.s_height = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
    rc = ykine_servo_init ();
    DEBUG_YKINE  yLOG_value   ("servo"     , rc);
    rc = ykine_scrp_begin ();

@@ -44,7 +44,7 @@ static char s_verify  [MAX_VERIFY][MAX_VERIFY];
 static void      o___SPREAD__________________o (void) {;}
 
 char
-ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry, double *a_result)
+ykine_stance_spread     (char a_leg, double a_start, char *a_entry, double *a_result)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -78,21 +78,10 @@ ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry,
       if (a_result != NULL)  *a_result = s_spreads [n].femu [a_leg];
       DEBUG_YKINE_SCRP   yLOG_value   ("literal"   , *a_result);
    }
-
    /*---(absolute)-----------------------*/
-   else if (a_from == YKINE_PURE) {
+   else {
       rc  = yPARSE_adjval   (a_start, a_entry, a_result);
       DEBUG_YKINE_SCRP   yLOG_value   ("pure"      , *a_result);
-   }
-   /*---(relative)-----------------------*/
-   else if (a_from == YKINE_FROM) {
-      rc  = yPARSE_adjfrom  (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_value   ("from"      , *a_result);
-   }
-   /*---(bad type)-----------------------*/
-   else {
-      DEBUG_YKINE_SCRP   yLOG_note    ("type not known");
-      rc = -1;
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -107,7 +96,7 @@ ykine_stance_spread     (char a_from, char a_leg, double a_start, char *a_entry,
 static void      o___RADIUS__________________o (void) {;}
 
 char         /*-> outward xz distance from military position --[--.---.---.--]*/
-ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_result)
+ykine_stance_radius     (double a_start, char *a_entry, double *a_result)
 {  /*---(design notes)-------------------*/
    /*
     * actual shortcut grid is from center in inches (groups of 25.4mm).  so,
@@ -142,8 +131,13 @@ ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_r
          }
       }
    }
+   /*---(normal)-------------------------*/
+   if (x_short == '·') {
+      rc  = yPARSE_adjval   (a_start, a_entry, a_result);
+      DEBUG_YKINE_SCRP   yLOG_double  ("pure"      , *a_result);
+   }
    /*---(shortcut)-----------------------*/
-   if (x_short != '·') {
+   else {
       if (a_result != NULL) {
          *a_result = (((x_short - 'a') / 2.0) + 3.0) * INCH2MM;
          switch (x_suffix) {
@@ -155,16 +149,6 @@ ykine_stance_radius     (char a_from, double a_start, char *a_entry, double *a_r
       DEBUG_YKINE_SCRP   yLOG_double  ("shortcut"  , *a_result);
       *a_result -= yKINE_seglen (YKINE_THOR) + yKINE_seglen (YKINE_COXA) + yKINE_seglen (YKINE_FEMU) + yKINE_seglen (YKINE_PATE);
       DEBUG_YKINE_SCRP   yLOG_double  ("adjusted"  , *a_result);
-   }
-   /*---(absolute)-----------------------*/
-   else if (a_from == YKINE_PURE) {
-      rc  = yPARSE_adjval   (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_double  ("pure"      , *a_result);
-   }
-   /*---(relative)-----------------------*/
-   else {
-      rc  = yPARSE_adjfrom  (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_double  ("from"      , *a_result);
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -203,7 +187,7 @@ float
 yKINE_radius         (char *a_entry)
 {
    double     x_val;
-   ykine_stance_radius (YKINE_PURE, 0.0, a_entry, &x_val);
+   ykine_stance_radius (0.0, a_entry, &x_val);
    return x_val;
 }
 
@@ -215,9 +199,10 @@ yKINE_radius         (char *a_entry)
 static void      o___HEIGHT__________________o (void) {;}
 
 char
-ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_result)
+ykine_stance_height     (char a_verb, double a_start, char *a_entry, double *a_result)
 {
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    char        rc          =    0;
    char        n           =   -1;
    int         i           =    0;
@@ -225,8 +210,16 @@ ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_r
    char        x_short     =  '·';
    char        x_suffix    =  '·';
    char       *x_lower     = "abcdefghijklmnopqrstuvwxyz";
+   char        x_zero      =  'j';
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_complex ("pointers"  , "entry %p, result %p", a_entry, a_result);
+   --rce;  if (a_entry == NULL || a_result == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare)------------------------*/
    x_len  = strlen (a_entry);
    DEBUG_YKINE_SCRP   yLOG_complex ("a_entry"   , "%d:%s", x_len, a_entry);
    /*---(check shortcut)-----------------*/
@@ -248,27 +241,32 @@ ykine_stance_height     (char a_from, double a_start, char *a_entry, double *a_r
       else if (strcmp ("easy", a_entry) == 0)  { x_short = 'q'; x_suffix = '·'; }
       else if (strcmp ("flat", a_entry) == 0)  { x_short = 'n'; x_suffix = '·'; }
    }
-   /*---(shortcut)-----------------------*/
-   if (x_short != '·') {
-      if (a_result != NULL) {
-         *a_result = ((x_short - 'j') / 2.0) * INCH2MM;
-         switch (x_suffix) {
-         case '-' :  *a_result -= INCH2MM * 0.125;  break;
-         case '+' :  *a_result += INCH2MM * 0.125;  break;
-         case '\'':  *a_result += INCH2MM * 0.250;  break;
-         }
-      }
-      DEBUG_YKINE_SCRP   yLOG_double  ("shortcut"  , *a_result);
-   }
-   /*---(absolute)-----------------------*/
-   else if (a_from == YKINE_PURE) {
+   /*---(normal)-------------------------*/
+   if (x_short == '·') {
       rc  = yPARSE_adjval   (a_start, a_entry, a_result);
       DEBUG_YKINE_SCRP   yLOG_value   ("pure"      , *a_result);
    }
-   /*---(relative)-----------------------*/
+   /*---(shortcuted)---------------------*/
    else {
-      rc  = yPARSE_adjfrom  (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_value   ("from"      , *a_result);
+      /*---(adjust for body)-------------*/
+      switch (a_verb) {
+      case YKINE_ZE : case YKINE_PO : case YKINE_ST :
+         x_zero = 'u';
+         break;
+      default :
+         x_zero = 'j';
+         break;
+      }
+      /*---(calculate)-------------------*/
+      *a_result = ((x_short - x_zero) / 2.0) * INCH2MM;
+      /*---(tweak)-----------------------*/
+      switch (x_suffix) {
+      case '-' :  *a_result -= INCH2MM * 0.125;  break;
+      case '+' :  *a_result += INCH2MM * 0.125;  break;
+      case '\'':  *a_result += INCH2MM * 0.250;  break;
+      }
+      DEBUG_YKINE_SCRP   yLOG_double  ("shortcut"  , *a_result);
+      /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -287,13 +285,13 @@ ykine_stance_height_next (int *n, char *a_short)
    return ykine_stance_radius_next (n, a_short);
 }
 
-float
-yKINE_height         (char *a_entry)
-{
-   double     x_val;
-   ykine_stance_height (YKINE_PURE, 0.0, a_entry, &x_val);
-   return x_val;
-}
+/*> float                                                                             <* 
+ *> yKINE_height         (char *a_entry)                                              <* 
+ *> {                                                                                 <* 
+ *>    double     x_val;                                                              <* 
+ *>    ykine_stance_height (YKINE_PURE, 0.0, a_entry, &x_val);                        <* 
+ *>    return x_val;                                                                  <* 
+ *> }                                                                                 <*/
 
 
 
@@ -303,7 +301,7 @@ yKINE_height         (char *a_entry)
 static void      o___LEGDROP_________________o (void) {;}
 
 char
-ykine_stance_scale      (char a_from, double a_start, char *a_entry, double *a_result)
+ykine_stance_scale      (double a_start, char *a_entry, double *a_result)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
@@ -345,8 +343,13 @@ ykine_stance_scale      (char a_from, double a_start, char *a_entry, double *a_r
    } else if (x_len == 4) {
       if      (strcmp ("zero", a_entry) == 0)  { x_short = 'a'; x_suffix = '·'; }
    }
+   /*---(normal)-------------------------*/
+   if (x_short == '·') {
+      rc  = yPARSE_adjval   (a_start, a_entry, a_result);
+      DEBUG_YKINE_SCRP   yLOG_value   ("pure"      , *a_result);
+   }
    /*---(shortcut)-----------------------*/
-   if (x_short != '·') {
+   else {
       if (a_result != NULL) {
          *a_result = ((x_short - 'a') / 2.0) * INCH2MM * x_sign;
          switch (x_suffix) {
@@ -356,16 +359,6 @@ ykine_stance_scale      (char a_from, double a_start, char *a_entry, double *a_r
          }
       }
       DEBUG_YKINE_SCRP   yLOG_double  ("shortcut"  , *a_result);
-   }
-   /*---(absolute)-----------------------*/
-   else if (a_from == YKINE_PURE) {
-      rc  = yPARSE_adjval   (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_value   ("pure"      , *a_result);
-   }
-   /*---(relative)-----------------------*/
-   else {
-      rc  = yPARSE_adjfrom  (a_start, a_entry, a_result);
-      DEBUG_YKINE_SCRP   yLOG_value   ("from"      , *a_result);
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -409,8 +402,78 @@ float
 yKINE_scale          (char *a_entry)
 {
    double     x_val;
-   ykine_stance_scale  (YKINE_PURE, 0.0, a_entry, &x_val);
+   ykine_stance_scale  (0.0, a_entry, &x_val);
    return x_val;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      stance verb handler                     ----===*/
+/*====================------------------------------------====================*/
+static void      o___STANCE__________________o (void) {;}
+
+char
+ykine_stance            (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   char        rc          =    0;
+   char       *x_one       [LEN_LABEL];
+   char       *x_two       [LEN_LABEL];
+   char       *x_thr       [LEN_LABEL];
+   char       *x_label     [LEN_LABEL];
+   char        x_recd      [LEN_RECD];
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(gather fields)---------------*/
+   rc = ykine_legs_prepare (x_one, x_two, x_thr, x_label);
+   DEBUG_YKINE_SCRP   yLOG_value   ("prepare"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(create record)------------------*/
+   if (myKINE.b >= 0)   sprintf (x_recd, "zero    (%6.1f, 0.0r, 0.0r, %s, %s)", myKINE.b, x_thr, x_label);
+   else                 sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %s, %s)"   , myKINE.accel, x_thr, x_label);
+   DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
+   /*---(parse)--------------------------*/
+   rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
+   myKINE.s_hidden = 'y';
+   DEBUG_YKINE_SCRP   yLOG_point   ("parse"     , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(run)-------------------------*/
+   rc = ykine_body_zero ();
+   DEBUG_YKINE_SCRP  yLOG_point   ("zero"      , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(create record)------------------*/
+   if (myKINE.b >= 0)   sprintf (x_recd, "radial  (AA, %6.1f, %s, %s, %s, %s)", myKINE.b, x_one, x_two, "-.-", x_label);
+   else                 sprintf (x_recd, "radial  (AA, %s, %s, %s, %s, %s)"   , myKINE.accel, x_one, x_two, "-.-", x_label);
+   DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
+   /*---(parse)--------------------------*/
+   rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
+   myKINE.s_hidden = 'y';
+   DEBUG_YKINE_SCRP   yLOG_point   ("parse"     , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(run)-------------------------*/
+   rc = ykine_legs_rk   ();
+   DEBUG_YKINE_SCRP  yLOG_point   ("radial"    , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
 

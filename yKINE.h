@@ -312,6 +312,7 @@
 #define     YKINE_TDE       21
 #define     YKINE_TPU       22
 #define     YKINE_TPO       23
+#define     YKINE_ST        24
 
 
 
