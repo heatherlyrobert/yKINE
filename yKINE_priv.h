@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2m"
-#define     P_VERTXT    "lots of work on documentation, not done, but advancing"
+#define     P_VERNUM    "1.2n"
+#define     P_VERTXT    "simplified all the move cursoring logic and retested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -508,6 +508,7 @@ char*       ykine_accel__unit       (char *a_question, int a_num);
 
 
 /*===[[ YKINE_move.c ]]=======================================================*/
+char        ykine_move_init         (void);
 /*---(malloc)-------------------------*/
 char        ykine__move_new         (tMOVE **a_move);
 char        ykine__move_free        (tMOVE **a_move);

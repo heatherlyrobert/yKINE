@@ -1,14 +1,14 @@
-.TH yKINE 3 2009-07 "linux" "heatherly custom tools manual"
+.TH yKINE 3 "2009-jul" "linux" "heatherly custom tools manual"
 
 .SH NAME
 .B yKINE
 \- shared, consistent, and reliable spider kinematics
 
-.SH PATRON
+.SH GREEK PATRON
 .B typhoeus-terrigena
 (earth-born), king of all the greek the monsters
 
-.SH IMAGERY (see HERITAGE at bottom for more)
+.SH IMAGERY (see HERITAGE in man section 7 for more)
 winged giant with a hundred dragon heads and countless viper tentacles
 
 .SH SUMMARY
@@ -19,33 +19,33 @@ from visualization, tactics, and strategy.
 
 .SH DOCUMENTATION FILES
 .nf
-yKINE (3)  ** interfacing applications with yKINE (you are here)
+yKINE (3)    ***   interfacing applications with yKINE
 .nf
-yKINE (5)     structure of the kinematics scripting file
+yKINE (5)          structure of the kinematics scripting file
 .nf
-yKINE (7)     decision rationale, objectives, and overview
+yKINE (7)          decision rationale, objectives, and overview
 
 .SH TABLE OF CONTENTS
 .nf
-synopsis      itemizes the function calls available
+synopsis           itemizes the function calls available
 .nf
-standards     itemizes the constants to be used
+standards          itemizes the constants to be used
 .nf
-program       overall functions
+program            overall functions
 .nf
-leg data      retrieving leg master data
+leg data           retrieving leg master data
 .nf
-segment data  retrieving segment master data
+segment data       retrieving segment master data
 .nf
-calculations  calling kinematic calculations
+calculations       calling kinematic calculations
 .nf
-details       retrieving calculation results
+details            retrieving calculation results
 .nf
-scripting     calling script reading and parsing
+scripting          calling script reading and parsing
 .nf
-interaction   for data to drive modeling and visualization
+interaction        for data to drive modeling and visualization
 .nf
-conversion    useful, related data conversion functions
+conversion         useful, related data conversion functions
 
 .SH SYNOPSIS
 .nf
@@ -85,6 +85,9 @@ conversion    useful, related data conversion functions
 .BI "char    yKINE_segdiff   (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
 .BI "char    yKINE_angle     (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
 .BI "char    yKINE_angles    (char  " "leg  " ", char  " "meth " ", float " "coxa " ", ...);"
+.sp
+---(zero position)-----------------------------
+.BI "char    yKINE_zero_head (float " "x    " ", float " "z    " ", float " "y    " ");"
 .sp
 ---(scripting)---------------------------------
 .BI "char    yKINE_script    (float *" "len  " ");"

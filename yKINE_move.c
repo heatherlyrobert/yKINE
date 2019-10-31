@@ -11,6 +11,25 @@ int         m_count;
 
 
 
+static tSERVO  *s_servo  = NULL;
+static tMOVE   *s_curr   = NULL;
+static int      s_finds  =    0;
+static int      s_shorts =    0;
+
+
+
+char
+ykine_move_init         (void)
+{
+   m_head   = NULL;
+   m_tail   = NULL;
+   m_count  =    0;
+   s_servo  = NULL;
+   s_curr   = NULL;
+   s_finds  =    0;
+   s_shorts =    0;
+   return 0;
+}
 
 /*====================------------------------------------====================*/
 /*===----                       memory allocation                      ----===*/
@@ -724,11 +743,8 @@ ykine__exact_data        (tSERVO *a_servo, float a_sec)
 /*====================------------------------------------====================*/
 static void      o___SEQUENCIAL______________o (void) {;}
 
-static tSERVO  *s_servo = NULL;
-static tMOVE   *s_curr  = NULL;
-
 char
-ykine__servo_next       (char a_dir, char a_type, float *a, float *b, float *c, float *d)
+ykine_servo__cursor     (char a_dir, char a_type, float *a, float *b, float *c, float *d)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -739,17 +755,23 @@ ykine__servo_next       (char a_dir, char a_type, float *a, float *b, float *c, 
    if (b  != NULL)  *b  = 0.0;
    if (c  != NULL)  *c  = 0.0;
    if (d  != NULL)  *d  = 0.0;
+   /*---(defense)------------------------*/
+   --rce;  if (s_servo == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("servo no found");
+      return rce;
+   }
    /*---(update current)-----------------*/
    DEBUG_YKINE_SCRP   yLOG_schar   (a_dir);
    --rce;  switch (a_dir) {
-   case 'H' : s_curr = s_servo->head;  a_dir = 'n';          break;
-   case 'n' : if (s_curr != NULL)  s_curr = s_curr->s_next;  break;
-   case 'p' : if (s_curr != NULL)  s_curr = s_curr->s_prev;  break;
-   case 'T' : s_curr = s_servo->tail;  a_dir = 'p';          break;
+   case YKINE_HEAD : s_curr = s_servo->head;  a_dir = YKINE_NEXT;   break;
+   case YKINE_NEXT : if (s_curr != NULL)  s_curr = s_curr->s_next;  break;
+   case YKINE_SAME : break;
+   case YKINE_PREV : if (s_curr != NULL)  s_curr = s_curr->s_prev;  break;
+   case YKINE_TAIL : s_curr = s_servo->tail;  a_dir = YKINE_PREV;   break;
    default  : /*---(problem)-------------*/
-              DEBUG_YKINE_SCRP   yLOG_snote   ("invalid dir");
-              return rce;
-              break;
+                     DEBUG_YKINE_SCRP   yLOG_snote   ("invalid dir");
+                     return rce;
+                     break;
    }
    DEBUG_YKINE_SCRP   yLOG_spoint  (s_curr);
    /*---(check for next)-----------------*/
@@ -759,14 +781,14 @@ ykine__servo_next       (char a_dir, char a_type, float *a, float *b, float *c, 
       if (s_curr->type == YKINE_SERVO)  break;
       if (s_curr->type == YKINE_WAIT )  break;
       switch (a_dir) {
-      case 'n' : s_curr = s_curr->s_next;  break;
-      case 'p' : s_curr = s_curr->s_prev;  break;
+      case YKINE_NEXT : s_curr = s_curr->s_next;  break;
+      case YKINE_PREV : s_curr = s_curr->s_prev;  break;
+      default         : break;
       }
    }
    DEBUG_YKINE_SCRP   yLOG_spoint  (s_curr);
    /*---(refuse null)--------------------*/
    --rce;  if (s_curr == NULL) {
-      s_curr  = NULL;
       DEBUG_YKINE_SCRP   yLOG_snote   ("no more moves");
       return rce;
    }
@@ -775,11 +797,11 @@ ykine__servo_next       (char a_dir, char a_type, float *a, float *b, float *c, 
    /*---(return values)------------------*/
    DEBUG_YKINE_SCRP   yLOG_schar   (a_type);
    --rce;  switch (a_type) {
-   case 'd' :
+   case YKINE_DEG :
       if (a  != NULL)  *a  = s_curr->secs;
       if (b  != NULL)  *b  = s_curr->degs;
       break;
-   case 'c' :
+   case YKINE_POS :
       if (a  != NULL)  *a  = s_curr->secs;
       if (b  != NULL)  *b  = s_curr->x_pos;
       if (c  != NULL)  *c  = s_curr->z_pos;
@@ -794,164 +816,39 @@ ykine__servo_next       (char a_dir, char a_type, float *a, float *b, float *c, 
    return 0;
 }
 
-char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_zero_first        (float *a_sec, float *a_x, float *a_z, float *a_y)
+char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
+yKINE_zero_cursor       (char a_dir, float *s, float *x, float *z, float *y)
 {
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -100;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(find servo)---------------------*/
-   s_servo   = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
-   DEBUG_YKINE_SCRP   yLOG_spoint  (s_servo);
-   --rce;  if (s_servo == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
+   /*---(prepare)------------------------*/
+   if (s_servo == NULL || s_servo->leg != YKINE_BODY || s_servo->seg != YKINE_FOCU) {
+      ++s_finds;
+      s_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
+   } else {
+      ++s_shorts;
    }
-   /*---(process)------------------------*/
-   rc = ykine__servo_next ('H', 'c', a_sec, a_x, a_z, a_y);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char         /*--> retrieve the next move ----------------[ ------ [ ------ ]-*/
-yKINE_zero_next          (float *a_sec, float *a_x, float *a_z, float *a_y)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(process)------------------------*/
-   rc = ykine__servo_next ('n', 'c', a_sec, a_x, a_z, a_y);
-   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
+   /*---(call)---------------------------*/
+   return ykine_servo__cursor (a_dir, YKINE_POS, s, x, z, y);
 }
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_move_first         (int a_leg, int a_seg, float *a_sec, float *a_deg)
+yKINE_move_cursor        (char a_dir, char a_leg, char a_seg, float *s, float *d)
 {
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -100;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(find servo)---------------------*/
-   s_servo   = ykine_servo_pointer (a_leg, a_seg);
-   DEBUG_YKINE_SCRP   yLOG_spoint  (s_servo);
-   --rce;  if (s_servo == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
+   /*---(prepare)------------------------*/
+   if (s_servo == NULL || s_servo->leg != a_leg || s_servo->seg != a_seg) {
+      ++s_finds;
+      s_servo = ykine_servo_pointer (a_leg, a_seg);
+   } else {
+      ++s_shorts;
    }
-   /*---(process)------------------------*/
-   rc = ykine__servo_next ('H', 'd', a_sec, a_deg, NULL, NULL);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char         /*--> retrieve the next move ----------------[ ------ [ ------ ]-*/
-yKINE_move_next          (float *a_sec, float *a_deg)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(process)------------------------*/
-   rc = ykine__servo_next ('n', 'd', a_sec, a_deg, NULL, NULL);
-   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char         /*--> retrieve the prev move ----------------[ ------ [ ------ ]-*/
-yKINE_move_prev          (float *a_sec, float *a_deg)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(process)------------------------*/
-   rc = ykine__servo_next ('p', 'd', a_sec, a_deg, NULL, NULL);
-   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
-   }
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
+   /*---(call)---------------------------*/
+   return ykine_servo__cursor (a_dir, YKINE_DEG, s, d, NULL, NULL);
 }
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_move_last          (int a_leg, int a_seg, float *a_sec, float *a_deg)
+yKINE_move_last_servo    (int a_servo, float *s, float *d)
 {
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -100;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(find servo)---------------------*/
-   s_servo   = ykine_servo_pointer (a_leg, a_seg);
-   DEBUG_YKINE_SCRP   yLOG_spoint  (s_servo);
-   --rce;  if (s_servo == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(process)------------------------*/
-   rc = ykine__servo_next ('T', 'd', a_sec, a_deg, NULL, NULL);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_move_last_servo    (int a_servo, float *a_sec, float *a_deg)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -100;
-   char        rc          =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(find servo)---------------------*/
-   s_servo   = ykine_servo_pointer (g_servo_info [a_servo].leg, g_servo_info [a_servo].seg);
-   DEBUG_YKINE_SCRP   yLOG_spoint  (s_servo);
-   --rce;  if (s_servo == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(process)------------------------*/
-   rc = ykine__servo_next ('T', 'd', a_sec, a_deg, NULL, NULL);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rc);
-      return rc;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
+   if (a_servo < 0 || a_servo >= g_nservo)  return -1; 
+   return yKINE_move_cursor (YKINE_TAIL, g_servo_info [a_servo].leg, g_servo_info [a_servo].seg, s, d);
 }
 
 char         /*--> retrieve data about current -----------[ ------ [ ------ ]-*/
@@ -980,24 +877,6 @@ yKINE_servo_deg          (int a_leg, int a_seg, float *a_deg)
       return -1;
    }
    if (a_deg       != NULL)  *a_deg = x_servo->deg;
-   if (x_servo->exact == 'y')  return 1;
-   return 0;
-}
-
-char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
-yKINE_zero_pos           (float *a_x, float *a_z, float *a_y)
-{
-   tSERVO     *x_servo     = NULL;
-   x_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
-   if (x_servo == NULL || x_servo->curr == NULL) {
-      if (a_x != NULL)  *a_x   = 0.0;
-      if (a_z != NULL)  *a_z   = 0.0;
-      if (a_y != NULL)  *a_y   = 0.0;
-      return -1;
-   }
-   if (a_x != NULL)  *a_x   = x_servo->xexp;
-   if (a_z != NULL)  *a_z   = x_servo->zexp;
-   if (a_y != NULL)  *a_y   = x_servo->yexp;
    if (x_servo->exact == 'y')  return 1;
    return 0;
 }

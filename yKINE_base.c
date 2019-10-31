@@ -138,6 +138,8 @@ yKINE_init         (void)
    myKINE.s_height = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
    rc = ykine_servo_init ();
    DEBUG_YKINE  yLOG_value   ("servo"     , rc);
+   rc = ykine_move_init  ();
+   DEBUG_YKINE  yLOG_value   ("move"      , rc);
    rc = ykine_scrp_begin ();
    DEBUG_YKINE  yLOG_value   ("scrp"      , rc);
    rc = yPARSE_init      (YPARSE_NOAUTO, ykine_scrp_popverb, YPARSE_REUSE);

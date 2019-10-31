@@ -386,6 +386,15 @@
 /*---(servos)-------------------------*/
 #define     YKINE_MAX_SERVO   64
 
+/*---(move searches)------------------*/
+#define     YKINE_HEAD      '['
+#define     YKINE_NEXT      '>'
+#define     YKINE_SAME      '.'
+#define     YKINE_PREV      '<'
+#define     YKINE_TAIL      ']'
+#define     YKINE_POS       'p'
+#define     YKINE_DEG       'd'
+
 
 #define     YKINE_NULL      '-'
 #define     YKINE_SERVO     's'
@@ -458,15 +467,14 @@ char        yKINE_script            (float *a_len);
 char        yKINE_exact_all         (float  a_time);
 char        yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_label, char *a_cell, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
 
-char        yKINE_move_first        (int a_leg, int a_seg, float *a_sec, float *a_deg);
-char        yKINE_move_next         (float *a_sec  , float *a_deg);
+char        yKINE_move_cursor        (char a_dir, char a_leg, char a_seg, float *s, float *d);
 char        yKINE_move_prev         (float *a_sec  , float *a_deg);
 char        yKINE_move_last         (int a_leg, int a_seg, float *a_sec, float *a_deg);
 char        yKINE_move_last_servo   (int a_servo, float *a_sec, float *a_deg);
 
-char        yKINE_zero_first        (float *a_sec, float *a_x, float *a_z, float *a_y);
-char        yKINE_zero_next         (float *a_sec, float *a_x, float *a_z, float *a_y);
-char        yKINE_zero_pos          (float *a_x, float *a_z, float *a_y);
+/*> char        yKINE_zero_first        (float *a_sec, float *a_x, float *a_z, float *a_y);   <*/
+/*> char        yKINE_zero_next         (float *a_sec, float *a_x, float *a_z, float *a_y);   <*/
+char        yKINE_zero_cursor       (char a_dir, float *s, float *x, float *z, float *y);
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        yKINE_move_curdata      (double *a_x, double *a_z, double *a_y);
@@ -477,12 +485,8 @@ char        yKINE_moves_rpt         (void);
 
 
 char        yKINE_xz2hex            (float x, float z, int *c, int *r);
-char        yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o);
 char        yKINE_hex2xz            (int c, int r, float *x, float *z);
 char        yKINE_verify_rc         (int a_row, int a_col);
-float       yKINE_height            (char *a_entry);
-float       yKINE_radius            (char *a_entry);
-float       yKINE_scale             (char *a_entry);
 
 
 /*> char        yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count);   <*/

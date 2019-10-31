@@ -592,7 +592,7 @@ yKINE_verify_rc            (int a_row, int a_col)
 static void      o___HEXAGONAL_______________o (void) {;}
 
 char
-yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
+ykine__xz2hexdo         (float x, float z, int *c, int *r, float *d, float *o)
 {
    /*---(locals)-----------+-----+-----+-*/
    float       x_inch, xd, zd, fd, x_deg;
@@ -646,7 +646,7 @@ yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
 char
 yKINE_xz2hex            (float x, float z, int *c, int *r)
 {
-   return yKINE_xz2hexdo (x, z, c, r, NULL, NULL);
+   return ykine__xz2hexdo (x, z, c, r, NULL, NULL);
 }
 
 char
