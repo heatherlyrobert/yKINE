@@ -19,8 +19,7 @@ PREP          v21  include the prototype headers                              
 SCRP          v21  (EXACT ) verify current calcs based on percentage                                                                                                                        ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  create a seconds variable            - - - - - - - - - - - - -   float   x_cur  = 0.0;                                                                                                                                                                        
      code     v21  create a seconds variable            - - - - - - - - - - - - -   float   x, z;                                                                                                                                                                                
 
@@ -103,7 +102,7 @@ SCRP          v21  (EXACT ) verify current calcs based on percentage          
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -112,8 +111,7 @@ SCRP          v21  (EXACT ) verify current calcs based on percentage          
 SCRP          v21  (EXACT ) verify linear distance calculation                                                                                                                              ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  start with simple zeros                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  set beginning manually               ykine_exact_fake_beg        0.0   ,    0.0,    0.0,    0.0,    0.0,    0.0                                                        i_equal     0                                                                                                    
@@ -161,7 +159,7 @@ SCRP          v21  (EXACT ) verify linear distance calculation                
      exec     v21  calculate distance                   ykine_exact_dist_xzy                                                                                                              r_norm93    7.071                                                                                                
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -170,8 +168,7 @@ SCRP          v21  (EXACT ) verify linear distance calculation                
 SCRP          v21  (EXACT ) verify polar distance calculation                                                                                                                               ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  start with simple zeros                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  set beginning manually               ykine_exact_fake_beg        0.0   ,    0.0,    0.0,    0.0,    0.0,    0.0                                                        i_equal     0                                                                                                    
@@ -261,7 +258,7 @@ SCRP          v21  (EXACT ) verify polar distance calculation                 
      exec     v21  calculate distance                   ykine_exact_dist_doy                                                                                                              r_norm93    471.239                                                                                              
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -270,8 +267,7 @@ SCRP          v21  (EXACT ) verify polar distance calculation                 
 SCRP          v21  (EXACT ) verify orient distance calculations                                                                                                                             ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  start with simple zeros                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  set beginning manually               ykine_exact_fake_abeg       0.0   ,    0.0,    0.0,    0.0,    0.0                                                                i_equal     0                                                                                                    
@@ -324,7 +320,7 @@ SCRP          v21  (EXACT ) verify orient distance calculations               
      exec     v21  calculate distance                   ykine_exact_dist_ypr                                                                                                              r_norm93    47.473                                                                                               
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -333,8 +329,7 @@ SCRP          v21  (EXACT ) verify orient distance calculations               
 SCRP          v21  (EXACT ) verify linear partial move calc                                                                                                                                 ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  start with simple zeros                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  set beginning manually               ykine_exact_fake_beg        0.0   ,    0.0,    0.0,    0.0,    0.0,    0.0                                                        i_equal     0                                                                                                    
@@ -355,7 +350,7 @@ SCRP          v21  (EXACT ) verify linear partial move calc                   
      get      v21  ... check calculation                ykine__unit_move            "calc"         , -1      , -1        , -1                                                             s_equal     MOVE calc curr : 0.25p,     0.00d,      7.5x,      2.5z,      2.5y                                   
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -364,8 +359,7 @@ SCRP          v21  (EXACT ) verify linear partial move calc                   
 SCRP          v21  (EXACT ) verify polar partial move calc                                                                                                                                  ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    GROUP      v21  start with very simple with no changes                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
@@ -450,7 +444,7 @@ SCRP          v21  (EXACT ) verify polar partial move calc                    
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -462,8 +456,7 @@ SCRP          v21  (EXACT ) verify polar partial move calc                    
 SCRP          v21  (EXACT ) verify move timing checks                                 ykine__exact_check                                                                                    ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
      code     v21  create servo pointer                 - - - - - - - - - - - - -   tSERVO *x_servo = NULL;                                                                                                                                                                       
      code     v21  create move pointer                  - - - - - - - - - - - - -   tMOVE  *x_1st   = NULL;                                                                                                                                                                       
@@ -555,7 +548,7 @@ SCRP          v21  (EXACT ) verify move timing checks                         
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -564,8 +557,7 @@ SCRP          v21  (EXACT ) verify move timing checks                         
 SCRP          v21  (EXACT ) verify move timing finds                                  ykine__exact_find                                                                                     ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
      code     v21  create servo pointer                 - - - - - - - - - - - - -   tSERVO *x_servo = NULL;                                                                                                                                                                       
      code     v21  create move pointer                  - - - - - - - - - - - - -   tMOVE  *x_1st   = NULL;                                                                                                                                                                       
@@ -675,7 +667,7 @@ SCRP          v21  (EXACT ) verify move timing finds                          
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 #23456789-12  123  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
@@ -683,8 +675,7 @@ SCRP          v21  (EXACT ) verify move timing finds                          
 SCRP          v21  (EXACT ) verify move timing for all servos                         yKINE_exact_all                                                                                       ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
      code     v21  create servo pointer                 - - - - - - - - - - - - -   tSERVO *x_RR    = NULL;                                                                                                                                                                       
      code     v21  create move pointer                  - - - - - - - - - - - - -   tMOVE  *x_RR0   = NULL;                                                                                                                                                                       
@@ -835,7 +826,7 @@ SCRP          v21  (EXACT ) verify move timing for all servos                 
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -844,8 +835,7 @@ SCRP          v21  (EXACT ) verify move timing for all servos                 
 SCRP          v21  (EXACT ) verify context setting for calculations                   ykine__exact_context                                                                                  ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
    COND       v21  add a short list of moves                                          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -922,7 +912,7 @@ SCRP          v21  (EXACT ) verify context setting for calculations           
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -931,8 +921,7 @@ SCRP          v21  (EXACT ) verify context setting for calculations           
 SCRP          v21  (EXACT ) verify leg retrieval for exact linear calcs               yKINE_exact_leg                                                                                       ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
      code     v21  create return variables              - - - - - - - - - - - - -   float  f, p, t, x, z, y, fr, pr, tr, xr, zr, yr;                                                                                                                                                                           
 
@@ -1013,7 +1002,7 @@ SCRP          v21  (EXACT ) verify leg retrieval for exact linear calcs       
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -1022,8 +1011,7 @@ SCRP          v21  (EXACT ) verify leg retrieval for exact linear calcs       
 SCRP          v21  (EXACT ) verify leg retrieval for exact polar calcs                yKINE_exact_leg                                                                                       ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
      code     v21  create return variables              - - - - - - - - - - - - -   float  f, p, t, x, z, y, fr, pr, tr, xr, zr, yr;                                                                                                                                                                           
 
@@ -1104,6 +1092,6 @@ SCRP          v21  (EXACT ) verify leg retrieval for exact polar calcs        
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 

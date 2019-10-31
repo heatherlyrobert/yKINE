@@ -28,7 +28,7 @@ static int     s_meth       = 0;
 static void      o___CONFIG__________________o (void) {;}
 
 char
-yKINE__setleg      (int a_num, int a_meth)
+ykine__setleg      (int a_num, int a_meth)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -61,7 +61,7 @@ yKINE__setleg      (int a_num, int a_meth)
 }
 
 char
-yKINE__unsetleg    (void)
+ykine__unsetleg    (void)
 {
    s_leg = NULL;
    return 0;
@@ -69,7 +69,7 @@ yKINE__unsetleg    (void)
 
 
 char       /*----: clear most recent kinematics working data -----------------*/
-yKINE__wipe        (void)
+ykine__wipe        (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -120,7 +120,7 @@ yKINE__wipe        (void)
 static void      o___SHARED__________________o (void) {;}
 
 char
-yKINE__chcv             (int a_seg)
+ykine__chcv             (int a_seg)
 {
    /*---(locals)-----------+-----+-----+-*/
    double      x_full      = 2 * M_PI;
@@ -182,7 +182,7 @@ yKINE__chcv             (int a_seg)
 }
 
 char
-yKINE__cums             (int a_seg)
+ykine__cums             (int a_seg)
 {
    /*---(locals)-----------+-----+-----+-*/
    double      x_full      = 2 * M_PI;
@@ -204,7 +204,7 @@ yKINE__cums             (int a_seg)
    x_curr->fl   =  sqrt ((x_curr->cx * x_curr->cx) + (x_curr->cz * x_curr->cz) + (x_curr->cy * x_curr->cy));
    DEBUG_YKINE_CALC   yLOG_complex ("lengths"  , "%6.1fxz, %6.1fsl, %6.1ffl", x_curr->xz, x_curr->sl, x_curr->fl);
    /*---(calc ch)------------------------*/
-   yKINE__chcv (a_seg);
+   ykine__chcv (a_seg);
    /*---(save to calc)-------------------*/
    x_calc->x   += x_curr->x;
    x_calc->z   += x_curr->z;
@@ -215,7 +215,7 @@ yKINE__cums             (int a_seg)
 }
 
 char
-yKINE__cums_copy        (int a_seg)
+ykine__cums_copy        (int a_seg)
 {
    /*---(locals)-----------+-----+-----+-*/
    double      x_full      = 2 * M_PI;
@@ -280,7 +280,7 @@ static void      o___FIXED___________________o (void) {;}
  */
 
 char         /*--: establish thorax endpoint -------------[ leaf   [ ------ ]-*/
-yKINE__thor        (void)
+ykine__thor        (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -294,7 +294,7 @@ yKINE__thor        (void)
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(save basics)-----------------*/
-   l     =  s_leg [YKINE_THOR].l;                        /* set during yKINE__clear */
+   l     =  s_leg [YKINE_THOR].l;                        /* set during ykine__clear */
    d     =  s_leg [YKINE_THOR].cd   =  s_leg [YKINE_THOR].d;
    v     =  s_leg [YKINE_THOR].v    =  s_leg [YKINE_THOR].cv  =  0.0f;
    h     =  s_leg [YKINE_THOR].h    =  s_leg [YKINE_THOR].ch  =  d * DEG2RAD;
@@ -306,14 +306,14 @@ yKINE__thor        (void)
    y     =  s_leg [YKINE_THOR].y    =  0.0f;
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(cumulatives)--------------------*/
-   yKINE__cums (YKINE_THOR);
+   ykine__cums (YKINE_THOR);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-yKINE__coxa        (void)
+ykine__coxa        (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -339,14 +339,14 @@ yKINE__coxa        (void)
    y     =  s_leg [YKINE_COXA].y    =  0.0f;
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(cumulatives)--------------------*/
-   yKINE__cums (YKINE_COXA);
+   ykine__cums (YKINE_COXA);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-yKINE__troc        (void)
+ykine__troc        (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -357,7 +357,7 @@ yKINE__troc        (void)
    s_leg [YKINE_TROC].cd   =  s_leg [YKINE_COXA].cd;
    DEBUG_YKINE_CALC   yLOG_note    ("save basics");
    /*---(cumulatives)--------------------*/
-   yKINE__cums_copy (YKINE_TROC);
+   ykine__cums_copy (YKINE_TROC);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -371,7 +371,7 @@ yKINE__troc        (void)
 static void      o___DRIVERS_________________o (void) {;}
 
 char
-yKINE__femu        (float a_deg)
+ykine__femu        (float a_deg)
 {  /*---(design notes)-------------------*/
    /*
     *   expand degree range by +/-1 degree to accomodate IK appoximations
@@ -422,14 +422,14 @@ yKINE__femu        (float a_deg)
    y    =  s_leg [YKINE_FEMU].y    =  0.0f;
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(cumulatives)--------------------*/
-   yKINE__cums (YKINE_FEMU);
+   ykine__cums (YKINE_FEMU);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-yKINE__lowr        (void)
+ykine__lowr        (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -450,7 +450,7 @@ yKINE__lowr        (void)
    fl   =  s_leg [YKINE_LOWR].fl   =  sqrt ((cx * cx) + (cz * cz) + (cy * cy));
    DEBUG_YKINE_CALC   yLOG_complex ("target"   , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz, %6.1ffl",  cx, cz, cy, cxz, fl);
    /*---(angles)-------------------------*/
-   yKINE__chcv             (YKINE_LOWR);
+   ykine__chcv             (YKINE_LOWR);
    /*---(patella/tibia calcs)------------*/
    x    =  s_leg [YKINE_LOWR].x    =  cx - s_leg [YKINE_FEMU].cx;
    z    =  s_leg [YKINE_LOWR].z    =  cz - s_leg [YKINE_FEMU].cz;
@@ -487,7 +487,7 @@ yKINE__lowr        (void)
 }
 
 char
-yKINE__pate        (float a_deg)
+ykine__pate        (float a_deg)
 {  /*---(design notes)-------------------*/
    /*
     *   expand degree range by +/-1 degree to accomodate IK appoximations
@@ -538,14 +538,14 @@ yKINE__pate        (float a_deg)
    z    =  s_leg [YKINE_PATE].z    = -xz * sin (h);
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(cumulatives)--------------------*/
-   yKINE__cums (YKINE_PATE);
+   ykine__cums (YKINE_PATE);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-yKINE__tibi        (float a_deg)
+ykine__tibi        (float a_deg)
 {  /*---(design notes)-------------------*/
    /*
     *   expand degree range by +/-1 degree to accomodate IK appoximations
@@ -604,7 +604,7 @@ yKINE__tibi        (float a_deg)
    z    =  s_leg [YKINE_TIBI].z    = -xz * sin (h);
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz, %6.1fsl",  x,  z,  y, xz, sl);
    /*---(cumulatives)--------------------*/
-   yKINE__cums (YKINE_TIBI);
+   ykine__cums (YKINE_TIBI);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -622,31 +622,31 @@ static void      o___ENDS____________________o (void) {;}
  */
 
 char
-yKINE__meta        (void)
+ykine__meta        (void)
 {
    /*---(calc basics)-----------------*/
    s_leg [YKINE_META].d    =  0.0;
    s_leg [YKINE_META].cd   =  s_leg [YKINE_TIBI].cd;
    /*---(cumulatives)--------------------*/
-   yKINE__cums_copy (YKINE_META);
+   ykine__cums_copy (YKINE_META);
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-yKINE__tars        (void)
+ykine__tars        (void)
 {
    /*---(calc basics)-----------------*/
    s_leg [YKINE_TARS].d    =  0.0;
    s_leg [YKINE_TARS].cd   =  s_leg [YKINE_META].cd;
    /*---(cumulatives)--------------------*/
-   yKINE__cums_copy (YKINE_TARS);
+   ykine__cums_copy (YKINE_TARS);
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-yKINE__foot        (void)
+ykine__foot        (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -673,7 +673,7 @@ yKINE__foot        (void)
    y    =  s_leg [YKINE_FOOT].y  =  -l;
    DEBUG_YKINE_CALC   yLOG_complex ("segment"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(cumulatives)--------------------*/
-   yKINE__cums (YKINE_FOOT);
+   ykine__cums (YKINE_FOOT);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -687,7 +687,7 @@ yKINE__foot        (void)
 static void      o___FORWARD_________________o (void) {;}
 
 char       /*----: set the leg target ----------------------------------------*/
-yKINE__FK_targ     (void)
+ykine__FK_targ     (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -716,7 +716,7 @@ yKINE__FK_targ     (void)
    s_leg [YKINE_TARG].xz  =  s_leg [YKINE_TARG].cxz =  xz;
    s_leg [YKINE_TARG].fl  =  s_leg [YKINE_TARG].fl  =  fl;
    /*---(angles)-------------------------*/
-   yKINE__chcv             (YKINE_TARG);
+   ykine__chcv             (YKINE_TARG);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -730,7 +730,7 @@ yKINE__FK_targ     (void)
 static void      o___INVERSE_________________o (void) {;};
 
 char       /*----: set the leg target ----------------------------------------*/
-yKINE__IK_targ     (float a_x, float a_z, float a_y)
+ykine__IK_targ     (float a_x, float a_z, float a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -748,7 +748,7 @@ yKINE__IK_targ     (float a_x, float a_z, float a_y)
    y    =  s_leg [YKINE_ORIG].y   =  s_leg [YKINE_ORIG].cy  = a_y;
    xz   =  s_leg [YKINE_ORIG].xz  =  s_leg [YKINE_ORIG].cxz = sqrt  ((x * x) + (z * z));
    fl   =  s_leg [YKINE_ORIG].sl  =  s_leg [YKINE_ORIG].fl  = sqrt  ((x * x) + (z * z) + (y * y));
-   yKINE__chcv             (YKINE_ORIG);
+   ykine__chcv             (YKINE_ORIG);
    DEBUG_YKINE_CALC   yLOG_complex ("original" , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(save adapted target)------------*/
    s_leg [YKINE_TARG].x   =  s_leg [YKINE_TARG].cx  = x;
@@ -756,7 +756,7 @@ yKINE__IK_targ     (float a_x, float a_z, float a_y)
    s_leg [YKINE_TARG].y   =  s_leg [YKINE_TARG].cy  = y;
    s_leg [YKINE_TARG].xz  =  s_leg [YKINE_TARG].cxz = xz;
    s_leg [YKINE_TARG].sl  =  s_leg [YKINE_TARG].fl  = fl;
-   yKINE__chcv             (YKINE_TARG);
+   ykine__chcv             (YKINE_TARG);
    DEBUG_YKINE_CALC   yLOG_complex ("targent"  , "%6.1fx , %6.1fz , %6.1fy , %6.1fxz",  x,  z,  y, xz);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
@@ -764,7 +764,7 @@ yKINE__IK_targ     (float a_x, float a_z, float a_y)
 }
 
 char       /*----: set the leg target ----------------------------------------*/
-yKINE__IK_adapt         (void)
+ykine__IK_adapt         (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -852,7 +852,7 @@ yKINE__IK_adapt         (void)
 }
 
 char       /*----: isolate the leg values ------------------------------------*/
-yKINE__IK_femu     (void)
+ykine__IK_femu     (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -883,7 +883,7 @@ yKINE__IK_femu     (void)
    DEBUG_YKINE_CALC   yLOG_double  ("new d"     , d);
    DEBUG_YKINE_CALC   yLOG_char    ("under femu", s_leg [YKINE_FEMU].u);
    /*----(save)--------------------------*/
-   rc   = yKINE__femu     (d);
+   rc   = ykine__femu     (d);
    DEBUG_YKINE_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YKINE_CALC   yLOG_note    ("calc function failed");
@@ -897,7 +897,7 @@ yKINE__IK_femu     (void)
 
 
 char       /*----: isolate the leg values ------------------------------------*/
-yKINE__IK_pate     (void)
+ykine__IK_pate     (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -935,7 +935,7 @@ yKINE__IK_pate     (void)
    }
    DEBUG_YKINE_CALC   yLOG_double  ("new d"     , d);
    /*----(save)--------------------------*/
-   rc   = yKINE__pate     (-d);
+   rc   = ykine__pate     (-d);
    DEBUG_YKINE_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YKINE_CALC   yLOG_note    ("calc function failed");
@@ -948,7 +948,7 @@ yKINE__IK_pate     (void)
 }
 
 char       /*----: isolate the leg values ------------------------------------*/
-yKINE__IK_tibi     (void)
+ykine__IK_tibi     (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;      /* return code for errors              */
@@ -974,7 +974,7 @@ yKINE__IK_tibi     (void)
    if (isnan (a))    d = 0.0;
    DEBUG_YKINE_CALC   yLOG_complex ("arccos"   , "%6.3fa , %6.3fd ", a, d);
    /*----(save)--------------------------*/
-   rc   = yKINE__tibi     (90.0 - d);
+   rc   = ykine__tibi     (90.0 - d);
    DEBUG_YKINE_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YKINE_CALC   yLOG_note    ("calc function failed");
@@ -994,7 +994,7 @@ yKINE__IK_tibi     (void)
 static void      o___OPENGL__________________o (void) {;};
 
 char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
-yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
+yKINE_opengl       (char a_leg, char a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
 {
    /*---(locals)-----------+-----------+-*/
    double      x_len       = 0.0;
@@ -1005,7 +1005,7 @@ yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, flo
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   yKINE__setleg   (a_leg, YKINE_GK);
+   ykine__setleg   (a_leg, YKINE_GK);
    /*---(target setting)-----------------*/
    DEBUG_YKINE_CALC   yLOG_complex ("object"    , "%1dl (%2.2s), %2ds (%4.4s), %8.3lfd", a_leg, g_leg_data [a_leg].caps, a_seg, g_seg_data [a_seg].four, a_deg);
    /*---(set cumulatives)----------------*/
@@ -1029,7 +1029,7 @@ yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, flo
    /*> s_leg [a_seg].xz  = sqrt ((a_len * a_len) - (x_y * x_y));                      <*/
    DEBUG_YKINE_CALC   yLOG_complex ("coords"    , "%8.3lfx , %8.3lfz , %8.3lfy , %8.3lfsl", x, z, y, a_len);
    /*---(calc ch)------------------------*/
-   yKINE__chcv (a_seg);
+   ykine__chcv (a_seg);
    /*> s_leg [a_seg].ch   = atan2 (-s_leg [a_seg].cz, s_leg [a_seg].cx);              <* 
     *> while (s_leg [a_seg].ch <  0     )  s_leg [a_seg].ch += x_full;                <* 
     *> while (s_leg [a_seg].ch >= x_full)  s_leg [a_seg].ch -= x_full;                <* 
@@ -1041,11 +1041,11 @@ yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, flo
     *> if    (s_leg [a_seg].cv >= x_full - 0.001)  s_leg [a_seg].cv = 0.0;            <*/
    /*---(target)-------------------------*/
    if (a_seg == YKINE_FOOT) {
-      yKINE__FK_targ  ();
-      yKINE__lowr     ();
+      ykine__FK_targ  ();
+      ykine__lowr     ();
    }
    /*---(wrapup)-------------------------*/
-   yKINE__unsetleg ();
+   ykine__unsetleg ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1059,32 +1059,32 @@ yKINE_opengl       (int a_leg, int a_seg, float a_deg, float a_x, float a_z, flo
 static void      o___MAIN____________________o (void) {;};
 
 char         /*--> drive the leg position from angles ----[ ------ [ ------ ]-*/
-yKINE_forward      (int a_leg, float a_femu, float a_pate, float a_tibi)
+yKINE_forward      (char a_leg, float a_femu, float a_pate, float a_tibi)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   yKINE__setleg   (a_leg, YKINE_FK);
-   yKINE__wipe     ();
+   ykine__setleg   (a_leg, YKINE_FK);
+   ykine__wipe     ();
    /*---(fixed body)---------------------*/
-   if (rc >= 0)  rc = yKINE__thor     ();
-   if (rc >= 0)  rc = yKINE__coxa     ();
-   if (rc >= 0)  rc = yKINE__troc     ();
+   if (rc >= 0)  rc = ykine__thor     ();
+   if (rc >= 0)  rc = ykine__coxa     ();
+   if (rc >= 0)  rc = ykine__troc     ();
    /*---(movable)------------------------*/
-   if (rc >= 0)  rc = yKINE__femu     (a_femu);
-   if (rc >= 0)  rc = yKINE__pate     (a_pate);
-   if (rc >= 0)  rc = yKINE__tibi     (a_tibi);
+   if (rc >= 0)  rc = ykine__femu     (a_femu);
+   if (rc >= 0)  rc = ykine__pate     (a_pate);
+   if (rc >= 0)  rc = ykine__tibi     (a_tibi);
    /*---(future)-------------------------*/
-   if (rc >= 0)  rc = yKINE__meta     ();
-   if (rc >= 0)  rc = yKINE__tars     ();
-   if (rc >= 0)  rc = yKINE__foot     ();
+   if (rc >= 0)  rc = ykine__meta     ();
+   if (rc >= 0)  rc = ykine__tars     ();
+   if (rc >= 0)  rc = ykine__foot     ();
    /*---(target setting)-----------------*/
-   if (rc >= 0)  rc = yKINE__FK_targ  ();
-   if (rc >= 0)  rc = yKINE__lowr     ();
+   if (rc >= 0)  rc = ykine__FK_targ  ();
+   if (rc >= 0)  rc = ykine__lowr     ();
    /*---(wrapup)-------------------------*/
-   yKINE__unsetleg ();
+   ykine__unsetleg ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
@@ -1098,37 +1098,37 @@ ykine_inverse_detail    (char a_adapt, int a_leg, float a_x, float a_z, float a_
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   yKINE__setleg   (a_leg, YKINE_IK);
-   yKINE__wipe     ();
+   ykine__setleg   (a_leg, YKINE_IK);
+   ykine__wipe     ();
    /*---(target setting)-----------------*/
    DEBUG_YKINE_CALC   yLOG_value   ("a_leg"     , a_leg);
    DEBUG_YKINE_CALC   yLOG_value   ("a_x"       , a_x);
    DEBUG_YKINE_CALC   yLOG_value   ("a_z"       , a_z);
    DEBUG_YKINE_CALC   yLOG_value   ("a_y"       , a_y);
-   if (rc >= 0)  rc = yKINE__IK_targ  (a_x, a_z, a_y);
-   if (rc >= 0 && a_adapt == 'y')  rc = yKINE__IK_adapt ();
+   if (rc >= 0)  rc = ykine__IK_targ  (a_x, a_z, a_y);
+   if (rc >= 0 && a_adapt == 'y')  rc = ykine__IK_adapt ();
    /*---(fixed body)---------------------*/
-   if (rc >= 0)  rc = yKINE__thor     ();
-   if (rc >= 0)  rc = yKINE__coxa     ();
-   if (rc >= 0)  rc = yKINE__troc     ();
+   if (rc >= 0)  rc = ykine__thor     ();
+   if (rc >= 0)  rc = ykine__coxa     ();
+   if (rc >= 0)  rc = ykine__troc     ();
    /*---(movable)------------------------*/
-   if (rc >= 0)  rc = yKINE__IK_femu  ();
-   if (rc >= 0)  rc = yKINE__lowr     ();
-   if (rc >= 0)  rc = yKINE__IK_pate  ();
-   if (rc >= 0)  rc = yKINE__IK_tibi  ();
+   if (rc >= 0)  rc = ykine__IK_femu  ();
+   if (rc >= 0)  rc = ykine__lowr     ();
+   if (rc >= 0)  rc = ykine__IK_pate  ();
+   if (rc >= 0)  rc = ykine__IK_tibi  ();
    /*---(future)-------------------------*/
-   if (rc >= 0)  rc = yKINE__meta     ();
-   if (rc >= 0)  rc = yKINE__tars     ();
-   if (rc >= 0)  rc = yKINE__foot     ();
+   if (rc >= 0)  rc = ykine__meta     ();
+   if (rc >= 0)  rc = ykine__tars     ();
+   if (rc >= 0)  rc = ykine__foot     ();
    /*---(wrapup)-------------------------*/
-   yKINE__unsetleg ();
+   ykine__unsetleg ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
-yKINE_inverse_adapt     (int a_leg, float a_x, float a_z, float a_y)
+yKINE_adapt             (char a_leg, float a_x, float a_z, float a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */
@@ -1142,7 +1142,7 @@ yKINE_inverse_adapt     (int a_leg, float a_x, float a_z, float a_y)
 }
 
 char         /*--> drive the leg position to a target ----[ ------ [ ------ ]-*/
-yKINE_inverse           (int a_leg, float a_x, float a_z, float a_y)
+yKINE_inverse           (char a_leg, float a_x, float a_z, float a_y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =   0;      /* generic return code                 */

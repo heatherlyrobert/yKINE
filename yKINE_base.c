@@ -60,53 +60,8 @@ yKINE_version      (void)
 /*====================------------------------------------====================*/
 static void      o___INIT____________________o (void) {;}
 
-char       /*----: set all segments to defaults ------------------------------*/
-yKINE_init         (char a_type)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rc          =    0;
-   int      x_leg = 0;              /* iterator         */
-   int      x_seg = 0;              /* iterator         */
-   /*---(header)-------------------------*/
-   DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
-   yLOG_mute  ();
-   DEBUG_PROG   yLOG_unmute ();
-   /*---(set body)-----------------------*/
-   /*> kine_center       (0.0f, 0.0f);                                                <* 
-    *> kine_height       (segs_len [YKINE_TIBI]);                                           <* 
-    *> kine_pivot        (0.0f, 0.0f);                                                <* 
-    *> kine_attitude     (0.0f, 0.0f, 0.0f);                                          <*/
-   /*---(clean legs)---------------------*/
-   for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
-      for (x_seg = 0; x_seg < YKINE_MAX_SEGS; ++x_seg) {
-         yKINE__clear ( &(fk [x_leg][x_seg]), "fk", x_leg, x_seg, a_type);
-         yKINE__clear ( &(ik [x_leg][x_seg]), "ik", x_leg, x_seg, a_type);
-         yKINE__clear ( &(gk [x_leg][x_seg]), "gk", x_leg, x_seg, a_type);
-      }
-   }
-   myKINE.s_height = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
-   rc = ykine_servo_init ();
-   DEBUG_YKINE  yLOG_value   ("servo"     , rc);
-   rc = ykine_scrp_begin ();
-   DEBUG_YKINE  yLOG_value   ("scrp"      , rc);
-   rc = yPARSE_init      (YPARSE_NOAUTO, ykine_scrp_popverb, YPARSE_REUSE);
-   DEBUG_YKINE  yLOG_value   ("yparse"    , rc);
-   rc = ykine_verb_init  ();
-   DEBUG_YKINE  yLOG_value   ("verb"      , rc);
-   rc = ykine_hint_init  ();
-   DEBUG_YKINE  yLOG_value   ("hint"      , rc);
-   rc = ykine_turtle_init    ();
-   DEBUG_YKINE  yLOG_value   ("turtle"    , rc);
-   ykine_stance_verify  ();
-   myKINE.s_pace  = YKINE_PACE;
-   yLOG_unmute ();
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
 char       /*----: set segment kimematics to defaults ------------------------*/
-yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type)
+ykine__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type)
 {
    /*---(defenses)-----------------------*/
    if (strlen(a_name) != 2)                   return -1;
@@ -145,6 +100,59 @@ yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_typ
    a_curr->p      =   'n';
    a_curr->m      =   'i';
    a_curr->c      =   'n';
+   return 0;
+}
+
+char
+yKINE_sizing            (char a_type)
+{
+   int      x_leg = 0;              /* iterator         */
+   int      x_seg = 0;              /* iterator         */
+   for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
+      for (x_seg = 0; x_seg < YKINE_MAX_SEGS; ++x_seg) {
+         ykine__clear ( &(fk [x_leg][x_seg]), "fk", x_leg, x_seg, a_type);
+         ykine__clear ( &(ik [x_leg][x_seg]), "ik", x_leg, x_seg, a_type);
+         ykine__clear ( &(gk [x_leg][x_seg]), "gk", x_leg, x_seg, a_type);
+      }
+   }
+}
+
+char       /*----: set all segments to defaults ------------------------------*/
+yKINE_init         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   int      x_leg = 0;              /* iterator         */
+   int      x_seg = 0;              /* iterator         */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
+   yLOG_mute  ();
+   DEBUG_PROG   yLOG_unmute ();
+   /*---(set body)-----------------------*/
+   /*> kine_center       (0.0f, 0.0f);                                                <* 
+    *> kine_height       (segs_len [YKINE_TIBI]);                                           <* 
+    *> kine_pivot        (0.0f, 0.0f);                                                <* 
+    *> kine_attitude     (0.0f, 0.0f, 0.0f);                                          <*/
+   /*---(clean legs)---------------------*/
+   yKINE_sizing (0);
+   myKINE.s_height = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
+   rc = ykine_servo_init ();
+   DEBUG_YKINE  yLOG_value   ("servo"     , rc);
+   rc = ykine_scrp_begin ();
+   DEBUG_YKINE  yLOG_value   ("scrp"      , rc);
+   rc = yPARSE_init      (YPARSE_NOAUTO, ykine_scrp_popverb, YPARSE_REUSE);
+   DEBUG_YKINE  yLOG_value   ("yparse"    , rc);
+   rc = ykine_verb_init  ();
+   DEBUG_YKINE  yLOG_value   ("verb"      , rc);
+   rc = ykine_hint_init  ();
+   DEBUG_YKINE  yLOG_value   ("hint"      , rc);
+   rc = ykine_turtle_init    ();
+   DEBUG_YKINE  yLOG_value   ("turtle"    , rc);
+   ykine_stance_verify  ();
+   myKINE.s_pace  = YKINE_PACE;
+   yLOG_unmute ();
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -189,7 +197,7 @@ static void      o___UNITTEST________________o (void) {;};
 char          ykine__unit_answer [ LEN_STR ];
 
 char*      /*----: unit testing accessor for clean validation interface ------*/
-yKINE__getter      (char *a_question, int a_leg,  int a_seg)
+ykine__getter      (char *a_question, int a_leg,  int a_seg)
 {
    float       x, z, y, e;
    /*---(defense)-----------------------------------------*/
@@ -283,26 +291,28 @@ yKINE__getter      (char *a_question, int a_leg,  int a_seg)
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
-yKINE__unit_quiet  (void)
+ykine__unit_quiet  (void)
 {
    char       *x_args [1]  = { "yKINE"      , ""        };
    yURG_logger (1, x_args);
    yURG_urgs   (1, x_args);
+   yKINE_init  ();
    return 0;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
-yKINE__unit_loud   (void)
+ykine__unit_loud   (void)
 {
    char       *x_args [9]  = { "yKINE_unit" , "@@kitchen", "@@ykine", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp", "@@ykine_move", "@@ykine_exact", "@@yparse" };
    yURG_logger (9, x_args);
    yURG_urgs   (9, x_args);
    DEBUG_YKINE  yLOG_info     ("yKINE" , yKINE_version   ());
+   yKINE_init  ();
    return 0;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
-yKINE__unit_end    (void)
+ykine__unit_end    (void)
 {
    yLOGS_end     ();
    return 0;

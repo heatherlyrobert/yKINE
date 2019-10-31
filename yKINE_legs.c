@@ -1062,11 +1062,11 @@ ykine_legs_partial      (char a_verb, char a_leg, char a_ik)
       switch (a_ik) {
       case 'e' :
          DEBUG_YKINE_EXACT   yLOG_note    ("ticker/progress so adapt");
-         rc = yKINE_inverse_adapt (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);
+         rc = yKINE_adapt   (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);
          break;
       case 's' :
          DEBUG_YKINE_EXACT   yLOG_note    ("script reading so do not adapt");
-         rc = yKINE_inverse       (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);
+         rc = yKINE_inverse (a_leg, myKINE.xc, myKINE.zc, myKINE.yc);
          break;
       }
       yKINE_angles   (a_leg, YKINE_IK, NULL, &myKINE.fc, &myKINE.pc, &myKINE.tc);

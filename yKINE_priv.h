@@ -50,9 +50,9 @@
 #define     P_DEPENDS   "none"
 
 #define     P_VERMAJOR  "1.--, working and advancing"
-#define     P_VERMINOR  "1.1-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2l"
-#define     P_VERTXT    "added stance verb and lightly unit tested it.  cleaned up stance functions."
+#define     P_VERMINOR  "1.2-, simplifying and combining verbs"
+#define     P_VERNUM    "1.2m"
+#define     P_VERTXT    "lots of work on documentation, not done, but advancing"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -353,35 +353,36 @@ extern tACCEL g_accel_info [10];
 
 
 
-/*---(setup)-----------------------------*/
-char        yKINE__setleg      (int a_num, int a_meth);
-char        yKINE__unsetleg    (void);
-char        yKINE__clear       (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type);
-/*---(shared forward/inverse)------------*/
-char        yKINE__thor        (void);
-char        yKINE__coxa        (void);
-char        yKINE__troc        (void);
-/*---(forward kinematics)----------------*/
-char        yKINE__femu        (float a_deg);
-char        yKINE__pate        (float a_deg);
-char        yKINE__tibi        (float a_deg);
-char        yKINE__lowr        (void);
-char        yKINE__FK_targ     (void);
-/*---(inverse kinematics)----------------*/
-char        yKINE__IK_targ     (float a_x, float a_z, float a_y);
-char        yKINE__IK_femu     (void);
-char        yKINE__IK_pate     (void);
-char        yKINE__IK_tibi     (void);
-/*---(shared forward/inverse)------------*/
-char        yKINE__meta        (void);
-char        yKINE__tars        (void);
-char        yKINE__foot        (void);
-/*---(unit testing)----------------------*/
-char        yKINE__setter      (char *a_request , int a_leg, int a_seg, float a_value);
-char*       yKINE__getter      (char *a_question, int a_leg, int a_seg);
-char        yKINE__unit_quiet  (void);
-char        yKINE__unit_loud   (void);
-char        yKINE__unit_end    (void);
+/*---(shared setup)-----+-----------+-----------+-----------+-----------+-----*/
+char        ykine__setleg           (int a_num, int a_meth);
+char        ykine__unsetleg         (void);
+char        ykine__clear            (tSEG *a_curr, char *a_name, int a_leg, int a_seg, char a_type);
+/*---(shared forward/inverse)-------+-----------+-----------+-----------+-----*/
+char        ykine__thor             (void);
+char        ykine__coxa             (void);
+char        ykine__troc             (void);
+/*---(forward kinematics)-----------+-----------+-----------+-----------+-----*/
+char        ykine__femu        (float a_deg);
+char        ykine__pate        (float a_deg);
+char        ykine__tibi        (float a_deg);
+char        ykine__lowr        (void);
+char        ykine__FK_targ     (void);
+/*---(inverse kinematics)-----------+-----------+-----------+-----------+-----*/
+char        ykine__IK_targ     (float a_x, float a_z, float a_y);
+char        ykine__IK_femu     (void);
+char        ykine__IK_pate     (void);
+char        ykine__IK_tibi     (void);
+/*---(shared forward/inverse)-------+-----------+-----------+-----------+-----*/
+char        ykine__meta        (void);
+char        ykine__tars        (void);
+char        ykine__foot        (void);
+/*---(unit testing)-----------------+-----------+-----------+-----------+-----*/
+char        ykine__setter      (char *a_request , int a_leg, int a_seg, float a_value);
+char*       ykine__getter      (char *a_question, int a_leg, int a_seg);
+char        ykine__unit_quiet  (void);
+char        ykine__unit_loud   (void);
+char        ykine__unit_end    (void);
+/*---(unit testing)-----------------+-----------+-----------+-----------+-----*/
 
 
 

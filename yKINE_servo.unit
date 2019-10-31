@@ -19,8 +19,7 @@ PREP          v21  include the prototype headers                              
 SCRP          v21  (SERVO ) verify servo targeting                                                                                                                                          ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    GROUP      v21  start with sides and ranks                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
@@ -152,7 +151,7 @@ SCRP          v21  (SERVO ) verify servo targeting                            
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.027))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -161,8 +160,7 @@ SCRP          v21  (SERVO ) verify servo targeting                            
 SCRP          v21  (SERVO ) verify servo finding                                                                                                                                            ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  check simple success                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  find index                           ykine_servo_find            YKINE_RR       , YKINE_FEMU                                                                           i_equal     0                                                                                                    
@@ -217,7 +215,7 @@ SCRP          v21  (SERVO ) verify servo finding                              
      exec     v21  find pointer                         ykine_servo_pointer         YKINE_RA       , YKINE_TIBI                                                                           p_exists    NULL                                                                                                 
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.012))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -226,8 +224,7 @@ SCRP          v21  (SERVO ) verify servo finding                              
 SCRP          v21  (SERVO ) verify servo selection                                                                                                                                          ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  check a middle leg                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  clear marks                          ykine_servo_prep                                                                                                                  i_equal     0                                                                                                    
@@ -242,7 +239,7 @@ SCRP          v21  (SERVO ) verify servo selection                            
      get      v21  check servos                         ykine__unit_servo           "servos"                                                                                              s_equal     SERVO servos   : __t __t __t __t __t __t ___ ___ ___ ___ ___ _                                       
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.012))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 

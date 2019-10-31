@@ -19,8 +19,7 @@ PREP          v21  include the prototype headers                              
 SCRP          v21  (SCRP  ) verify verb identification                                                                                                                                      ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  check simple success                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  clear everything                     ykine__scrp_prep                                                                                                                  i_equal     0                                                                                                    
@@ -53,7 +52,7 @@ SCRP          v21  (SCRP  ) verify verb identification                        
      get      v21  ...check verb                        ykine__unit_scrp            "verb"         , 0                                                                                    s_equal     SCRP verb      : ripetere  , targ c, from -                                                          
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -62,8 +61,7 @@ SCRP          v21  (SCRP  ) verify verb identification                        
 SCRP          v21  (SCRP  ) verify verb lookup by code                                                                                                                                      ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  create terse name holder             - - - - - - - - - - - - -   char   x_terse   [LEN_LABEL];                                                                                                                                                                 
      code     v21  create long name holder              - - - - - - - - - - - - -   char   x_full    [LEN_LABEL];                                                                                                                                                                 
      code     v21  create description holder            - - - - - - - - - - - - -   char   x_desc    [LEN_HUND ];                                                                                                                                                                 
@@ -110,7 +108,7 @@ SCRP          v21  (SCRP  ) verify verb lookup by code                        
      echo     v21  ...check full                        - - - - - - - - - - - - -   x_full                                                                                                s_equal     error_body                                                                                           
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -119,8 +117,7 @@ SCRP          v21  (SCRP  ) verify verb lookup by code                        
 SCRP          v21  (SCRP  ) verify script line parsing                                                                                                                                      ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
    GROUP      v21  start with sides and ranks                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -279,7 +276,7 @@ SCRP          v21  (SCRP  ) verify script line parsing                        
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -289,8 +286,7 @@ SCRP          v21  (SCRP  ) verify script line parsing                        
 SCRP          v21  (SCRP  ) verify return processing on body                                                                                                                                ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
    GROUP      v21  create a prefix                                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -477,7 +473,7 @@ SCRP          v21  (SCRP  ) verify return processing on body                  
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -486,8 +482,7 @@ SCRP          v21  (SCRP  ) verify return processing on body                  
 SCRP          v21  (SCRP  ) verify creation of passage and section hints              ykine_hint__new                                                                                       ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  check the saved data                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      get      v21  ... check passage/section            ykine__unit_scrp            "passage"      , 0                                                                                    s_equal     SCRP passage   :  1/ 1 a a  0 inizio             0.0                                                 
@@ -680,7 +675,7 @@ SCRP          v21  (SCRP  ) verify creation of passage and section hints      
      get      v21  ... check passage/section            ykine__unit_scrp            "passage"      , 56                                                                                   s_equal     SCRP passage   : --/-- - - -- --------------- ----.-                                                 
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -689,8 +684,7 @@ SCRP          v21  (SCRP  ) verify creation of passage and section hints      
 SCRP          v21  (SCRP  ) verify sequential lookup of passages and sections         yKINE_section                                                                                         ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  create variables                     - - - - - - - - - - - - -   char   x_major;                                                                                                                                                                               
      code     v21  create variables                     - - - - - - - - - - - - -   char   x_minor;                                                                                                                                                                               
      code     v21  create variables                     - - - - - - - - - - - - -   int    x_line;                                                                                                                                                                                
@@ -869,7 +863,7 @@ SCRP          v21  (SCRP  ) verify sequential lookup of passages and sections 
      echo     v21  ...check secs                        - - - - - - - - - - - - -   x_sec                                                                                                 r_norm93    22.000                                                                                               
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -878,8 +872,7 @@ SCRP          v21  (SCRP  ) verify sequential lookup of passages and sections 
 SCRP          v21  (SCRP  ) verify passages and sections                              ykine_scrp_section                                                                                    ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
    COND       v21  check the saved data                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -1055,7 +1048,7 @@ SCRP          v21  (SCRP  ) verify passages and sections                      
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 

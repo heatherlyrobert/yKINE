@@ -1,78 +1,265 @@
-.TH yKINE 3 2009-Jul "linux" "heatherly custom tools manual"
+.TH yKINE 3 2009-07 "linux" "heatherly custom tools manual"
 
 .SH NAME
-.BI yKINE
-\- shared, consistent, and reliable spider kinematics/scripting
+.B yKINE
+\- shared, consistent, and reliable spider kinematics
+
+.SH PATRON
+.B typhoeus-terrigena
+(earth-born), king of all the greek the monsters
+
+.SH IMAGERY (see HERITAGE at bottom for more)
+winged giant with a hundred dragon heads and countless viper tentacles
 
 .SH SUMMARY
 .BI yKINE
-is a consistent, shared, full-featured, and reliable spider
-kinematics and scripting library designed around the lynxmotion CH3-R hexapod
-which will free all other applications from this detailed work.
+is a specialized, experimental, full-featured, and reliable spider kinematics
+and scripting library designed to isolate the detailed mathmatics
+from visualization, tactics, and strategy.
 
+.SH DOCUMENTATION FILES
+.nf
+yKINE (3)  ** interfacing applications with yKINE (you are here)
+.nf
+yKINE (5)     structure of the kinematics scripting file
+.nf
+yKINE (7)     decision rationale, objectives, and overview
 
-.SH SCRIPTING
-the purpose of scripting is to provide condensed, human maintainable input
-that can translate into detailed actions in the system.
+.SH TABLE OF CONTENTS
+.nf
+synopsis      itemizes the function calls available
+.nf
+standards     itemizes the constants to be used
+.nf
+program       overall functions
+.nf
+leg data      retrieving leg master data
+.nf
+segment data  retrieving segment master data
+.nf
+calculations  calling kinematic calculations
+.nf
+details       retrieving calculation results
+.nf
+scripting     calling script reading and parsing
+.nf
+interaction   for data to drive modeling and visualization
+.nf
+conversion    useful, related data conversion functions
 
-.B file formatting
-   -- pure ascii text file, 7-bit safe
-   -- eight fields per record
+.SH SYNOPSIS
+.nf
+.B #include  <yKINE.h>
+.sp
+---(program level)-----------------------------
+.BI "char*   yKINE_version   (void);"
+.BI "char    yKINE_init      (void);"
+.BI "char    yKINE_sizing    (char  " "type " ");"
+.sp
+---(leg standards)-----------------------------
+.BI "char*   yKINE_legtwo    (char  " "leg  " ");"
+.BI "char*   yKINE_legcaps   (char  " "leg  " ");"
+.BI "char*   yKINE_legfull   (char  " "leg  " ");"
+.BI "float   yKINE_legdeg    (char  " "leg  " ");"
+.sp
+---(segment standards)-------------------------
+.BI "char*   yKINE_segfour   (char  " "seg  " ");"
+.BI "char*   yKINE_segcaps   (char  " "seg  " ");"
+.BI "char*   yKINE_segfull   (char  " "seg  " ");"
+.BI "float   yKINE_seglen    (char  " "seg  " ");"
+.BI "float   yKINE_segmin    (char  " "seg  " ");"
+.BI "float   yKINE_segattn   (char  " "seg  " ");"
+.BI "float   yKINE_segmax    (char  " "seg  " ");"
+.sp
+---(calculation)-------------------------------
+.BI "char    yKINE_zero      (float " "x    " ", float " "z    " ", float " "y    " ");"
+.BI "char    yKINE_orient    (float " "yaw  " ", float " "pitch" ", float " "roll " ");"
+.BI "char    yKINE_forward   (char  " "leg  " ", float " "femu " ", float " "pate " ", float " "tibi " ");"
+.BI "char    yKINE_inverse   (char  " "leg  " ", float " "x    " ", float " "z    " ", float " "y    " ");"
+.BI "char    yKINE_adapt     (char  " "leg  " ", float " "x    " ", float " "z    " ", float " "y    " ");"
+.sp
+---(details)-----------------------------------
+.BI "char    yKINE_endpoint  (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
+.BI "char    yKINE_enddiff   (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
+.BI "char    yKINE_segment   (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
+.BI "char    yKINE_segdiff   (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
+.BI "char    yKINE_angle     (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
+.BI "char    yKINE_angles    (char  " "leg  " ", char  " "meth " ", float " "coxa " ", ...);"
+.sp
+---(scripting)---------------------------------
+.BI "char    yKINE_script    (float *" "len  " ");"
+.sp
+---(interaction)-------------------------------
+.BI "char    yKINE_exact_all (float " "sec  " ");"
+.BI "char    yKINE_exact_leg (char  " "leg  " ", float " "margn" ", float *" "exact" ", ...);"
+.BI "char    yKINE_opengl    (char  " "leg  " ", char  " "seg  " ", float " "deg  " ", ...);"
+.sp
+---(conversion)--------------------------------
+.BI "char    yKINE_xz2hex    (float " "x" ", float " "z" ", float *" "r" ", float *" "c" ");"
+.BI "char    yKINE_hex2xz    (float " "r" ", float " "c" ", float *" "x" ", float *" "z" ");"
+.sp
 
-.B record formatting
-   -- eight fields
-   -- separated by standard ascii field separator character
-   -- fields are standard width to make editing easier
-   1) verb
-   2) version
-   3) servos
-   8) arguments
+.SH STANDARDS
 
-.B servo references
-    FORMAT     sp.segn
-    s (side)   L=left  , R=right ,           a=all   , +=large , -=small
-    p (pos)    F=front , M=middle, R=rear  , a=all   , +=large , -=small
-    segment    thor = thorax     , coxa = coxa       , troc = trocanter  
-               femu = femur      , pate = patella    , tibi = tibia
-               meta = metatarsus , tars = tarsus     , foot = foot
-               claw = claw       , magn = magnet     , hook = hook
-    examples   LF.femu    = left-front leg's femur
-               aF.femu    = femur on both front legs
-               La.femu    = femurs on the left side
-               aa.femu    = all femurs
-               -F.femu    = femurs on the front small legs
-               +F.femu    = femurs on the front large legs
-               L-.femu    = femurs on the left small legs
-               L+.femu    = femurs on the left large legs
-               ++.femu    = femurs on all large legs
-               --.femu    = femurs on all small legs
+.SS body constants
+  YKINE_FOCU    focus
+  YKINE_CORE    core
 
-.B absolute servo position setting
-   INIT       -b-  aa.femu    0.50  -85.0      -      -  -    
-   servo      -b-  aa.femu    0.50  -85.0      -      -  -    
+.SS leg constants
+  YKINE_RR      right rear
+  YKINE_RM      right middle
+  YKINE_RF      right front
+  YKINE_LF      left front
+  YKINE_LM      left middle
+  YKINE_LR      left rear
+  YKINE_RP      right posterior
+  YKINE_RA      right anterior
+  YKINE_RA      left anterior
+  YKINE_RP      left posterior
 
-.B relative servo position setting
-   forward    -a-  aa         0.00    0.0    0.0   90.0  -    
+.SS leg segment constants
+  YKINE_THOR    thorax          fixed position for spacing
+  YKINE_COXA    coxa            fixed position for spacing
+  YKINE_TROC    trocanter       [future expansion]
+  YKINE_FEMU    femur           horizontal movement
+  YKINE_PATE    patella         vertical (with tibia)
+  YKINE_TIBI    tibia           vertical (with patella)
+  YKINE_META    metatarsus      [future expansion]
+  YKINE_TARS    tarsus          [future expansion]
+  YKINE_FOOT    foot            always perpendicular to ground
+  YKINE_CLAW    claw            [future expansion]
+  YKINE_MAGN    magnet          [future expansion]
+  YKINE_HOOK    hook            [future expansion]
 
-.B inverse kinematics
-   ik_pure    -a-  LF.full    0.50  -20.0    0.0   30.0  -    
+.SS method constants
+  YKINE_FK      forward
+  YKINE_IK      inverse
+  YKINE_GK      opengl (actuals)
 
-.B repeats
-   SEGNO      -a-  aa.pate       -      -      -      -  -    
-   DAL SEGNO  -b-  aa.pate       7      -      -      -  -    
-   REPEAT     -b-  aa.tibi       7     10      -      -  -    
+.SH PROGRAM LEVEL FUNCTIONS
 
-.B zero-point (center) adjustments
-   ze_pure    -a-  aa         0.00    0.0    0.0   90.0  -    
-   ze_from    -a-  aa         0.00    0.0    0.0   90.0  -    
+.B yKINE_version, 
+returns string of latest version and comment
 
+.B yKINE_init, 
+initializes and clears environment
 
-.B inverse kinematics
-   inverse     same as ik_pure (simple for automated scripting)
-   ik_pure     establish single leg servo positions from tibia endpoint
-   ik_from     use relative tibia endpoint numbers to the last saved position
-   ik_save     save the last tibia endpoint for future manipulation
+.B yKINE_sizing, 
+sets segment sizing (0 = std, > 0 experiments)
 
+.SH STANDARD LEG DATA
+all these functions return leg master data for use in label and annotation.
+they all accept a single argument, the leg name.
+
+.B yKINE_legfull,
+returns full name for leg, e.g. "right rear"
+
+.B yKINE_legtwo, 
+returns abbr for leg, e.g. "rr" for right-rear
+
+.B yKINE_legcaps, 
+returns abbr for leg, e.g. "RR" for right-rear
+
+.B yKINE_legdeg,
+returns attachment degree, e.g. 60Ì for right-front
+
+.SH STANDARD SEGMENT DATA
+all these functions return leg segment master data for use in label and
+annotation.  they all accept a single argument, the segment name.
+
+.B yKINE_segfull,
+returns full name for segment, e.g. "tibia"
+
+.B yKINE_segfour,
+returns abbr for segment, e.g. "tibi"
+
+.B yKINE_segcaps,
+returns abbr for segment, e.g. "TIBI"
+
+.B yKINE_seglen,
+returns length of segment, e.g. 133.4mm for tibia
+
+.B yKINE_segmin,
+returns min position of segment, e.g. -40Ì for tibia
+
+.B yKINE_segattn,
+returns attn deg of segment, e.g. 0Ì for tibia
+
+.B yKINE_segmax,
+returns max position of segment, e.g. 80Ì for tibia
+
+.SH CALCULATIONS
+
+.B yKINE_zero (x, z, y),
+forces a body center position for use in inverse kinematics if you call
+yKINE_adapt.
+
+.B yKINE_orient (yaw, pitch, roll),
+forces a body orientation for use in inverse kinematics if you call
+yKINE_adapt.
+
+.B yKINE_forward (leg, femur, patella, tibia),
+performs forward kinematics using the three main joint angles
+
+.B yKINE_inverse (leg, x, z, y),
+performs inverse kinematics using x, z, and y of the foot end position
+
+.B yKINE_adapt (leg, x, z, y),
+performs inverse kinematics, but takes zero point and orient of the body
+into account
+
+.SH DETAILS OF KINEMATICS
+each function requires a "meth" argument from the method constands above.
+d is degree, l is length, xz is length in xz plane.
+
+.B yKINE_endpoint (leg, seg, meth, &d, &l, &x, &z, &y, &xz),
+returns the final endpoint for a len/segment combination
+
+.B yKINE_segment  (leg, seg, meth, &d, &l, &x, &z, &y, &xz),
+returns the segment-only data for a len/segment combination
+
+.B yKINE_angles   (leg, meth, &coxa, &femu, &pate, &tibi),
+returns each of the leg angles
+
+.B yKINE_angle    (leg, meth, &d, &cd, &l, &ch, &cv, &fh, &fv),
+returns all the detailed angle information (TESTING/DEBUGGING)
+
+.B yKINE_enddiff  (leg, seg, meth, &d, &l, &x, &z, &y),
+returns the endpoint difference from the opengl values (DEBUGGING)
+
+.B yKINE_segdiff  (leg, seg, meth, &d, &l, &x, &z, &y),
+returns the segment-only difference from the opengl values (DEBUGGING)
+
+.SH INTEGRATION DETAILS
+these functions allow access to data for specific points in time, allowing
+modeling, visualization, and simulation.  in opengl f,p,t are femu, pate,
+and tibi angles and args ending in r are revised after zero/orient.
+
+.B yKINE_exact_all (sec),
+prepare all servos to provide data for an exact point in time
+
+.B yKINE_exact_leg (leg, margin, &exact, &label, &cell, &f, &p, &t, &x, &z, &y, &fr, &pr, &tr, &xr, &zr, &yr),
+all angles and positions
+
+.B yKINE_opengl   (leg, seg, deg, x, z, y, len),
+record actual opengl position to compare with kinematics (TESTING)
+
+.SH CONVERSION HELPERS
+converts from millimeter mesurements to and one-inch hex grid for use in
+spider visualization programs.
+
+.B yKINE_xz2hex (x, z, &row, &col),
+converts from normal 2d to hex grid
+
+.B yKINE_hex2xz (row, col, &x, &z),
+converts from hex grid to normal 2d
+
+.SH AUTHOR
+jelloshrike at gmail dot com
+
+.SH COLOPHON
+this page is part of a documentation package meant to make use of the
+heatherly tools easier and faster.
 
 
 

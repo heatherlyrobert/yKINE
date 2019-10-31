@@ -2,6 +2,19 @@
 #include    "yKINE.h"
 #include    "yKINE_priv.h"
 
+
+
+/*===[[ METIS ]]==============================================================*/
+/*
+ * metis  dm8··  stance changes must use a step to reposition the foot
+ * metis  dn4··  hex/xz conversions are making arachne footprints wrong
+ *
+ *
+ *
+ */
+
+
+
 #define   MAX_SPREADS    30
 typedef struct cSPREAD  tSPREAD;
 struct  cSPREAD {

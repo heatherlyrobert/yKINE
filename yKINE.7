@@ -1,0 +1,176 @@
+.TH yKINE 7 2009-07 "linux" "heatherly custom tools manual"
+
+.SH NAME
+.B yKINE
+\- shared, consistent, and reliable spider kinematics
+
+.SH PATRON
+.B typhoeus-terrigena
+(earth-born), king of all the greek the monsters
+
+.SH IMAGERY (see HERITAGE is man (7) for more)
+winged giant with a hundred dragon heads and countless viper tentacles
+
+.SH SUMMARY
+.BI yKINE
+is a specialized, experimental, full-featured, and reliable spider kinematics
+and scripting library designed to isolate the detailed mathmatics
+from visualization, tactics, and strategy.
+
+.SH DOCUMENTATION FILES
+.nf
+yKINE (3)     interfacing applications with yKINE
+.nf
+yKINE (5)     structure of the kinematics scripting file
+.nf
+yKINE (7)  ** decision rationale, objectives, and overview (you are here)
+
+.SH TABLE OF CONTENTS
+.nf
+definition    what is the subject matter
+.nf
+focus         what are the broad scope boundaries
+.nf
+why           why would you do this
+.nf
+situation     present state of capability
+.nf
+complication  what concerns me
+.nf
+problem       what i need to address
+.nf
+answer        what i will do
+.nf
+target user   who will use this code
+.nf
+standards     requirements for all my applications
+.nf
+accepted      requirements that i expect to deliver
+.nf
+rejected      requirements for another place, or nowhere
+
+.SH DEFINITION OF CONCEPT (D)
+.B kinematics
+, also known as the geometry of motion, is the mathmatics and mechanics
+behind the movement of points, objects, and systems without any respect to forces
+or resistance of any kind.
+.B dynamics
+is the complementary study of those forces working on and against motion and
+.B statics
+is the complementary study of loads and pressures.
+
+.SH FOCUS/SCOPE (F)
+.B working spiders
+are my very specific focus.  these spiders are expected to
+be strong, resilient, flexible, and redundantly constructed.
+
+i have chosen to implement
+.B full radial symmetry
+and
+.B interchangeable limbs.
+this means there is no true head, tail, front, or back.
+
+the exact number and design of limbs will be variable.  initial designs are
+for
+.B ten legs in two rings
+-- six in the main/outer and four on the inner.
+
+in the center of the spider will be a
+.B powerful beak
+for holding tools vertially, such as routers, drills, soldering irons, etc.
+
+additionally, the spider is expected to have many movable and stationary
+sensors.
+
+.SH WHAT THE HELL (?)
+i am tackling this wickedly hard area because i need a solution to adapt to
+my goals rather than accepting the limitations and constraints placed on it
+by others.  many people have a perspective and architecture they view as right.
+i need to follow my own path.
+
+.SH SITUATION (S)
+there are a number of fantastic modeling and simulation environments available
+on various platforms -- ranging from spreadsheets to custom applications.
+some or wildly configurable and well tested.  these are perfect for most people.
+
+.SH COMPLICATION (C)
+these environments have very specific architectures and end-uses.  they also
+have product development paths and bug priorities that may not match my
+desires.  finally, they last only so long before a competitor wipes them out.
+
+.SH PROBLEM (P)
+no matter which solution i standardize on, it will limit my progress and i
+will have to migrate between solutions over time.  i will have no ability
+to experiment and have those ideas to become part of the solution.
+
+.SH ANSWER (A).  
+build a very focused kinematics library targeting only working spiders that
+emphasizes traceabilty, debugging, testing, and reliabilty.  this library will
+be one of my
+.B forever libraries
+that i can count on till the end-of-days.
+
+.SH TARGET USER (T).  
+me, myself, and i.
+
+.SH STANDARD REQUIREMENTS (#)
+.nf
+-- run on any linux box from raspberry to cray
+.nf
+-- stay focused, small, tight, reliable, and secure
+.nf
+-- forgo sloppy, kitchen-sink languages, like python, java, or perl
+.nf
+-- stay away from dependency on external code libraries, like boost
+.nf
+-- only human-readable, 7-bit safe, ascii streams (not database)
+.nf
+-- have dedicated, maintained, automated unit testing
+.nf
+-- provide either detailed reporting or logging for debugging
+.nf
+-- use secure communications between systems where required
+.nf
+-- clean, clean code so i can maintain after long absences
+.nf
+-- no international, multi-lang, multi-byte support (freaking ever)
+.nf
+-- one-hundred percent keyboard driven and centric
+.nf
+-- all tables must be self describing with labels and queries
+.nf
+-- all data structures must include dumps, reports, and audits
+
+.SH ACCEPTED REQUIREMENTS (a).  
+.nf
+-- kinematics calculations on spider legs
+.nf
+-- reading and interpreting standard movement scripts
+.nf
+-- smooth and steady movements using acceleration curves
+.nf
+-- stepping styles for feet
+.nf
+-- gaits to coordinate legs and body
+.nf
+-- body location and orientation
+.nf
+-- coortination of all parts using orchestra/sheet music concepts
+
+.SH REJECTED REQUIREMENTS (r).  
+.nf
+-- visualization (that is a front-end thing)
+.nf
+-- simulation (that is a front-end thing)
+.nf
+-- dynamics (forces and resistance) of any sort
+.nf
+-- statics (loads and pressures) of any sort
+
+.SH AUTHOR
+jelloshrike at gmail dot com
+
+.SH COLOPHON
+this page is part of a documentation package meant to make use of the
+heatherly tools easier and faster.
+

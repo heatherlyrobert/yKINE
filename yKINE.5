@@ -1,0 +1,101 @@
+.TH yKINE 5 2009-07 "linux" "heatherly custom tools manual"
+
+.SH NAME
+.B yKINE
+\- structure of the kinematics scripting file
+
+.SH PATRON
+.B typhoeus-terrigena
+(earth-born), king of all the greek the monsters
+
+.SH IMAGERY (see HERITAGE at bottom for more)
+winged giant with one-hundred dragon heads and viper coil tentacles
+
+.SH SUMMARY
+.BI yKINE
+is a specialized, experimental, full-featured, and reliable spider kinematics
+and scripting library designed to isolate the detailed mathmatics
+from visualization, tactics, and strategy.
+
+
+
+
+
+.SH SCRIPTING
+the purpose of scripting is to provide condensed, human maintainable input
+that can translate into detailed actions in the system.
+
+.B file formatting
+   -- pure ascii text file, 7-bit safe
+   -- eight fields per record
+
+.B record formatting
+   -- eight fields
+   -- separated by standard ascii field separator character
+   -- fields are standard width to make editing easier
+   1) verb
+   2) version
+   3) servos
+   8) arguments
+
+.B servo references
+    FORMAT     sp.segn
+    s (side)   L=left  , R=right ,           a=all   , +=large , -=small
+    p (pos)    F=front , M=middle, R=rear  , a=all   , +=large , -=small
+    segment    thor = thorax     , coxa = coxa       , troc = trocanter  
+               femu = femur      , pate = patella    , tibi = tibia
+               meta = metatarsus , tars = tarsus     , foot = foot
+               claw = claw       , magn = magnet     , hook = hook
+    examples   LF.femu    = left-front leg's femur
+               aF.femu    = femur on both front legs
+               La.femu    = femurs on the left side
+               aa.femu    = all femurs
+               -F.femu    = femurs on the front small legs
+               +F.femu    = femurs on the front large legs
+               L-.femu    = femurs on the left small legs
+               L+.femu    = femurs on the left large legs
+               ++.femu    = femurs on all large legs
+               --.femu    = femurs on all small legs
+
+.B absolute servo position setting
+   INIT       -b-  aa.femu    0.50  -85.0      -      -  -    
+   servo      -b-  aa.femu    0.50  -85.0      -      -  -    
+
+.B relative servo position setting
+   forward    -a-  aa         0.00    0.0    0.0   90.0  -    
+
+.B inverse kinematics
+   ik_pure    -a-  LF.full    0.50  -20.0    0.0   30.0  -    
+
+.B repeats
+   SEGNO      -a-  aa.pate       -      -      -      -  -    
+   DAL SEGNO  -b-  aa.pate       7      -      -      -  -    
+   REPEAT     -b-  aa.tibi       7     10      -      -  -    
+
+.B zero-point (center) adjustments
+   ze_pure    -a-  aa         0.00    0.0    0.0   90.0  -    
+   ze_from    -a-  aa         0.00    0.0    0.0   90.0  -    
+
+
+.B inverse kinematics
+   inverse     same as ik_pure (simple for automated scripting)
+   ik_pure     establish single leg servo positions from tibia endpoint
+   ik_from     use relative tibia endpoint numbers to the last saved position
+   ik_save     save the last tibia endpoint for future manipulation
+
+
+
+.SH SEE ALSO
+this documentation is layered to provide easier navigation.
+   yKINE (3), interfacing applications with yKINE
+   yKINE (5), structure of the kinematics scripting file
+   yKINE (7), decision rationale, objectives, and overview
+
+.SH AUTHOR
+jelloshrike at gmail dot com
+
+.SH COLOPHON
+this page is part of a documentation package meant to make use of the
+heatherly tools easier and faster.
+
+

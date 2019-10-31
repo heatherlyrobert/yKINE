@@ -19,8 +19,7 @@ PREP          v21  include the prototype headers                              
 SCRP          v21  (ACCEL ) verify identification of accelerated durations            ykine_accel_dur, ykine_accel__default                                                                 ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  check defenses                                                     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  run accel check                      ykine_accel_dur             NULL                                                                                                  i_lesser    0                                                                                                    
@@ -121,7 +120,7 @@ SCRP          v21  (ACCEL ) verify identification of accelerated durations    
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -130,8 +129,7 @@ SCRP          v21  (ACCEL ) verify identification of accelerated durations    
 SCRP          v21  (ACCEL ) verify calculations for accelerated intra-move points                                                                                                           ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  create a seconds variable            - - - - - - - - - - - - -   float   x_dist = 0.0;                                                                                                                                                                        
 
    GROUP      v21  check the defenses                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -932,7 +930,7 @@ SCRP          v21  (ACCEL ) verify calculations for accelerated intra-move poi
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -941,8 +939,7 @@ SCRP          v21  (ACCEL ) verify calculations for accelerated intra-move poi
 SCRP          v21  (ACCEL ) verify calculations for accelerated exact moves                                                                                                                 ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
 
    COND       v21  normal run                                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  clear values                         ykine_accel__clear                                                                                                                i_equal     0                                                                                                    
@@ -985,7 +982,7 @@ SCRP          v21  (ACCEL ) verify calculations for accelerated exact moves   
      get      v21  ...check percentages                 ykine_accel__unit           "cums"         , -1                                                                                   s_equal     ACCEL cums     : 0.07 0.21 0.79 -.-- -.-- -.-- -.-- 0.93 1.00 -.--                                   
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -994,8 +991,7 @@ SCRP          v21  (ACCEL ) verify calculations for accelerated exact moves   
 SCRP          v21  (ACCEL ) verify leg move entries for accelerated style                                                                                                                   ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  simplify pace for testing            - - - - - - - - - - - - -   myKINE.s_pace = 1.0;                                                                                                                                                                                                       
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
@@ -1204,7 +1200,7 @@ SCRP          v21  (ACCEL ) verify leg move entries for accelerated style     
      get      v21  check expected detail                ykine__unit_move            "accel"        , YKINE_RM, YKINE_TIBI, 23                                                             s_equal     MOVE accel     :      -.-s      -.-d      -.-x      -.-z      -.-y      -.-l                         
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -1213,8 +1209,7 @@ SCRP          v21  (ACCEL ) verify leg move entries for accelerated style     
 SCRP          v21  (ACCEL ) verify radial leg move entries for accelerated style                                                                                                            ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  simplify pace for testing            - - - - - - - - - - - - -   myKINE.s_pace = 1.0;                                                                                                                                                                                                       
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
@@ -1287,7 +1282,7 @@ SCRP          v21  (ACCEL ) verify radial leg move entries for accelerated sty
 
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -1296,8 +1291,7 @@ SCRP          v21  (ACCEL ) verify radial leg move entries for accelerated sty
 SCRP          v21  (ACCEL ) verify zero point entries for accelerated style                                                                                                                 ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  simplify pace for testing            - - - - - - - - - - - - -   myKINE.s_pace = 1.0;                                                                                                                                                                                                       
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
@@ -1406,7 +1400,7 @@ SCRP          v21  (ACCEL ) verify zero point entries for accelerated style   
      get      v21  check expected detail                ykine__unit_move            "accel"        , YKINE_BODY, YKINE_FOCU, 19                                                           s_equal     MOVE accel     :      -.-s      -.-d      -.-x      -.-z      -.-y      -.-l                         
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 
@@ -1415,8 +1409,7 @@ SCRP          v21  (ACCEL ) verify zero point entries for accelerated style   
 SCRP          v21  (ACCEL ) verify orientation entries for accelerated style                                                                                                                ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     set      v21  start testing                        yKINE__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  run init                             yKINE_init                  '0'                                                                                                   i_equal     0                                                                                                    
+     set      v21  start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
      code     v21  simplify pace for testing            - - - - - - - - - - - - -   myKINE.s_pace = 1.0;                                                                                                                                                                                                       
      exec     v21  open stdin for reading               yPARSE_stdin                                                                                                                      i_equal     0                                                                                                    
 
@@ -1570,7 +1563,7 @@ SCRP          v21  (ACCEL ) verify orientation entries for accelerated style  
 
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-     exec     v21  stop testing                         yKINE__unit_end                                                                                                                   i_equal     0                                                                                                    
+     exec     v21  stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
 
 
 

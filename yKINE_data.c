@@ -285,7 +285,7 @@ yKINE__setlen      (
 }
 
 char       /*----: unit testing setter for unit testing ----------------------*/
-yKINE__setter      (char *a_request, int a_leg, int a_seg, float a_value)
+ykine__setter      (char *a_request, int a_leg, int a_seg, float a_value)
 {
    char        rce         = -11;
    /*---(defense)-----------------------------------------*/

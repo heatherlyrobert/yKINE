@@ -415,15 +415,16 @@
 #define     YKINE_OPOLAR      'z'
 #define     YKINE_MAX         'm'
 
-char*       yKINE_version      (void);
-char        yKINE_init         (char a_type);
+char*       yKINE_version           (void);
+char        yKINE_init              (void);
+char        yKINE_sizing            (char a_type);
 
 char        yKINE_zero              (float a_x, float a_z, float a_y);
 char        yKINE_orient            (float a_yaw, float a_pitch, float a_roll);
-char        yKINE_forward           (int a_leg, float a_femu, float a_pate, float a_tibi);
-char        yKINE_inverse           (int a_leg, float a_x, float a_z, float a_y);
-char        yKINE_inverse_adapt     (int a_leg, float a_x, float a_z, float a_y);
-char        yKINE_opengl            (int a_leg, int a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len);
+char        yKINE_forward           (char  a_leg, float a_femu, float a_pate, float a_tibi);
+char        yKINE_inverse           (char  a_leg, float a_x, float a_z, float a_y);
+char        yKINE_adapt             (char  a_leg, float a_x, float a_z, float a_y);
+char        yKINE_opengl            (char  a_leg, char  a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len);
 
 /*---(static data accessors)----------*/
 char*       yKINE_legtwo            (char a_leg);
@@ -439,11 +440,11 @@ float       yKINE_segattn           (char a_seg);
 float       yKINE_segmax            (char a_seg);
 
 /*---(dynamic datae accessors)--------*/
-char        yKINE_endpoint          (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz);
-char        yKINE_segment           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz);
+char        yKINE_endpoint          (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz);
+char        yKINE_segment           (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y, float *a_xz);
 char        yKINE_angle             (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_cd, float *a_len, float *a_cv, float *a_ch, float *a_fv, float *a_fh);
-char        yKINE_enddiff           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
-char        yKINE_segdiff           (char a_leg, char a_seg, int a_type, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
+char        yKINE_enddiff           (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
+char        yKINE_segdiff           (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_len, float *a_x, float *a_z, float *a_y);
 char        yKINE_angles            (char a_leg, char a_meth, float *a_coxa, float *a_femu, float *a_pate, float *a_tibi);
 
 
