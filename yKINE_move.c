@@ -845,14 +845,14 @@ yKINE_move_cursor        (char a_dir, char a_leg, char a_seg, float *s, float *d
 }
 
 char         /*--> retrieve the first move ---------------[ ------ [ ------ ]-*/
-yKINE_move_last_servo    (int a_servo, float *s, float *d)
+yKINE_move_tail         (int a_servo, float *s, float *d)
 {
    if (a_servo < 0 || a_servo >= g_nservo)  return -1; 
    return yKINE_move_cursor (YKINE_TAIL, g_servo_info [a_servo].leg, g_servo_info [a_servo].seg, s, d);
 }
 
 char         /*--> retrieve data about current -----------[ ------ [ ------ ]-*/
-yKINE_move_curdata       (double *a_x, double *a_z, double *a_y)
+ykine_move_curdata       (double *a_x, double *a_z, double *a_y)
 {
    if (s_curr == NULL)   return -1;
    if (a_x != NULL)  *a_x = s_curr->x_pos;
@@ -861,77 +861,77 @@ yKINE_move_curdata       (double *a_x, double *a_z, double *a_y)
    return 0;
 }
 
-char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
-yKINE_servo_deg          (int a_leg, int a_seg, float *a_deg)
-{
-   tSERVO     *x_servo     = NULL;
-   double      x_deg       = 0.0;
-   /*> if (a_leg < YKINE_BODY || a_leg > YKINE_LR  )  return -1;                      <* 
-    *> if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;                      <*/
-   x_servo = ykine_servo_pointer (a_leg, a_seg);
-   if (x_servo->curr == NULL) {
-      if (a_seg == YKINE_FEMU)  x_deg  =  0.0;
-      if (a_seg == YKINE_PATE)  x_deg  =  0.0;
-      if (a_seg == YKINE_TIBI)  x_deg  =  0.0;
-      if (a_deg       != NULL)  *a_deg = x_deg;
-      return -1;
-   }
-   if (a_deg       != NULL)  *a_deg = x_servo->deg;
-   if (x_servo->exact == 'y')  return 1;
-   return 0;
-}
+/*> char         /+--> get the current deg for servo ---------[ ------ [ ------ ]-+/            <* 
+ *> yKINE_servo_deg          (int a_leg, int a_seg, float *a_deg)                               <* 
+ *> {                                                                                           <* 
+ *>    tSERVO     *x_servo     = NULL;                                                          <* 
+ *>    double      x_deg       = 0.0;                                                           <* 
+ *>    /+> if (a_leg < YKINE_BODY || a_leg > YKINE_LR  )  return -1;                      <*    <* 
+ *>     *> if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;                      <+/   <* 
+ *>    x_servo = ykine_servo_pointer (a_leg, a_seg);                                            <* 
+ *>    if (x_servo->curr == NULL) {                                                             <* 
+ *>       if (a_seg == YKINE_FEMU)  x_deg  =  0.0;                                              <* 
+ *>       if (a_seg == YKINE_PATE)  x_deg  =  0.0;                                              <* 
+ *>       if (a_seg == YKINE_TIBI)  x_deg  =  0.0;                                              <* 
+ *>       if (a_deg       != NULL)  *a_deg = x_deg;                                             <* 
+ *>       return -1;                                                                            <* 
+ *>    }                                                                                        <* 
+ *>    if (a_deg       != NULL)  *a_deg = x_servo->deg;                                         <* 
+ *>    if (x_servo->exact == 'y')  return 1;                                                    <* 
+ *>    return 0;                                                                                <* 
+ *> }                                                                                           <*/
 
-char         /*--> get the current details for servo -----[ ------ [ ------ ]-*/
-yKINE_servo_move         (int a_leg, int a_seg, char *a_label, float *a_secb, float *a_sece, float *a_dur , float *a_degb, float *a_dege, int *a_seq , int *a_line)
-{
-   tSERVO     *x_servo     = NULL;
-   double      x_deg       = 0.0;
-   float       dp, sp;
-   if (a_leg < YKINE_RR   || a_leg > YKINE_LR  )  return -1;
-   if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;
-   x_servo = ykine_servo_pointer (a_leg, a_seg);
-   if (x_servo == NULL)  return -1;
-   ykine_move_savedprev  (x_servo->curr, &sp, &dp, NULL, NULL, NULL, NULL);
-   if (a_label     != NULL)  strlcpy (a_label, x_servo->curr->label, LEN_LABEL);
-   if (a_secb      != NULL)  *a_secb = sp;
-   if (a_sece      != NULL)  *a_sece = x_servo->curr->secs;
-   if (a_dur       != NULL)  *a_dur  = x_servo->curr->dur;
-   if (a_degb      != NULL)  *a_degb = dp;
-   if (a_dege      != NULL)  *a_dege = x_servo->curr->degs;
-   if (a_seq       != NULL)  *a_seq  = x_servo->curr->seq;
-   if (a_line      != NULL)  *a_line = x_servo->curr->line;
-   if (x_servo->exact == 'y')  return 1;
-   return 0;
-}
+/*> char         /+--> get the current details for servo -----[ ------ [ ------ ]-+/                                                                                      <* 
+ *> yKINE_servo_move         (int a_leg, int a_seg, char *a_label, float *a_secb, float *a_sece, float *a_dur , float *a_degb, float *a_dege, int *a_seq , int *a_line)   <* 
+ *> {                                                                                                                                                                     <* 
+ *>    tSERVO     *x_servo     = NULL;                                                                                                                                    <* 
+ *>    double      x_deg       = 0.0;                                                                                                                                     <* 
+ *>    float       dp, sp;                                                                                                                                                <* 
+ *>    if (a_leg < YKINE_RR   || a_leg > YKINE_LR  )  return -1;                                                                                                          <* 
+ *>    if (a_seg < YKINE_FEMU || a_seg > YKINE_TIBI)  return -2;                                                                                                          <* 
+ *>    x_servo = ykine_servo_pointer (a_leg, a_seg);                                                                                                                      <* 
+ *>    if (x_servo == NULL)  return -1;                                                                                                                                   <* 
+ *>    ykine_move_savedprev  (x_servo->curr, &sp, &dp, NULL, NULL, NULL, NULL);                                                                                           <* 
+ *>    if (a_label     != NULL)  strlcpy (a_label, x_servo->curr->label, LEN_LABEL);                                                                                      <* 
+ *>    if (a_secb      != NULL)  *a_secb = sp;                                                                                                                            <* 
+ *>    if (a_sece      != NULL)  *a_sece = x_servo->curr->secs;                                                                                                           <* 
+ *>    if (a_dur       != NULL)  *a_dur  = x_servo->curr->dur;                                                                                                            <* 
+ *>    if (a_degb      != NULL)  *a_degb = dp;                                                                                                                            <* 
+ *>    if (a_dege      != NULL)  *a_dege = x_servo->curr->degs;                                                                                                           <* 
+ *>    if (a_seq       != NULL)  *a_seq  = x_servo->curr->seq;                                                                                                            <* 
+ *>    if (a_line      != NULL)  *a_line = x_servo->curr->line;                                                                                                           <* 
+ *>    if (x_servo->exact == 'y')  return 1;                                                                                                                              <* 
+ *>    return 0;                                                                                                                                                          <* 
+ *> }                                                                                                                                                                     <*/
 
-char         /*--> get the current deg for servo ---------[ ------ [ ------ ]-*/
-yKINE_servo_line         (int a_leg, int a_seg, float *a_x1, float *a_z1, float *a_y1, float *a_x2, float *a_z2, float *a_y2)
-{
-   char        rce         =  -10;
-   tSERVO     *x_servo     = 0;
-   double      x_deg       = 0.0;
-   tMOVE      *x_curr      = NULL;
-   tMOVE      *x_prev      = NULL;
-   x_servo   = ykine_servo_pointer (a_leg, a_seg);
-   --rce;  if (x_servo == NULL)    return rce;
-   x_curr = x_servo->curr;
-   --rce;  if (x_curr  == NULL)    return rce;
-   x_prev = x_servo->curr->s_prev;
-   while  (x_prev != NULL) {
-      if (x_prev->type == YKINE_INIT )  break;
-      if (x_prev->type == YKINE_SERVO)  break;
-      if (x_prev->type == YKINE_WAIT )  break;
-      x_prev = x_prev->s_prev;
-   }
-   if (x_prev        == NULL)      return -4;
-   if (a_x1 != NULL)  *a_x1 = x_prev->x_pos;
-   if (a_z1 != NULL)  *a_z1 = x_prev->z_pos;
-   if (a_y1 != NULL)  *a_y1 = x_prev->y_pos;
-   if (a_x2 != NULL)  *a_x2 = x_curr->x_pos;
-   if (a_z2 != NULL)  *a_z2 = x_curr->z_pos;
-   if (a_y2 != NULL)  *a_y2 = x_curr->y_pos;
-   return 0;
-}
+/*> char         /+--> get the current deg for servo ---------[ ------ [ ------ ]-+/                                                <* 
+ *> yKINE_servo_line         (int a_leg, int a_seg, float *a_x1, float *a_z1, float *a_y1, float *a_x2, float *a_z2, float *a_y2)   <* 
+ *> {                                                                                                                               <* 
+ *>    char        rce         =  -10;                                                                                              <* 
+ *>    tSERVO     *x_servo     = 0;                                                                                                 <* 
+ *>    double      x_deg       = 0.0;                                                                                               <* 
+ *>    tMOVE      *x_curr      = NULL;                                                                                              <* 
+ *>    tMOVE      *x_prev      = NULL;                                                                                              <* 
+ *>    x_servo   = ykine_servo_pointer (a_leg, a_seg);                                                                              <* 
+ *>    --rce;  if (x_servo == NULL)    return rce;                                                                                  <* 
+ *>    x_curr = x_servo->curr;                                                                                                      <* 
+ *>    --rce;  if (x_curr  == NULL)    return rce;                                                                                  <* 
+ *>    x_prev = x_servo->curr->s_prev;                                                                                              <* 
+ *>    while  (x_prev != NULL) {                                                                                                    <* 
+ *>       if (x_prev->type == YKINE_INIT )  break;                                                                                  <* 
+ *>       if (x_prev->type == YKINE_SERVO)  break;                                                                                  <* 
+ *>       if (x_prev->type == YKINE_WAIT )  break;                                                                                  <* 
+ *>       x_prev = x_prev->s_prev;                                                                                                  <* 
+ *>    }                                                                                                                            <* 
+ *>    if (x_prev        == NULL)      return -4;                                                                                   <* 
+ *>    if (a_x1 != NULL)  *a_x1 = x_prev->x_pos;                                                                                    <* 
+ *>    if (a_z1 != NULL)  *a_z1 = x_prev->z_pos;                                                                                    <* 
+ *>    if (a_y1 != NULL)  *a_y1 = x_prev->y_pos;                                                                                    <* 
+ *>    if (a_x2 != NULL)  *a_x2 = x_curr->x_pos;                                                                                    <* 
+ *>    if (a_z2 != NULL)  *a_z2 = x_curr->z_pos;                                                                                    <* 
+ *>    if (a_y2 != NULL)  *a_y2 = x_curr->y_pos;                                                                                    <* 
+ *>    return 0;                                                                                                                    <* 
+ *> }                                                                                                                               <*/
 
 
 
@@ -941,7 +941,7 @@ yKINE_servo_line         (int a_leg, int a_seg, float *a_x1, float *a_z1, float 
 static void      o___REPORTS_________________o (void) {;}
 
 char
-yKINE_moves_rpt    (void)
+yKINE_move_rpt     (void)
 {
    int         i           =    0;
    int         j           =    0;

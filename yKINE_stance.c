@@ -298,13 +298,13 @@ ykine_stance_height_next (int *n, char *a_short)
    return ykine_stance_radius_next (n, a_short);
 }
 
-/*> float                                                                             <* 
- *> yKINE_height         (char *a_entry)                                              <* 
- *> {                                                                                 <* 
- *>    double     x_val;                                                              <* 
- *>    ykine_stance_height (YKINE_PURE, 0.0, a_entry, &x_val);                        <* 
- *>    return x_val;                                                                  <* 
- *> }                                                                                 <*/
+float
+yKINE_height         (char *a_entry)
+{
+   double     x_val;
+   ykine_stance_height (YKINE_PURE, 0.0, a_entry, &x_val);
+   return x_val;
+}
 
 
 
@@ -436,11 +436,12 @@ ykine_stance            (void)
    char       *x_two       [LEN_LABEL];
    char       *x_thr       [LEN_LABEL];
    char       *x_label     [LEN_LABEL];
+   char       *x_mods      [LEN_LABEL];
    char        x_recd      [LEN_RECD];
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(gather fields)---------------*/
-   rc = ykine_legs_prepare (x_one, x_two, x_thr, x_label);
+   rc = ykine_legs_prepare (x_one, x_two, x_thr, x_label, x_mods);
    DEBUG_YKINE_SCRP   yLOG_value   ("prepare"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -592,7 +593,7 @@ yKINE_verify_rc            (int a_row, int a_col)
 static void      o___HEXAGONAL_______________o (void) {;}
 
 char
-ykine__xz2hexdo         (float x, float z, int *c, int *r, float *d, float *o)
+yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
 {
    /*---(locals)-----------+-----+-----+-*/
    float       x_inch, xd, zd, fd, x_deg;
@@ -646,7 +647,7 @@ ykine__xz2hexdo         (float x, float z, int *c, int *r, float *d, float *o)
 char
 yKINE_xz2hex            (float x, float z, int *c, int *r)
 {
-   return ykine__xz2hexdo (x, z, c, r, NULL, NULL);
+   return yKINE_xz2hexdo (x, z, c, r, NULL, NULL);
 }
 
 char

@@ -71,6 +71,11 @@ conversion         useful, related data conversion functions
 .BI "float   yKINE_segattn   (char  " "seg  " ");"
 .BI "float   yKINE_segmax    (char  " "seg  " ");"
 .sp
+---(scale standards)---------------------------
+.BI "float   yKINE_radius    (char *" "entry" ");"
+.BI "float   yKINE_height    (char *" "entry" ");"
+.BI "float   yKINE_scale     (char *" "entry" ");"
+.sp
 ---(calculation)-------------------------------
 .BI "char    yKINE_zero      (float " "x    " ", float " "z    " ", float " "y    " ");"
 .BI "char    yKINE_orient    (float " "yaw  " ", float " "pitch" ", float " "roll " ");"
@@ -86,11 +91,15 @@ conversion         useful, related data conversion functions
 .BI "char    yKINE_angle     (char  " "leg  " ", char  " "seg  " ", char  " "meth " ", ...);"
 .BI "char    yKINE_angles    (char  " "leg  " ", char  " "meth " ", float " "coxa " ", ...);"
 .sp
----(zero position)-----------------------------
-.BI "char    yKINE_zero_head (float " "x    " ", float " "z    " ", float " "y    " ");"
+---(move cursoring)----------------------------
+.BI "char    yKINE_move_cursor  (char " "dir  " ", char " "leg" ", char " "seg" ", float *" "s" ", ...);"
+.BI "char    yKINE_move_tail    (int  " "servo" ", float *" "s" ", float *" "d" ");"
+.BI "char    yKINE_zero_cursor  (char " "dir  " ", float *" "s" ", float *" "x" ", float *" "z" ", ...);"
 .sp
 ---(scripting)---------------------------------
-.BI "char    yKINE_script    (float *" "len  " ");"
+.BI "char    yKINE_script       (float *" "len  " ");"
+.BI "char    yKINE_moves_rpt    (void);"
+.BI "char    yKINE_sect_cursor  (char " "dir  " ", char " "leg" ", char " "seg" ", float *" "s" ", ...);"
 .sp
 ---(interaction)-------------------------------
 .BI "char    yKINE_exact_all (float " "sec  " ");"
@@ -100,6 +109,7 @@ conversion         useful, related data conversion functions
 ---(conversion)--------------------------------
 .BI "char    yKINE_xz2hex    (float " "x" ", float " "z" ", float *" "r" ", float *" "c" ");"
 .BI "char    yKINE_hex2xz    (float " "r" ", float " "c" ", float *" "x" ", float *" "z" ");"
+.BI "char    yKINE_xz2hexdo  (float " "x" ", float " "z" ", float *" "r" ", float *" "c" ", ...);"
 .sp
 
 .SH STANDARDS
@@ -191,6 +201,18 @@ returns attn deg of segment, e.g. 0Ì for tibia
 .B yKINE_segmax,
 returns max position of segment, e.g. 80Ì for tibia
 
+.SH STANDARD SCALE DATA
+these functions are mostly for annotating moves.
+
+.B yKINE_radius  (<str>),
+returns dist (xz) for entry
+
+.B yKINE_hieight (<str>),
+returns height (y) for entry
+
+.B yKINE_scale   (<str>),
+returns dist for entry
+
 .SH CALCULATIONS
 
 .B yKINE_zero (x, z, y),
@@ -248,14 +270,22 @@ all angles and positions
 record actual opengl position to compare with kinematics (TESTING)
 
 .SH CONVERSION HELPERS
-converts from millimeter mesurements to and one-inch hex grid for use in
-spider visualization programs.
+converts from millimeter mesurements to and one-inch hex grid for use in spider
+visualization programs.  d is degree from center and o is distance from center.
 
 .B yKINE_xz2hex (x, z, &row, &col),
 converts from normal 2d to hex grid
 
 .B yKINE_hex2xz (row, col, &x, &z),
 converts from hex grid to normal 2d
+
+.B yKINE_xz2hexdo (x, z, &row, &col, &d, &o),
+xz2hex plus deg/out
+
+.SH TECHNICAL HELPERS
+
+.B yKINE_servo_which  (seq, &leg, &seg)
+
 
 .SH AUTHOR
 jelloshrike at gmail dot com

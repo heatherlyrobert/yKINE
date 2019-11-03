@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2n"
-#define     P_VERTXT    "simplified all the move cursoring logic and retested"
+#define     P_VERNUM    "1.2o"
+#define     P_VERTXT    "created step/seq input parsing logic and unit tested it"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -175,6 +175,11 @@ struct cLOCAL {
    float       db, sb, xb, zb, xzb, yb, ob, cb, fb, pb, tb;
    float       de, se, xe, ze, xze, ye, oe, ce, fe, pe, te, le;
    float       dc, sc, xc, zc, xzc, yc, oc, cc, fc, pc, tc, lc, pct;
+   int         step_s;
+   float       step_h;
+   char        step        [LEN_LABEL];     /* stepping specification         */
+   int         seq;
+   float       off;
    /*---(done)--------------*/
 };
 tLOCAL      myKINE;
@@ -425,7 +430,6 @@ char        ykine_hint_final        (float a_sec);
 char        ykine_hint_reset        (void);
 char        ykine_hint_wrap         (void);
 char        ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec);
-char        ykine_hint_list         (void);
 char        ykine_scrp_section      (void);
 
 char        ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y);
@@ -444,6 +448,7 @@ char        ykine_body_tilt         (void);
 /*---(shared)-------------------------*/
 char        ykine_legs_prepservos   (char a_verb);
 char        ykine_legs_get_prev     (int a_leg);
+char        ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label, char *a_mods);
 /*---(forward)------------------------*/
 char        ykine_legs_fk           (void);
 /*---(inverse)------------------------*/
@@ -483,9 +488,8 @@ char        ykine_scrp_exec         (void);
 char        ykine_servo_purge       (void);
 char        ykine_servo_init        (void);
 char        ykine_servo_prep        (void);
-int         ykine_servo_find        (int   a_leg, int a_seg);
 tSERVO*     ykine_servo_pointer     (int   a_leg, int a_seg);
-char        ykine_servo_unfocused   (int   a_leg, int a_seg);
+/*> char        ykine_servo_unfocused   (int   a_leg, int a_seg);                     <*/
 char        ykine_servo_side        (char  a_char);
 char        ykine_servo_rank        (char  a_char);
 char        ykine_servo_segment     (char *a_char);
@@ -521,6 +525,7 @@ char        ykine_move_clear_servo  (tSERVO *a_servo);
 char        ykine_move_savedtail     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char        ykine_move_savedcurr    (tMOVE  *a_move , float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
 char        ykine_move_savedprev    (tMOVE  *a_move , float *a_sec, float *a_deg, float *x, float *z, float *y, float *xz);
+char        ykine_move_curdata      (double *a_x, double *a_z, double *a_y);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
 char        ykine_gait_beg          (void);
@@ -571,6 +576,11 @@ char        ykine_stance_scale_next  (int *n, char *a_short);
 char        ykine_stance            (void);
 char        ykine_stance_verify     (void);
 
+char        ykine_step_init         (void);
+char        ykine_step_shape        (char *a_step);
+char        ykine_step_seq          (char *a_seq);
+char        ykine_stepping          (char *a_mods);
+char*       ykine_step__unit        (char *a_question, int a_num);
 
 
 

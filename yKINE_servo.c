@@ -135,8 +135,8 @@ ykine_servo_prep   (void)
    return 0;
 }
 
-int
-ykine_servo_find        (int a_leg, int a_seg)
+char
+yKINE_servo_index       (char a_leg, char a_seg)
 {
    /*---(locals)-----------+-----------+-*/
    int         i           =    0;          /* loop iterator                  */
@@ -144,10 +144,13 @@ ykine_servo_find        (int a_leg, int a_seg)
    int         rc          =   -1;
    /*---(prepare)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_leg);
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_seg);
    /*---(cycle)--------------------------*/
    for (i = 0; i < g_nservo; ++i) {
       if (g_servo_info [i].leg != a_leg)  continue;
       if (g_servo_info [i].seg != a_seg)  continue;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
       rc = i;
       break;
    }
@@ -157,110 +160,108 @@ ykine_servo_find        (int a_leg, int a_seg)
    return rc;
 }
 
-char
-yKINE_servo_which       (int a_seq, int *a_leg, int *a_seg)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;          /* loop iterator                  */
-   int         i           =    0;          /* loop iterator                  */
-   int         c           =    0;
-   int         rc          =   -1;
-   /*---(prepare)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_seq);
-   --rce;  if (a_seq < 0) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("too small");
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   --rce;  if (a_seq >= g_nservo) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("too large");
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(return values)------------------*/
-   if (a_leg != NULL) {
-      *a_leg = g_servo_info [a_seq].leg;
-      DEBUG_YKINE_SCRP   yLOG_sint    (*a_leg);
-   }
-   if (a_seg != NULL) {
-      *a_seg = g_servo_info [a_seq].seg;
-      DEBUG_YKINE_SCRP   yLOG_sint    (*a_seg);
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
-char
-ykine_servo_unfocused   (int a_leg, int a_seg)
-{
-   /*---(locals)-----------+-----------+-*/
-   int         i           =    0;          /* loop iterator                  */
-   int         c           =    0;
-   char        rc          =   -1;
-   /*---(prepare)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_leg);
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_seg);
-   /*---(cycle)--------------------------*/
-   for (i = 0; i < g_nservo; ++i) {
-      if (g_servo_info [i].leg != a_leg)  continue;
-      if (g_servo_info [i].seg != a_seg)  continue;
-      rc = i;
-      break;
-   }
-   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("not found");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return 1;
-   }
-   DEBUG_YKINE_SCRP   yLOG_schar   (g_servo_info [rc].scrp);
-   if (g_servo_info [rc].scrp != 'y')  {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("unfocused");
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-      return 1;
-   }
-   DEBUG_YKINE_SCRP   yLOG_snote   ("SELECTED");
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
-   return 0;
-}
-
 tSERVO*
 ykine_servo_pointer     (int a_leg, int a_seg)
 {
    /*---(locals)-----------+-----------+-*/
-   int         i           =    0;          /* loop iterator                  */
+   int         n           =   -1;          /* loop iterator                  */
    int         c           =    0;
-   char        rc          =   -1;
    tSERVO     *x_servo     = NULL;
    /*---(prepare)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(cycle)--------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_leg);
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_seg);
-   for (i = 0; i < g_nservo; ++i) {
-      if (g_servo_info [i].leg != a_leg)  continue;
-      if (g_servo_info [i].seg != a_seg)  continue;
-      DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
-      rc = i;
-      break;
-   }
-   DEBUG_YKINE_SCRP   yLOG_sint    (rc);
-   if (rc < 0) {
-      DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   n = yKINE_servo_index (a_leg, a_seg);
+   DEBUG_YKINE_SCRP   yLOG_value   ("find"      , n);
+   if (n < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
       return NULL;
    }
-   DEBUG_YKINE_SCRP   yLOG_snote   (g_servo_info [rc].label);
-   x_servo = &(g_servo_info [rc]);
-   DEBUG_YKINE_SCRP   yLOG_spoint  (x_servo);
+   DEBUG_YKINE_SCRP   yLOG_info    ("label"     , g_servo_info [n].label);
+   x_servo = &(g_servo_info [n]);
+   DEBUG_YKINE_SCRP   yLOG_point   ("x_servo"   , x_servo);
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return x_servo;
 }
+
+char
+yKINE_servo_cursor      (char a_dir)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   static int  x_curr      =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_schar   (a_dir);
+   /*---(update current)-----------------*/
+   DEBUG_YKINE_SCRP   yLOG_schar   (a_dir);
+   --rce;  switch (a_dir) {
+   case YKINE_HEAD : x_curr = 0;             break;
+   case YKINE_NEXT : ++x_curr;               break;
+   case YKINE_SAME : break;
+   case YKINE_PREV : --x_curr;               break;
+   case YKINE_TAIL : x_curr = g_nservo - 1;  break;
+   default  : /*---(problem)-------------*/
+                     DEBUG_YKINE_SCRP   yLOG_snote   ("invalid dir");
+                     DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+                     return rce;
+                     break;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sint    (x_curr);
+   /*---(range checking)-----------------*/
+   --rce;  if (x_curr < 0) {
+      x_curr = 0;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("before head, reset");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   --rce;  if (x_curr >= g_nservo) {
+      x_curr = g_nservo - 1;
+      DEBUG_YKINE_SCRP   yLOG_snote   ("after tail, reset");
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sint    (x_curr);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return x_curr;
+}
+
+/*> char                                                                               <* 
+ *> yKINE_servo_which       (int a_seq, int *a_leg, int *a_seg)                        <* 
+ *> {                                                                                  <* 
+ *>    /+---(locals)-----------+-----------+-+/                                        <* 
+ *>    char        rce         =  -10;          /+ loop iterator                  +/   <* 
+ *>    int         i           =    0;          /+ loop iterator                  +/   <* 
+ *>    int         c           =    0;                                                 <* 
+ *>    int         rc          =   -1;                                                 <* 
+ *>    /+---(prepare)------------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);                                 <* 
+ *>    /+---(defense)------------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_sint    (a_seq);                                        <* 
+ *>    --rce;  if (a_seq < 0) {                                                        <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_snote   ("too small");                               <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);                         <* 
+ *>       return rce;                                                                  <* 
+ *>    }                                                                               <* 
+ *>    --rce;  if (a_seq >= g_nservo) {                                                <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_snote   ("too large");                               <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);                         <* 
+ *>       return rce;                                                                  <* 
+ *>    }                                                                               <* 
+ *>    /+---(return values)------------------+/                                        <* 
+ *>    if (a_leg != NULL) {                                                            <* 
+ *>       *a_leg = g_servo_info [a_seq].leg;                                           <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_sint    (*a_leg);                                    <* 
+ *>    }                                                                               <* 
+ *>    if (a_seg != NULL) {                                                            <* 
+ *>       *a_seg = g_servo_info [a_seq].seg;                                           <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_sint    (*a_seg);                                    <* 
+ *>    }                                                                               <* 
+ *>    /+---(complete)-----------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);                                 <* 
+ *>    return 0;                                                                       <* 
+ *> }                                                                                  <*/
 
 
 
@@ -569,6 +570,42 @@ ykine_servo_list        (char *a_which)
    return 0;
 }
 
+/*> char                                                                               <* 
+ *> ykine_servo_unfocused   (int a_leg, int a_seg)                                     <* 
+ *> {                                                                                  <* 
+ *>    /+---(locals)-----------+-----------+-+/                                        <* 
+ *>    int         i           =    0;          /+ loop iterator                  +/   <* 
+ *>    int         c           =    0;                                                 <* 
+ *>    char        rc          =   -1;                                                 <* 
+ *>    /+---(prepare)------------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);                                 <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_sint    (a_leg);                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_sint    (a_seg);                                        <* 
+ *>    /+---(cycle)--------------------------+/                                        <* 
+ *>    for (i = 0; i < g_nservo; ++i) {                                                <* 
+ *>       if (g_servo_info [i].leg != a_leg)  continue;                                <* 
+ *>       if (g_servo_info [i].seg != a_seg)  continue;                                <* 
+ *>       rc = i;                                                                      <* 
+ *>       break;                                                                       <* 
+ *>    }                                                                               <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_sint    (rc);                                           <* 
+ *>    if (rc < 0) {                                                                   <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_snote   ("not found");                               <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);                              <* 
+ *>       return 1;                                                                    <* 
+ *>    }                                                                               <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_schar   (g_servo_info [rc].scrp);                       <* 
+ *>    if (g_servo_info [rc].scrp != 'y')  {                                           <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_snote   ("unfocused");                               <* 
+ *>       DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);                              <* 
+ *>       return 1;                                                                    <* 
+ *>    }                                                                               <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_snote   ("SELECTED");                                   <* 
+ *>    /+---(complete)-----------------------+/                                        <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);                                 <* 
+ *>    return 0;                                                                       <* 
+ *> }                                                                                  <*/
+
 
 
 /*====================------------------------------------====================*/
@@ -601,6 +638,9 @@ ykine__unit_servo       (char *a_question)
          ++x_pos;
       }
       sprintf (ykine__unit_answer, "SERVO servos   : %s", x_msg);
+   }
+   else if (strcmp (a_question, "count"   ) == 0) {
+      sprintf (ykine__unit_answer, "SERVO count    : %d", g_nservo);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;

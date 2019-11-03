@@ -56,8 +56,8 @@ ykine_gait__begin       (char a_scrp)
          /*---(get last position)-----------*/
          DEBUG_YKINE_SCRP   yLOG_value    ("servo"     , x_servo);
          DEBUG_YKINE_SCRP   yLOG_info     ("name"      , g_servo_info [x_servo].label);
-         yKINE_move_last_servo  (x_servo, NULL, &x_deg);
-         yKINE_move_curdata     (&x_xpos, &x_zpos, &x_ypos);
+         yKINE_move_tail     (x_servo, NULL, &x_deg);
+         ykine_move_curdata  (&x_xpos, &x_zpos, &x_ypos);
          DEBUG_YKINE_SCRP   yLOG_double   ("last deg"  , x_deg);
          /*---(write header note)-----------*/
          ykine_move_create (g_servo_info + x_servo, YKINE_NOTE , YKINE_NONE, myKINE.s_nline, "incipio"      , YKINE_NONE, 0.0  , 0.0);
@@ -379,7 +379,7 @@ ykine_gait__update      (char a_scrp, char a_count)
       /*---(handle three servos each)----*/
       for (j = 0; j < 3; ++j) {
          /*---(figure starting move)-----*/
-         x_snum = ykine_servo_find (x_leg + 1, j + YKINE_FEMU);
+         x_snum = yKINE_servo_index (x_leg + 1, j + YKINE_FEMU);
          DEBUG_YKINE_SCRP  yLOG_value   ("x_snum"    , x_snum);
          /*---(get neutral data)---------*/
          yKINE__gait_save_neutral (x_snum);

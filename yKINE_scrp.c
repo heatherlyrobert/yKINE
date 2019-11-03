@@ -180,22 +180,22 @@ ykine_verb_init         (void)
 }
 
 
-char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
-yKINE_servo        (char *a_source)
-{
-   /*---(locals)-----------+-----------+-*/
-   int         i           = 0;
-   /*---(cycle)--------------------------*/
-   /*> printf ("start check\n");                                                      <*/
-   for (i = 0; i < YKINE_MAX_SERVO; ++i) {
-      if (g_servo_info [i].label [0] == 'e')   break;
-      /*> printf ("checking %s¦", g_servo_info[i].label);                                <*/
-      if (a_source [0] != g_servo_info [i].label [0])       continue;
-      if (strcmp (a_source, g_servo_info [i].label) != 0)   continue;
-      return i;
-   }
-   return -1;
-}
+/*> char         /+--> locate a servo entry ------------------[ ------ [ ------ ]-+/               <* 
+ *> yKINE_servo        (char *a_source)                                                            <* 
+ *> {                                                                                              <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                    <* 
+ *>    int         i           = 0;                                                                <* 
+ *>    /+---(cycle)--------------------------+/                                                    <* 
+ *>    /+> printf ("start check\n");                                                      <+/      <* 
+ *>    for (i = 0; i < YKINE_MAX_SERVO; ++i) {                                                     <* 
+ *>       if (g_servo_info [i].label [0] == 'e')   break;                                          <* 
+ *>       /+> printf ("checking %s¦", g_servo_info[i].label);                                <+/   <* 
+ *>       if (a_source [0] != g_servo_info [i].label [0])       continue;                          <* 
+ *>       if (strcmp (a_source, g_servo_info [i].label) != 0)   continue;                          <* 
+ *>       return i;                                                                                <* 
+ *>    }                                                                                           <* 
+ *>    return -1;                                                                                  <* 
+ *> }                                                                                              <*/
 
 char  /*--> prepare for use ---------s-------------[ leaf   [ ------ ]-*/
 ykine_scrp_begin   (void)
@@ -765,7 +765,7 @@ ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec)
 }
 
 char
-yKINE_section           (char a_type, char *a_major, char *a_minor, int *a_line, char *a_label, float *a_sec)
+yKINE_sect_cursor       (char a_dir, char *a_major, char *a_minor, int *a_line, char *a_label, float *a_sec)
 {
    /*---(locals)-----------+-----+-----+-*/
    char       rce          =  -10;
@@ -777,12 +777,12 @@ yKINE_section           (char a_type, char *a_major, char *a_minor, int *a_line,
    if (a_label != NULL)  a_label [0]  = '\0';
    if (a_sec   != NULL)  *a_sec       = -1.0;
    /*---(set cursor)---------------------*/
-   switch (a_type) {
-   case '['  : x_curr = 0;                   break;
-   case '<'  : --x_curr;                     break;
-   case '`'  : x_curr;                       break;
-   case '>'  : ++x_curr;                     break;
-   case ']'  : x_curr = s_nhint - 1;         break;
+   switch (a_dir) {
+   case YKINE_HEAD : x_curr = 0;                   break;
+   case YKINE_NEXT : ++x_curr;                     break;
+   case YKINE_SAME : break;
+   case YKINE_PREV : --x_curr;                     break;
+   case YKINE_TAIL : x_curr = s_nhint - 1;         break;
    default   : return -1;
    }
    /*---(defense)------------------------*/
@@ -806,7 +806,7 @@ yKINE_section           (char a_type, char *a_major, char *a_minor, int *a_line,
 }
 
 char
-ykine_hint_list         (void)
+yKINE_sect_rpt          (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
@@ -1080,7 +1080,7 @@ yKINE_script       (float *a_len)
    /*---(fix length)---------------------*/
    x_len = 0.0;
    for (i = 0; i < g_nservo; ++i) {
-      yKINE_move_last_servo (i, &x_sec, NULL);
+      yKINE_move_tail (i, &x_sec, NULL);
       /*> printf ("#%-2d, %-10.10s, %fs\n", i, g_servo_info [i].label, x_sec);        <*/
       if (x_sec > x_len)  x_len = x_sec;
    }
@@ -1089,7 +1089,7 @@ yKINE_script       (float *a_len)
    /*> printf ("so, %fs and %fs\n", x_len, myKINE.scrp_len);                          <*/
    /*> exit (1);                                                                      <*/
    ykine_hint_final (myKINE.scrp_len);
-   ykine_hint_list  ();
+   yKINE_sect_rpt   ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
    return 0;

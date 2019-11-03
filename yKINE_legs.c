@@ -45,7 +45,7 @@ ykine_legs_prepservos   (char a_verb)
 }
 
 char         /*--> identify the servos effected ----------[ ------ [ ------ ]-*/
-ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label)
+ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label, char *a_mods)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -78,6 +78,12 @@ ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label)
    DEBUG_YKINE_SCRP  yLOG_complex ("a_label"   , "%3d, %s", rc, a_label);
    if (strcmp (a_label, "-") == 0) {
       strlcpy (a_label, "", LEN_LABEL);
+   }
+   /*---(get optional modifiers)------*/
+   rc = yPARSE_popstr    (a_mods);
+   DEBUG_YKINE_SCRP  yLOG_complex ("a_mods"    , "%3d, %s", rc, a_mods);
+   if (strcmp (a_mods , "-") == 0) {
+      strlcpy (a_mods , "", LEN_LABEL);
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -919,6 +925,7 @@ ykine_legs_driver    (char a_verb)
    char       *x_two       [LEN_LABEL];
    char       *x_thr       [LEN_LABEL];
    char       *x_label     [LEN_LABEL];
+   char       *x_mods      [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(prepare servos)--------------*/
@@ -929,7 +936,7 @@ ykine_legs_driver    (char a_verb)
       return rce;
    }
    /*---(mark servers)----------------*/
-   rc = ykine_legs_prepare (x_one, x_two, x_thr, x_label);
+   rc = ykine_legs_prepare (x_one, x_two, x_thr, x_label, x_mods);
    DEBUG_YKINE_SCRP   yLOG_value   ("prepare"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -946,7 +953,7 @@ ykine_legs_driver    (char a_verb)
    /*---(process)------------------------*/
    for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
       /*---(filter)----------------------*/
-      rc = ykine_servo_find (x_leg, x_seg);
+      rc = yKINE_servo_index (x_leg, x_seg);
       if (rc < 0)                     continue;
       if (myKINE.servos [rc] == '_')  continue;
       /*---(get positions)---------------*/

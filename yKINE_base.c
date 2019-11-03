@@ -150,6 +150,8 @@ yKINE_init         (void)
    DEBUG_YKINE  yLOG_value   ("hint"      , rc);
    rc = ykine_turtle_init    ();
    DEBUG_YKINE  yLOG_value   ("turtle"    , rc);
+   rc = ykine_step_init      ();
+   DEBUG_YKINE  yLOG_value   ("step"      , rc);
    ykine_stance_verify  ();
    myKINE.s_pace  = YKINE_PACE;
    yLOG_unmute ();
