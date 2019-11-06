@@ -15,6 +15,15 @@
  *       double time   T/turtle, S/slow, M/moderate, F/fast, X/extra fast
  *     decel type      ] decel to zero, > no deceleration
  *
+ *  [ and ] mean turtle
+ *  < and > mean same as middle
+ *
+ *  [m]  = tmt
+ *  <m]  = mmt
+ *  [m>  = tmm
+ *  [ms  = tms
+ *  mxf
+ *
  *  integration
  *     ykine_exact_dist_route    total distance calc (based on verb type)
  *     ykine_exact_pct_route     position for percent (based on verb type)
@@ -48,6 +57,15 @@ static char    s_speed    = '-';
 static float   s_exact    =  0.0;
 static float   s_step     =  1.0;
 
+static char    s_acceln   =  0;
+static char    s_deceln   =  0;
+static char    s_speedn   =  0;
+
+
+static char    s_accels   [LEN_LABEL] = "tsmfx<[";
+static char    s_decels   [LEN_LABEL] = "tsmfx>]";
+static char    s_speeds   [LEN_LABEL] = "tsmfx";
+
 
 
 /*====================------------------------------------====================*/
@@ -78,34 +96,23 @@ ykine_accel__level  (char a_max, char a_level, char a_accel, char a_decel, float
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    float       x_persec    =  0.0;
-   char        x_maxes     [LEN_LABEL] = "tsmfx";
-   char       *p           = NULL;
-   int         x_max       =    0;
    float       a           =  0.0;
    char        x_lvl       =  '-';
    /*---(header)-------------------------*/
    DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    DEBUG_YKINE_MOVE   yLOG_value   ("a_max"     , a_max);
-   p    = strchr (x_maxes, a_max);
-   DEBUG_YKINE_MOVE   yLOG_point   ("p"         , p);
-   --rce;  if (a_max == '\0' || p == NULL) {
+   --rce;  if (a_max   < 0 || a_max   > 4) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_max    = p - x_maxes;
-   DEBUG_YKINE_MOVE   yLOG_value   ("x_max"     , x_max);
    DEBUG_YKINE_MOVE   yLOG_value   ("a_level"   , a_level);
-   --rce;  if (a_level < 0 || a_level > 4) {
+   --rce;  if (a_level < 0 || a_level > a_max) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_lvl    = x_maxes [a_level];
+   x_lvl    = s_speeds [a_level];
    DEBUG_YKINE_MOVE   yLOG_char    ("x_lvl"     , x_lvl);
-   if (a_level > x_max) {
-      DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
    DEBUG_YKINE_MOVE   yLOG_point   ("a_rem"     , a_rem);
    --rce;  if (a_rem == NULL) {
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
@@ -119,24 +126,35 @@ ykine_accel__level  (char a_max, char a_level, char a_accel, char a_decel, float
    /*---(prepare)------------------------*/
    x_persec = g_accel_info [a_level].persec;
    /*---(max level)----------------------*/
-   if (x_max == a_level && *a_rem >= 0.1) {
+   if (a_max == a_level && *a_rem >= 0.1) {
       DEBUG_YKINE_MOVE   yLOG_note    ("max, so all at this level");
       g_accel_info [0 + a_level].dist += *a_rem;
       *a_rem = 0.0;
    }
+   /*---(last needed level)--------------*/
    if (*a_rem > 0.1 && *a_rem <= 2.0 * x_persec) {
       DEBUG_YKINE_MOVE   yLOG_note    ("all will fit (2x) at this level");
       g_accel_info [0 + a_level].dist += *a_rem;
       *a_rem = 0.0;
    }
    /*---(acceleration)-------------------*/
-   if (a_accel == '[' && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {
+   /*> if (a_accel == '[' && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {                     <* 
+    *>    DEBUG_YKINE_MOVE   yLOG_note    ("adding to accel");                             <* 
+    *>    if (*a_rem < x_persec)   *a_rem -= g_accel_info [0 + a_level].dist = *a_rem;     <* 
+    *>    else                     *a_rem -= g_accel_info [0 + a_level].dist = x_persec;   <* 
+    *> }                                                                                   <*/
+   if (a_accel <= a_level && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {
       DEBUG_YKINE_MOVE   yLOG_note    ("adding to accel");
       if (*a_rem < x_persec)   *a_rem -= g_accel_info [0 + a_level].dist = *a_rem;
       else                     *a_rem -= g_accel_info [0 + a_level].dist = x_persec;
    }
    /*---(deceleration)-------------------*/
-   if (a_decel == ']' && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {
+   /*> if (a_decel == ']' && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {                     <* 
+    *>    DEBUG_YKINE_MOVE   yLOG_note    ("adding to decel");                             <* 
+    *>    if (*a_rem < x_persec)   *a_rem -= g_accel_info [8 - a_level].dist = *a_rem;     <* 
+    *>    else                     *a_rem -= g_accel_info [8 - a_level].dist = x_persec;   <* 
+    *> }                                                                                   <*/
+   if (a_decel <= a_level && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {
       DEBUG_YKINE_MOVE   yLOG_note    ("adding to decel");
       if (*a_rem < x_persec)   *a_rem -= g_accel_info [8 - a_level].dist = *a_rem;
       else                     *a_rem -= g_accel_info [8 - a_level].dist = x_persec;
@@ -179,7 +197,7 @@ ykine_accel_calc        (char a_verb)
    x_dist = x_total = myKINE.le;
    /*---(fill)---------------------------*/
    for (i = 0; i <= 4; ++i) {
-      ykine_accel__level (s_speed, i, s_accel, s_decel, s_step, &x_dist);
+      ykine_accel__level (s_speedn, i, s_acceln, s_deceln, s_step, &x_dist);
    }
    /*---(percents)-----------------------*/
    x_cum = x_dur = 0.0;
@@ -220,11 +238,14 @@ ykine_accel_calc        (char a_verb)
 char
 ykine_accel__defaults   (void)
 {
-   s_accel = '-';
-   s_decel = '-';
-   s_speed = '-';
-   s_exact = 0.0;
-   s_step  = 1.0;
+   s_accel  = '-';
+   s_acceln = 0;
+   s_decel  = '-';
+   s_deceln = 0;
+   s_speed  = '-';
+   s_speedn = 0;
+   s_exact  = 0.0;
+   s_step   = 1.0;
    return 0;
 }
 
@@ -236,6 +257,7 @@ ykine_accel_dur         (cchar *a_dur)
    int         x_len       =    0;
    char        t           [LEN_LABEL];
    int         i           =    0;
+   char       *p           = NULL;
    /*---(header)-------------------------*/
    DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
@@ -254,32 +276,53 @@ ykine_accel_dur         (cchar *a_dur)
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(accel)--------------------------*/
-   s_accel = a_dur [0];
-   DEBUG_YKINE_MOVE   yLOG_char    ("s_accel"   , s_accel);
-   --rce;  if (strchr ("<["        , s_accel) == NULL) {
-      ykine_accel__defaults ();
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(decel)--------------------------*/
-   s_decel = a_dur [x_len - 1];
-   DEBUG_YKINE_MOVE   yLOG_char    ("decel"     , s_decel);
-   --rce;  if (strchr ("]>"        , s_decel) == NULL) {
-      ykine_accel__defaults ();
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
    /*---(pace)---------------------------*/
    s_speed = tolower (a_dur [x_len - 2]);
    DEBUG_YKINE_MOVE   yLOG_char    ("s_speed"   , s_speed);
-   --rce;  if (strchr ("tsmfx", s_speed) == NULL) {
+   p = strchr (s_speeds, s_speed);
+   --rce;  if (p == NULL) {
       ykine_accel__defaults ();
       DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   s_speedn = p - s_speeds;
+   DEBUG_YKINE_MOVE   yLOG_value   ("s_speedn"  , s_speedn);
    if (s_speed != a_dur [x_len - 2])  s_step = 0.5;
    DEBUG_YKINE_MOVE   yLOG_double  ("s_step"    , s_step);
+   /*---(accel)--------------------------*/
+   s_accel = a_dur [0];
+   DEBUG_YKINE_MOVE   yLOG_char    ("s_accel"   , s_accel);
+   p = strchr (s_accels, s_accel);
+   --rce;  if (p == NULL) {
+      ykine_accel__defaults ();
+      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   switch (s_accel) {
+   case '[' : s_acceln = 0;                 break;
+   case '<' : s_acceln = s_speedn;          break;
+   default  : s_acceln = p - s_accels;
+              if (s_acceln > s_speedn)  s_acceln = s_speedn;
+              break;
+   }
+   DEBUG_YKINE_MOVE   yLOG_value   ("s_acceln"  , s_acceln);
+   /*---(decel)--------------------------*/
+   s_decel = a_dur [x_len - 1];
+   DEBUG_YKINE_MOVE   yLOG_char    ("decel"     , s_decel);
+   p = strchr (s_decels, s_decel);
+   --rce;  if (p == NULL) {
+      ykine_accel__defaults ();
+      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   switch (s_decel) {
+   case ']' : s_deceln = 0;                 break;
+   case '>' : s_deceln = s_speedn;          break;
+   default  : s_deceln = p - s_decels;
+              if (s_deceln > s_speedn)  s_deceln = s_speedn;
+              break;
+   }
+   DEBUG_YKINE_MOVE   yLOG_value   ("s_deceln"  , s_deceln);
    /*---(exact timing)-------------------*/
    if (x_len > 3) {
       DEBUG_YKINE_MOVE   yLOG_note    ("exact version");
@@ -333,6 +376,23 @@ ykine_accel_timing      (void)
    /*---(complete)-----------------------*/
    DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       stack operations                       ----===*/
+/*====================------------------------------------====================*/
+static void      o___STACK___________________o (void) {;};
+
+char
+ykine_accel_push        (void)
+{
+}
+
+char
+ykine_accel_pop         (void)
+{
 }
 
 
@@ -525,7 +585,7 @@ ykine_accel__unit       (char *a_question, int a_num)
       sprintf (ykine__unit_answer, "ACCEL cums     :%s", x_msg);
    }
    else if (strcmp (a_question, "parse"     ) == 0) {
-      sprintf (ykine__unit_answer, "ACCEL parse    : %c %c %c %6.1f %6.1f", s_accel, s_decel, s_speed, s_exact, s_step);
+      sprintf (ykine__unit_answer, "ACCEL parse    : %c%1d   %c%1d   %c%1d %6.1f %6.1f", s_accel, s_acceln, s_decel, s_deceln, s_speed, s_speedn, s_exact, s_step);
    }
    /*---(complete)-----------------------*/
    return ykine__unit_answer;

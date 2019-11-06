@@ -466,9 +466,9 @@ ykine_move_delete  (tMOVE **a_move)
    }
    /*---(mark deleted)-------------------*/
    DEBUG_YKINE_MOVE   yLOG_note    ("wipe move header values");
-   x_move->type     = YKINE_DEL;
+   x_move->type  = YKINE_DEL;
    x_move->secs  = 0.0;
-   x_move->dur  = 0.0;
+   x_move->dur   = 0.0;
    if (x_move->s_prev != NULL) {
       x_move->degs  = x_move->s_prev->degs;
    }

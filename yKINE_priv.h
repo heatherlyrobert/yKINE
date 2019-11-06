@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2o"
-#define     P_VERTXT    "created step/seq input parsing logic and unit tested it"
+#define     P_VERNUM    "1.2p"
+#define     P_VERTXT    "updated accel logic to handle very specific accel/decel points"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -580,6 +580,8 @@ char        ykine_step_init         (void);
 char        ykine_step_shape        (char *a_step);
 char        ykine_step_seq          (char *a_seq);
 char        ykine_stepping          (char *a_mods);
+char        ykine_step_raise       (char a_verb, char a_leg, char *a_label);
+char        ykine_step_plant       (char a_verb, char a_leg, char *a_label);
 char*       ykine_step__unit        (char *a_question, int a_num);
 
 

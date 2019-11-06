@@ -85,6 +85,7 @@ ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label, c
    if (strcmp (a_mods , "-") == 0) {
       strlcpy (a_mods , "", LEN_LABEL);
    }
+   ykine_stepping (a_mods);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -984,6 +985,8 @@ ykine_legs_driver    (char a_verb)
          DEBUG_YKINE_SCRP   yLOG_complex ("coords"    , "%8.3lfx , %8.3lfz , %8.3lfy", myKINE.xe, myKINE.ze, myKINE.ye);
          break;
       }
+      /*---(if step, create raise)-------*/
+      rc = ykine_step_raise (a_verb, x_leg, x_label);
       /*---(inverse kinematics)----------*/
       switch (a_verb) {
       case YKINE_ZE : case YKINE_PO : case YKINE_OR : case YKINE_TI :
@@ -1018,6 +1021,8 @@ ykine_legs_driver    (char a_verb)
       DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , myKINE.le);
       /*---(process moves)---------------*/
       ykine_accel_create      (a_verb, x_leg, myKINE.b, myKINE.accel, x_label);
+      /*---(if step, create plant)-------*/
+      rc = ykine_step_plant (a_verb, x_leg, x_label);
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/
