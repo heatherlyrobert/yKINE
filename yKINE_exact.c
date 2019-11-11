@@ -183,17 +183,17 @@ ykine_exact_dist_route  (char a_verb)
  *> }                                                                                                 <*/
 
 char
-ykine_exact_pct_xzy     (float p)
+ykine_exact_pct_xzy     (float a_pct)
 {
    /*---(calculate)----------------------*/
-   myKINE.pct = p;
-   ykine_exact_calc ('-', myKINE.sb, myKINE.se, p, &myKINE.sc);
-   ykine_exact_calc ('-', myKINE.xb, myKINE.xe, p, &myKINE.xc);
-   ykine_exact_calc ('-', myKINE.zb, myKINE.ze, p, &myKINE.zc);
-   ykine_exact_calc ('-', myKINE.yb, myKINE.ye, p, &myKINE.yc);
-   ykine_exact_calc ('-', myKINE.fb, myKINE.fe, p, &myKINE.fc);
-   ykine_exact_calc ('-', myKINE.pb, myKINE.pe, p, &myKINE.pc);
-   ykine_exact_calc ('-', myKINE.tb, myKINE.te, p, &myKINE.tc);
+   myKINE.pct = a_pct;
+   ykine_exact_calc ('-', myKINE.sb, myKINE.se, a_pct, &myKINE.sc);
+   ykine_exact_calc ('-', myKINE.xb, myKINE.xe, a_pct, &myKINE.xc);
+   ykine_exact_calc ('-', myKINE.zb, myKINE.ze, a_pct, &myKINE.zc);
+   ykine_exact_calc ('-', myKINE.yb, myKINE.ye, a_pct, &myKINE.yc);
+   ykine_exact_calc ('-', myKINE.fb, myKINE.fe, a_pct, &myKINE.fc);
+   ykine_exact_calc ('-', myKINE.pb, myKINE.pe, a_pct, &myKINE.pc);
+   ykine_exact_calc ('-', myKINE.tb, myKINE.te, a_pct, &myKINE.tc);
    DEBUG_YKINE_EXACT   yLOG_complex ("linear"    , "%8.2fx, %8.2fz, %8.2fy", myKINE.xc, myKINE.zc, myKINE.yc);
    DEBUG_YKINE_EXACT   yLOG_complex ("angles"    , "%8.2ff, %8.2fp, %8.2ft", myKINE.fc, myKINE.pc, myKINE.tc);
    /*---(complete)-----------------------*/
@@ -201,10 +201,10 @@ ykine_exact_pct_xzy     (float p)
 }
 
 char
-ykine_exact_pct_doy     (char a_verb, char a_leg, float p)
+ykine_exact_pct_doy     (char a_verb, float a_pct)
 {
-   myKINE.pct = p;
-   ykine_exact_calc ('-', myKINE.sb, myKINE.se, p, &myKINE.sc);
+   myKINE.pct = a_pct;
+   ykine_exact_calc ('-', myKINE.sb, myKINE.se, a_pct, &myKINE.sc);
    switch (a_verb) {
    case YKINE_PO :
       DEBUG_YKINE_EXACT   yLOG_note    ("zero polar kinematics");
@@ -229,9 +229,9 @@ ykine_exact_pct_doy     (char a_verb, char a_leg, float p)
    }
    DEBUG_YKINE_EXACT   yLOG_complex ("begin"     , "%8.2fx, %8.2fz, %8.2fd, %8.2fo", myKINE.xb, myKINE.xb, myKINE.db, myKINE.ob);
    DEBUG_YKINE_EXACT   yLOG_complex ("end"       , "%8.2fx, %8.2fz, %8.2fd, %8.2fo", myKINE.xe, myKINE.xe, myKINE.de, myKINE.oe);
-   ykine_exact_calc ('-', myKINE.db, myKINE.de, p, &myKINE.dc);
-   ykine_exact_calc ('-', myKINE.ob, myKINE.oe, p, &myKINE.oc);
-   ykine_exact_calc ('-', myKINE.yb, myKINE.ye, p, &myKINE.yc);
+   ykine_exact_calc ('-', myKINE.db, myKINE.de, a_pct, &myKINE.dc);
+   ykine_exact_calc ('-', myKINE.ob, myKINE.oe, a_pct, &myKINE.oc);
+   ykine_exact_calc ('-', myKINE.yb, myKINE.ye, a_pct, &myKINE.yc);
    DEBUG_YKINE_EXACT   yLOG_complex ("polar"     , "%8.2fd, %8.2fo, %8.2fy", myKINE.dc, myKINE.oc, myKINE.yc);
    switch (a_verb) {
    case YKINE_PO :  ykine_body_po2xz (           myKINE.dc, myKINE.oc, &myKINE.xc, &myKINE.zc);  break;
@@ -240,36 +240,36 @@ ykine_exact_pct_doy     (char a_verb, char a_leg, float p)
    case YKINE_SK :  ykine_legs_sk2ik (myKINE.cb, myKINE.dc, myKINE.oc, &myKINE.xc, &myKINE.zc);  break;
    }
    DEBUG_YKINE_EXACT   yLOG_complex ("endpoint"  , "%8.2fx, %8.2fz, %8.2fy", myKINE.xc, myKINE.zc, myKINE.yc);
-   ykine_exact_calc ('-', myKINE.fb, myKINE.fe, p, &myKINE.fc);
-   ykine_exact_calc ('-', myKINE.pb, myKINE.pe, p, &myKINE.pc);
-   ykine_exact_calc ('-', myKINE.tb, myKINE.te, p, &myKINE.tc);
+   ykine_exact_calc ('-', myKINE.fb, myKINE.fe, a_pct, &myKINE.fc);
+   ykine_exact_calc ('-', myKINE.pb, myKINE.pe, a_pct, &myKINE.pc);
+   ykine_exact_calc ('-', myKINE.tb, myKINE.te, a_pct, &myKINE.tc);
    DEBUG_YKINE_EXACT   yLOG_complex ("angles"    , "%8.2ff, %8.2fp, %8.2ft", myKINE.fc, myKINE.pc, myKINE.tc);
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-ykine_exact_pct_ypr     (float p)
+ykine_exact_pct_ypr     (float a_pct)
 {
-   myKINE.pct = p;
-   ykine_exact_calc ('-', myKINE.sb, myKINE.se, p, &myKINE.sc);
-   ykine_exact_calc ('-', myKINE.fb, myKINE.fe, p, &myKINE.fc);
-   ykine_exact_calc ('-', myKINE.pb, myKINE.pe, p, &myKINE.pc);
-   ykine_exact_calc ('-', myKINE.tb, myKINE.te, p, &myKINE.tc);
+   myKINE.pct = a_pct;
+   ykine_exact_calc ('-', myKINE.sb, myKINE.se, a_pct, &myKINE.sc);
+   ykine_exact_calc ('-', myKINE.fb, myKINE.fe, a_pct, &myKINE.fc);
+   ykine_exact_calc ('-', myKINE.pb, myKINE.pe, a_pct, &myKINE.pc);
+   ykine_exact_calc ('-', myKINE.tb, myKINE.te, a_pct, &myKINE.tc);
    DEBUG_YKINE_EXACT   yLOG_complex ("angles"    , "%8.2ff, %8.2fp, %8.2ft", myKINE.fc, myKINE.pc, myKINE.tc);
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-ykine_exact_pct_route   (char a_verb, char a_leg, float a_pct)
+ykine_exact_pct_route   (char a_verb, float a_pct)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_MOVE   yLOG_complex ("params"    , "verb %d, leg %d, pct %5.3f", a_verb, a_leg, a_pct);
+   DEBUG_YKINE_MOVE   yLOG_complex ("params"    , "verb %d, pct %5.3f", a_verb, a_pct);
    /*---(find interim point)-------------*/
    --rce;  switch (a_verb) {
    case YKINE_OR : case YKINE_TI :
@@ -282,7 +282,7 @@ ykine_exact_pct_route   (char a_verb, char a_leg, float a_pct)
       break;
    case YKINE_PO :
       DEBUG_YKINE_EXACT   yLOG_note    ("zero polar partial");
-      ykine_exact_pct_doy  (a_verb, a_leg, a_pct);
+      ykine_exact_pct_doy  (a_verb, a_pct);
       break;
    case YKINE_FK :
       DEBUG_YKINE_EXACT   yLOG_note    ("forward partial");
@@ -294,7 +294,7 @@ ykine_exact_pct_route   (char a_verb, char a_leg, float a_pct)
       break;
    case YKINE_CK : case YKINE_RK : case YKINE_SK :
       DEBUG_YKINE_EXACT   yLOG_note    ("inverse polar partial");
-      ykine_exact_pct_doy  (a_verb, a_leg, a_pct);
+      ykine_exact_pct_doy  (a_verb, a_pct);
       break;
    case YKINE_LEGE : case YKINE_BODE : case YKINE_NOOP :
       ykine_exact_pct_xzy  (a_pct);
@@ -604,7 +604,7 @@ yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_labe
    else                 x_pct   = (s_sec - myKINE.sb) / x_range;
    DEBUG_YKINE_EXACT  yLOG_double  ("x_pct"     , x_pct);
    /*---(calc current endpoint)----------*/
-   rc = ykine_exact_pct_route (myKINE.vb, a_leg, x_pct);
+   rc = ykine_exact_pct_route (myKINE.vb, x_pct);
    DEBUG_YKINE_EXACT  yLOG_value   ("exact"     , rc);
    /*---(save current endpoint)----------*/
    if (x     != NULL)  *x     = myKINE.xc;

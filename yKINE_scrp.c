@@ -980,7 +980,7 @@ ykine_scrp_crap         (void)
          x_servo = &(g_servo_info [i-0]);
          if (x_servo->tail != NULL)  t = myKINE.te = x_servo->tail->degs;
          x_leg = g_servo_info [i].leg;
-         ykine_accel_create      (x_verb, x_leg, myKINE.b, "", "error entry");
+         ykine_accel_immediate   (x_verb, x_leg, myKINE.b, "error entry");
          ykine_move_addloc (x_servo, x, z, y); /* update */
       } else {
          x_servo = &(g_servo_info [i]);

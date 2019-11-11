@@ -307,9 +307,9 @@ ykine__unit_quiet  (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ykine__unit_loud   (void)
 {
-   char       *x_args [9]  = { "yKINE_unit" , "@@kitchen", "@@ykine", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp", "@@ykine_move", "@@ykine_exact", "@@yparse" };
-   yURG_logger (9, x_args);
-   yURG_urgs   (9, x_args);
+   char       *x_args [8]  = { "yKINE_unit" , "@@ykine", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp", "@@ykine_move", "@@ykine_exact", "@@yparse" };
+   yURG_logger (8, x_args);
+   yURG_urgs   (8, x_args);
    DEBUG_YKINE  yLOG_info     ("yKINE" , yKINE_version   ());
    yKINE_init  ();
    return 0;

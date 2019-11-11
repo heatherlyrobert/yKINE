@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2p"
-#define     P_VERTXT    "updated accel logic to handle very specific accel/decel points"
+#define     P_VERNUM    "1.2q"
+#define     P_VERTXT    "added most of the new accel/step logic and tested -- more to do"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -180,6 +180,13 @@ struct cLOCAL {
    char        step        [LEN_LABEL];     /* stepping specification         */
    int         seq;
    float       off;
+   char        a_acceln;
+   char        a_deceln;
+   char        a_speedn;
+   float       a_exact;
+   char        a_raise     [LEN_LABEL];     /* raise acceleration             */
+   char        a_move      [LEN_LABEL];     /* move acceleration              */
+   char        a_plant     [LEN_LABEL];     /* plant acceleration             */
    /*---(done)--------------*/
 };
 tLOCAL      myKINE;
@@ -327,6 +334,9 @@ extern    tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinemati
 extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinematics        */
 
 
+#define     MAX_ACCEL         10
+#define     MAX_PARTS         10
+
 #define     ACCEL_TURTLE       0
 #define     ACCEL_SLOW         1
 #define     ACCEL_MOD          2
@@ -338,16 +348,31 @@ extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinemati
 #define     DECEL_TURTLE       8
 #define     DECEL_NOOP         9
 
+typedef struct cENDS tENDS;
+struct cENDS {
+   char        verb;
+   float       sb, se;
+   float       xb, xe;
+   float       zb, ze;
+   float       yb, ye;
+   float       fb, fe;
+   float       pb, pe;
+   float       tb, te;
+};
+extern tENDS  g_accel_ends [MAX_PARTS];
+
 typedef struct cACCEL tACCEL;
 struct cACCEL {
    char        abbr;
    char        label    [LEN_LABEL];
    float       persec;
-   float       dur;
-   float       pct;
-   float       dist;
+   float       dist     [MAX_PARTS];         /* distance at speed/level       */
+   float       dur      [MAX_PARTS];         /* duration at speed/level       */
+   float       pct      [MAX_PARTS];         /* lvl pct by distance           */
+   float       cum      [MAX_PARTS];         /* cum pct by distance           */
+   float       adj      [MAX_PARTS];         /* adjusted duration after fixes */
 };
-extern tACCEL g_accel_info [10];
+extern tACCEL g_accel_info [MAX_ACCEL];
 
 
 
@@ -367,39 +392,41 @@ char        ykine__thor             (void);
 char        ykine__coxa             (void);
 char        ykine__troc             (void);
 /*---(forward kinematics)-----------+-----------+-----------+-----------+-----*/
-char        ykine__femu        (float a_deg);
-char        ykine__pate        (float a_deg);
-char        ykine__tibi        (float a_deg);
-char        ykine__lowr        (void);
-char        ykine__FK_targ     (void);
+char        ykine__femu             (float a_deg);
+char        ykine__pate             (float a_deg);
+char        ykine__tibi             (float a_deg);
+char        ykine__lowr             (void);
+char        ykine__FK_targ          (void);
 /*---(inverse kinematics)-----------+-----------+-----------+-----------+-----*/
-char        ykine__IK_targ     (float a_x, float a_z, float a_y);
-char        ykine__IK_femu     (void);
-char        ykine__IK_pate     (void);
-char        ykine__IK_tibi     (void);
+char        ykine__IK_targ          (float a_x, float a_z, float a_y);
+char        ykine__IK_femu          (void);
+char        ykine__IK_pate          (void);
+char        ykine__IK_tibi          (void);
 /*---(shared forward/inverse)-------+-----------+-----------+-----------+-----*/
-char        ykine__meta        (void);
-char        ykine__tars        (void);
-char        ykine__foot        (void);
+char        ykine__meta             (void);
+char        ykine__tars             (void);
+char        ykine__foot             (void);
 /*---(unit testing)-----------------+-----------+-----------+-----------+-----*/
-char        ykine__setter      (char *a_request , int a_leg, int a_seg, float a_value);
-char*       ykine__getter      (char *a_question, int a_leg, int a_seg);
-char        ykine__unit_quiet  (void);
-char        ykine__unit_loud   (void);
-char        ykine__unit_end    (void);
+char        ykine__setter           (char *a_request , int a_leg, int a_seg, float a_value);
+char*       ykine__getter           (char *a_question, int a_leg, int a_seg);
+char        ykine__unit_quiet       (void);
+char        ykine__unit_loud        (void);
+char        ykine__unit_end         (void);
 /*---(unit testing)-----------------+-----------+-----------+-----------+-----*/
 
 
 
 char        ykine_exact_calc        (char a_type, float a_beg, float a_end, float a_pct, float *a_cur);
+
 float       ykine_exact_dist_xzy    (void);
 float       ykine_exact_dist_doy    (void);
 float       ykine_exact_dist_ypr    (void);
 char        ykine_exact_dist_route  (char a_verb);
-char        ykine_exact_pct_xzy     (float p);
-char        ykine_exact_pct_doy     (char a_verb, char a_leg, float p);
-char        ykine_exact_pct_ypr     (float p);
-char        ykine_exact_pct_route   (char a_verb, char a_leg, float a_pct);
+
+char        ykine_exact_pct_xzy     (float a_pct);
+char        ykine_exact_pct_doy     (char a_verb, float a_pct);
+char        ykine_exact_pct_ypr     (float a_pct);
+char        ykine_exact_pct_route   (char a_verb, float a_pct);
 
 char        ykine_exact_calc_length (float xp, float xc, float zp, float zc, float a_pct, float *l);
 char        ykine_exact_calc_polar  (float l, float d, float *x, float *z);
@@ -499,14 +526,22 @@ char*       ykine__unit_servo       (char *a_question);
 
 
 char        ykine_accel__clear      (void);
-char        ykine_accel__level       (char a_max , char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
-char        ykine_accel_calc        (char a_meth);
+char        ykine_accel__level      (char a_part, char a_max , char a_level, char a_accel, char a_decel, float a_step, float *a_rem);
+char        ykine_accel__alloc      (char a_part, float a_dist);
+char        ykine_accel__dist       (float *a_dist, float *a_dur);
+char        ykine_accel__pcts       (float a_dist);
+int         ykine_accel__adjust     (float a_dur);
+char        ykine_accel_calc        (char a_part, char a_meth);
 char        ykine_accel_dur         (cchar *a_dur);
 char        ykine_accel_timing      (void);
+char        ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_deceln, char *a_out);
 char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell);
 char        ykine_accel__zero       (char a_verb, float x, float z, float y, float a_beat, char *a_label, char a_cell);
 char        ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_cell);
-char        ykine_accel_create      (char a_verb, char a_leg, float b, char *a_accel, char *a_label);
+char        ykine_accel_reset       (char a_leg);
+char        ykine_accel_append      (char a_verb, char *a_accel);
+char        ykine_accel_execute     (char *a_label);
+char        ykine_accel_immediate   (char a_verb, char a_leg, float b, char *a_label);
 char*       ykine_accel__unit       (char *a_question, int a_num);
 
 
@@ -580,8 +615,9 @@ char        ykine_step_init         (void);
 char        ykine_step_shape        (char *a_step);
 char        ykine_step_seq          (char *a_seq);
 char        ykine_stepping          (char *a_mods);
-char        ykine_step_raise       (char a_verb, char a_leg, char *a_label);
-char        ykine_step_plant       (char a_verb, char a_leg, char *a_label);
+char        ykine_step_accels       (void);
+char        ykine_step_raise        (char a_verb);
+char        ykine_step_plant        (char a_verb);
 char*       ykine_step__unit        (char *a_question, int a_num);
 
 
