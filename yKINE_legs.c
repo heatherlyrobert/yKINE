@@ -80,12 +80,15 @@ ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label, c
       strlcpy (a_label, "", LEN_LABEL);
    }
    /*---(get optional modifiers)------*/
-   rc = yPARSE_popstr    (a_mods);
-   DEBUG_YKINE_SCRP  yLOG_complex ("a_mods"    , "%3d, %s", rc, a_mods);
-   if (strcmp (a_mods , "-") == 0) {
-      strlcpy (a_mods , "", LEN_LABEL);
-   }
-   ykine_stepping (a_mods);
+   if (myKINE.b < 0.0) {
+      rc = yPARSE_popstr    (a_mods);
+      DEBUG_YKINE_SCRP  yLOG_complex ("a_mods"    , "%3d, %s", rc, a_mods);
+      if (strcmp (a_mods , "-") == 0) {
+         strlcpy (a_mods , "", LEN_LABEL);
+      }
+      ykine_stepping    (a_mods);
+   } else ykine_stepping    ("");
+   ykine_step_accels ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -967,8 +970,11 @@ ykine_legs_driver    (char a_verb)
       ykine_exact_dist_route (a_verb);
       DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , myKINE.le);
       /*---(process moves)---------------*/
+      DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
+      DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
+      DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
       if (myKINE.b >= 0)  ykine_accel_immediate   (a_verb, x_leg, myKINE.b    , x_label);
-      else                ykine_accel_append      (a_verb, myKINE.a_move);
+      else                ykine_accel_append      (a_verb, myKINE.a_middle);
       /*---(if step, create plant)-------*/
       rc = ykine_step_plant    (a_verb);
       rc = ykine_accel_execute (x_label);

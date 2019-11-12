@@ -499,6 +499,16 @@ ykine_accel_dur         (cchar *a_dur)
 }
 
 char
+ykine_accel_timing_save (void)
+{
+      myKINE.a_acceln = s_acceln;
+      myKINE.a_deceln = s_deceln;
+      myKINE.a_speedn = s_speedn;
+      myKINE.a_exact  = s_exact;
+      return 0;
+}
+
+char
 ykine_accel_timing      (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -518,10 +528,7 @@ ykine_accel_timing      (void)
    /*---(if accelerated)--------------*/
    else  {
       myKINE.b = -1.0;
-      myKINE.a_acceln = s_acceln;
-      myKINE.a_deceln = s_deceln;
-      myKINE.a_speedn = s_speedn;
-      myKINE.a_exact  = s_exact;
+      ykine_accel_timing_save ();
    }
    DEBUG_YKINE_SCRP  yLOG_info    ("accel'"    , myKINE.accel);
    DEBUG_YKINE_SCRP  yLOG_value   ("b'"        , myKINE.b);

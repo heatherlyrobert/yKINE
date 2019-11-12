@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2q"
-#define     P_VERTXT    "added most of the new accel/step logic and tested -- more to do"
+#define     P_VERNUM    "1.2r"
+#define     P_VERTXT    "sharp straight, square, and direct stepping are working and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -185,7 +185,7 @@ struct cLOCAL {
    char        a_speedn;
    float       a_exact;
    char        a_raise     [LEN_LABEL];     /* raise acceleration             */
-   char        a_move      [LEN_LABEL];     /* move acceleration              */
+   char        a_middle    [LEN_LABEL];     /* middle of move acceleration    */
    char        a_plant     [LEN_LABEL];     /* plant acceleration             */
    /*---(done)--------------*/
 };
@@ -533,6 +533,7 @@ char        ykine_accel__pcts       (float a_dist);
 int         ykine_accel__adjust     (float a_dur);
 char        ykine_accel_calc        (char a_part, char a_meth);
 char        ykine_accel_dur         (cchar *a_dur);
+char        ykine_accel_timing_save (void);
 char        ykine_accel_timing      (void);
 char        ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_deceln, char *a_out);
 char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell);
@@ -612,6 +613,7 @@ char        ykine_stance            (void);
 char        ykine_stance_verify     (void);
 
 char        ykine_step_init         (void);
+char        ykine_step__defaults    (void);
 char        ykine_step_shape        (char *a_step);
 char        ykine_step_seq          (char *a_seq);
 char        ykine_stepping          (char *a_mods);

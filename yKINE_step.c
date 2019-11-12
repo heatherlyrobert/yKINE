@@ -32,7 +32,7 @@
  *
  */
 
-#define     YKINE_STRAIGHT  '-'
+#define     YKINE_STRAIGHT  '>'
 #define     YKINE_SSQUARE   's'
 #define     YKINE_RSQUARE   'S'
 #define     YKINE_SDIRECT   'd'
@@ -48,12 +48,12 @@ static struct cSHAPE {
    char        desc        [LEN_DESC];
 };
 static tSHAPE      s_shapes    [MAX_SHAPE] = {
-   { '-'            , "--", "straight" , "fastest and most direct"            , "default with no changes to original"                  },
-   { YKINE_SSQUARE  , "sq", "square"   , "perfect for uneven surfaces"        , "up, horizontal, down -- perfect for uneven surfaces"  },
+   { YKINE_STRAIGHT , "--", "straight" , "fastest and most direct"            , "default with no changes to original"                  },
+   { YKINE_SSQUARE  , "ss", "square"   , "perfect for uneven surfaces"        , "up, horizontal, down -- perfect for uneven surfaces"  },
    { YKINE_RSQUARE  , "rs", "rsquare"  , "faster square using acceleration"   , "up, little curve, horizontal, little curve and down"  },
-   { YKINE_SDIRECT  , "di", "direct"   , "perfect for angled surfaces"        , "up, incline/decline over, down"                       },
+   { YKINE_SDIRECT  , "sd", "direct"   , "perfect for angled surfaces"        , "up, incline/decline over, down"                       },
    { YKINE_RDIRECT  , "rd", "rdirect"  , "faster direct using acceleration"   , "up, little curve, over, little curve and down"        },
-   { 't'            , "tr", "triangle" , "for getting over low objects"       , "up to high middle, then down to far point"            },
+   { 't'            , "st", "triangle" , "for getting over low objects"       , "up to high middle, then down to far point"            },
    { 'T'            , "rt", "rtriangle", "faster triangle using acceleration" , "up to high middle, curved, then down to far point"    },
    { 'p'            , "pu", "pullup"   , "for getting over larger objects"    , "up, then to to low middle, down to far, then down"    },
    { 'h'            , "hx", "hexagon"  , "for getting over rough terrain"     , "up, then up to high middle, down above far, then down"},
@@ -77,7 +77,7 @@ static struct cHEIGHT {
    char        desc        [LEN_DESC];
 };
 static tHEIGHT      s_heights   [MAX_HEIGHT] = {
-   { 'z', "ze", "zero"     ,  0.0, "no upward movement"                                   },
+   { 'z', "--", "zero"     ,  0.0, "no upward movement"                                   },
    { 's', "sc", "scrape"   ,  3.0, "very low height steps"                                },
    { 'l', "lo", "low"      ,  6.1, "low height steps"                                     },
    { 'n', "nm", "normal"   , 12.2, "normal height steps"                                  },
@@ -146,6 +146,20 @@ char        s_cseq      = '-';
 static void      o___PROGRAM_________________o (void) {;};
 
 char
+ykine_step__defaults    (void)
+{
+   s_cshape      = YKINE_STRAIGHT;
+   myKINE.step_s =   0;
+   s_cheight     = 'z';
+   myKINE.step_h = 0.0;
+   s_cspeed      = '-';
+   myKINE.off    = 0.0;
+   s_cseq        = '-';
+   myKINE.seq    = -1;
+   return 0;
+}
+
+char
 ykine_step_init         (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -161,8 +175,6 @@ ykine_step_init         (void)
       ++s_nshape;
    }
    DEBUG_YKINE_SCRP   yLOG_value   ("s_nshape"  , s_nshape);
-   s_cshape      = '-';
-   myKINE.step_s = -1;
    /*---(heights)------------------------*/
    s_nheight = 0;
    for (i = 0; i < MAX_HEIGHT; ++i) {
@@ -170,8 +182,6 @@ ykine_step_init         (void)
       ++s_nheight;
    }
    DEBUG_YKINE_SCRP   yLOG_value   ("s_nheight" , s_nheight);
-   s_cheight     = '-';
-   myKINE.step_h = 0.0;
    /*---(speeds)-------------------------*/
    s_nspeed  = 0;
    for (i = 0; i < MAX_SPEED ; ++i) {
@@ -179,8 +189,6 @@ ykine_step_init         (void)
       ++s_nspeed;
    }
    DEBUG_YKINE_SCRP   yLOG_value   ("s_nspeed"  , s_nspeed);
-   s_cspeed      = '-';
-   myKINE.off    = 0.0;
    /*---(sequencing)---------------------*/
    s_nseq  = 0;
    for (i = 0; i < MAX_SEQ ; ++i) {
@@ -188,8 +196,8 @@ ykine_step_init         (void)
       ++s_nseq;
    }
    DEBUG_YKINE_SCRP   yLOG_value   ("s_nseq"    , s_nseq);
-   s_cseq        = '-';
-   myKINE.seq    = -1;
+   /*---(set defaults)-------------------*/
+   ykine_step__defaults ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -213,11 +221,6 @@ ykine_step_shape        (char *a_step)
    char        x_height    [LEN_TERSE] = "";
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(prepare)------------------------*/
-   s_cshape      = '-';
-   s_cheight     = '-';
-   myKINE.step_s = -1;
-   myKINE.step_h = 0.0;
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_point   ("a_step"    , a_step);
    --rce;  if (a_step == NULL) {
@@ -236,6 +239,7 @@ ykine_step_shape        (char *a_step)
       return rce;
    }
    /*---(find shape)---------------------*/
+   s_cshape  = '-';
    for (i = 0; i < s_nshape; ++i) {
       if (s_shapes [i].terse [0] != a_step [0])  continue;
       if (s_shapes [i].terse [1] != a_step [1])  continue;
@@ -244,10 +248,12 @@ ykine_step_shape        (char *a_step)
       break;
    }
    --rce;  if (s_cshape == '-') {
+      ykine_step__defaults ();
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(find height)--------------------*/
+   s_cheight = '-';
    for (i = 0; i < s_nheight; ++i) {
       if (s_heights [i].terse [0] != a_step [3])  continue;
       if (s_heights [i].terse [1] != a_step [4])  continue;
@@ -256,8 +262,7 @@ ykine_step_shape        (char *a_step)
       break;
    }
    --rce;  if (s_cheight == '-') {
-      s_cshape      = '-';
-      myKINE.step_s = -1;
+      ykine_step__defaults ();
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -275,11 +280,6 @@ ykine_step_seq          (char *a_seq)
    int         i           =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(prepare)------------------------*/
-   s_cseq        = '-';
-   s_cspeed      = '-';
-   myKINE.seq    = -1;
-   myKINE.off    = 0.0;
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_point   ("a_seq"     , a_seq);
    --rce;  if (a_seq == NULL) {
@@ -338,6 +338,12 @@ ykine_stepping          (char *a_mods)
    char        x_seq       [LEN_LABEL] = "";
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   ykine_step__defaults ();
+   --rce;  if (myKINE.b >= 0.0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_point   ("a_mods"    , a_mods);
    --rce;  if (a_mods == NULL) {
@@ -376,11 +382,28 @@ static float  s_ye   = 0.0;
 char
 ykine_step_accels       (void)
 {
-   switch (myKINE.step_s) {
+   char        x_end       =    0;
+   strlcpy (myKINE.a_raise , "", LEN_LABEL);
+   strlcpy (myKINE.a_middle, "", LEN_LABEL);
+   strlcpy (myKINE.a_plant , "", LEN_LABEL);
+   if (myKINE.b >= 0.0)  return 0;
+   switch (s_cshape) {
    case YKINE_STRAIGHT :
-
+      ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_middle);
       break;
-   case YKINE_SSQUARE  :
+   case YKINE_SSQUARE  : case YKINE_SDIRECT  :
+      x_end = ACCEL_TURTLE; /* fastest through sharp corners  */
+      if (myKINE.a_speedn < ACCEL_TURTLE)  x_end = myKINE.a_speedn;
+      ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
+      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_middle);
+      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_plant );
+      break;
+   case YKINE_RSQUARE  : case YKINE_RDIRECT  :
+      x_end = ACCEL_MOD;  /* fastest through curved corners  */
+      if (myKINE.a_speedn < ACCEL_MOD)     x_end = myKINE.a_speedn;
+      ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
+      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_middle);
+      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_plant );
       break;
    }
    return 0;
@@ -393,6 +416,7 @@ ykine_step_raise       (char a_verb)
    char        rce         =  -10;
    char        rc          =    0;
    char        x_accel     [LEN_LABEL] = "";
+   float       xe, ze, ye;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -408,39 +432,47 @@ ykine_step_raise       (char a_verb)
       return rce;
    }
    DEBUG_YKINE_SCRP   yLOG_value   ("step_s"    , myKINE.step_s);
-   --rce;  if (myKINE.step_s < 0) {
+   --rce;  if (myKINE.step_s <= 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(increate height)-------------*/
-   s_yb = myKINE.yb;
-   s_ye = myKINE.ye;
+   /*---(save endpoint)---------------*/
+   xe         = myKINE.xe;
+   ze         = myKINE.ze;
+   s_ye       = myKINE.ye;
+   /*---(set for raise)---------------*/
+   myKINE.xe  = myKINE.xb;
+   myKINE.ze  = myKINE.zb;
+   /*---(increase height)-------------*/
    switch (s_cshape) {
    case YKINE_SSQUARE :
       DEBUG_YKINE_SCRP  yLOG_note    ("square handler");
-      if (s_yb >= s_ye) myKINE.ye = myKINE.yb += myKINE.step_h;
-      else              myKINE.yb = myKINE.ye += myKINE.step_h;
-      strlcpy (x_accel, "[*m]", LEN_LABEL);
+      if (myKINE.yb >= myKINE.ye)  myKINE.ye = myKINE.yb + myKINE.step_h;
+      else                         myKINE.ye = myKINE.ye + myKINE.step_h;
+      ye         = myKINE.ye;
       break;
    case YKINE_SDIRECT :
       DEBUG_YKINE_SCRP  yLOG_note    ("direct handler");
-      myKINE.yb += myKINE.step_h;
-      myKINE.ye += myKINE.step_h;
-      strlcpy (x_accel, "[*m]", LEN_LABEL);
+      myKINE.ye = myKINE.yb + myKINE.step_h;
+      ye        = s_ye      + myKINE.step_h;
       break;
    case YKINE_RSQUARE :
-      strlcpy (x_accel, "[*ms", LEN_LABEL);
       break;
    }
-   DEBUG_YKINE_SCRP   yLOG_complex ("y-pos"     , "yb1 %6.1f, yb2 %6.1f, ye1 %6.1f, ye2 %6.1f", myKINE.yb, s_yb, myKINE.ye, s_ye);
    /*---(inverse kinematics)----------*/
-   rc = yKINE_inverse (myKINE.leg, myKINE.xb, myKINE.zb, myKINE.yb);
+   rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
-   /*---(get angles)------------------*/
-   rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.cb, &myKINE.fb, &myKINE.pb, &myKINE.tb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
+   rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
    /*---(create moves)-------------------*/
-   ykine_accel_append (YKINE_IK, x_accel);
+   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
+   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   ykine_accel_append (YKINE_IK, myKINE.a_raise);
+   /*---(put endpoint back)-----------*/
+   myKINE.xe = xe;
+   myKINE.ze = ze;
+   myKINE.yb = myKINE.ye;
+   myKINE.ye = ye;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -467,21 +499,25 @@ ykine_step_plant       (char a_verb)
       return rce;
    }
    DEBUG_YKINE_SCRP   yLOG_value   ("step_s"    , myKINE.step_s);
-   --rce;  if (myKINE.step_s < 0) {
+   --rce;  if (myKINE.step_s <= 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(set for raise)---------------*/
+   myKINE.xb  = myKINE.xe;
+   myKINE.zb  = myKINE.ze;
+   myKINE.yb  = myKINE.ye;
    /*---(decrease height)-------------*/
-   myKINE.yb  = s_yb;
    myKINE.ye  = s_ye;
    /*---(inverse kinematics)----------*/
    rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
-   /*---(get angles)------------------*/
    rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
-   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
    /*---(create moves)-------------------*/
-   ykine_accel_append (YKINE_IK, "s*m]");
+   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
+   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   ykine_accel_append (YKINE_IK, myKINE.a_plant);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -503,8 +539,11 @@ ykine_step__unit        (char *a_question, int a_num)
    /*---(preprare)-----------------------*/
    strlcpy  (ykine__unit_answer, "STEP unit        : question not understood", LEN_STR);
    /*---(answer)------------------------------------------*/
-   if (strcmp (a_question, "global"  ) == 0) {
+   if      (strcmp (a_question, "global"  ) == 0) {
       sprintf (ykine__unit_answer, "STEP global    : s %c/%2d, h %c/%5.1f, q %c/%2d, o %c/%5.2f", s_cshape, myKINE.step_s, s_cheight, myKINE.step_h, s_cseq, myKINE.seq, s_cspeed, myKINE.off);
+   }
+   else if (strcmp (a_question, "accels"  ) == 0) {
+      sprintf (ykine__unit_answer, "STEP accels    : [ r %-6.6s, m %-6.6s, p %-6.6s ]", myKINE.a_raise, myKINE.a_middle, myKINE.a_plant);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;
