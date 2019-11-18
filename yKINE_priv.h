@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2r"
-#define     P_VERTXT    "sharp straight, square, and direct stepping are working and unit tested"
+#define     P_VERNUM    "1.2s"
+#define     P_VERTXT    "updated unit tests with new accel accessor output, and koios fixes"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -167,13 +167,14 @@ struct cLOCAL {
    char        leg;                         /* current leg for move           */
    char        exact;                       /* current move fully completed   */
    char        label       [LEN_LABEL];     /* current move label             */
+   char        part;                        /* current move cell note         */
    char        cell;                        /* current move cell note         */
    double      b;                           /* current moves beats            */
    char        accel       [LEN_LABEL];     /* current accel string           */
    char        servos      [LEN_HUND];      /* current servo focus list       */
    char        vb, ov, rcc;
    float       db, sb, xb, zb, xzb, yb, ob, cb, fb, pb, tb;
-   float       de, se, xe, ze, xze, ye, oe, ce, fe, pe, te, le;
+   float       de, se, xe, ze, xze, ye, oe, ce, fe, pe, te, le, lxz;
    float       dc, sc, xc, zc, xzc, yc, oc, cc, fc, pc, tc, lc, pct;
    int         step_s;
    float       step_h;
@@ -209,6 +210,7 @@ struct      cMOVE {
    tSERVO     *servo;                       /* servo pointer for move         */
    int         line;                        /* line from input file           */
    char        label       [LEN_LABEL];     /* label from input line          */
+   char        part;                        /* for grouping into accels       */
    char        cell;                        /* for grouping into cells        */
    /*---(timing)------------*/
    float       dur;                         /* duration of move               */
@@ -351,10 +353,12 @@ extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinemati
 typedef struct cENDS tENDS;
 struct cENDS {
    char        verb;
+   char        part;
    float       sb, se;
    float       xb, xe;
    float       zb, ze;
    float       yb, ye;
+   float       xzlen, len;
    float       fb, fe;
    float       pb, pe;
    float       tb, te;
@@ -531,16 +535,16 @@ char        ykine_accel__alloc      (char a_part, float a_dist);
 char        ykine_accel__dist       (float *a_dist, float *a_dur);
 char        ykine_accel__pcts       (float a_dist);
 int         ykine_accel__adjust     (float a_dur);
-char        ykine_accel_calc        (char a_part, char a_meth);
+char        ykine_accel_calc        (char a_part, char a_meth, char a_action);
 char        ykine_accel_dur         (cchar *a_dur);
 char        ykine_accel_timing_save (void);
 char        ykine_accel_timing      (void);
 char        ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_deceln, char *a_out);
-char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_cell);
+char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_part, char a_cell);
 char        ykine_accel__zero       (char a_verb, float x, float z, float y, float a_beat, char *a_label, char a_cell);
-char        ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_cell);
+char        ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_part, char a_cell);
 char        ykine_accel_reset       (char a_leg);
-char        ykine_accel_append      (char a_verb, char *a_accel);
+char        ykine_accel_append      (char a_verb, char a_part, char *a_accel);
 char        ykine_accel_execute     (char *a_label);
 char        ykine_accel_immediate   (char a_verb, char a_leg, float b, char *a_label);
 char*       ykine_accel__unit       (char *a_question, int a_num);
@@ -553,7 +557,7 @@ char        ykine_move_init         (void);
 char        ykine__move_new         (tMOVE **a_move);
 char        ykine__move_free        (tMOVE **a_move);
 
-char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, int a_line, char *a_label, char a_cell, float a_deg, float a_sec);
+char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, int a_line, char *a_label, char a_part, char a_cell, float a_deg, float a_sec);
 char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
 char        ykine_move_delete       (tMOVE **a_move);
@@ -620,6 +624,8 @@ char        ykine_stepping          (char *a_mods);
 char        ykine_step_accels       (void);
 char        ykine_step_raise        (char a_verb);
 char        ykine_step_plant        (char a_verb);
+char        ykine_step__rounded     (float a_xzlen, float a_pct, float *y);
+char        ykine_step_yshaper      (float a_xzlen, float a_pct, float *y);
 char*       ykine_step__unit        (char *a_question, int a_num);
 
 

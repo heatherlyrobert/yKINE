@@ -85,6 +85,7 @@ ykine__move_new    (tMOVE **a_move)
    x_new->servo   = NULL;
    x_new->line    = 0;
    strlcpy (x_new->label, "", LEN_LABEL);
+   x_new->part    = '-';
    x_new->cell    = '-';
    /*---(position)-----------------------*/
    DEBUG_YKINE_MOVE   yLOG_snote   ("pos");
@@ -183,6 +184,7 @@ ykine_move_create  (
       char        a_verb      ,   /* verb used for servo operation            */
       int         a_line      ,   /* source line                              */
       char       *a_label     ,   /* step label                               */
+      char        a_part      ,   /* for grouping into accels                 */
       char        a_cell      ,   /* for grouping into cells                  */
       float       a_deg       ,   /* end position                             */
       float       a_sec       )   /* duration                                 */
@@ -224,6 +226,7 @@ ykine_move_create  (
    x_move->verb     = a_verb;
    x_move->servo    = a_servo;
    if (a_label != NULL)  strlcpy (x_move->label, a_label, LEN_LABEL);
+   x_move->part     = a_part;
    x_move->cell     = a_cell;
    x_move->line     = a_line;
    x_move->degs     = a_deg;
@@ -316,26 +319,26 @@ ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
    }
    /*---(moves)--------------------------*/
    ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-   ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+   ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
    ykine_move_addloc (a_servo, x, z, y);
    if (a_servo->seg == YKINE_TIBI) {
       --a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
       ykine_move_addloc (a_servo, x, z, y);
       --a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
       ykine_move_addloc (a_servo, x, z, y);
    }
    else if (a_servo->seg == YKINE_FEMU) {
       ++a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
       ykine_move_addloc (a_servo, x, z, y);
       ++a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, YKINE_NONE, 0.0, 0.0);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
       ykine_move_addloc (a_servo, x, z, y);
    }
    /*---(complete)-----------------------*/
@@ -1129,8 +1132,8 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       else                 sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8do", x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos, x_move->other);
    }
    else if (strcmp (a_question, "accel"   ) == 0) {
-      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE accel     :      -.-s      -.-d      -.-x      -.-z      -.-y      -.-l");
-      else                 sprintf (ykine__unit_answer, "MOVE accel     : %8.1lfs %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8.1lfl", x_move->dur, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos, x_dist);
+      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE accel     :      -.-s      -.-d      -.-x      -.-z      -.-y      -.-l  -  -");
+      else                 sprintf (ykine__unit_answer, "MOVE accel     : %8.1lfs %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8.1lfl  %c  %c", x_move->dur, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos, x_dist, x_move->part, x_move->cell);
    }
    else if (strcmp (a_question, "counts"  ) == 0) {
       strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_STR);

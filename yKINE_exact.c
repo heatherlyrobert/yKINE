@@ -58,7 +58,8 @@ ykine_exact_dist_xzy    (void)
    yd  = myKINE.ye - myKINE.yb;
    /*---(length)-------------------------*/
    ld = sqrt ((xd * xd) + (zd * zd) + (yd * yd));
-   myKINE.le = ld;
+   myKINE.le  = ld;
+   myKINE.lxz = sqrt ((xd * xd) + (zd * zd));
    /*---(complete)-----------------------*/
    return ld;
 }
@@ -97,7 +98,8 @@ ykine_exact_dist_doy    (void)
    DEBUG_YKINE_MOVE   yLOG_complex ("y"         , "yb  %6.1f, ye  %6.1f, yd  %6.1f", myKINE.yb, myKINE.ye, yd);
    /*---(length)-------------------------*/
    ld  = sqrt ((dd * dd) + (od * od) + (yd * yd));
-   myKINE.le = ld;
+   myKINE.le  = ld;
+   myKINE.lxz = sqrt ((dd * dd) + (od * od));
    DEBUG_YKINE_MOVE   yLOG_complex ("doy"       , "dd  %6.1f, od  %6.1f, yd  %6.1f, ld %6.1f", dd, od, yd, ld);
    /*---(complete)-----------------------*/
    return ld;
@@ -118,7 +120,8 @@ ykine_exact_dist_ypr    (void)
    td  = ((myKINE.te - myKINE.tb) / 360.0) * 2.0 * 3.1415927 * cd;
    /*---(length)-------------------------*/
    ld  = sqrt ((fd * fd) + (pd * pd) + (td * td));
-   myKINE.le = ld;
+   myKINE.le  = ld;
+   myKINE.lxz = 0.0;
    /*---(complete)-----------------------*/
    return ld;
 }
@@ -164,23 +167,6 @@ ykine_exact_dist_route  (char a_verb)
    DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
-
-
-/*> float        /+--> zero polar move distance --------------[ ------ [ ------ ]-+/                  <* 
- *> ykine_exact_dist_dty    (void)                                                                    <* 
- *> {                                                                                                 <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                       <* 
- *>    float       dd, td, yd, ld;                                                                    <* 
- *>    /+---(full beg/end)-------------------+/                                                       <* 
- *>    dd  = ((myKINE.de - myKINE.db) / 360.0) * 2.0 * 3.1415927 * ((myKINE.ob + myKINE.oe) / 2.0);   <* 
- *>    od  = myKINE.oe - myKINE.ob;                                                                   <* 
- *>    yd  = myKINE.ye - myKINE.yb;                                                                   <* 
- *>    /+---(length)-------------------------+/                                                       <* 
- *>    ld  = sqrt ((dd * dd) + (od * od) + (yd * yd));                                                <* 
- *>    myKINE.le = ld;                                                                                <* 
- *>    /+---(complete)-----------------------+/                                                       <* 
- *>    return ld;                                                                                     <* 
- *> }                                                                                                 <*/
 
 char
 ykine_exact_pct_xzy     (float a_pct)
@@ -476,7 +462,7 @@ ykine_exact_context     (char a_leg, float a_margin)
    tMOVE      *x_curr      = NULL;
    tMOVE      *x_prev      = NULL;
    /*---(wipe)---------------------------*/
-   myKINE.exact = myKINE.cell  = '-';
+   myKINE.exact = myKINE.part  = myKINE.cell  = '-';
    myKINE.label [0] = '\0';
    myKINE.sb = myKINE.db = myKINE.cb = myKINE.fb = myKINE.pb = myKINE.tb = myKINE.xb = myKINE.zb = myKINE.yb = myKINE.xzb = myKINE.ob = 0.0;
    myKINE.sc = myKINE.dc = myKINE.cc = myKINE.fc = myKINE.pc = myKINE.tc = myKINE.xc = myKINE.zc = myKINE.yc = myKINE.xzc = myKINE.oc = 0.0;
@@ -521,6 +507,8 @@ ykine_exact_context     (char a_leg, float a_margin)
    /*---(verb)---------------------------*/
    if (x_curr != NULL)  myKINE.vb  = x_curr->verb;
    else                 myKINE.vb  = -1;
+   /*---(distance)-----------------------*/
+   ykine_exact_dist_route (myKINE.vb);
    /*---(exact)--------------------------*/
    DEBUG_YKINE_EXACT  yLOG_complex ("beg"       , "%6.2fsc, %6.2fsb, %6.2fdi, %6.2fma, %c", s_sec, myKINE.sb, s_sec - myKINE.sb, a_margin, (s_sec - myKINE.sb <= a_margin + 0.01) ? 'y' : '-');
    myKINE.exact = '-';
@@ -532,6 +520,7 @@ ykine_exact_context     (char a_leg, float a_margin)
    if (x_curr != NULL) {
       DEBUG_YKINE_EXACT  yLOG_note    ("copy labels and marks");
       strlcpy (myKINE.label, x_curr->label, LEN_LABEL);
+      myKINE.part = x_curr->part;
       myKINE.cell = x_curr->cell;
    }
    /*---(report)-------------------------*/
@@ -606,6 +595,7 @@ yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_labe
    /*---(calc current endpoint)----------*/
    rc = ykine_exact_pct_route (myKINE.vb, x_pct);
    DEBUG_YKINE_EXACT  yLOG_value   ("exact"     , rc);
+   if (myKINE.part == 'm')  ykine_step_yshaper (myKINE.lxz, x_pct, &myKINE.yc);
    /*---(save current endpoint)----------*/
    if (x     != NULL)  *x     = myKINE.xc;
    if (z     != NULL)  *z     = myKINE.zc;

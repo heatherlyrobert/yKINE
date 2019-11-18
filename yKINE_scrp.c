@@ -523,7 +523,7 @@ ykine_scrp_segno        (void)
       if (x_servo->seg == YKINE_FOCU) {
          DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
          ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
-         ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", YKINE_NONE, d, 0.0);
+         ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", '-', YKINE_NONE, d, 0.0);
          ykine_move_addloc (x_servo, x, z, y);
          x_servo->segni [x_servo->nsegno] = x_servo->tail;
          ++(x_servo->nsegno);
@@ -531,7 +531,7 @@ ykine_scrp_segno        (void)
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
             ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
-            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", YKINE_NONE, d, 0.0);
+            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", '-', YKINE_NONE, d, 0.0);
             ykine_move_addloc (x_servo, x, z, y);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
@@ -541,7 +541,7 @@ ykine_scrp_segno        (void)
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
             ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
-            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", YKINE_NONE, d, 0.0);
+            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_cline, "segno", '-', YKINE_NONE, d, 0.0);
             ykine_move_addloc (x_servo, x, z, y);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
@@ -885,7 +885,7 @@ ykine_scrp_section      (void)
       }
       /*---(add filler)----------*/
       DEBUG_YKINE_SCRP   yLOG_complex ("adding"    , "%-10.10s, %6.1fs", x_servo->label, x_dur);
-      ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, -1, "", YKINE_NONE, d, x_dur);
+      ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, -1, "", '-', YKINE_NONE, d, x_dur);
       ykine_move_addloc (x_servo, x, z, y);
       /*---(done)----------------*/
    }
@@ -984,7 +984,7 @@ ykine_scrp_crap         (void)
          ykine_move_addloc (x_servo, x, z, y); /* update */
       } else {
          x_servo = &(g_servo_info [i]);
-         ykine_move_create (x_servo, YKINE_SERVO, x_verb, myKINE.s_cline, "error entry", YKINE_NONE, 0.0, s);
+         ykine_move_create (x_servo, YKINE_SERVO, x_verb, myKINE.s_cline, "error entry", '-', YKINE_NONE, 0.0, s);
          ykine_move_addloc (x_servo, x, z, y);
       }
    }

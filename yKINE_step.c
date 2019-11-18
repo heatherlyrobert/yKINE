@@ -445,18 +445,17 @@ ykine_step_raise       (char a_verb)
    myKINE.ze  = myKINE.zb;
    /*---(increase height)-------------*/
    switch (s_cshape) {
-   case YKINE_SSQUARE :
+   case YKINE_SSQUARE : case YKINE_RSQUARE :
       DEBUG_YKINE_SCRP  yLOG_note    ("square handler");
       if (myKINE.yb >= myKINE.ye)  myKINE.ye = myKINE.yb + myKINE.step_h;
       else                         myKINE.ye = myKINE.ye + myKINE.step_h;
       ye         = myKINE.ye;
       break;
-   case YKINE_SDIRECT :
+   case YKINE_SDIRECT : case YKINE_RDIRECT :
       DEBUG_YKINE_SCRP  yLOG_note    ("direct handler");
       myKINE.ye = myKINE.yb + myKINE.step_h;
       ye        = s_ye      + myKINE.step_h;
       break;
-   case YKINE_RSQUARE :
       break;
    }
    /*---(inverse kinematics)----------*/
@@ -467,7 +466,7 @@ ykine_step_raise       (char a_verb)
    DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
    DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
    DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
-   ykine_accel_append (YKINE_IK, myKINE.a_raise);
+   ykine_accel_append (YKINE_IK, 'r', myKINE.a_raise);
    /*---(put endpoint back)-----------*/
    myKINE.xe = xe;
    myKINE.ze = ze;
@@ -517,10 +516,101 @@ ykine_step_plant       (char a_verb)
    DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
    DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
    DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
-   ykine_accel_append (YKINE_IK, myKINE.a_plant);
+   ykine_accel_append (YKINE_IK, 'p', myKINE.a_plant);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     y-position shapers                       ----===*/
+/*====================------------------------------------====================*/
+static void      o___YSHAPERS________________o (void) {;};
+
+char
+ykine_step__rounded     (float a_xzlen, float a_pct, float *y)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   float       x_dist      =  0.0;
+   char        x_stage     =    0;
+   float       x_frac      =  0.0;
+   float       x_round     =  5.0;
+   float       x_mid       =  0.0;
+   float       x_rev       =  0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_complex ("args"      , "%6.1fxz, %6.3fp, %p", a_xzlen, a_pct, y);
+   /*---(defense)------------------------*/
+   --rce;  if (y == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(determine stage)----------------*/
+   x_mid  = a_xzlen / 2.0;
+   x_dist = a_pct * a_xzlen;
+   x_rev  = a_xzlen - x_dist;
+   if (x_dist < 5.0)   x_stage += 1;
+   if (x_rev  < 5.0)   x_stage += 2;
+   DEBUG_YKINE_SCRP   yLOG_complex ("calcs"     , "mid %6.1f, rev %6.1f, rev %6.1f, stage %d", x_mid, x_dist, x_rev, x_stage);
+   /*---(deal with contension)-----------*/
+   if (x_stage == 3) {
+      if (x_dist <= x_mid)  x_stage = 1;
+      else                  x_stage = 2;
+      DEBUG_YKINE_SCRP   yLOG_value   ("new stage" , x_stage);
+   }
+   /*---(handle adjustment)--------------*/
+   x_frac = (3.1415927 / 2.0) / x_round;
+   switch (x_stage) {
+   case  0 :
+      DEBUG_YKINE_SCRP   yLOG_note    ("middle stage");
+      *y += x_round;
+      break;
+   case  1 :
+      DEBUG_YKINE_SCRP   yLOG_note    ("raise stage");
+      *y += sin (x_dist * x_frac) * x_round;
+      break;
+   case  2 :
+      DEBUG_YKINE_SCRP   yLOG_note    ("plant stage");
+      *y += sin (x_rev * x_frac) * x_round;
+      break;
+   }
+   DEBUG_YKINE_SCRP  yLOG_double  ("new y"     , *y);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_step_yshaper      (float a_xzlen, float a_pct, float *y)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_complex ("args"      , "%6.1fxz, %6.3fp, %p", a_xzlen, a_pct, y);
+   DEBUG_YKINE_SCRP   yLOG_char    ("cshape"    , s_cshape);
+   switch (s_cshape) {
+   case YKINE_STRAIGHT :
+      DEBUG_YKINE_SCRP   yLOG_note    ("straight, nothing to do");
+      break;
+   case YKINE_SSQUARE  : case YKINE_SDIRECT  :
+      DEBUG_YKINE_SCRP   yLOG_note    ("sharp, nothing to do");
+      break;
+   case YKINE_RSQUARE  : case YKINE_RDIRECT  :
+      DEBUG_YKINE_SCRP   yLOG_note    ("rounded, calling handler");
+      rc = ykine_step__rounded (a_xzlen, a_pct, y);
+      break;
+   default :
+      DEBUG_YKINE_SCRP   yLOG_note    ("unknown, nothing to do");
+      break;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return rc;
 }
 
 

@@ -185,7 +185,7 @@ ykine_turtle_head       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
    /*---(update turtle)---------------*/
    s_head  = d;
-   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, 0.0);   <*/
+   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, '-', YKINE_NONE, 0.0, 0.0);   <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -217,7 +217,7 @@ ykine_turtle_turn       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
    /*---(update turtle)---------------*/
    s_head  = d;
-   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, YKINE_NONE, 0.0, 0.0);   <*/
+   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, '-', YKINE_NONE, 0.0, 0.0);   <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;

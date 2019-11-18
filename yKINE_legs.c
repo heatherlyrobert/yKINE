@@ -974,7 +974,7 @@ ykine_legs_driver    (char a_verb)
       DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
       DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
       if (myKINE.b >= 0)  ykine_accel_immediate   (a_verb, x_leg, myKINE.b    , x_label);
-      else                ykine_accel_append      (a_verb, myKINE.a_middle);
+      else                ykine_accel_append      (a_verb, 'm', myKINE.a_middle);
       /*---(if step, create plant)-------*/
       rc = ykine_step_plant    (a_verb);
       rc = ykine_accel_execute (x_label);
