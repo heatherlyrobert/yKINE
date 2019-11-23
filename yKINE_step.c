@@ -119,20 +119,21 @@ struct cSEQ {
    char        name        [LEN_LABEL];
    char        seq         [LEN_LABEL];
    int         grps;
+   int         offsets     [10];
    float       min;
    char        desc        [LEN_DESC];
 };
 tSEQ        s_seqs      [MAX_SEQ] = {
-   { 's', "spiral"         , "0.1.2.3.4.5" , 6, 0.34, "rolling right to left"        },
-   { 'S', "r.spiral"       , "5.4.3.2.1.0" , 6, 0.34, "rolling left to right"        },
-   { 'r', "ripple"         , "0.3.1.4.2.5" , 6, 0.34, "back and forth opposing legs" },
-   { 'R', "r.ripple"       , "5.2.4.1.3.0" , 6, 0.34, "back and forth opposing legs" },
-   { 'a', "alternate"      , "0.2.4.1.5.5" , 6, 0.34, "triple sequence"              },
-   { 'A', "r.alternate"    , "5.3.1.4.2.0" , 6, 0.34, "triple sequence"              },
-   { 'd', "double"         , "03.14.25"    , 3, 1.00, "synchronize opposing pairs"   },
-   { 'D', "r.double"       , "25.14.03"    , 3, 1.00, "synchronize opposing pairs"   },
-   { 't', "triple"         , "024.135"     , 2, 1.00, "alternating triangles"        },
-   { 'T', "r.triple"       , "135.024"     , 2, 1.00, "alternating triangles"        },
+   { 's', "spiral"         , "0.1.2.3.4.5" , 6, { 0, 1, 2, 3, 4, 5 }, 0.34, "rolling right to left"        },
+   { 'S', "r.spiral"       , "5.4.3.2.1.0" , 6, { 5, 4, 3, 2, 1, 0 }, 0.34, "rolling left to right"        },
+   { 'r', "ripple"         , "0.3.1.4.2.5" , 6, { 0, 2, 4, 1, 3, 5 }, 0.34, "back and forth opposing legs" },
+   { 'R', "r.ripple"       , "5.2.4.1.3.0" , 6, { 5, 3, 1, 4, 2, 0 }, 0.34, "back and forth opposing legs" },
+   { 'a', "alternate"      , "0.2.4.1.5.5" , 6, { 0, 3, 1, 4, 2, 5 }, 0.34, "triple sequence"              },
+   { 'A', "r.alternate"    , "5.3.1.4.2.0" , 6, { 5, 2, 4, 1, 3, 0 }, 0.34, "triple sequence"              },
+   { 'd', "double"         , "03.14.25"    , 3, { 0, 1, 2, 0, 1, 2 }, 1.00, "synchronize opposing pairs"   },
+   { 'D', "r.double"       , "25.14.03"    , 3, { 2, 1, 0, 2, 1, 0 }, 1.00, "synchronize opposing pairs"   },
+   { 't', "triple"         , "024.135"     , 2, { 0, 1, 0, 1, 0, 1 }, 1.00, "alternating triangles"        },
+   { 'T', "r.triple"       , "135.024"     , 2, { 1, 0, 1, 0, 1, 0 }, 1.00, "alternating triangles"        },
    {  0 , "end-list"       , ""                                                   },
 };
 int         s_nseq      = 0;
@@ -304,10 +305,12 @@ ykine_step_seq          (char *a_seq)
       myKINE.off = s_speeds [i].value;
       break;
    }
+   DEBUG_YKINE_SCRP   yLOG_char    ("s_cspeed"  , s_cspeed);
    --rce;  if (s_cspeed == '-') {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_YKINE_SCRP   yLOG_double  ("off"       , myKINE.off);
    /*---(find sequence)------------------*/
    for (i = 0; i < s_nseq; ++i) {
       if (strcmp (s_seqs [i].name, a_seq + 2) != 0)  continue;
@@ -315,12 +318,14 @@ ykine_step_seq          (char *a_seq)
       myKINE.seq = i;
       break;
    }
+   DEBUG_YKINE_SCRP   yLOG_char    ("s_cseq"    , s_cseq);
    --rce;  if (s_cseq == '-') {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       s_cspeed      = '-';
       myKINE.off    = 0.0;
       return rce;
    }
+   DEBUG_YKINE_SCRP   yLOG_double  ("seq"       , myKINE.seq);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -383,6 +388,7 @@ char
 ykine_step_accels       (void)
 {
    char        x_end       =    0;
+   float       x_pct       =  0.0;
    strlcpy (myKINE.a_raise , "", LEN_LABEL);
    strlcpy (myKINE.a_middle, "", LEN_LABEL);
    strlcpy (myKINE.a_plant , "", LEN_LABEL);
@@ -392,19 +398,25 @@ ykine_step_accels       (void)
       ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_middle);
       break;
    case YKINE_SSQUARE  : case YKINE_SDIRECT  :
-      x_end = ACCEL_TURTLE; /* fastest through sharp corners  */
+      x_end = ACCEL_TURTLE; /* speed limit through sharp corners  */
       if (myKINE.a_speedn < ACCEL_TURTLE)  x_end = myKINE.a_speedn;
       ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
       ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_middle);
       ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_plant );
       break;
    case YKINE_RSQUARE  : case YKINE_RDIRECT  :
-      x_end = ACCEL_MOD;  /* fastest through curved corners  */
+      x_end = ACCEL_MOD;  /* speed limit through curved corners  */
       if (myKINE.a_speedn < ACCEL_MOD)     x_end = myKINE.a_speedn;
       ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
       ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_middle);
       ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_plant );
       break;
+   }
+   if (myKINE.seq <  0) {
+      ykine_accel_body_adj (0.00 , myKINE.a_body);
+   } else {
+      x_pct = s_seqs [myKINE.seq].grps * myKINE.off;
+      ykine_accel_body_adj (x_pct, myKINE.a_body);
    }
    return 0;
 }
@@ -529,52 +541,81 @@ ykine_step_plant       (char a_verb)
 /*====================------------------------------------====================*/
 static void      o___YSHAPERS________________o (void) {;};
 
+static float       s_dist      =  0.0;
+static char        s_stage     =    0;
+static float       s_frac      =  0.0;
+static float       s_round     =  5.0;
+static float       s_mid       =  0.0;
+static float       s_rev       =  0.0;
+
+
 char
-ykine_step__rounded     (float a_xzlen, float a_pct, float *y)
+ykine_step__prepare     (float a_xzlen, float a_pct, float *y, float a_exit)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
-   float       x_dist      =  0.0;
-   char        x_stage     =    0;
-   float       x_frac      =  0.0;
-   float       x_round     =  5.0;
-   float       x_mid       =  0.0;
-   float       x_rev       =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_complex ("args"      , "%6.1fxz, %6.3fp, %p", a_xzlen, a_pct, y);
+   DEBUG_YKINE_SCRP   yLOG_complex ("args"      , "%6.1fxz, %6.3fp, %-10p, %6.1fx", a_xzlen, a_pct, y, a_exit);
    /*---(defense)------------------------*/
    --rce;  if (y == NULL) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(determine stage)----------------*/
-   x_mid  = a_xzlen / 2.0;
-   x_dist = a_pct * a_xzlen;
-   x_rev  = a_xzlen - x_dist;
-   if (x_dist < 5.0)   x_stage += 1;
-   if (x_rev  < 5.0)   x_stage += 2;
-   DEBUG_YKINE_SCRP   yLOG_complex ("calcs"     , "mid %6.1f, rev %6.1f, rev %6.1f, stage %d", x_mid, x_dist, x_rev, x_stage);
+   s_mid   = a_xzlen / 2.0;
+   s_dist  = a_pct * a_xzlen;
+   s_rev   = a_xzlen - s_dist;
+   s_stage = 0;
+   if (s_dist < s_round)   s_stage += 1;
+   if (s_rev  < s_round)   s_stage += 4;
+   DEBUG_YKINE_SCRP   yLOG_complex ("calcs"     , "mid %6.1f, rev %6.1f, rev %6.1f, stage %d", s_mid, s_dist, s_rev, s_stage);
    /*---(deal with contension)-----------*/
-   if (x_stage == 3) {
-      if (x_dist <= x_mid)  x_stage = 1;
-      else                  x_stage = 2;
-      DEBUG_YKINE_SCRP   yLOG_value   ("new stage" , x_stage);
+   if (s_stage == 5) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("very small movement");
+      if (s_dist <= s_mid)  s_stage = 1;
+      else                  s_stage = 4;
+   }
+   /*---(mid-points)---------------------*/
+   if (s_stage == 0) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("break middle into fore/aft");
+      if (s_dist <= s_mid)  s_stage = 2;
+      else                  s_stage = 3;
+   }
+   DEBUG_YKINE_SCRP   yLOG_value   ("new stage" , s_stage);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+}
+
+char
+ykine_step__rounded     (float a_xzlen, float a_pct, float *y)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   float       x_frac      =  0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   rc = ykine_step__prepare (a_xzlen, a_pct, y, 90.0);
+   --rce;  if (rc < 0)  {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    /*---(handle adjustment)--------------*/
-   x_frac = (3.1415927 / 2.0) / x_round;
-   switch (x_stage) {
-   case  0 :
-      DEBUG_YKINE_SCRP   yLOG_note    ("middle stage");
-      *y += x_round;
-      break;
+   x_frac = (3.1415927 / 2.0) / s_round;
+   switch (s_stage) {
    case  1 :
       DEBUG_YKINE_SCRP   yLOG_note    ("raise stage");
-      *y += sin (x_dist * x_frac) * x_round;
+      *y += sin (s_dist * x_frac) * s_round;
       break;
-   case  2 :
+   case  2 : case  3 :
+      DEBUG_YKINE_SCRP   yLOG_note    ("middle stage");
+      *y += s_round;
+      break;
+   case  4 :
       DEBUG_YKINE_SCRP   yLOG_note    ("plant stage");
-      *y += sin (x_rev * x_frac) * x_round;
+      *y += sin (s_rev * x_frac) * s_round;
       break;
    }
    DEBUG_YKINE_SCRP  yLOG_double  ("new y"     , *y);
@@ -612,6 +653,113 @@ ykine_step_yshaper      (float a_xzlen, float a_pct, float *y)
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return rc;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       step sequencing                        ----===*/
+/*====================------------------------------------====================*/
+static void      o___SEQUENCING______________o (void) {;};
+
+static float       xe, ze, ye, fe, pe, te;
+
+char
+ykine_step_begin       (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         x_leg       =    0;
+   float       x_wait      =  0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_value   ("seq"       , myKINE.seq);
+   --rce;  if (myKINE.seq < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
+   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   /*---(save endpoint)---------------*/
+   xe         = myKINE.xe;
+   ze         = myKINE.ze;
+   ye         = myKINE.ye;
+   fe         = myKINE.fe;
+   pe         = myKINE.pe;
+   te         = myKINE.te;
+   /*---(match to beginning)----------*/
+   myKINE.xe  = myKINE.xb;
+   myKINE.ze  = myKINE.zb;
+   myKINE.ye  = myKINE.yb + yKINE_seglen (YKINE_FOOT);
+   myKINE.fe  = myKINE.fb;
+   myKINE.pe  = myKINE.pb;
+   myKINE.te  = myKINE.tb;
+   DEBUG_YKINE_SCRP   yLOG_complex ("r.beg"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("r_end"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
+   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   /*---(add to leg)------------------*/
+   x_leg  = myKINE.leg - 1;
+   x_wait = s_seqs [myKINE.seq].offsets [x_leg] * myKINE.off;
+   ykine_accel_seq_beg (myKINE.leg, x_wait);
+   /*---(put it back)-----------------*/
+   myKINE.xe  = xe;
+   myKINE.ze  = ze;
+   myKINE.ye  = ye;
+   myKINE.fe  = fe;
+   myKINE.pe  = pe;
+   myKINE.te  = te;
+   DEBUG_YKINE_SCRP   yLOG_complex ("a_beg"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("a_end"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
+   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_step_end         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         x_leg       =    0;
+   float       x_wait      =  0.0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_value   ("seq"       , myKINE.seq);
+   --rce;  if (myKINE.seq < 0) {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(match to beginning)----------*/
+   myKINE.xb  = myKINE.xe = xe;
+   myKINE.zb  = myKINE.ze = ze;
+   myKINE.yb  = myKINE.ye = ye;
+   myKINE.fb  = myKINE.fe = fe;
+   myKINE.pb  = myKINE.pe = pe;
+   myKINE.tb  = myKINE.te = te;
+   myKINE.ye += yKINE_seglen (YKINE_FOOT);
+   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
+   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
+   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   /*---(add to leg)------------------*/
+   x_leg  = myKINE.leg - 1;
+   x_wait = (s_seqs [myKINE.seq].grps - 1 - s_seqs [myKINE.seq].offsets [x_leg]) * myKINE.off;
+   ykine_accel_seq_end (myKINE.leg, x_wait);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
 
 
 

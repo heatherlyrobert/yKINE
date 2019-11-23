@@ -432,6 +432,7 @@ ykine_stance            (void)
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
    char        rc          =    0;
+   char       *x_accel     [LEN_LABEL];
    char       *x_one       [LEN_LABEL];
    char       *x_two       [LEN_LABEL];
    char       *x_thr       [LEN_LABEL];
@@ -447,9 +448,10 @@ ykine_stance            (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   strlcpy (x_accel, myKINE.accel, LEN_LABEL);
    /*---(create record)------------------*/
    if (myKINE.b >= 0)   sprintf (x_recd, "zero    (%6.1f, 0.0r, 0.0r, %s, %s)", myKINE.b, x_thr, x_label);
-   else                 sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %s, %s)"   , myKINE.accel, x_thr, x_label);
+   else                 sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %s, %s)"   , myKINE.a_body, x_thr, x_label);
    DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
    /*---(parse)--------------------------*/
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
@@ -467,8 +469,8 @@ ykine_stance            (void)
       return rce;
    }
    /*---(create record)------------------*/
-   if (myKINE.b >= 0)   sprintf (x_recd, "radial  (AA, %6.1f, %s, %s, %s, %s)", myKINE.b, x_one, x_two, "-.-", x_label);
-   else                 sprintf (x_recd, "radial  (AA, %s, %s, %s, %s, %s)"   , myKINE.accel, x_one, x_two, "-.-", x_label);
+   if (myKINE.b >= 0)   sprintf (x_recd, "radial  (AA, %6.1f, %s, %s, %s, %s, %s)", myKINE.b, x_one, x_two, "-.-", x_label, x_mods);
+   else                 sprintf (x_recd, "radial  (AA, %s, %s, %s, %s, %s, %s)"   , x_accel, x_one, x_two, "-.-", x_label, x_mods);
    DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
    /*---(parse)--------------------------*/
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
@@ -592,54 +594,172 @@ yKINE_verify_rc            (int a_row, int a_col)
 /*====================------------------------------------====================*/
 static void      o___HEXAGONAL_______________o (void) {;}
 
+/*
+ *
+ *   hexagon grid standard coordinate system
+ *
+ *                        North is Negative Z
+ *       ____        ____        ____        ____        ____  
+ *      /    µ      /    µ      /····µ      /    µ      /    µ 
+ *     / -3   µ____/ -3   µ____/·-3···µ____/ -3   µ____/ -3   µ
+ *     µ  -4  /    µ  -2  /    µ···0··/    µ   2  /    µ   4  /
+ *      µ____/ -2   µ____/ -2   µ____/ -2   µ____/ -2   µ____/      
+ *      /    µ  -3  /    µ      /····µ   1  /    µ   3  /    µ        
+ *     / -2   µ____/ -2   µ____/·-2···µ____/ -2   µ____/ -2   µ  row
+ *     µ  -4  /    µ  -2  /    µ···0··/    µ   2  /    µ   4  /    col
+ *      µ____/ -1   µ____/ -1   µ____/ -1   µ____/ -1   µ____/ 
+ *      /    µ  -3  /    µ  -1  /····µ   1  /    µ   3  /    µ 
+ *     / -1   µ____/ -1   µ____/·-1···µ____/ -1   µ____/ -1   µ
+ *     µ  -4  /´´´´µ  -2  /´´´´µ···0··/´´´´µ   2  /´´´´µ   4  /
+ *      µ____/´´0´´´µ____/´´0´´´µ____/´´0´´´µ____/´´0´´´µ____/
+ * W    /´´´´µ´´-3´´/´´´´µ´´-1´´/´´´´µ´´´1´´/´´´´µ´´´3´´/´´´´µ    E
+ * e   /´´0´´´µ´´´´/´´0´´´µ´´´´/´´0´´´µ´´´´/´´0´´´µ´´´´/´´0´´´µ   a
+ * s   µ´´-4´´/    µ´´-2´´/    µ´´´0´´/    µ´´´2´´/    µ´´´4´´/   s
+ * t    µ´´´´/  1   µ´´´´/  1   µ´´´´/  1   µ´´´´/  1   µ´´´´/    t
+ *      /    µ  -3  /    µ  -1  /····µ   1  /    µ   3  /    µ 
+ *     /  1   µ____/  1   µ____/··1···µ____/  1   µ____/  1   µ
+ *     µ  -4  /    µ  -2  /    µ···0··/    µ   2  /    µ   4  /
+ *      µ____/  2   µ____/  2   µ____/  2   µ____/  2   µ____/ 
+ *      /    µ  -3  /    µ  -1  /····µ   1  /    µ   3  /    µ 
+ *     /  2   µ____/  2   µ____/··2···µ____/  2   µ____/  2   µ
+ *     µ  -4  /    µ  -2  /    µ···0··/    µ   2  /    µ   4  /
+ *      µ____/  3   µ____/  3   µ____/  3   µ____/  3   µ____/ 
+ *      /    µ  -3  /    µ  -1  /····µ   1  /    µ   3  /    µ 
+ *     /  3   µ____/  3   µ____/··3···µ____/  3   µ____/  3   µ
+ *     µ  -4  /    µ  -2  /    µ···0··/    µ   2  /    µ   4  /
+ *      µ____/      µ____/      µ____/      µ____/      µ____/ 
+ *
+ *                       South is Positive Z
+ *
+ *
+ *
+ *   hexagon neighbors references
+ *
+ *           LF                  North                 RF    
+ *              (8+16) 24          8          12 (4+8)                   
+ *                         µ________________/                           
+ *                         /                µ                          
+ *                        /                  µ                          
+ *       South-West      /                    µ     North-East          
+ *                  16  /                      µ  4                     
+ *                     /                        µ                       
+ *                    /                          µ                      
+ *                   /                            µ                     
+ * LM  (16+32) 48 __/                              µ__ 6 (2+4)   RM
+ *                  µ                              /                    
+ *                   µ                            /                     
+ *                    µ                          /                      
+ *                     µ                        /                       
+ *                  32  µ                      /  2                     
+ *       South-West      µ                    /     South-East          
+ *                        µ                  /                          
+ *                         µ________________/                          
+ *                         /                µ             
+ *              (32+1) 33          1           3 (1+2)    
+ *          LR                   South                 RR   
+ */
+
+static float       s_fd [10];
+
+char
+ykine__neighbors        (float a_x, float a_z, int a_col, int a_row)
+{
+   char        rc          =     0;
+   int         i;
+   float       gx, gz;
+   float       xd, zd, nxd, nzd;
+   float       z_limit = MM2ROW / 3.0;
+   float       x_limit = MM2COL / 3.0;
+   int         x_factor    =    0;
+   /*---(prepare)------------------------*/
+   yKINE_hex2xz (a_col, a_row, &gx, &gz);
+   for (i = 0; i < 10; ++i)  s_fd [i] = 1.0;
+   /*---(original point)-----------------*/
+   xd     = a_x - gx;
+   zd     = a_z - gz;
+   s_fd [0] = sqrt ((xd * xd) + (zd * zd)) / MM2ROW;
+   /*> printf ("%6.1fx  %6.1fz  %3dc  %3dr  %6.1fgx  %6.1fgz   ", a_x, a_z, a_col, a_row, gx, gz);   <*/
+   /*---(front)--------------------------*/
+   /*> if (zd >=  z_limit) {                                                          <*/
+      nzd    = MM2ROW - zd;
+      nxd    = xd;
+      s_fd [1] = sqrt ((nxd * nxd) + (nzd * nzd)) / MM2ROW;
+   /*> }                                                                              <*/
+   /*---(right)--------------------------*/
+   /*> if (xd >=  z_limit) {                                                          <*/
+      nxd    = MM2COL - xd;
+      nzd    = (MM2ROW / 2.0) + zd;
+      s_fd [3] = sqrt ((nxd * nxd) + (nzd * nzd)) / MM2ROW;
+      nzd    = (MM2ROW / 2.0) - zd;
+      s_fd [2] = sqrt ((nxd * nxd) + (nzd * nzd)) / MM2ROW;
+   /*> }                                                                              <*/
+   /*---(behind)-------------------------*/
+   /*> if (zd <= -z_limit) {                                                          <*/
+      nzd    = MM2ROW + zd;
+      nxd    = xd;
+      s_fd [4] = sqrt ((nxd * nxd) + (nzd * nzd)) / MM2ROW;
+   /*> }                                                                              <*/
+   /*---(left)---------------------------*/
+   /*> if (xd <= -z_limit) {                                                          <*/
+      nxd    = MM2COL + xd;
+      nzd    = (MM2ROW / 2.0) + zd;
+      s_fd [5] = sqrt ((nxd * nxd) + (nzd * nzd)) / MM2ROW;
+      nzd    = (MM2ROW / 2.0) - zd;
+      s_fd [6] = sqrt ((nxd * nxd) + (nzd * nzd)) / MM2ROW;
+   /*> }                                                                              <*/
+   /*---(compare)------------------------*/
+   /*> printf ("··  ");                                                               <*/
+   for (i = 0; i < 7; ++i) {
+      if (i > 0)  x_factor = pow (2, i - 1);
+      /*> printf ("   (%2d) %4.2f", x_factor, s_fd [i]);                                <*/
+      if (s_fd [i] <= 0.67)  rc += x_factor;
+   }
+   /*> printf ("  ··  %d\n\n", rc);                                                   <*/
+   /*---(complete)-----------------------*/
+   return rc;
+
+}
+
+char
+yKINE_neighbors         (float *a_center, float *a_s, float *a_se, float *a_ne, float *a_n, float *a_nw, float *a_sw)
+{
+   if (a_center != NULL)  *a_center = s_fd [0];
+   if (a_s      != NULL)  *a_s      = s_fd [1];
+   if (a_se     != NULL)  *a_se     = s_fd [2];
+   if (a_ne     != NULL)  *a_ne     = s_fd [3];
+   if (a_n      != NULL)  *a_n      = s_fd [4];
+   if (a_nw     != NULL)  *a_nw     = s_fd [5];
+   if (a_sw     != NULL)  *a_sw     = s_fd [6];
+   return 0;
+}
+
 char
 yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o)
 {
    /*---(locals)-----------+-----+-----+-*/
-   float       x_inch, xd, zd, fd, x_deg;
+   float       x_inch, xd, nz, zd, x_deg;
    int         x_base;
    int         rc          =    0;
    char        x_rig       =  '-';
-   /*---(header)-------------------------*/
-   /*> printf ("%8.2fx, %8.2fz   ", x, z);                                            <*/
    /*---(set base col)-------------------*/
    x_inch = x / MM2COL;
    x_base = round (x_inch);
    xd     = x_inch - x_base;
    *c     = x_base;
-   /*> printf ("  col %8.2fx, %8.2fi, %4db, %5.2fd   ", x, x_inch, x_base, xd);       <*/
+   /*> printf ("col %8.2fx, %8.2f¶, %4db, %5.2fxd   ", x, x_inch, x_base, xd);        <*/
    /*---(set base row)-------------------*/
-   if (*c %  2 !=  0)  z -= 14.664;
-   x_inch = z / MM2ROW;
+   nz     = z;
+   if (*c %  2 !=  0)  nz += MM2ROW / 2.0;
+   x_inch = nz / MM2ROW;
    x_base = round (x_inch);
    zd     = x_inch - x_base;
    *r     = x_base;
-   /*> printf ("  row %8.2fz, %8.2fi, %4db, %5.2fd   ", z, x_inch, x_base, zd);       <*/
+   /*> printf ("··   row %8.2fz, %8.2fnz, %8.2f¶, %4db, %5.2fzd\n", z, nz, x_inch, x_base, zd);   <*/
+   /*---(check each dist)----------------*/
+   rc = ykine__neighbors (x, z, *c, *r);
    /*---(formulate rc)-------------------*/
-   fd     = sqrt ((xd * xd) + (zd * zd));
-   x_deg  = atan2 (xd, zd) * RAD2DEG;
-   while (x_deg <   0.0)  x_deg += 360.0;
-   while (x_deg > 360.0)  x_deg -= 360.0;
-   /*> printf ("  dir %8.2fd, %8.2fd   ", fd, x_deg);                                 <*/
-   if (fd >= 0.33) {
-      /*---(direction)--*/
-      if      (x_deg <   15)   rc =  1;
-      else if (x_deg <   45)   rc =  3;
-      else if (x_deg <   75)   rc =  2;
-      else if (x_deg <  115)   rc =  6;
-      else if (x_deg <  135)   rc =  4;
-      else if (x_deg <  165)   rc = 12;
-      else if (x_deg <= 195)   rc =  8;
-      else if (x_deg <= 225)   rc = 24;
-      else if (x_deg <= 255)   rc = 16;
-      else if (x_deg <= 285)   rc = 48;
-      else if (x_deg <= 315)   rc = 32;
-      else if (x_deg <= 345)   rc = 33;
-      else                     rc =  1;
-   }
    if (d != NULL)  *d = x_deg;
-   if (o != NULL)  *o = fd;
-   /*> printf ("--   rc %3d\n", rc);                                                  <*/
+   if (o != NULL)  *o = s_fd [0];
    /*---(complete)-----------------------*/
    return rc;
 }
@@ -657,7 +777,41 @@ yKINE_hex2xz            (int c, int r, float *x, float *z)
    /*> printf ("%6dr, %6dc\n", r, c);                                                 <*/
    *x = c * MM2COL;
    *z = r * MM2ROW;
-   if (c % 2 != 0)  *z -= 14.664;
+   if (c % 2 != 0)  *z -= MM2ROW / 2.0;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yKINE_hex2adj           (int c, int r, int rc, int *ac, int *ar)
+{
+   char        rce         =  -10;
+   --rce;  if (ac == NULL)  return rce;
+   --rce;  if (ar == NULL)  return rce;
+   *ac = c;
+   *ar = r;
+   /*---(update row)---------------------*/
+   /*> switch (rc) {                                                                  <* 
+    *> case   1  : *ar += 1;                    break;                                <* 
+    *> case   2  : if (*ac % 2 == 0)  *ar += 1; break;                                <* 
+    *> case   4  : if (*ac % 2 != 0)  *ar -= 1; break;                                <* 
+    *> case   8  : *ar -= 1;                    break;                                <* 
+    *> case  16  : if (*ac % 2 != 0)  *ar -= 1; break;                                <* 
+    *> case  32  : if (*ac % 2 == 0)  *ar += 1; break;                                <* 
+    *> }                                                                              <*/
+   switch (rc) {
+   case   1  : *ar += 1;                    break;
+   case   2  : if (*ac % 2 == 0)  *ar += 1; break;
+   case   4  : if (*ac % 2 != 0)  *ar -= 1; break;
+   case   8  : *ar -= 1;                    break;
+   case  16  : if (*ac % 2 != 0)  *ar -= 1; break;
+   case  32  : if (*ac % 2 == 0)  *ar += 1; break;
+   }
+   /*---(update col)---------------------*/
+   switch (rc) {
+   case   2  : case   4  : *ac += 1;       break;
+   case  16  : case  32  : *ac -= 1;       break;
+   }
    /*---(complete)-----------------------*/
    return 0;
 }

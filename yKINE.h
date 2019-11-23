@@ -313,6 +313,7 @@
 #define     YKINE_TPU       22
 #define     YKINE_TPO       23
 #define     YKINE_ST        24
+#define     YKINE_WAIT      25
 
 
 
@@ -480,9 +481,11 @@ char        yKINE_move_rpt          (void);
 char        yKINE_sect_rpt          (void);
 
 
+char        yKINE_neighbors         (float *a_center, float *a_s, float *a_se, float *a_ne, float *a_n, float *a_nw, float *a_sw);
 char        yKINE_xz2hexdo          (float x, float z, int *c, int *r, float *d, float *o);
 char        yKINE_xz2hex            (float x, float z, int *c, int *r);
 char        yKINE_hex2xz            (int c, int r, float *x, float *z);
+char        yKINE_hex2adj           (int c, int r, int rc, int *ac, int *ar);
 char        yKINE_verify_rc         (int a_row, int a_col);
 
 

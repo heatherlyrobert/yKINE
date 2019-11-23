@@ -70,7 +70,7 @@ static float   s_exact    = 0.0;
 
 static char    s_accels   [LEN_LABEL] = "tsmfx<[";
 static char    s_decels   [LEN_LABEL] = "tsmfx>]";
-static char    s_speeds   [LEN_LABEL] = "tsmfx";
+static char    s_speeds   [LEN_LABEL] = "tsmfx/";
 
 static int     s_cpart    =  0;
 
@@ -367,6 +367,7 @@ ykine_accel_calc        (char a_part, char a_verb, char a_action)
    DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
    /*---(init)---------------------------*/
    if (a_part == 0)  ykine_accel__clear ();
+   /*---(handle)-------------------------*/
    ykine_exact_dist_route (a_verb);
    ykine_accel__alloc  (a_part, myKINE.le);
    ykine_accel__dist   (&x_dist, &x_dur);
@@ -509,11 +510,11 @@ ykine_accel_dur         (cchar *a_dur)
 char
 ykine_accel_timing_save (void)
 {
-      myKINE.a_acceln = s_acceln;
-      myKINE.a_deceln = s_deceln;
-      myKINE.a_speedn = s_speedn;
-      myKINE.a_exact  = s_exact;
-      return 0;
+   myKINE.a_acceln = s_acceln;
+   myKINE.a_deceln = s_deceln;
+   myKINE.a_speedn = s_speedn;
+   myKINE.a_exact  = s_exact;
+   return 0;
 }
 
 char
@@ -552,13 +553,35 @@ ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_dec
    char        rce         =  -10;
    char        x_exact     [LEN_LABEL] = "";
    char        x_accel, x_speed, x_decel;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   --rce;  if (a_out == NULL)                 return rce;
+   DEBUG_YKINE_SCRP   yLOG_spoint  (a_out);
+   --rce;  if (a_out == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
    strlcpy (a_out, "", LEN_LABEL);
-   --rce;  if (a_acceln < 0 || a_acceln > 4)  return rce;
-   --rce;  if (a_speedn < 0 || a_speedn > 4)  return rce;
-   --rce;  if (a_deceln < 0 || a_deceln > 4)  return rce;
-   --rce;  if (a_exact  < 0.0)                return rce;
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_acceln);
+   --rce;  if (a_acceln < 0 || a_acceln > 4) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_speedn);
+   --rce;  if (a_speedn < 0 || a_speedn > 4) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sint    (a_deceln);
+   --rce;  if (a_deceln < 0 || a_deceln > 4) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_sdouble (a_exact);
+   --rce;  if (a_exact  < 0.0) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(limits)-------------------------*/
    if      (a_acceln >  a_speedn)  a_acceln = a_speedn;
    if      (a_deceln >  a_speedn)  a_deceln = a_speedn;
@@ -575,7 +598,41 @@ ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_dec
       else                               sprintf (x_exact, "%.1f", a_exact);
    }
    sprintf (a_out, "%c%s%c%c", x_accel, x_exact, x_speed, x_decel);
+   DEBUG_YKINE_SCRP   yLOG_snote   (a_out);
    /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+ykine_accel_body_adj    (float a_pct, char *a_out)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        x_exact     [LEN_LABEL] = "";
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP   yLOG_sdouble (a_pct);
+   DEBUG_YKINE_SCRP   yLOG_spoint  (a_out);
+   /*---(defense)------------------------*/
+   --rce;  if (a_out == NULL) {
+      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   if (s_exact <  0.1) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("no exact");
+      sprintf (a_out, "%c%c%c", s_accel, s_speed, s_decel);
+   } else if (a_pct   <= 0.0) {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("no pecent");
+      sprintf (a_out, "%c%.1f%c%c", s_accel, s_exact, s_speed, s_decel);
+   } else {
+      DEBUG_YKINE_SCRP   yLOG_snote   ("exact and percent");
+      sprintf (x_exact, "%.1f", s_exact * a_pct);
+      sprintf (a_out, "%c%s%c%c", s_accel, x_exact, s_speed, s_decel);
+   }
+   DEBUG_YKINE_SCRP   yLOG_snote   (a_out);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -649,13 +706,17 @@ ykine_accel__servo     (char a_verb, char a_leg, int a_seg, float a_deg, float a
    switch (a_verb) {
    case YKINE_OR : case YKINE_TI :
       break;
+   case YKINE_WAIT :
+      rc = ykine_move_addloc (x_servo, myKINE.xe, myKINE.ze, myKINE.ye);
+      break;
+   case YKINE_FK :
+      x_meth = YKINE_FK;
    default       :
-      if (a_verb == YKINE_FK)  x_meth = YKINE_FK;
       rc = yKINE_endpoint    (a_leg, a_seg, x_meth, NULL, NULL, &x, &z, &y, NULL);
-      DEBUG_YKINE_SCRP   yLOG_complex ("updated"   , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
       rc = ykine_move_addloc (x_servo, x, z, y);
       break;
    }
+   DEBUG_YKINE_SCRP   yLOG_complex ("updated"   , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -758,20 +819,34 @@ ykine_accel_immediate   (char a_verb, char a_leg, float a_beats, char *a_label)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(normal)-------------------------*/
-   if (a_beats >= 0)  {
-      DEBUG_YKINE_SCRP   yLOG_note    ("unaccelerated move");
-      switch (a_verb) {
-      case YKINE_ZE : case YKINE_PO :
-         ykine_accel__zero   (a_verb, myKINE.xe, myKINE.ze, myKINE.ye, a_beats, a_label, YKINE_NONE);
-         break;
-      default  :
-         ykine_accel__single (a_verb, a_leg, myKINE.fe, myKINE.pe, myKINE.te, a_beats, a_label, '-', YKINE_NONE);
-         break;
-      }
+   --rce;  if (a_beats < 0)  {
+      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_SCRP   yLOG_note    ("unaccelerated move");
+   switch (a_verb) {
+   case YKINE_ZE : case YKINE_PO :
+      ykine_accel__zero   (a_verb, myKINE.xe, myKINE.ze, myKINE.ye, a_beats, a_label, YKINE_NONE);
+      break;
+   default  :
+      ykine_accel__single (a_verb, a_leg, myKINE.fe, myKINE.pe, myKINE.te, a_beats, a_label, '-', YKINE_NONE);
+      break;
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+char
+ykine_accel_seq_beg     (char a_leg, float a_wait)
+{
+   return ykine_accel_immediate (YKINE_WAIT, a_leg, a_wait * s_exact, "step_beg");
+}
+
+char
+ykine_accel_seq_end     (char a_leg, float a_wait)
+{
+   return ykine_accel_immediate (YKINE_WAIT, a_leg, a_wait * s_exact, "step_end");
 }
 
 

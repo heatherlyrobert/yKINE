@@ -935,8 +935,9 @@ ykine_legs_driver    (char a_verb)
          break;
       }
       /*---(if step, create raise)-------*/
-      rc = ykine_accel_reset (x_leg);
-      rc = ykine_step_raise  (a_verb);
+      /*> rc = ykine_accel_reset (x_leg);                                             <* 
+       *> rc = ykine_step_begin  ();                                                  <* 
+       *> rc = ykine_step_raise  (a_verb);                                            <*/
       /*---(inverse kinematics)----------*/
       switch (a_verb) {
       case YKINE_ZE : case YKINE_PO : case YKINE_OR : case YKINE_TI :
@@ -966,6 +967,10 @@ ykine_legs_driver    (char a_verb)
          DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
          break;
       }
+      /*---(if step, create raise)-------*/
+      rc = ykine_accel_reset (x_leg);
+      rc = ykine_step_begin  ();
+      rc = ykine_step_raise  (a_verb);
       /*---(get distance)----------------*/
       ykine_exact_dist_route (a_verb);
       DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , myKINE.le);
@@ -978,6 +983,7 @@ ykine_legs_driver    (char a_verb)
       /*---(if step, create plant)-------*/
       rc = ykine_step_plant    (a_verb);
       rc = ykine_accel_execute (x_label);
+      rc = ykine_step_end      ();
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/

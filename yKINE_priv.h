@@ -51,8 +51,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2s"
-#define     P_VERTXT    "updated unit tests with new accel accessor output, and koios fixes"
+#define     P_VERNUM    "1.2t"
+#define     P_VERTXT    "stance verb works nicely with step shapes and sequencing"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -188,6 +188,7 @@ struct cLOCAL {
    char        a_raise     [LEN_LABEL];     /* raise acceleration             */
    char        a_middle    [LEN_LABEL];     /* middle of move acceleration    */
    char        a_plant     [LEN_LABEL];     /* plant acceleration             */
+   char        a_body      [LEN_LABEL];     /* body acceleration              */
    /*---(done)--------------*/
 };
 tLOCAL      myKINE;
@@ -540,6 +541,7 @@ char        ykine_accel_dur         (cchar *a_dur);
 char        ykine_accel_timing_save (void);
 char        ykine_accel_timing      (void);
 char        ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_deceln, char *a_out);
+char        ykine_accel_body_adj    (float a_pct, char *a_out);
 char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_part, char a_cell);
 char        ykine_accel__zero       (char a_verb, float x, float z, float y, float a_beat, char *a_label, char a_cell);
 char        ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_part, char a_cell);
@@ -547,6 +549,8 @@ char        ykine_accel_reset       (char a_leg);
 char        ykine_accel_append      (char a_verb, char a_part, char *a_accel);
 char        ykine_accel_execute     (char *a_label);
 char        ykine_accel_immediate   (char a_verb, char a_leg, float b, char *a_label);
+char        ykine_accel_seq_beg     (char a_leg, float a_wait);
+char        ykine_accel_seq_end     (char a_leg, float a_wait);
 char*       ykine_accel__unit       (char *a_question, int a_num);
 
 
@@ -615,6 +619,8 @@ char        ykine_stance_scale_head  (int *n, char *a_short);
 char        ykine_stance_scale_next  (int *n, char *a_short);
 char        ykine_stance            (void);
 char        ykine_stance_verify     (void);
+char        ykine__neighbors        (float a_x, float a_z, int a_col, int a_row);
+
 
 char        ykine_step_init         (void);
 char        ykine_step__defaults    (void);
@@ -626,6 +632,8 @@ char        ykine_step_raise        (char a_verb);
 char        ykine_step_plant        (char a_verb);
 char        ykine_step__rounded     (float a_xzlen, float a_pct, float *y);
 char        ykine_step_yshaper      (float a_xzlen, float a_pct, float *y);
+char        ykine_step_begin        (void);
+char        ykine_step_end          (void);
 char*       ykine_step__unit        (char *a_question, int a_num);
 
 

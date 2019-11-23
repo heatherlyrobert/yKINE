@@ -154,7 +154,7 @@ ykine_exact_dist_route  (char a_verb)
    case YKINE_CK : case YKINE_RK : case YKINE_SK :
       x_total = ykine_exact_dist_doy    ();
       break;
-   case YKINE_LEGE : case YKINE_BODE : case YKINE_NOOP :
+   case YKINE_WAIT : case YKINE_LEGE : case YKINE_BODE : case YKINE_NOOP :
       x_total = ykine_exact_dist_xzy    ();
       break;
    default       :
@@ -282,7 +282,8 @@ ykine_exact_pct_route   (char a_verb, float a_pct)
       DEBUG_YKINE_EXACT   yLOG_note    ("inverse polar partial");
       ykine_exact_pct_doy  (a_verb, a_pct);
       break;
-   case YKINE_LEGE : case YKINE_BODE : case YKINE_NOOP :
+   case YKINE_WAIT : case YKINE_LEGE : case YKINE_BODE : case YKINE_NOOP :
+      DEBUG_YKINE_EXACT   yLOG_note    ("wait, errors, and noop partial");
       ykine_exact_pct_xzy  (a_pct);
       break;
    default       :
