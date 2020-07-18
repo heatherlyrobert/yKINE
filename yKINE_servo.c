@@ -618,9 +618,9 @@ ykine__unit_servo       (char *a_question)
 {
    int         i           =    0;
    int         x_pos       =    0;
-   char        x_msg       [LEN_STR];
+   char        x_msg       [LEN_RECD];
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "SCRP unit        : question not understood", LEN_STR);
+   strlcpy  (ykine__unit_answer, "SCRP unit        : question not understood", LEN_RECD);
    /*---(answer)------------------------------------------*/
    if (strcmp (a_question, "sides"   ) == 0) {
       sprintf (ykine__unit_answer, "SERVO sides    : %d sides=%-10.10s, %d ranks=%s", s_nside, s_sides, s_nrank, s_ranks);

@@ -705,7 +705,7 @@ char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine__exact_unit       (char *a_question, int a_cnt)
 {
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "EXACT unit     : question not understood", LEN_STR);
+   strlcpy  (ykine__unit_answer, "EXACT unit     : question not understood", LEN_RECD);
    /*---(answer)-------------------------*/
    if (strcmp (a_question, "begin"   ) == 0) {
       sprintf (ykine__unit_answer, "EXACT begin    : %6.1lfd %6.3lfs %6.1lfx %6.1lfz %6.1lfy %6.1lfo %6.1lfc %6.1lff %6.1lfp %6.1lft", myKINE.db, myKINE.sb, myKINE.xb, myKINE.zb, myKINE.yb, myKINE.ob, myKINE.cb, myKINE.fb, myKINE.pb, myKINE.tb);

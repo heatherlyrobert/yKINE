@@ -1033,7 +1033,7 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    int         i           =    0;
    int         x_pos       =    0;
    char        t           [LEN_LABEL] = "";
-   char        x_msg       [LEN_STR  ];
+   char        x_msg       [LEN_RECD ];
    tSERVO     *x_servo     = NULL;
    tMOVE      *x_move      = NULL;
    tMOVE      *x_next      = NULL;
@@ -1045,7 +1045,7 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    int         x_fore      =    0;
    int         x_back      =    0;
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "MOVE unit      : question not understood", LEN_STR);
+   strlcpy  (ykine__unit_answer, "MOVE unit      : question not understood", LEN_RECD);
    /*---(supporting data)----------------*/
    if (a_leg >= 0) {
       /*---(get servo)-------------------*/
@@ -1136,12 +1136,12 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       else                 sprintf (ykine__unit_answer, "MOVE accel     : %8.1lfs %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8.1lfl  %c  %c", x_move->dur, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos, x_dist, x_move->part, x_move->cell);
    }
    else if (strcmp (a_question, "counts"  ) == 0) {
-      strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_STR);
+      strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_RECD);
       for (i = 0; i < g_nservo; ++i) {
-         if (i > 0 && i % 3 == 0)  strlcat (ykine__unit_answer, " ", LEN_STR);
+         if (i > 0 && i % 3 == 0)  strlcat (ykine__unit_answer, " ", LEN_RECD);
          if (g_servo_info [i].count < 9)  sprintf (x_msg, "%c", g_servo_info [i].count + '0');
          else                             sprintf (x_msg, "%c", g_servo_info [i].count - 10 + 'a');
-         strlcat (ykine__unit_answer, x_msg, LEN_STR);
+         strlcat (ykine__unit_answer, x_msg, LEN_RECD);
       }
    }
    else if (strcmp (a_question, "current" ) == 0) {
@@ -1159,29 +1159,29 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       sprintf (ykine__unit_answer, "MOVE calc curr : %4.2fp, %8.2fd, %8.1fx, %8.1fz, %8.1fy", myKINE.pct, myKINE.dc, myKINE.xc, myKINE.zc, myKINE.yc);
    }
    /*> else if (strcmp (a_question, "accel_dist") == 0) {                                  <* 
-    *>    strlcpy (x_msg, "", LEN_STR);                                                    <* 
+    *>    strlcpy (x_msg, "", LEN_RECD);                                                    <* 
     *>    for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {                                 <* 
     *>       if (g_accel_info [i].dist == 0.0)  strlcpy (t, "  -.-", LEN_LABEL);           <* 
     *>       else                          sprintf (t, " %4.1f", g_accel_info [i].dist);   <* 
-    *>       strlcat  (x_msg, t, LEN_STR);                                                 <* 
+    *>       strlcat  (x_msg, t, LEN_RECD);                                                 <* 
     *>    }                                                                                <* 
     *>    sprintf (ykine__unit_answer, "MOVE accel dist:%s", x_msg);                       <* 
     *> }                                                                                   <*/
    /*> else if (strcmp (a_question, "accel_durs") == 0) {                                 <* 
-    *>    strlcpy (x_msg, "", LEN_STR);                                                   <* 
+    *>    strlcpy (x_msg, "", LEN_RECD);                                                   <* 
     *>    for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {                                <* 
     *>       if (g_accel_info [i].dur  == 0.0)  strlcpy (t, "  -.-", LEN_LABEL);          <* 
     *>       else                          sprintf (t, " %4.1f", g_accel_info [i].dur);   <* 
-    *>       strlcat  (x_msg, t, LEN_STR);                                                <* 
+    *>       strlcat  (x_msg, t, LEN_RECD);                                                <* 
     *>    }                                                                               <* 
     *>    sprintf (ykine__unit_answer, "MOVE accel durs:%s", x_msg);                      <* 
     *> }                                                                                  <*/
    /*> else if (strcmp (a_question, "accel_cums") == 0) {                                 <* 
-    *>    strlcpy (x_msg, "", LEN_STR);                                                   <* 
+    *>    strlcpy (x_msg, "", LEN_RECD);                                                   <* 
     *>    for (i = ACCEL_TURTLE; i <= DECEL_TURTLE; ++i) {                                <* 
     *>       if (g_accel_info [i].pct  == 0.0)  strlcpy (t, " -.--", LEN_LABEL);          <* 
     *>       else                          sprintf (t, " %4.2f", g_accel_info [i].pct);   <* 
-    *>       strlcat  (x_msg, t, LEN_STR);                                                <* 
+    *>       strlcat  (x_msg, t, LEN_RECD);                                                <* 
     *>    }                                                                               <* 
     *>    sprintf (ykine__unit_answer, "MOVE accel cums:%s", x_msg);                      <* 
     *> }                                                                                  <*/

@@ -1057,9 +1057,6 @@ SCRP          (STEP  ) verify step beginning and ending                        
      get      check expected detail                ykine__unit_move            "accel"        , YKINE_BODY, YKINE_FOCU,  5                                                           u_round/3   MOVE accel     :      3.2s    ¬¬¬¬¬d      0.0x      0.0z    -25.4y      2.0l  -  t                   
      get      check expected detail                ykine__unit_move            "accel"        , YKINE_BODY, YKINE_FOCU,  6                                                           s_equal     MOVE accel     :      -.-s      -.-d      -.-x      -.-z      -.-y      -.-l  -  -                   
 
-
-
-
    COND       complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((07.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     close stdin after reading            yPARSE_close_in                                                                                                                   i_equal     0                                                                                                    
      exec     stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    

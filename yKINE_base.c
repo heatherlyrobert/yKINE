@@ -127,7 +127,7 @@ yKINE_init         (void)
    /*---(header)-------------------------*/
    DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
    yLOG_mute  ();
-   DEBUG_PROG   yLOG_unmute ();
+   DEBUG_YKINE  yLOG_unmute ();
    /*---(set body)-----------------------*/
    /*> kine_center       (0.0f, 0.0f);                                                <* 
     *> kine_height       (segs_len [YKINE_TIBI]);                                           <* 
@@ -142,8 +142,10 @@ yKINE_init         (void)
    DEBUG_YKINE  yLOG_value   ("move"      , rc);
    rc = ykine_scrp_begin ();
    DEBUG_YKINE  yLOG_value   ("scrp"      , rc);
-   rc = yPARSE_init      (YPARSE_NOAUTO, ykine_scrp_popverb, YPARSE_REUSE);
+   rc = yPARSE_init      (YPARSE_NOREAD, ykine_scrp_popverb, YPARSE_REUSING);
    DEBUG_YKINE  yLOG_value   ("yparse"    , rc);
+   rc = yPARSE_delimiters(YPARSE_FUNCTION);
+   DEBUG_YKINE  yLOG_value   ("delimiters", rc);
    rc = ykine_verb_init  ();
    DEBUG_YKINE  yLOG_value   ("verb"      , rc);
    rc = ykine_hint_init  ();
@@ -198,7 +200,7 @@ yKINE_init         (void)
 /*====================------------------------------------====================*/
 static void      o___UNITTEST________________o (void) {;};
 
-char          ykine__unit_answer [ LEN_STR ];
+char          ykine__unit_answer [LEN_RECD];
 
 char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine__getter      (char *a_question, int a_leg,  int a_seg)
@@ -214,7 +216,7 @@ ykine__getter      (char *a_question, int a_leg,  int a_seg)
       return ykine__unit_answer;
    }
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "BASE unit        : question not understood", LEN_STR);
+   strlcpy  (ykine__unit_answer, "BASE unit        : question not understood", LEN_RECD);
    /*---(answer)------------------------------------------*/
    if (strcmp(a_question, "FK_final") == 0) {
       sprintf(ykine__unit_answer, "FK %1d/final     : %8.2fx,%8.2fz,%8.2fy", 

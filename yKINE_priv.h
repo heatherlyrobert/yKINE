@@ -50,9 +50,9 @@
 #define     P_DEPENDS   "none"
 
 #define     P_VERMAJOR  "1.--, working and advancing"
-#define     P_VERMINOR  "1.2-, simplifying and combining verbs"
-#define     P_VERNUM    "1.2t"
-#define     P_VERTXT    "stance verb works nicely with step shapes and sequencing"
+#define     P_VERMINOR  "1.3-, prepare basics for demonstration"
+#define     P_VERNUM    "1.3a update for yPARSE changes and improved script verification"
+#define     P_VERTXT    ""
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -86,13 +86,6 @@
 
 
 
-/*===[[ VERSION ]]========================================*/
-/* rapidly evolving version number to aid with visual change confirmation     */
-/*> #define     YKINE_VER_NUM   "1.0s"                                                <*/
-/*> #define     YKINE_VER_TXT   "updated to full unit test pass after yPARSE modified (doubles)"   <*/
-
-
-
 /*===[[ UNIT TEST ]]======================================*/
 #ifndef DEBUG_TOPS
 #define     DEBUG_TOPS     if (myKINE.unit  == 'y')
@@ -107,16 +100,12 @@
  *   MAX_ is a maximum count
  *
  */
-/*---(string length)------------------*/
-#define     LEN_LABEL   20
-#define     LEN_STR     200
-#define     LEN_RECD    2000
 
 
 extern const    float    DEG2RAD;
 extern const    float    RAD2DEG;
 
-extern char ykine__unit_answer [ LEN_STR  ];
+extern char ykine__unit_answer [LEN_RECD];
 
 
 typedef struct cLOCAL tLOCAL;
@@ -133,8 +122,9 @@ struct cLOCAL {
    int         s_len;                       /* original record length         */
    char        s_q         [LEN_LABEL];     /* record parsing delimiter       */
    char       *s_context;                   /* record parsing context         */
-   int         s_nline;                     /* source file count of lines     */
-   int         s_cline;                     /* source file current line       */
+   int         s_tline;                     /* source line position in file   */
+   int         s_nline;                     /* source lines accepted          */
+   int         s_cline;                     /* current line                   */
    /*---(parsing)-----------*/
    char        s_verb      [LEN_LABEL];     /* script line verb               */
    char        s_hidden;                    /* a hidden action/move           */
@@ -583,7 +573,7 @@ char        ykine_scrp_turn         (int   a_repeats);
 /*===[[ YKINE_queue.c ]]======================================================*/
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
 char        ykine_scrp_by_code      (char a_code, char *a_terse, char *a_name, char *a_desc);
-char        ykine_scrp_popverb      (void);
+char        ykine_scrp_popverb      (int n, uchar *a_verb, char a_exist, void *a_handler);
 char        ykine_scrp_popservo     (void);
 char        ykine_servo_list        (char *a_which);
 

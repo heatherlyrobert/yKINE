@@ -773,9 +773,9 @@ ykine_step__unit        (char *a_question, int a_num)
 {
    int         i           =    0;
    int         x_pos       =    0;
-   char        x_msg       [LEN_STR];
+   char        x_msg       [LEN_RECD];
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "STEP unit        : question not understood", LEN_STR);
+   strlcpy  (ykine__unit_answer, "STEP unit        : question not understood", LEN_RECD);
    /*---(answer)------------------------------------------*/
    if      (strcmp (a_question, "global"  ) == 0) {
       sprintf (ykine__unit_answer, "STEP global    : s %c/%2d, h %c/%5.1f, q %c/%2d, o %c/%5.2f", s_cshape, myKINE.step_s, s_cheight, myKINE.step_h, s_cseq, myKINE.seq, s_cspeed, myKINE.off);

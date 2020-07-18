@@ -185,7 +185,7 @@ ykine_turtle_head       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
    /*---(update turtle)---------------*/
    s_head  = d;
-   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, '-', YKINE_NONE, 0.0, 0.0);   <*/
+   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_tline, myKINE.s_verb, '-', YKINE_NONE, 0.0, 0.0);   <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -217,7 +217,7 @@ ykine_turtle_turn       (void)
    DEBUG_YKINE_SCRP  yLOG_value   ("d"         , d);
    /*---(update turtle)---------------*/
    s_head  = d;
-   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_cline, myKINE.s_verb, '-', YKINE_NONE, 0.0, 0.0);   <*/
+   /*> rc = ykine_move_create (s_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_tline, myKINE.s_verb, '-', YKINE_NONE, 0.0, 0.0);   <*/
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -513,9 +513,9 @@ ykine_turtle__unit      (char *a_question, int a_num)
 {
    int         i           =    0;
    int         x_pos       =    0;
-   char        x_msg       [LEN_STR];
+   char        x_msg       [LEN_RECD];
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "TURTLE unit      : question not understood", LEN_STR);
+   strlcpy  (ykine__unit_answer, "TURTLE unit      : question not understood", LEN_RECD);
    /*---(answer)------------------------------------------*/
    if (strcmp (a_question, "global"  ) == 0) {
       sprintf (ykine__unit_answer, "TURTLE global  : speed [%c], heading %8.2f deg", s_speed, s_head);

@@ -123,14 +123,14 @@ tMOVE      *s_gait_begin  [YKINE_MAX_SERVO];
  *>          ykine_move_curdata  (&x_xpos, &x_zpos, &x_ypos);                                                                                     <* 
  *>          DEBUG_YKINE_SCRP   yLOG_double   ("last deg"  , x_deg);                                                                              <* 
  *>          /+---(write header note)-----------+/                                                                                                <* 
- *>          ykine_move_create (g_servo_info + x_servo, YKINE_NOTE , YKINE_NONE, myKINE.s_nline, "incipio"      , '-', YKINE_NONE, 0.0  , 0.0);   <* 
+ *>          ykine_move_create (g_servo_info + x_servo, YKINE_NOTE , YKINE_NONE, myKINE.s_tline, "incipio"      , '-', YKINE_NONE, 0.0  , 0.0);   <* 
  *>          /+---(write header placeholders)---+/                                                                                                <* 
  *>          ykine_move_addloc (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);                                                                  <* 
- *>          ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, myKINE.s_nline, "wait for turn", '-', YKINE_NONE, x_deg, 3.0);   <* 
+ *>          ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, myKINE.s_tline, "wait for turn", '-', YKINE_NONE, x_deg, 3.0);   <* 
  *>          ykine_move_addloc (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);                                                                  <* 
- *>          ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_nline, "up to neutral", '-', YKINE_NONE, 0.0  , 0.5);   <* 
- *>          ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_nline, "step to first", '-', YKINE_NONE, 0.0  , 0.5);   <* 
- *>          ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, myKINE.s_nline, "wait for legs", '-', YKINE_NONE, 0.0  , 3.0);   <* 
+ *>          ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_tline, "up to neutral", '-', YKINE_NONE, 0.0  , 0.5);   <* 
+ *>          ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_tline, "step to first", '-', YKINE_NONE, 0.0  , 0.5);   <* 
+ *>          ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, myKINE.s_tline, "wait for legs", '-', YKINE_NONE, 0.0  , 3.0);   <* 
  *>          /+---(save end of header)----------+/                                                                                                <* 
  *>          DEBUG_YKINE_SCRP   yLOG_point    ("saved"     , g_servo_info [x_servo].tail);                                                        <* 
  *>          s_gait_begin [x_servo] = g_servo_info [x_servo].tail;                                                                                <* 

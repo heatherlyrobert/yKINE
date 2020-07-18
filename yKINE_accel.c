@@ -664,7 +664,7 @@ ykine_accel__zero      (char a_verb, float x, float z, float y, float a_beat, ch
    /*---(calculate)----------------------*/
    s = a_beat * myKINE.s_pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
-   rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_cline, a_label, '-', a_cell, 0.0, s);
+   rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_tline, a_label, '-', a_cell, 0.0, s);
    rc = ykine_move_addloc (x_servo, x, z, y);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -698,7 +698,7 @@ ykine_accel__servo     (char a_verb, char a_leg, int a_seg, float a_deg, float a
    /*---(calculate)----------------------*/
    s = a_beat * myKINE.s_pace;
    DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
-   rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_cline, a_label, a_part, a_cell, a_deg, s);
+   rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_tline, a_label, a_part, a_cell, a_deg, s);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -861,51 +861,51 @@ ykine_accel__unit       (char *a_question, int a_num)
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
    char        t           [LEN_LABEL];
-   char        x_msg       [LEN_STR  ];
+   char        x_msg       [LEN_RECD ];
    /*---(preprare)-----------------------*/
-   strlcpy  (ykine__unit_answer, "MOVE unit      : question not understood", LEN_STR);
+   strlcpy  (ykine__unit_answer, "MOVE unit      : question not understood", LEN_RECD);
    if      (strcmp (a_question, "dist"      ) == 0) {
-      strlcpy (x_msg, "", LEN_STR);
+      strlcpy (x_msg, "", LEN_RECD);
       for (i = ACCEL_TURTLE; i <= DECEL_NOOP; ++i) {
          if (g_accel_info [i].dist [a_num] == 0.0)  strlcpy (t, "  -.-", LEN_LABEL);
          else                          sprintf (t, " %4.1f", g_accel_info [i].dist [a_num]);
-         strlcat  (x_msg, t, LEN_STR);
+         strlcat  (x_msg, t, LEN_RECD);
       }
       sprintf (ykine__unit_answer, "ACCEL dist (%d) :%s", a_num, x_msg);
    }
    else if (strcmp (a_question, "durs"      ) == 0) {
-      strlcpy (x_msg, "", LEN_STR);
+      strlcpy (x_msg, "", LEN_RECD);
       for (i = ACCEL_TURTLE; i <= DECEL_NOOP; ++i) {
          if (g_accel_info [i].dur [a_num]  == 0.0)  strlcpy (t, "  -.-", LEN_LABEL);
          else                          sprintf (t, " %4.1f", g_accel_info [i].dur [a_num]);
-         strlcat  (x_msg, t, LEN_STR);
+         strlcat  (x_msg, t, LEN_RECD);
       }
       sprintf (ykine__unit_answer, "ACCEL durs (%d) :%s", a_num, x_msg);
    }
    else if (strcmp (a_question, "adjs"      ) == 0) {
-      strlcpy (x_msg, "", LEN_STR);
+      strlcpy (x_msg, "", LEN_RECD);
       for (i = ACCEL_TURTLE; i <= DECEL_NOOP; ++i) {
          if (g_accel_info [i].adj [a_num]  == 0.0)  strlcpy (t, "  -.-", LEN_LABEL);
          else                          sprintf (t, " %4.1f", g_accel_info [i].adj [a_num]);
-         strlcat  (x_msg, t, LEN_STR);
+         strlcat  (x_msg, t, LEN_RECD);
       }
       sprintf (ykine__unit_answer, "ACCEL adjs (%d) :%s", a_num, x_msg);
    }
    else if (strcmp (a_question, "pcts"      ) == 0) {
-      strlcpy (x_msg, "", LEN_STR);
+      strlcpy (x_msg, "", LEN_RECD);
       for (i = ACCEL_TURTLE; i <= DECEL_NOOP; ++i) {
          if (g_accel_info [i].pct [a_num]  == 0.0)  strlcpy (t, " -.--", LEN_LABEL);
          else                          sprintf (t, " %4.2f", g_accel_info [i].pct [a_num]);
-         strlcat  (x_msg, t, LEN_STR);
+         strlcat  (x_msg, t, LEN_RECD);
       }
       sprintf (ykine__unit_answer, "ACCEL pcts (%d) :%s", a_num, x_msg);
    }
    else if (strcmp (a_question, "cums"      ) == 0) {
-      strlcpy (x_msg, "", LEN_STR);
+      strlcpy (x_msg, "", LEN_RECD);
       for (i = ACCEL_TURTLE; i <= DECEL_NOOP; ++i) {
          if (g_accel_info [i].cum [a_num]  == 0.0)  strlcpy (t, " -.--", LEN_LABEL);
          else                          sprintf (t, " %4.2f", g_accel_info [i].cum [a_num]);
-         strlcat  (x_msg, t, LEN_STR);
+         strlcat  (x_msg, t, LEN_RECD);
       }
       sprintf (ykine__unit_answer, "ACCEL cums (%d) :%s", a_num, x_msg);
    }
