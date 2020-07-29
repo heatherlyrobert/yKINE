@@ -25,15 +25,15 @@ struct cVERBS {
    char        from;                        /* pure vs from coding            */
    char        style;                       /* normal (xzy) vs polar (dly)    */
    char        mask;                        /* masked field for yPARSE reload */
-   char        (*call)     (void);          /* function pointer               */
+   int         (*call)     (int n, char *a_verb);
    char        desc        [LEN_HUND ];     /* english description            */
 };
 tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ forward kinematics ]]================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { YKINE_FK  , "fk"   , "forward"      , 'y' , 'y' , YKINE_FORWARD, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_fk         , "set absolute joint angles on all three joints"     },
    /* ===[[ inverse kinematics ]]================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { YKINE_IK  , "ik"   , "inverse"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_ik         , "set an exact endpoint in 3d space"                 },
    { YKINE_TK  , "tk"   , "tangent"      , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_tk         , "set an exact endpoint tangential to leg"           },
    { YKINE_CK  , "ck"   , "center"       , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_POLAR ,  1, ykine_legs_ck         , "set absolute joint angles on all three joints"     },
@@ -41,16 +41,18 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { YKINE_SK  , "sk"   , "step"         , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_POLAR ,  1, ykine_legs_sk         , "set absolute joint angles on all three joints"     },
    { YKINE_NK  , "nk"   , "neighbor"     , 'y' , 'y' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, ykine_legs_nk         , "set exact endpoint relative to military"           },
    /* ===[[ body zero-point ]]===================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { YKINE_ZE  , "ze"   , "zero"         , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_zero       , "set absolute body position in 3d space"            },
    { YKINE_PO  , "po"   , "polar"        , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_POLAR , -1, ykine_body_polar      , "set relative body position based on last position" },
    /* ===[[ body orientation ]]==================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { YKINE_OR  , "or"   , "orient"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_LINEAR, -1, ykine_body_orient     , "set absolute body orientation angles"              },
    { YKINE_TI  , "ti"   , "tilt"         , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_body_tilt       , "set relative body position based on last position" },
    { YKINE_ST  , "st"   , "stance"       , 'y' , '-' , YKINE_ORIENT , YKINE_PURE, YKINE_POLAR , -1, ykine_stance          , "set relative body position based on last position" },
+   /* ===[[ synchronization ]]===================================================*/
+   { YKINE_SYNC, "sync" , "sync-up"      , 'y' , '-' , YKINE_FORWARD, YKINE_PURE, YKINE_LINEAR, -1, NULL                  , "non-moving periods to sync up stances"             },
    /* ===[[ music notation ]]====================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "metr" , "meter"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "time signature for rhythm/beat"                    },
    { -1        , "tmpo" , "tempo"        , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_scrp_repeat     , "pace of music in beats-per-minute"                 },
    /* ===[[ flow control ]]======================================================*/
@@ -67,7 +69,7 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ external ]]==========================================================*/
    { YKINE_SONG, "song" , "song"         , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "insert external script to allow reuse"             },
    /* ===[[ turtle graphics ]]===================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { YKINE_TSP , "tsp"  , "tu_speed"     , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_speed    , "set the speed of the turtle movement"              },
    { YKINE_TWA , "twa"  , "tu_wait"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_wait     , "stop action for a specific period"                 },
    { YKINE_THM , "thm"  , "tu_home"      , 'y' , 'y' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, ykine_turtle_home     , "move the turtle to 0x, 0z at the same height"      },
@@ -81,13 +83,13 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    { YKINE_TPU , "tpu"  , "tu_push"      , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
    { YKINE_TPO , "tpo"  , "tu_pop"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "time signature for rhythm/beat"                    },
    /* ===[[ gait framework ]]====================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "incp" , "gait_beg"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_beg        , "beginning of a gait description"                   },
    { -1        , "incp" , "incipio"      , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_beg        , "beginning of a gait description"                   },
    { -1        , "comp" , "gait_end"     , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_end        , "end of a gait description"                         },
    { -1        , "comp" , "compleo"      , 'y' , 'y' , YKINE_CONTROL, YKINE_NONE, YKINE_NONE  , -1, ykine_gait_end        , "end of a gait description"                         },
    /* ===[[ complex gaits ]]=====================================================*/
-   /* constant , terse-  verb----------- actv- servo targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
+   /* constant , terse--  verb----------- actv- servo  targ---------- rel-------- style------- mask call------------------- description---------------------------------------- */
    { -1        , "walk" , "walk"         , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
    { -1        , "circ" , "circle"       , '-' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, NULL                  , "repeat a specific number of steps"                 },
    /* ===[[ special ]]===========================================================*/
@@ -162,21 +164,7 @@ static void      o___ACCESS__________________o (void) {;}
 char
 ykine_verb_init         (void)
 {
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;               /* return code for errors    */
-   int         i           =    0;
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(verbs)--------------------------*/
-   for (i = 0; i < MAX_VERBS; ++i) {
-      if (s_verb_info [i].name  [0] == NULL) break;
-      if (s_verb_info [i].active   != 'y' )  continue;
-      DEBUG_YKINE_SCRP   yLOG_info    ("verb"      , s_verb_info [i].name);
-      yPARSE_handler_max ('·', s_verb_info [i].name, 0.0, "", s_verb_info [i].mask, NULL, NULL, "", "", s_verb_info [i].desc);
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
+   return yKINE_handlers ();
 }
 
 
@@ -273,7 +261,7 @@ ykine_scrp_by_code      (char a_code, char *a_terse, char *a_name, char *a_desc)
 }
 
 char         /*--> locate a servo entry ------------------[ ------ [ ------ ]-*/
-ykine_scrp_verb         (char *a_char)
+ykine_scrp_verb         (char *a_verb)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -282,7 +270,7 @@ ykine_scrp_verb         (char *a_char)
    int         x_index     =   -1;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_spoint  (a_char);
+   DEBUG_YKINE_SCRP   yLOG_spoint  (a_verb);
    /*---(default)------------------------*/
    myKINE.s_iverb = -1;
    myKINE.s_style = -1;
@@ -290,18 +278,18 @@ ykine_scrp_verb         (char *a_char)
    myKINE.s_from  = -1;
    myKINE.s_servo = -1;
    /*---(defense)------------------------*/
-   --rce;  if (a_char == NULL) {
+   --rce;  if (a_verb == NULL) {
       DEBUG_YKINE_SCRP   yLOG_snote   ("no value");
       DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_snote   (a_char);
+   DEBUG_YKINE_SCRP   yLOG_snote   (a_verb);
    /*---(by-terse)-----------------------*/
    for (i = 0; i < MAX_VERBS; ++i) {
       if (s_verb_info [i].name  [0] == NULL)             break;
       if (s_verb_info [i].active != 'y')                 continue;
-      if (a_char [0] != s_verb_info [i].terse  [0])      continue;
-      if (strcmp (a_char, s_verb_info [i].terse) != 0)   continue;
+      if (a_verb [0] != s_verb_info [i].terse  [0])      continue;
+      if (strcmp (a_verb, s_verb_info [i].terse) != 0)   continue;
       DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
       x_index = i;
       break;
@@ -311,8 +299,8 @@ ykine_scrp_verb         (char *a_char)
       for (i = 0; i < MAX_VERBS; ++i) {
          if (s_verb_info [i].name  [0] == NULL)             break;
          if (s_verb_info [i].active != 'y')                 continue;
-         if (a_char [0] != s_verb_info [i].name  [0])       continue;
-         if (strcmp (a_char, s_verb_info [i].name) != 0)    continue;
+         if (a_verb [0] != s_verb_info [i].name  [0])       continue;
+         if (strcmp (a_verb, s_verb_info [i].name) != 0)    continue;
          DEBUG_YKINE_SCRP   yLOG_snote   ("FOUND");
          x_index = i;
          break;
@@ -498,7 +486,7 @@ ykine_scrp_prev         (tMOVE *a_move, float *d, float *x, float *z, float *y)
 }
 
 char         /*--> parse a segno marker ------------------[ ------ [ ------ ]-*/
-ykine_scrp_segno        (void)
+ykine_scrp_segno        (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -561,7 +549,7 @@ ykine_scrp_segno        (void)
 }
 
 char  /*--> parse a low level repeat --------------[ ------ [ ------ ]-*/
-ykine_scrp_repeat       (void)
+ykine_scrp_repeat       (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;                /* return code for errors    */
@@ -829,7 +817,7 @@ yKINE_sect_rpt          (void)
 }
 
 char
-ykine_scrp_section      (void)
+ykine_scrp_section      (int n, char *v)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
@@ -1030,11 +1018,32 @@ ykine_scrp_exec         (void)
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = s_verb_info [myKINE.s_iverb].call ();
+   rc = s_verb_info [myKINE.s_iverb].call (0, s_verb_info [myKINE.s_iverb].terse);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);
    return rc;
+}
+
+char         /*-> setup yPARSE handlers ------------------[--------[--------]-*/
+yKINE_handlers          (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;               /* return code for errors    */
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(verbs)--------------------------*/
+   for (i = 0; i < MAX_VERBS; ++i) {
+      if (s_verb_info [i].name  [0] == NULL) break;
+      if (s_verb_info [i].active   != 'y' )  continue;
+      DEBUG_YKINE_SCRP   yLOG_info    ("verb"      , s_verb_info [i].name);
+      yPARSE_handler_max ('·', s_verb_info [i].name, 0.0, "", s_verb_info [i].mask, s_verb_info [i].call, NULL, "", "", s_verb_info [i].desc);
+   }
+   yPARSE_delimiters  (YPARSE_FUNCTION);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
 char         /* file reading driver ----------------------[--------[--------]-*/
@@ -1106,6 +1115,46 @@ yKINE_script       (float *a_len, char a_verify)
    yKINE_sect_rpt   ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yKINE_scrp_prepper      (char a_verify)
+{
+   DEBUG_YKINE_SCRP yLOG_senter  (__FUNCTION__);
+   switch (a_verify) {
+   case 'y' :
+      myKINE.verify = a_verify;
+      DEBUG_YKINE_SCRP yLOG_snote   ("turn on verification");
+      break;
+   default  :
+      myKINE.verify = '-';
+      DEBUG_YKINE_SCRP yLOG_snote   ("no checking");
+      break;
+   }
+   DEBUG_YKINE_SCRP yLOG_schar   (myKINE.verify);
+   DEBUG_YKINE_SCRP yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+yKINE_scrp_finisher     (float *a_len)
+{
+   float       x_len     =  0.0;
+   int         i         =    0;
+   float       x_sec       =  0.0;
+   x_len = 0.0;
+   for (i = 0; i < g_nservo; ++i) {
+      yKINE_move_tail (i, &x_sec, NULL);
+      /*> printf ("#%-2d, %-10.10s, %fs\n", i, g_servo_info [i].label, x_sec);        <*/
+      if (x_sec > x_len)  x_len = x_sec;
+   }
+   myKINE.scrp_len = x_len;
+   if (a_len != NULL)  *a_len = x_len;
+   /*> printf ("so, %fs and %fs\n", x_len, myKINE.scrp_len);                          <*/
+   /*> exit (1);                                                                      <*/
+   ykine_hint_final (myKINE.scrp_len);
+   /*> yKINE_sect_rpt   ();                                                           <*/
    return 0;
 }
 

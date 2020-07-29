@@ -25,8 +25,119 @@ yKINE (5)    ***   structure of the kinematics scripting file
 .nf
 yKINE (7)          decision rationale, objectives, and overview
 
+.SH LEG SPECIFICATION GRAMMAR
+legs are specified with a two letter string that is then interpreted into
+a specific scope.  working spiders are radially symmetrical, but have an
+artificial sense of side (left/right) and rank (front/back) in order to
+maintain a heading.  they will have six large legs and four small legs.
+obviously this is not a general purpose robotic language as i am extremely
+focused.
 
+.SS examples of two-letter leg specifiers
+.nf
+   AA   all six large legs, none of the small ones
+.nf
+   RM   right, middle large leg
+.nf
+   l*   both left side, small legs
 
+.SS side, first character in specifier
+common (large legs only)
+   L    left
+   R    right
+   A    all sides
+.nf
+useful (small legs only)
+   l    left
+   r    right
+   a    all sides
+.nf
+uncommon (both large and small)
+   Ö    left
+   Õ    right
+   *    all sides
+
+.SS rank, second character in specifier
+common (large legs only)
+   F    front
+   M    middle
+   R    rear
+   A    all ranks
+.nf
+useful (small legs only)
+   f    front
+   r    rear
+   a    all ranks
+.nf
+uncommon (both large and small)
+   Ó    front
+   Ô    rear
+   *    all ranks
+
+.SH OUTWARD SPECIFICATION
+outward is the distance a leg-tip will be placed relative to the body-center,
+with zero-point being the military position.  the most common specification
+is by a alpha code.  obviously, this scale is a kluge / placeholder while i am
+experimenting and will be generalized in the future.
+
+.SS letter code
+.nf
+ m     represents the military standard position
+.nf
+ each letter change represents a half-centimeter (5mm)
+.nf
+ <= l  is further under the body with "a" being unreachable
+.nf
+ >= n  is farther from the body with "z" being unreachable
+
+.SS adjusters for letter codes
+.nf
+ -     means subtract a quarter unit (-1.25mm)
+.nf
+ +     means add a quarter unit (+1.25mm)
+.nf
+ '     means add a half unit (+2.5mm)
+
+.SS numberic values
+.nf
+ the zero-point is standard military position
+.nf
+ negative values are further under the body (inward)
+.nf
+ positive values are farther from the body (outward)
+
+.SH LEG POSITIONING
+moving 3DF spider legs into specific coordinate positions is a daunting
+challenge given that the body can also change position and orientation.
+below are a series of verbs meant to significantly ease that burden by
+encapsulating all the logic and calculations.
+
+.SS verb inventory
+.nf
+forward    FK   specifies exact joint angles for a leg
+.nf
+inverse    IK   distance from the body-center
+.nf
+neighbor   NK   distance from the leg military position
+.nf
+tangent    TK   distance tangental from military position
+.nf
+stepwise   SK   distance in line with direction of travel
+.nf
+center     CK   angles relative to body-center for turning/circling
+.nf
+radial     RK   angles relative to leg-hip for stance positioning
+
+.SS radial (RK)
+radial kinematics provides a shorthand for artfully and gracefully repositioning
+legs within coordinated stances -- it likely has limited general use.
+
+EX: radial § <legs> § <dur> § <deg> § <out> § <y> §
+   <legs>   : standard leg grammar (see LEG SPECS)
+   <dur>    : standard duration grammar (see DURATION SPECS)
+   <deg>    : relative to coxa angle (pos = CCW, neg = CW)
+   <out>    : distance from military (see OUTWARD SPECS)
+   <y>      : standard y specifier from body-center (see VERT SPECS)
 
 
 .SH SCRIPTING

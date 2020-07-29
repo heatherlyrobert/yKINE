@@ -135,8 +135,8 @@ ykine_body_po_getter   (char *d_str, char *o_str, char *y_str, float *x, float *
    return 0;
 }
 
-char   ykine_body_zero         (void) { return ykine_legs_driver (YKINE_ZE); }
-char   ykine_body_polar        (void) { return ykine_legs_driver (YKINE_PO); }
+char   ykine_body_zero         (int n, char *v) { return ykine_legs_driver (n, v, YKINE_ZE); }
+char   ykine_body_polar        (int n, char *v) { return ykine_legs_driver (n, v, YKINE_PO); }
 
 
 
@@ -346,8 +346,8 @@ ykine_body_ti_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    return 0;
 }
 
-char   ykine_body_orient       (void) { return ykine_legs_driver (YKINE_OR); }
-char   ykine_body_tilt         (void) { return ykine_legs_driver (YKINE_TI); }
+char   ykine_body_orient       (int n, char *v) { return ykine_legs_driver (n, v, YKINE_OR); }
+char   ykine_body_tilt         (int n, char *v) { return ykine_legs_driver (n, v, YKINE_TI); }
 
 
 

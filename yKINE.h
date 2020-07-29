@@ -313,7 +313,7 @@
 #define     YKINE_TPU       22
 #define     YKINE_TPO       23
 #define     YKINE_ST        24
-#define     YKINE_WAIT      25
+#define     YKINE_SYNC      25
 
 
 
@@ -488,6 +488,12 @@ char        yKINE_xz2hex            (float x, float z, int *c, int *r);
 char        yKINE_hex2xz            (int c, int r, float *x, float *z);
 char        yKINE_hex2adj           (int c, int r, int rc, int *ac, int *ar);
 char        yKINE_verify_rc         (int a_row, int a_col);
+
+
+
+char        yKINE_handlers          (void);
+char        yKINE_scrp_prepper      (char a_verify);
+char        yKINE_scrp_finisher     (float *a_len);
 
 
 /*> char        yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count);   <*/

@@ -32,13 +32,26 @@
  *
  */
 
-#define     YKINE_STRAIGHT  '>'
-#define     YKINE_SSQUARE   's'
-#define     YKINE_RSQUARE   'S'
-#define     YKINE_SDIRECT   'd'
-#define     YKINE_RDIRECT   'D'
+#define     YKINE_N_DIR     '>'
+#define     YKINE_A_DIR     '}'
+#define     YKINE_N_RECT    's'
+#define     YKINE_A_RECT    'S'
+#define     YKINE_N_TRAP    'd'
+#define     YKINE_A_TRAP    'D'
+#define     YKINE_N_TRI     't'
+#define     YKINE_A_TRI     'T'
+#define     YKINE_N_PULL    'p'
+#define     YKINE_A_PULL    'P'
+#define     YKINE_N_HEX     'h'
+#define     YKINE_A_HEX     'H'
+#define     YKINE_N_ARC     'a'
+#define     YKINE_A_ARC     'A'
+#define     YKINE_N_BRID    'b'
+#define     YKINE_A_BRID    'B'
+#define     YKINE_N_CURV    'c'
+#define     YKINE_A_CURV    'C'
 
-#define     MAX_SHAPE   20
+#define     MAX_SHAPE   30
 typedef struct cSHAPE tSHAPE;
 static struct cSHAPE {
    char        abbr;
@@ -48,18 +61,24 @@ static struct cSHAPE {
    char        desc        [LEN_DESC];
 };
 static tSHAPE      s_shapes    [MAX_SHAPE] = {
-   { YKINE_STRAIGHT , "--", "straight" , "fastest and most direct"            , "default with no changes to original"                  },
-   { YKINE_SSQUARE  , "ss", "square"   , "perfect for uneven surfaces"        , "up, horizontal, down -- perfect for uneven surfaces"  },
-   { YKINE_RSQUARE  , "rs", "rsquare"  , "faster square using acceleration"   , "up, little curve, horizontal, little curve and down"  },
-   { YKINE_SDIRECT  , "sd", "direct"   , "perfect for angled surfaces"        , "up, incline/decline over, down"                       },
-   { YKINE_RDIRECT  , "rd", "rdirect"  , "faster direct using acceleration"   , "up, little curve, over, little curve and down"        },
-   { 't'            , "st", "triangle" , "for getting over low objects"       , "up to high middle, then down to far point"            },
-   { 'T'            , "rt", "rtriangle", "faster triangle using acceleration" , "up to high middle, curved, then down to far point"    },
-   { 'p'            , "pu", "pullup"   , "for getting over larger objects"    , "up, then to to low middle, down to far, then down"    },
-   { 'h'            , "hx", "hexagon"  , "for getting over rough terrain"     , "up, then up to high middle, down above far, then down"},
-   { 'a'            , "ar", "arc"      , "more natural, low curving"          , "gentle arcing motion"                                 },
-   { 'b'            , "br", "bridge"     "quite spider-like movement"         , "up, over, and down in a low curved motion"            },
-   { 'c'            , "cv", "curve"    , "cautious spider-like movement"      , "up, over, and down in a high curved motion"           },
+   { YKINE_N_DIR    , "--", "nor_dire" , "normal, straight path"        , "most direct, space/vacuum"   , "directly from start to finish with no detours"                 },
+   { YKINE_A_DIR    , "a-", "acc_dire" , "accel, straight path"         , "most direct, space/vacuum"   , "directly from start to finish with no detours"                 },
+   { YKINE_N_RECT   , "ss", "nor_rect" , "normal, rectangular path"     , "mechanical, router-like"     , "straight up to max, flat/horizontal, straight down"            },
+   { YKINE_A_RECT   , "rs", "acc_rect" , "accel, retangular path"       , "mechanical, router-like"     , "straight up to max, flat/horizontal, straight down"            },
+   { YKINE_N_TRAP   , "sd", "nor_trap" , "normal, trapazoidal path"     , "mechanical, cautious path"   , "step straight up, incline/decline over, step straight down"    },
+   { YKINE_A_TRAP   , "rd", "acc_trap" , "accel, trapazoidal path"      , "mechanical, cautious path"   , "step straight up, incline/decline over, step straight down"    },
+   { YKINE_N_TRI    , "st", "nor_tri"  , "normal, triangular path"      , "quick obstacle avoidance"    , "direct to middle point at max height, direct back down"        },
+   { YKINE_A_TRI    , "rt", "acc_tri"  , "accel, triangular path"       , "quick obstacle avoidance"    , "direct to middle point at max height, direct back down"        },
+   { YKINE_N_PULL   , "pu", "nor_pull" , "normal, low hexagonal path"   , "rough terrain, obstacles"    , "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_A_PULL   , "ap", "acc_pull" , "accel, low hexagonal path"    , "rough terrain, obstacles"    , "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_N_HEX    , "hx", "nor_hex"  , "normal, high hexagonal path"  , "rough terrain, very cautious", "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_A_HEX    , "ax", "acc_hex"  , "accel, high hexagonal path"   , "rough terrain, very cautious", "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_N_ARC    , "ar", "nor_arc"  , "normal, low arcing path"      , "gentle, lazy spider"         , "gentle arcing motion from start to finish"                     },
+   { YKINE_A_ARC    , "aa", "acc_arc"  , "accel, low arcing path"       , "gentle, lazy spider"         , "gentle arcing motion from start to finish"                     },
+   { YKINE_N_BRID   , "br", "nor_brid" , "normal, moderate arcing path" , "quite spider-like path"      , "step straight up, gentle over, and down, step straight down"   },
+   { YKINE_A_BRID   , "ab", "acc_brid" , "accel, moderate arcing path"  , "quite spider-like path"      , "step straight up, gentle over, and down, step straight down"   },
+   { YKINE_N_CURV   , "cv", "nor_curv" , "normal, high arcing path"     , "cautious spider-like path"   , "step straight up, high over, and down, step straight down"     },
+   { YKINE_A_CURV   , "ac", "acc_curv" , "accel, high arcing path"      , "cautious spider-like path"   , "step straight up, high over, and down, step straight down"     },
    {  0             , "--", "end-list" , ""                                   , ""                                                     },
 };
 static int         s_nshape    = 0;
@@ -149,7 +168,7 @@ static void      o___PROGRAM_________________o (void) {;};
 char
 ykine_step__defaults    (void)
 {
-   s_cshape      = YKINE_STRAIGHT;
+   s_cshape      = YKINE_N_DIR;
    myKINE.step_s =   0;
    s_cheight     = 'z';
    myKINE.step_h = 0.0;
@@ -394,17 +413,17 @@ ykine_step_accels       (void)
    strlcpy (myKINE.a_plant , "", LEN_LABEL);
    if (myKINE.b >= 0.0)  return 0;
    switch (s_cshape) {
-   case YKINE_STRAIGHT :
+   case YKINE_N_DIR    :
       ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_middle);
       break;
-   case YKINE_SSQUARE  : case YKINE_SDIRECT  :
+   case YKINE_N_RECT   : case YKINE_N_TRAP   :
       x_end = ACCEL_TURTLE; /* speed limit through sharp corners  */
       if (myKINE.a_speedn < ACCEL_TURTLE)  x_end = myKINE.a_speedn;
       ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
       ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_middle);
       ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_plant );
       break;
-   case YKINE_RSQUARE  : case YKINE_RDIRECT  :
+   case YKINE_A_RECT   : case YKINE_A_TRAP   :
       x_end = ACCEL_MOD;  /* speed limit through curved corners  */
       if (myKINE.a_speedn < ACCEL_MOD)     x_end = myKINE.a_speedn;
       ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
@@ -457,13 +476,13 @@ ykine_step_raise       (char a_verb)
    myKINE.ze  = myKINE.zb;
    /*---(increase height)-------------*/
    switch (s_cshape) {
-   case YKINE_SSQUARE : case YKINE_RSQUARE :
+   case YKINE_N_RECT  : case YKINE_A_RECT  :
       DEBUG_YKINE_SCRP  yLOG_note    ("square handler");
       if (myKINE.yb >= myKINE.ye)  myKINE.ye = myKINE.yb + myKINE.step_h;
       else                         myKINE.ye = myKINE.ye + myKINE.step_h;
       ye         = myKINE.ye;
       break;
-   case YKINE_SDIRECT : case YKINE_RDIRECT :
+   case YKINE_N_TRAP  : case YKINE_A_TRAP  :
       DEBUG_YKINE_SCRP  yLOG_note    ("direct handler");
       myKINE.ye = myKINE.yb + myKINE.step_h;
       ye        = s_ye      + myKINE.step_h;
@@ -471,7 +490,8 @@ ykine_step_raise       (char a_verb)
       break;
    }
    /*---(inverse kinematics)----------*/
-   rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
+   rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
+   /*> rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
    rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
    /*---(create moves)-------------------*/
@@ -521,7 +541,8 @@ ykine_step_plant       (char a_verb)
    /*---(decrease height)-------------*/
    myKINE.ye  = s_ye;
    /*---(inverse kinematics)----------*/
-   rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
+   /*> rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
+   rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
    rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
    /*---(create moves)-------------------*/
@@ -635,13 +656,13 @@ ykine_step_yshaper      (float a_xzlen, float a_pct, float *y)
    DEBUG_YKINE_SCRP   yLOG_complex ("args"      , "%6.1fxz, %6.3fp, %p", a_xzlen, a_pct, y);
    DEBUG_YKINE_SCRP   yLOG_char    ("cshape"    , s_cshape);
    switch (s_cshape) {
-   case YKINE_STRAIGHT :
+   case YKINE_N_DIR    :
       DEBUG_YKINE_SCRP   yLOG_note    ("straight, nothing to do");
       break;
-   case YKINE_SSQUARE  : case YKINE_SDIRECT  :
+   case YKINE_N_RECT   : case YKINE_N_TRAP   :
       DEBUG_YKINE_SCRP   yLOG_note    ("sharp, nothing to do");
       break;
-   case YKINE_RSQUARE  : case YKINE_RDIRECT  :
+   case YKINE_A_RECT   : case YKINE_A_TRAP   :
       DEBUG_YKINE_SCRP   yLOG_note    ("rounded, calling handler");
       rc = ykine_step__rounded (a_xzlen, a_pct, y);
       break;
@@ -676,6 +697,7 @@ ykine_step_begin       (void)
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_value   ("seq"       , myKINE.seq);
    --rce;  if (myKINE.seq < 0) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("alignment (first) move, nothing to do");
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -734,6 +756,7 @@ ykine_step_end         (void)
    /*---(defense)------------------------*/
    DEBUG_YKINE_SCRP   yLOG_value   ("seq"       , myKINE.seq);
    --rce;  if (myKINE.seq < 0) {
+      DEBUG_YKINE_SCRP   yLOG_note    ("alignment (first) move, nothing to do");
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }

@@ -1,0 +1,56 @@
+#!/usr/local/bin/koios
+#   koios-polos (north star) -- customized c unit testing meta-program and mini-language
+#   program under test  : yKINE_step
+#   auto-generated script file converted from a previous script version
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+PREP          include the prototype headers                                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   incl       include public header                yKINE.h                     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   incl       include private header               yKINE_priv.h                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+SCRP          (TICK) verify allocating and freeing the ticker                                                                                                                          ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
+
+   COND       check initial ticker allocation                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     get      ... check allocation                 ykine_tick__unit            "alloc"        , -1                                                                                   s_equal     TICK alloc       :    0   body  - -   bigs  - - - - - -   smls  - - - -   oths  - - -                
+
+   COND       create the ticker                                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     set the script length                - - - - - - - - - - - - -   myKINE.scrp_len  = 1.0;                                                                                                                                                                                                    
+     exec     allocate the ticker                  ykine_tick__create                                                                                                                i_equal     0                                                                                                    
+     get      ... check allocation                 ykine_tick__unit            "alloc"        , -1                                                                                   s_equal     TICK alloc       :   10   body  y y   bigs  y y y y y y   smls  y y y y   oths  y y y                
+
+   COND       attempt to create twice                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     set the script length                - - - - - - - - - - - - -   myKINE.scrp_len  = 2.0;                                                                                                                                                                                                    
+     exec     allocate the ticker                  ykine_tick__create                                                                                                                i_lesser    0                                                                                                    
+     get      ... check allocation                 ykine_tick__unit            "alloc"        , -1                                                                                   s_equal     TICK alloc       :   10   body  y y   bigs  y y y y y y   smls  y y y y   oths  y y y                
+
+   COND       destroy the ticker                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     free the ticker                      ykine_tick__free                                                                                                                  i_equal     0                                                                                                    
+     get      ... check allocation                 ykine_tick__unit            "alloc"        , -1                                                                                   s_equal     TICK alloc       :    0   body  - -   bigs  - - - - - -   smls  - - - -   oths  - - -                
+
+   COND       attempt to destroy twice                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     free the ticker                      ykine_tick__free                                                                                                                  i_lesser    0                                                                                                    
+     get      ... check allocation                 ykine_tick__unit            "alloc"        , -1                                                                                   s_equal     TICK alloc       :    0   body  - -   bigs  - - - - - -   smls  - - - -   oths  - - -                
+
+   COND       create a bigger ticker                                             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     code     set the script length                - - - - - - - - - - - - -   myKINE.scrp_len  = 35.5;                                                                                                                                                                                                   
+     exec     allocate the ticker                  ykine_tick__create                                                                                                                i_equal     0                                                                                                    
+     get      ... check allocation                 ykine_tick__unit            "alloc"        , -1                                                                                   s_equal     TICK alloc       :  355   body  y y   bigs  y y y y y y   smls  y y y y   oths  y y y                
+
+   COND       destroy the ticker                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     free the ticker                      ykine_tick__free                                                                                                                  i_equal     0                                                                                                    
+     get      ... check allocation                 ykine_tick__unit            "alloc"        , -1                                                                                   s_equal     TICK alloc       :    0   body  - -   bigs  - - - - - -   smls  - - - -   oths  - - -                
+
+   COND       complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.009))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     stop testing                         ykine__unit_end                                                                                                                   i_equal     0                                                                                                    
+
+

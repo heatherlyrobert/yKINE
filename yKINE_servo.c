@@ -292,8 +292,8 @@ ykine_servo_side        (char a_char)
    case 'R' : strlcpy (s_sides , "R"         , LEN_LABEL);   break;
    case 'l' : strlcpy (s_sides , "l"         , LEN_LABEL);   break;
    case 'r' : strlcpy (s_sides , "r"         , LEN_LABEL);   break;
-   case '<' : strlcpy (s_sides , "Ll"        , LEN_LABEL);   break;
-   case '>' : strlcpy (s_sides , "Rr"        , LEN_LABEL);   break;
+   case 'Ö' : strlcpy (s_sides , "Ll"        , LEN_LABEL);   break;
+   case 'Õ' : strlcpy (s_sides , "Rr"        , LEN_LABEL);   break;
    case 'A' : strlcpy (s_sides , "LR"        , LEN_LABEL);   break;
    case 'a' : strlcpy (s_sides , "lr"        , LEN_LABEL);   break;
    case '*' : strlcpy (s_sides , "LRlr"      , LEN_LABEL);   break;
@@ -332,8 +332,8 @@ ykine_servo_rank        (char a_char)
    case 'F' : strlcpy (s_ranks , "F"         , LEN_LABEL);   break;
    case 'r' : strlcpy (s_ranks , "r"         , LEN_LABEL);   break;
    case 'f' : strlcpy (s_ranks , "f"         , LEN_LABEL);   break;
-   case '^' : strlcpy (s_ranks , "Ff"        , LEN_LABEL);   break;
-   case 'v' : strlcpy (s_ranks , "Rr"        , LEN_LABEL);   break;
+   case 'Ó' : strlcpy (s_ranks , "Ff"        , LEN_LABEL);   break;
+   case 'Ô' : strlcpy (s_ranks , "Rr"        , LEN_LABEL);   break;
    case 'A' : strlcpy (s_ranks , "RMF"       , LEN_LABEL);   break;
    case 'a' : strlcpy (s_ranks , "rf"        , LEN_LABEL);   break;
    case '*' : strlcpy (s_ranks , "RMFrf"     , LEN_LABEL);   break;

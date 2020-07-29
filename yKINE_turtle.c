@@ -128,7 +128,7 @@ ykine_turtle_pop        (void)
 static void      o___CONFIG__________________o (void) {;}
 
 char
-ykine_turtle_speed      (void)
+ykine_turtle_speed      (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -161,7 +161,7 @@ ykine_turtle_speed      (void)
 }
 
 char
-ykine_turtle_head       (void)
+ykine_turtle_head       (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -192,7 +192,7 @@ ykine_turtle_head       (void)
 }
 
 char
-ykine_turtle_turn       (void)
+ykine_turtle_turn       (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -231,7 +231,7 @@ ykine_turtle_turn       (void)
 static void      o___MOVES___________________o (void) {;}
 
 char
-ykine_turtle__zero      (char a_verb, float x, float z, float y)
+ykine_turtle__zero      (int n, uchar *v, char a_verb, float x, float z, float y)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -268,7 +268,7 @@ ykine_turtle__zero      (char a_verb, float x, float z, float y)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_body_zero ();
+   rc = ykine_body_zero (n, v);
    DEBUG_YKINE_SCRP  yLOG_point   ("zero"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -280,7 +280,7 @@ ykine_turtle__zero      (char a_verb, float x, float z, float y)
 }
 
 char
-ykine_turtle_move       (void)
+ykine_turtle_move       (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -298,7 +298,7 @@ ykine_turtle_move       (void)
    z = l * sin ((s_head - 90.0) * DEG2RAD);
    DEBUG_YKINE_SCRP  yLOG_complex ("change"    , "%6.1fl, %6.1fx, %6.1fz", l, x, z);
    /*---(call move)-------------------*/
-   rc = ykine_turtle__zero (YKINE_TMV, x, z, 0.0);
+   rc = ykine_turtle__zero (n, v, YKINE_TMV, x, z, 0.0);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -310,7 +310,7 @@ ykine_turtle_move       (void)
 }
 
 char
-ykine_turtle_home       (void)
+ykine_turtle_home       (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -320,7 +320,7 @@ ykine_turtle_home       (void)
    /*---(reset acceleration)----------*/
    rc = ykine_turtle__reset ();
    /*---(call move)-------------------*/
-   rc = ykine_turtle__zero (YKINE_THM, 0.0, 0.0, 0.0);
+   rc = ykine_turtle__zero (n, v, YKINE_THM, 0.0, 0.0, 0.0);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -332,7 +332,7 @@ ykine_turtle_home       (void)
 }
 
 char
-ykine_turtle_goto       (void)
+ykine_turtle_goto       (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -347,7 +347,7 @@ ykine_turtle_goto       (void)
    rc  = yPARSE_popval   (0.0, &x);
    rc  = yPARSE_popval   (0.0, &z);
    /*---(call move)-------------------*/
-   rc = ykine_turtle__zero (YKINE_TGO, x, -z, 0.0);
+   rc = ykine_turtle__zero (n, v, YKINE_TGO, x, -z, 0.0);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -394,7 +394,7 @@ ykine_turtle_end        (void)
 static void      o___NON_MOVE________________o (void) {;}
 
 char
-ykine_turtle_wait       (void)
+ykine_turtle_wait       (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -407,7 +407,7 @@ ykine_turtle_wait       (void)
    /*---(get timing)------------------*/
    rc  = yPARSE_popval   (0.0, &b);
    /*---(call move)-------------------*/
-   rc = ykine_turtle__zero (YKINE_TWA, b, 0.0, 0.0);
+   rc = ykine_turtle__zero (n, v, YKINE_TWA, b, 0.0, 0.0);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -427,7 +427,7 @@ static void      o___BEAK____________________o (void) {;}
 
 
 char
-ykine_turtle_raise      (void)
+ykine_turtle_raise      (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -437,7 +437,7 @@ ykine_turtle_raise      (void)
    /*---(reset acceleration)----------*/
    rc = ykine_turtle__reset ();
    /*---(call move)-------------------*/
-   rc = ykine_turtle__zero (YKINE_TRA, 0.0, 0.0, 10.0);
+   rc = ykine_turtle__zero (n, v, YKINE_TRA, 0.0, 0.0, 10.0);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -449,7 +449,7 @@ ykine_turtle_raise      (void)
 }
 
 char
-ykine_turtle_lower      (void)
+ykine_turtle_lower      (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -459,7 +459,7 @@ ykine_turtle_lower      (void)
    /*---(reset acceleration)----------*/
    rc = ykine_turtle__reset ();
    /*---(call move)-------------------*/
-   rc = ykine_turtle__zero (YKINE_TLO, 0.0, 0.0, s_depth);
+   rc = ykine_turtle__zero (n, v, YKINE_TLO, 0.0, 0.0, s_depth);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -471,7 +471,7 @@ ykine_turtle_lower      (void)
 }
 
 char
-ykine_turtle_depth      (void)
+ykine_turtle_depth      (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */

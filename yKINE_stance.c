@@ -427,7 +427,7 @@ yKINE_scale          (char *a_entry)
 static void      o___STANCE__________________o (void) {;}
 
 char
-ykine_stance            (void)
+ykine_stance            (int n, char *v)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -462,7 +462,7 @@ ykine_stance            (void)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_body_zero ();
+   rc = ykine_body_zero (n, "zero");
    DEBUG_YKINE_SCRP  yLOG_point   ("zero"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -481,7 +481,7 @@ ykine_stance            (void)
       return rce;
    }
    /*---(run)-------------------------*/
-   rc = ykine_legs_rk   ();
+   rc = ykine_legs_rk   (n, "radial");
    DEBUG_YKINE_SCRP  yLOG_point   ("radial"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -527,7 +527,8 @@ ykine_stance_verify_radius (char a_leg)
       rc = ykine__legs_rk_getter (a_leg, d_str, o_str, y_str, &x, &z, &y);
       DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
       /*---(check ik)--------------------*/
-      rc = yKINE_inverse (a_leg, x, z, y);
+      rc = yKINE_adapt   (a_leg, x, z, y);
+      /*> rc = yKINE_inverse (a_leg, x, z, y);                                        <*/
       /*> printf ("%-10.10sd, %-10.10so, %-10.10sy     pos %8.2fx, %8.2fz, %8.2fy     rc %4d\n", d_str, o_str, y_str, x, z, y, rc);   <*/
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
       if (rc >= 0)   s_verify [s_row][s_col] = '¬';

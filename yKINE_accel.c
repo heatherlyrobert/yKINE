@@ -135,78 +135,79 @@ ykine_accel__level  (char a_part, char a_max, char a_level, char a_accel, char a
    float       a           =  0.0;
    char        x_lvl       =  '-';
    /*---(header)-------------------------*/
-   DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YKINE_MOVE   yLOG_complex ("a_part"    , "p %d, m %d, l %d, a %d, d %d, s %3.1f", a_part, a_max, a_level, a_accel, a_decel, a_step);
+   DEBUG_YKINE   yLOG_complex ("a_part"    , "p %d, m %d, l %d, a %d, d %d, s %3.1f", a_part, a_max, a_level, a_accel, a_decel, a_step);
    --rce;  if (a_part  < 0 || a_part  >= MAX_PARTS) {
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (a_max   < 0 || a_max   > 4) {
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (a_level < 0 || a_level > a_max) {
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_note    ("level beyond max requested");
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_lvl    = s_speeds [a_level];
-   DEBUG_YKINE_MOVE   yLOG_char    ("x_lvl"     , x_lvl);
-   DEBUG_YKINE_MOVE   yLOG_point   ("a_rem"     , a_rem);
+   DEBUG_YKINE   yLOG_char    ("x_lvl"     , x_lvl);
+   DEBUG_YKINE   yLOG_point   ("a_rem"     , a_rem);
    --rce;  if (a_rem == NULL) {
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    if (*a_rem <  0.1) {
       *a_rem = 0.0;
-      DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
+      DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_YKINE_MOVE   yLOG_double  ("*a_rem"    , *a_rem);
+   DEBUG_YKINE   yLOG_double  ("*a_rem"    , *a_rem);
    /*---(prepare)------------------------*/
    x_persec = g_accel_info [a_level].persec;
    /*---(max level)----------------------*/
    if (a_max == a_level && *a_rem >= 0.1) {
-      DEBUG_YKINE_MOVE   yLOG_note    ("max, so all at this level");
+      DEBUG_YKINE   yLOG_note    ("max, so all at this level");
       g_accel_info [0 + a_level].dist [a_part] += *a_rem;
       *a_rem = 0.0;
    }
    /*---(last needed level)--------------*/
    if (*a_rem > 0.1 && *a_rem <= 2.0 * x_persec) {
-      DEBUG_YKINE_MOVE   yLOG_note    ("all will fit (2x) at this level");
+      DEBUG_YKINE   yLOG_note    ("all will fit (2x) at this level");
       g_accel_info [0 + a_level].dist [a_part] += *a_rem;
       *a_rem = 0.0;
    }
    /*---(acceleration)-------------------*/
    if (a_accel <= a_level && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {
-      DEBUG_YKINE_MOVE   yLOG_double  ("accel was" , g_accel_info [0 + a_level].dist [a_part]);
+      DEBUG_YKINE   yLOG_double  ("accel was" , g_accel_info [0 + a_level].dist [a_part]);
       if (*a_rem < x_persec)   *a_rem -= g_accel_info [0 + a_level].dist [a_part] = *a_rem;
       else                     *a_rem -= g_accel_info [0 + a_level].dist [a_part] = x_persec;
-      DEBUG_YKINE_MOVE   yLOG_double  ("accel now" , g_accel_info [0 + a_level].dist [a_part]);
+      DEBUG_YKINE   yLOG_double  ("accel now" , g_accel_info [0 + a_level].dist [a_part]);
    }
    /*---(deceleration)-------------------*/
    if (a_decel <= a_level && *a_rem >= 0.1 && a_level < ACCEL_EXTRA) {
-      DEBUG_YKINE_MOVE   yLOG_double  ("decel was" , g_accel_info [8 - a_level].dist [a_part]);
+      DEBUG_YKINE   yLOG_double  ("decel was" , g_accel_info [8 - a_level].dist [a_part]);
       if (*a_rem < x_persec)   *a_rem -= g_accel_info [8 - a_level].dist [a_part] = *a_rem;
       else                     *a_rem -= g_accel_info [8 - a_level].dist [a_part] = x_persec;
-      DEBUG_YKINE_MOVE   yLOG_double  ("decel now" , g_accel_info [8 - a_level].dist [a_part]);
+      DEBUG_YKINE   yLOG_double  ("decel now" , g_accel_info [8 - a_level].dist [a_part]);
    }
    /*---(wrap up)------------------------*/
    if (*a_rem < 0.1)  *a_rem = 0.0;
    if (g_accel_info [0 + a_level].dist [a_part] > 0.0) {
-      DEBUG_YKINE_MOVE   yLOG_note    ("set accel duration");
+      DEBUG_YKINE   yLOG_note    ("set accel duration");
       a = (g_accel_info [0 + a_level].dist [a_part] / x_persec) * a_step;
       g_accel_info [0 + a_level].dur [a_part] = round (a * 10) / 10;
       if (g_accel_info [0 + a_level].dur [a_part] < 0.1) g_accel_info [0 + a_level].dur [a_part] = 0.1;
    }
    if (g_accel_info [8 - a_level].dist [a_part] > 0.0) {
-      DEBUG_YKINE_MOVE   yLOG_note    ("set decel duration");
+      DEBUG_YKINE   yLOG_note    ("set decel duration");
       a = (g_accel_info [8 - a_level].dist [a_part] / x_persec) * a_step;
       g_accel_info [8 - a_level].dur [a_part] = round (a * 10) / 10;
       if (g_accel_info [8 - a_level].dur [a_part] < 0.1) g_accel_info [8 - a_level].dur [a_part] = 0.1;
    }
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -296,7 +297,7 @@ ykine_accel__adjust     (float a_dur)
          for (j = 0; j < MAX_PARTS; ++j) {
             if (g_accel_info [i].dur  [j] == 0.0)  continue;
             g_accel_info [i].adj [j] = g_accel_info [i].dur [j] * x_scale;
-            DEBUG_YKINE_MOVE   yLOG_complex ("level"     , "%d %c %5.1fd %5.1fs %4.2fp %5.1fa", j, g_accel_info [i].abbr, g_accel_info [i].dist [j], g_accel_info [i].dur [j], g_accel_info [i].pct [j], g_accel_info [i].adj [j]);
+            DEBUG_YKINE   yLOG_complex ("level"     , "%d %c %5.1fd %5.1fs %4.2fp %5.1fa", j, g_accel_info [i].abbr, g_accel_info [i].dist [j], g_accel_info [i].dur [j], g_accel_info [i].pct [j], g_accel_info [i].adj [j]);
          }
       }
    }
@@ -364,7 +365,7 @@ ykine_accel_calc        (char a_part, char a_verb, char a_action)
    /*---(locals)-----------+-----+-----+-*/
    float       x_dist, x_dur, x_cum;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
    /*---(init)---------------------------*/
    if (a_part == 0)  ykine_accel__clear ();
    /*---(handle)-------------------------*/
@@ -375,7 +376,7 @@ ykine_accel_calc        (char a_part, char a_verb, char a_action)
    ykine_accel__adjust (x_dur);
    ykine_accel__save   (a_verb, a_part, a_action);
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -404,44 +405,44 @@ ykine_accel_dur         (cchar *a_dur)
    char       *p           = NULL;
    float       x_exact     =  0.0;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
    /*---(default)------------------------*/
    x_exact = s_exact;
    ykine_accel__defaults ();
    /*> printf ("s_accel %c, s_decel %c, s_speed %c, s_step %6.1f, s_exact %6.1f\n", s_accel, s_decel, s_speed, s_step, s_exact);   <*/
    /*---(defense)------------------------*/
-   DEBUG_YKINE_MOVE   yLOG_point   ("a_dur"     , a_dur);
+   DEBUG_YKINE   yLOG_point   ("a_dur"     , a_dur);
    --rce;  if (a_dur   == NULL) {
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(filter)-------------------------*/
    x_len = strlen (a_dur);
-   DEBUG_YKINE_MOVE   yLOG_value   ("x_len"     , x_len);
+   DEBUG_YKINE   yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len < 3) {
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(pace)---------------------------*/
    s_speed = tolower (a_dur [x_len - 2]);
-   DEBUG_YKINE_MOVE   yLOG_char    ("s_speed"   , s_speed);
+   DEBUG_YKINE   yLOG_char    ("s_speed"   , s_speed);
    p = strchr (s_speeds, s_speed);
    --rce;  if (p == NULL) {
       ykine_accel__defaults ();
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    s_speedn = p - s_speeds;
-   DEBUG_YKINE_MOVE   yLOG_value   ("a_speedn"  , s_speedn);
+   DEBUG_YKINE   yLOG_value   ("a_speedn"  , s_speedn);
    if (s_speed != a_dur [x_len - 2])  s_step = 0.5;
-   DEBUG_YKINE_MOVE   yLOG_double  ("s_step"    , s_step);
+   DEBUG_YKINE   yLOG_double  ("s_step"    , s_step);
    /*---(accel)--------------------------*/
    s_accel = a_dur [0];
-   DEBUG_YKINE_MOVE   yLOG_char    ("s_accel"   , s_accel);
+   DEBUG_YKINE   yLOG_char    ("s_accel"   , s_accel);
    p = strchr (s_accels, s_accel);
    --rce;  if (p == NULL) {
       ykine_accel__defaults ();
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    switch (s_accel) {
@@ -451,14 +452,14 @@ ykine_accel_dur         (cchar *a_dur)
               if (s_acceln > s_speedn)  s_acceln = s_speedn;
               break;
    }
-   DEBUG_YKINE_MOVE   yLOG_value   ("a_acceln"  , s_acceln);
+   DEBUG_YKINE   yLOG_value   ("a_acceln"  , s_acceln);
    /*---(decel)--------------------------*/
    s_decel = a_dur [x_len - 1];
-   DEBUG_YKINE_MOVE   yLOG_char    ("decel"     , s_decel);
+   DEBUG_YKINE   yLOG_char    ("decel"     , s_decel);
    p = strchr (s_decels, s_decel);
    --rce;  if (p == NULL) {
       ykine_accel__defaults ();
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    switch (s_decel) {
@@ -468,10 +469,10 @@ ykine_accel_dur         (cchar *a_dur)
               if (s_deceln > s_speedn)  s_deceln = s_speedn;
               break;
    }
-   DEBUG_YKINE_MOVE   yLOG_value   ("a_deceln"  , s_deceln);
+   DEBUG_YKINE   yLOG_value   ("a_deceln"  , s_deceln);
    /*---(exact timing)-------------------*/
    if (x_len > 3) {
-      DEBUG_YKINE_MOVE   yLOG_note    ("exact version");
+      DEBUG_YKINE   yLOG_note    ("exact version");
       /*---(same as last)------*/
       if (x_len == 4 && a_dur [1] == '*') {
          s_exact = x_exact;
@@ -480,22 +481,22 @@ ykine_accel_dur         (cchar *a_dur)
       else {
          sprintf (t, "%*.*s", x_len - 3, x_len - 3, a_dur + 1);
          /*> strncpy (t, a_dur + 1, x_len - 3);                                          <*/
-         DEBUG_YKINE_MOVE   yLOG_info    ("t"         , t);
+         DEBUG_YKINE   yLOG_info    ("t"         , t);
          /*> printf ("a_dur %s, t %s\n", a_dur, t);                                      <*/
          x_len = strlen (t);
-         DEBUG_YKINE_MOVE   yLOG_value   ("x_len"     , x_len);
+         DEBUG_YKINE   yLOG_value   ("x_len"     , x_len);
          --rce;  for (i = 0; i < x_len; ++i) {
             if (strchr ("0123456789.", t [i]) != NULL)  continue;
             ykine_accel__defaults ();
-            DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+            DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
          s_exact = atof (t);
          /*---(check)-------------*/
-         DEBUG_YKINE_MOVE   yLOG_double  ("a_exact"   , s_exact);
+         DEBUG_YKINE   yLOG_double  ("a_exact"   , s_exact);
          --rce;  if (s_exact < 0.1) {
             ykine_accel__defaults ();
-            DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+            DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
       }
@@ -503,17 +504,19 @@ ykine_accel_dur         (cchar *a_dur)
    }
    /*> printf ("s_accel %c, s_decel %c, s_speed %c, s_step %6.1f, s_exact %6.1f\n", s_accel, s_decel, s_speed, s_step, s_exact);   <*/
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
 ykine_accel_timing_save (void)
 {
+   DEBUG_YKINE   yLOG_senter  (__FUNCTION__);
    myKINE.a_acceln = s_acceln;
    myKINE.a_deceln = s_deceln;
    myKINE.a_speedn = s_speedn;
    myKINE.a_exact  = s_exact;
+   DEBUG_YKINE   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -523,15 +526,15 @@ ykine_accel_timing      (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
    /*---(check accel)-----------------*/
    yPARSE_top      (myKINE.accel);
-   DEBUG_YKINE_SCRP  yLOG_info    ("accel"     , myKINE.accel);
+   DEBUG_YKINE   yLOG_info    ("accel"     , myKINE.accel);
    rc  = ykine_accel_dur (myKINE.accel);
-   DEBUG_YKINE_SCRP  yLOG_value   ("accel_dur" , rc);
+   DEBUG_YKINE   yLOG_value   ("accel_dur" , rc);
    /*---(check normal)----------------*/
    yPARSE_popval (0.0, &myKINE.b);
-   DEBUG_YKINE_SCRP  yLOG_value   ("b"         , myKINE.b);
+   DEBUG_YKINE   yLOG_value   ("b"         , myKINE.b);
    /*---(if normal)-------------------*/
    if (rc < 0)   strlcpy (myKINE.accel, "", LEN_LABEL);
    /*---(if accelerated)--------------*/
@@ -539,10 +542,10 @@ ykine_accel_timing      (void)
       myKINE.b = -1.0;
       ykine_accel_timing_save ();
    }
-   DEBUG_YKINE_SCRP  yLOG_info    ("accel'"    , myKINE.accel);
-   DEBUG_YKINE_SCRP  yLOG_value   ("b'"        , myKINE.b);
+   DEBUG_YKINE   yLOG_info    ("accel'"    , myKINE.accel);
+   DEBUG_YKINE   yLOG_value   ("b'"        , myKINE.b);
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_MOVE   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -554,32 +557,32 @@ ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_dec
    char        x_exact     [LEN_LABEL] = "";
    char        x_accel, x_speed, x_decel;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_spoint  (a_out);
+   DEBUG_YKINE   yLOG_spoint  (a_out);
    --rce;  if (a_out == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    strlcpy (a_out, "", LEN_LABEL);
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_acceln);
+   DEBUG_YKINE   yLOG_sint    (a_acceln);
    --rce;  if (a_acceln < 0 || a_acceln > 4) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_speedn);
+   DEBUG_YKINE   yLOG_sint    (a_speedn);
    --rce;  if (a_speedn < 0 || a_speedn > 4) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_sint    (a_deceln);
+   DEBUG_YKINE   yLOG_sint    (a_deceln);
    --rce;  if (a_deceln < 0 || a_deceln > 4) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_sdouble (a_exact);
+   DEBUG_YKINE   yLOG_sdouble (a_exact);
    --rce;  if (a_exact  < 0.0) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(limits)-------------------------*/
@@ -598,9 +601,9 @@ ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_dec
       else                               sprintf (x_exact, "%.1f", a_exact);
    }
    sprintf (a_out, "%c%s%c%c", x_accel, x_exact, x_speed, x_decel);
-   DEBUG_YKINE_SCRP   yLOG_snote   (a_out);
+   DEBUG_YKINE   yLOG_snote   (a_out);
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -611,28 +614,28 @@ ykine_accel_body_adj    (float a_pct, char *a_out)
    char        rce         =  -10;
    char        x_exact     [LEN_LABEL] = "";
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_senter  (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_sdouble (a_pct);
-   DEBUG_YKINE_SCRP   yLOG_spoint  (a_out);
+   DEBUG_YKINE   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE   yLOG_sdouble (a_pct);
+   DEBUG_YKINE   yLOG_spoint  (a_out);
    /*---(defense)------------------------*/
    --rce;  if (a_out == NULL) {
-      DEBUG_YKINE_SCRP   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    if (s_exact <  0.1) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no exact");
+      DEBUG_YKINE   yLOG_snote   ("no exact");
       sprintf (a_out, "%c%c%c", s_accel, s_speed, s_decel);
    } else if (a_pct   <= 0.0) {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("no pecent");
+      DEBUG_YKINE   yLOG_snote   ("no pecent");
       sprintf (a_out, "%c%.1f%c%c", s_accel, s_exact, s_speed, s_decel);
    } else {
-      DEBUG_YKINE_SCRP   yLOG_snote   ("exact and percent");
+      DEBUG_YKINE   yLOG_snote   ("exact and percent");
       sprintf (x_exact, "%.1f", s_exact * a_pct);
       sprintf (a_out, "%c%s%c%c", s_accel, x_exact, s_speed, s_decel);
    }
-   DEBUG_YKINE_SCRP   yLOG_snote   (a_out);
+   DEBUG_YKINE   yLOG_snote   (a_out);
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -652,26 +655,26 @@ ykine_accel__zero      (char a_verb, float x, float z, float y, float a_beat, ch
    tSERVO     *x_servo     =    0;
    float       s           =  0.0;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_complex ("parms"     , "%dm, %6.2fx, %6.2fz, %6.2fy, %8.2fb", a_verb, x, z, y, a_beat);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_complex ("parms"     , "%dm, %6.2fx, %6.2fz, %6.2fy, %8.2fb", a_verb, x, z, y, a_beat);
    /*---(servo)--------------------------*/
    x_servo = ykine_servo_pointer (YKINE_BODY, YKINE_FOCU);
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
+   DEBUG_YKINE  yLOG_point   ("x_servo"   , x_servo);
    --rce;  if (x_servo ==  NULL) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(calculate)----------------------*/
    s = a_beat * myKINE.s_pace;
-   DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
+   DEBUG_YKINE  yLOG_value   ("s_secs"    , s);
    rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_tline, a_label, '-', a_cell, 0.0, s);
    rc = ykine_move_addloc (x_servo, x, z, y);
    --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -686,27 +689,27 @@ ykine_accel__servo     (char a_verb, char a_leg, int a_seg, float a_deg, float a
    float       x, y, z;
    char        x_meth      = YKINE_IK;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_SCRP   yLOG_complex ("parms"     , "%dm, %dl, %ds, %8.2fd, %8.2fb, %s", a_verb, a_leg, a_seg, a_deg, a_beat, a_label);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_complex ("parms"     , "%dm, %dl, %ds, %8.2fd, %8.2fb, %s", a_verb, a_leg, a_seg, a_deg, a_beat, a_label);
    /*---(servo)--------------------------*/
    x_servo = ykine_servo_pointer (a_leg, a_seg);
-   DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
+   DEBUG_YKINE  yLOG_point   ("x_servo"   , x_servo);
    --rce;  if (x_servo ==  NULL) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(calculate)----------------------*/
    s = a_beat * myKINE.s_pace;
-   DEBUG_YKINE_SCRP  yLOG_value   ("s_secs"    , s);
+   DEBUG_YKINE  yLOG_value   ("s_secs"    , s);
    rc = ykine_move_create (x_servo, YKINE_SERVO, a_verb, myKINE.s_tline, a_label, a_part, a_cell, a_deg, s);
    --rce;  if (rc <  0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    switch (a_verb) {
    case YKINE_OR : case YKINE_TI :
       break;
-   case YKINE_WAIT :
+   case YKINE_SYNC :
       rc = ykine_move_addloc (x_servo, myKINE.xe, myKINE.ze, myKINE.ye);
       break;
    case YKINE_FK :
@@ -716,9 +719,9 @@ ykine_accel__servo     (char a_verb, char a_leg, int a_seg, float a_deg, float a
       rc = ykine_move_addloc (x_servo, x, z, y);
       break;
    }
-   DEBUG_YKINE_SCRP   yLOG_complex ("updated"   , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
+   DEBUG_YKINE   yLOG_complex ("updated"   , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -726,13 +729,13 @@ char
 ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_part, char a_cell)
 {
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
    /*---(handle)-------------------------*/
    ykine_accel__servo (a_verb, a_leg, YKINE_FEMU, f, b, a_label, a_part, a_cell);
    ykine_accel__servo (a_verb, a_leg, YKINE_PATE, p, b, a_label, a_part, a_cell);
    ykine_accel__servo (a_verb, a_leg, YKINE_TIBI, t, b, a_label, a_part, a_cell);
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -755,17 +758,17 @@ ykine_accel_append      (char a_verb, char a_part, char *a_accel)
    float       x_pct       =  0.0;
    float       x_adj       =  0.0;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
    rc = ykine_accel_dur  (a_accel);
    rc = ykine_accel_calc (s_cpart, a_verb, a_part);
    --rce;  if (rc <  0) {
-      DEBUG_YKINE_MOVE   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(prepare for next)---------------*/
    ++s_cpart;
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -779,16 +782,22 @@ ykine_accel_execute     (char *a_label)
    float       x_pct       =  0.0;
    float       x_adj       =  0.0;
    char        x_verb      =   -1;
+   float       a           =  0.0;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_value   ("b"         , myKINE.b);
    --rce;  if (myKINE.b >= 0) {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    for (j = 0; j < MAX_PARTS; ++j) {
       ykine_accel__restore (j);
+      a = 0.0;
+      for (i = ACCEL_TURTLE; i <= DECEL_NOOP; ++i)  a += g_accel_info [i].dur [j];
+      if (a <= 0.0)  continue;
+      DEBUG_YKINE   yLOG_value   ("ACCEL PART", j);
       for (i = ACCEL_TURTLE; i <= DECEL_NOOP; ++i) {
-         DEBUG_YKINE_MOVE   yLOG_complex ("level"     , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist [j], g_accel_info [i].dur [j], g_accel_info [i].pct [j]);
+         DEBUG_YKINE   yLOG_complex ("level"     , "%c %5.1fd %5.1fd %4.2fp", g_accel_info [i].abbr, g_accel_info [i].dist [j], g_accel_info [i].dur [j], g_accel_info [i].pct [j]);
          if (g_accel_info [i].dur [j]  < 0.1)   continue;
          x_pct  = g_accel_info [i].pct [j];
          x_adj  = g_accel_info [i].adj [j];
@@ -803,7 +812,7 @@ ykine_accel_execute     (char *a_label)
       }
    }
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -817,13 +826,13 @@ ykine_accel_immediate   (char a_verb, char a_leg, float a_beats, char *a_label)
    float       x_pct       =  0.0;
    float       x_adj       =  0.0;
    /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE   yLOG_enter   (__FUNCTION__);
    /*---(normal)-------------------------*/
    --rce;  if (a_beats < 0)  {
-      DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YKINE   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_note    ("unaccelerated move");
+   DEBUG_YKINE   yLOG_note    ("unaccelerated move");
    switch (a_verb) {
    case YKINE_ZE : case YKINE_PO :
       ykine_accel__zero   (a_verb, myKINE.xe, myKINE.ze, myKINE.ye, a_beats, a_label, YKINE_NONE);
@@ -833,20 +842,20 @@ ykine_accel_immediate   (char a_verb, char a_leg, float a_beats, char *a_label)
       break;
    }
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YKINE   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
 ykine_accel_seq_beg     (char a_leg, float a_wait)
 {
-   return ykine_accel_immediate (YKINE_WAIT, a_leg, a_wait * s_exact, "step_beg");
+   return ykine_accel_immediate (YKINE_SYNC, a_leg, a_wait * s_exact, "step_beg");
 }
 
 char
 ykine_accel_seq_end     (char a_leg, float a_wait)
 {
-   return ykine_accel_immediate (YKINE_WAIT, a_leg, a_wait * s_exact, "step_end");
+   return ykine_accel_immediate (YKINE_SYNC, a_leg, a_wait * s_exact, "step_end");
 }
 
 

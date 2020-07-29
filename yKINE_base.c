@@ -126,6 +126,7 @@ yKINE_init         (void)
    int      x_seg = 0;              /* iterator         */
    /*---(header)-------------------------*/
    DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
+   /*---(cut log volume)-----------------*/
    yLOG_mute  ();
    DEBUG_YKINE  yLOG_unmute ();
    /*---(set body)-----------------------*/
@@ -156,6 +157,7 @@ yKINE_init         (void)
    DEBUG_YKINE  yLOG_value   ("step"      , rc);
    ykine_stance_verify  ();
    myKINE.s_pace  = YKINE_PACE;
+   /*---(ready to return)----------------*/
    yLOG_unmute ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
