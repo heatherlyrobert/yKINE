@@ -287,10 +287,11 @@
 /*---(method/verbs)-------------------*/
 #define     YKINE_MAX_METH  10
 
+/*---(general)------------------------*/
 #define     YKINE_FK         0
 #define     YKINE_IK         1
 #define     YKINE_GK         2
-
+/*---(specific)-----------------------*/
 #define     YKINE_TK         3
 #define     YKINE_CK         4
 #define     YKINE_RK         5
@@ -314,9 +315,6 @@
 #define     YKINE_TPO       23
 #define     YKINE_ST        24
 #define     YKINE_SYNC      25
-
-
-
 /*---(minor)--------------------------*/
 #define     YKINE_SEGN      40
 #define     YKINE_REPT      41
@@ -330,6 +328,7 @@
 /*---(errors)-------------------------*/
 #define     YKINE_BODE      66
 #define     YKINE_LEGE      67
+#define     YKINE_MISS      68
 /*---(special)------------------------*/
 #define     YKINE_NOOP      99
 
@@ -427,6 +426,7 @@
 
 char*       yKINE_version           (void);
 char        yKINE_init              (void);
+char        yKINE_reinit            (void);
 char        yKINE_sizing            (char a_type);
 
 char        yKINE_zero              (float a_x, float a_z, float a_y);
@@ -469,7 +469,6 @@ char        yKINE_servo_cursor      (char a_dir);
 /*> char        yKINE_servo_which       (int a_seq, int *a_leg, int *a_seg);          <*/
 /*> char        yKINE_servo             (char *a_source);                             <*/
 char        yKINE_sect_cursor       (char a_dir, char *a_major, char *a_minor, int *a_line, char *a_label, float *a_sec);
-char        yKINE_script            (float *a_len, char a_verify);
 
 char        yKINE_exact_all         (float  a_time);
 char        yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_label, char *a_cell, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
@@ -492,8 +491,8 @@ char        yKINE_verify_rc         (int a_row, int a_col);
 
 
 char        yKINE_handlers          (void);
-char        yKINE_scrp_prepper      (char a_verify);
-char        yKINE_scrp_finisher     (float *a_len);
+char        yKINE_scrp_prepper      (char a_pass);
+char        yKINE_scrp_finisher     (char a_pass, float *a_len);
 
 
 /*> char        yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count);   <*/

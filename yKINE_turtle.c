@@ -512,7 +512,6 @@ char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine_turtle__unit      (char *a_question, int a_num)
 {
    int         i           =    0;
-   int         x_pos       =    0;
    char        x_msg       [LEN_RECD];
    /*---(preprare)-----------------------*/
    strlcpy  (ykine__unit_answer, "TURTLE unit      : question not understood", LEN_RECD);

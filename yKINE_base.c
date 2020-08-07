@@ -164,6 +164,29 @@ yKINE_init         (void)
    return 0;
 }
 
+char
+yKINE_reinit            (void)
+{
+   /*---(header)-------------------------*/
+   DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   rc = ykine_servo_init ();
+   DEBUG_YKINE  yLOG_value   ("servo"     , rc);
+   rc = ykine_move_init  ();
+   DEBUG_YKINE  yLOG_value   ("move"      , rc);
+   rc = ykine_scrp_begin ();
+   DEBUG_YKINE  yLOG_value   ("scrp"      , rc);
+   rc = ykine_hint_init  ();
+   DEBUG_YKINE  yLOG_value   ("hint"      , rc);
+   rc = ykine_turtle_init    ();
+   DEBUG_YKINE  yLOG_value   ("turtle"    , rc);
+   myKINE.s_pace  = YKINE_PACE;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 /*> char       /+----: change the center of gravity ------------------------------+/   <* 
  *> yKINE_center       (double a_x, double a_z, double a_y)                            <* 
  *> {                                                                                  <* 
@@ -311,9 +334,9 @@ ykine__unit_quiet  (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ykine__unit_loud   (void)
 {
-   char       *x_args [8]  = { "yKINE_unit" , "@@ykine", "@@ykine_calc", "@@ykine_data", "@@ykine_scrp", "@@ykine_move", "@@ykine_exact", "@@yparse" };
-   yURG_logger (8, x_args);
-   yURG_urgs   (8, x_args);
+   char       *x_args [9]  = { "yKINE_unit" , "@@ykine", "@@ykine_calc", "@@ykine_tick", "@@ykine_data", "@@ykine_scrp", "@@ykine_move", "@@ykine_exact", "@@yparse" };
+   yURG_logger (9, x_args);
+   yURG_urgs   (9, x_args);
    DEBUG_YKINE  yLOG_info     ("yKINE" , yKINE_version   ());
    yKINE_init  ();
    return 0;

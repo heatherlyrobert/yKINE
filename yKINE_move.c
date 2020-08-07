@@ -79,42 +79,49 @@ ykine__move_new    (tMOVE **a_move)
    }
    /*---(overall)------------------------*/
    DEBUG_YKINE_MOVE   yLOG_snote   ("overall");
-   x_new->seq     = 0;
-   x_new->type    = YKINE_NULL;
-   x_new->verb    = YKINE_NOOP; 
-   x_new->servo   = NULL;
-   x_new->line    = 0;
+   x_new->seq      = 0;
+   x_new->type     = YKINE_NULL;
+   x_new->verb     = YKINE_NOOP; 
+   x_new->servo    = NULL;
+   x_new->line     = 0;
    strlcpy (x_new->label, "", LEN_LABEL);
-   x_new->part    = '-';
-   x_new->cell    = '-';
-   /*---(position)-----------------------*/
-   DEBUG_YKINE_MOVE   yLOG_snote   ("pos");
-   x_new->degs    =  0.0f;
+   x_new->part     = '-';
+   x_new->cell     = '-';
    /*---(timing)-------------------------*/
    DEBUG_YKINE_MOVE   yLOG_snote   ("time");
-   x_new->dur     =  0.0f;
-   x_new->secs    =  0.0f;
-   x_new->other   =  0;
-   /*---(location)-----------------------*/
+   x_new->dur      =  0.0f;
+   x_new->secs     =  0.0f;
+   x_new->other    =  0;
+   /*---(pure)---------------------------*/
    DEBUG_YKINE_MOVE   yLOG_snote   ("loc");
-   x_new->x_pos   =  0.0f;
-   x_new->z_pos   =  0.0f;
-   x_new->y_pos   =  0.0f;
-   x_new->xz_len  =  0.0f;
+   x_new->pure_rc  =     0;
+   x_new->pure_d   =  0.0f;
+   x_new->pure_x    =  0.0f;
+   x_new->pure_z    =  0.0f;
+   x_new->pure_y    =  0.0f;
+   x_new->pure_xz   =  0.0f;
+   /*---(adapt)--------------------------*/
+   DEBUG_YKINE_MOVE   yLOG_snote   ("loc");
+   x_new->adapt_rc =     0;
+   x_new->adapt_d  =  0.0f;
+   x_new->adapt_x  =  0.0f;
+   x_new->adapt_z  =  0.0f;
+   x_new->adapt_y  =  0.0f;
+   x_new->adapt_xz =  0.0f;
    /*---(master linked list)-------------*/
    DEBUG_YKINE_MOVE   yLOG_snote   ("link");
-   x_new->m_prev  = NULL;
-   x_new->m_next  = NULL;
+   x_new->m_prev   = NULL;
+   x_new->m_next   = NULL;
    if (m_tail == NULL) {
-      m_head         = x_new;
-      m_tail         = x_new;
+      m_head          = x_new;
+      m_tail          = x_new;
    } else {
-      x_new->m_prev  = m_tail;
-      m_tail->m_next = x_new;
-      m_tail         = x_new;
+      x_new->m_prev   = m_tail;
+      m_tail->m_next  = x_new;
+      m_tail          = x_new;
    }
-   x_new->s_prev  = NULL;
-   x_new->s_next  = NULL;
+   x_new->s_prev   = NULL;
+   x_new->s_next   = NULL;
    ++m_count;
    DEBUG_YKINE_MOVE   yLOG_sint    (m_count);
    /*---(save)---------------------------*/
@@ -186,7 +193,6 @@ ykine_move_create  (
       char       *a_label     ,   /* step label                               */
       char        a_part      ,   /* for grouping into accels                 */
       char        a_cell      ,   /* for grouping into cells                  */
-      float       a_deg       ,   /* end position                             */
       float       a_sec       )   /* duration                                 */
 {
    /*---(locals)-----------+-----------+-*/
@@ -199,7 +205,6 @@ ykine_move_create  (
    DEBUG_YKINE_MOVE   yLOG_enter   (__FUNCTION__);
    DEBUG_YKINE_MOVE   yLOG_info    ("a_label"   , a_label);
    DEBUG_YKINE_MOVE   yLOG_char    ("a_type"    , a_type);
-   DEBUG_YKINE_MOVE   yLOG_double  ("a_deg"     , a_deg);
    DEBUG_YKINE_MOVE   yLOG_double  ("a_sec"     , a_sec);
    /*---(defenses)-----------------------*/
    DEBUG_YKINE_MOVE   yLOG_point   ("a_servo"   , a_servo);
@@ -229,7 +234,6 @@ ykine_move_create  (
    x_move->part     = a_part;
    x_move->cell     = a_cell;
    x_move->line     = a_line;
-   x_move->degs     = a_deg;
    x_move->dur      = a_sec;
    /*---(hook it up to servo)---------*/
    DEBUG_YKINE_MOVE   yLOG_note    ("hook up move into servo doubly-linked list");
@@ -240,7 +244,7 @@ ykine_move_create  (
       a_servo->count        = 1;
       DEBUG_YKINE_MOVE   yLOG_note    ("update sec/deg based on being first move");
       x_move->seq           = 1;
-      x_move->secs       = a_sec;
+      x_move->secs          = a_sec;
    } else {
       DEBUG_YKINE_MOVE   yLOG_note    ("add to tail");
       x_move->s_prev        = a_servo->tail;
@@ -252,12 +256,10 @@ ykine_move_create  (
       x_sec                 = x_move->s_prev->secs;
       x_move->secs          = x_sec + a_sec;
    }
-   /*---(carry last values)--------------*/
-   /*> ykine_move_addloc (a_servo, x, z, y);                                          <*/
    /*---(display stats)------------------*/
    DEBUG_YKINE_MOVE   yLOG_value   ("count"     , a_servo->count);
    DEBUG_YKINE_MOVE   yLOG_value   ("seq"       , x_move->seq);
-   DEBUG_YKINE_MOVE   yLOG_double  ("secs"   , x_move->secs);
+   DEBUG_YKINE_MOVE   yLOG_double  ("secs"      , x_move->secs);
    /*---(update globals)-----------------*/
    DEBUG_YKINE_MOVE   yLOG_double  ("scrp_len"  , myKINE.scrp_len);
    if (x_move->secs > myKINE.scrp_len) {
@@ -271,12 +273,13 @@ ykine_move_create  (
 }
 
 char         /*--> add a location to a move object -------[ ------ [ ------ ]-*/
-ykine_move_addloc        (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos)
+ykine_move_add_zero       (tSERVO *a_servo, char a_rc, float a_xpos, float a_zpos, float a_ypos)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;           /* return code for errors         */
    /*---(header)-------------------------*/
    DEBUG_YKINE_MOVE   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_MOVE   yLOG_schar   (a_rc);
    DEBUG_YKINE_MOVE   yLOG_sdouble (a_xpos);
    DEBUG_YKINE_MOVE   yLOG_sdouble (a_zpos);
    DEBUG_YKINE_MOVE   yLOG_sdouble (a_ypos);
@@ -293,11 +296,116 @@ ykine_move_addloc        (tSERVO *a_servo, float a_xpos, float a_zpos, float a_y
       return rce;
    }
    /*---(assign basics)---------------*/
-   a_servo->tail->x_pos    = a_xpos;
-   a_servo->tail->z_pos    = a_zpos;
-   a_servo->tail->y_pos    = a_ypos;
-   a_servo->tail->xz_len   = sqrt ((a_xpos * a_xpos) + (a_zpos * a_zpos));
-   DEBUG_YKINE_MOVE   yLOG_sdouble (a_servo->tail->xz_len);
+   a_servo->tail->pure_rc   = a_rc;
+   a_servo->tail->pure_d    = 0.0;
+   a_servo->tail->pure_x    = a_xpos;
+   a_servo->tail->pure_z    = a_zpos;
+   a_servo->tail->pure_y    = a_ypos;
+   a_servo->tail->pure_xz   = sqrt ((a_xpos * a_xpos) + (a_zpos * a_zpos));
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_servo->tail->pure_xz);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_MOVE   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> add a location to a move object -------[ ------ [ ------ ]-*/
+ykine_move_add_orient      (tSERVO *a_servo, char a_rc, float a_deg)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;           /* return code for errors         */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_MOVE   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_MOVE   yLOG_schar   (a_rc);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_deg);
+   /*---(defenses)-----------------------*/
+   DEBUG_YKINE_MOVE   yLOG_spoint  (a_servo);
+   --rce;  if (a_servo     == NULL) {
+      DEBUG_YKINE_MOVE   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_MOVE   yLOG_snote   (a_servo->label);
+   DEBUG_YKINE_MOVE   yLOG_spoint  (a_servo->tail);
+   --rce;  if (a_servo->tail == NULL) {
+      DEBUG_YKINE_MOVE   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(assign basics)---------------*/
+   a_servo->tail->pure_rc   = a_rc;
+   a_servo->tail->pure_d    = a_deg;
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_MOVE   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> add a location to a move object -------[ ------ [ ------ ]-*/
+ykine_move_add_pure        (tSERVO *a_servo, char a_rc, float a_deg, float a_xpos, float a_zpos, float a_ypos)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;           /* return code for errors         */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_MOVE   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_MOVE   yLOG_schar   (a_rc);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_deg);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_xpos);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_zpos);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_ypos);
+   /*---(defenses)-----------------------*/
+   DEBUG_YKINE_MOVE   yLOG_spoint  (a_servo);
+   --rce;  if (a_servo     == NULL) {
+      DEBUG_YKINE_MOVE   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_MOVE   yLOG_snote   (a_servo->label);
+   DEBUG_YKINE_MOVE   yLOG_spoint  (a_servo->tail);
+   --rce;  if (a_servo->tail == NULL) {
+      DEBUG_YKINE_MOVE   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(assign basics)---------------*/
+   a_servo->tail->pure_rc   = a_rc;
+   a_servo->tail->pure_d    = a_deg;
+   a_servo->tail->pure_x    = a_xpos;
+   a_servo->tail->pure_z    = a_zpos;
+   a_servo->tail->pure_y    = a_ypos;
+   a_servo->tail->pure_xz   = sqrt ((a_xpos * a_xpos) + (a_zpos * a_zpos));
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_servo->tail->pure_xz);
+   /*---(complete)-----------------------*/
+   DEBUG_YKINE_MOVE   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char         /*--> add a location to a move object -------[ ------ [ ------ ]-*/
+ykine_move_add_adapt       (tSERVO *a_servo, char a_rc, float a_deg, float a_xpos, float a_zpos, float a_ypos)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         = -10;           /* return code for errors         */
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_MOVE   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_MOVE   yLOG_schar   (a_rc);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_deg);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_xpos);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_zpos);
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_ypos);
+   /*---(defenses)-----------------------*/
+   DEBUG_YKINE_MOVE   yLOG_spoint  (a_servo);
+   --rce;  if (a_servo     == NULL) {
+      DEBUG_YKINE_MOVE   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YKINE_MOVE   yLOG_snote   (a_servo->label);
+   DEBUG_YKINE_MOVE   yLOG_spoint  (a_servo->tail);
+   --rce;  if (a_servo->tail == NULL) {
+      DEBUG_YKINE_MOVE   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(assign basics)---------------*/
+   a_servo->tail->adapt_rc  = a_rc;
+   a_servo->tail->adapt_d   = a_deg;
+   a_servo->tail->adapt_x   = a_xpos;
+   a_servo->tail->adapt_z   = a_zpos;
+   a_servo->tail->adapt_y   = a_ypos;
+   a_servo->tail->adapt_xz  = sqrt ((a_xpos * a_xpos) + (a_zpos * a_zpos));
+   DEBUG_YKINE_MOVE   yLOG_sdouble (a_servo->tail->adapt_xz);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_MOVE   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -309,6 +417,7 @@ ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
    /*---(locals)-----------+-----------+-*/
    char        x_label     [LEN_LABEL];
    float       d, x, z, y;
+   char        PURE_RC     =    0;
    /*---(labels)-------------------------*/
    if (a_count >= 0) {
       sprintf (x_label, "repeat %d,%d", a_segno, a_count + 1);
@@ -319,27 +428,27 @@ ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
    }
    /*---(moves)--------------------------*/
    ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-   ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
-   ykine_move_addloc (a_servo, x, z, y);
+   ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0);
+   ykine_move_add_pure (a_servo, PURE_RC, 0.0, x, z, y);
    if (a_servo->seg == YKINE_TIBI) {
       --a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
-      ykine_move_addloc (a_servo, x, z, y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0);
+      ykine_move_add_pure (a_servo, PURE_RC, 0.0, x, z, y);
       --a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
-      ykine_move_addloc (a_servo, x, z, y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0);
+      ykine_move_add_pure (a_servo, PURE_RC, 0.0, x, z, y);
    }
    else if (a_servo->seg == YKINE_FEMU) {
       ++a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
-      ykine_move_addloc (a_servo, x, z, y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0);
+      ykine_move_add_pure (a_servo, PURE_RC, 0.0, x, z, y);
       ++a_servo;
       ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
-      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0, 0.0);
-      ykine_move_addloc (a_servo, x, z, y);
+      ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0);
+      ykine_move_add_pure (a_servo, PURE_RC, 0.0, x, z, y);
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -473,7 +582,7 @@ ykine_move_delete  (tMOVE **a_move)
    x_move->secs  = 0.0;
    x_move->dur   = 0.0;
    if (x_move->s_prev != NULL) {
-      x_move->degs  = x_move->s_prev->degs;
+      x_move->pure_d  = x_move->s_prev->pure_d;
    }
    /*---(remove from servo list)---------*/
    DEBUG_YKINE_MOVE   yLOG_note    ("remove from backwards/prev direction");
@@ -566,13 +675,13 @@ ykine_move_savedtail     (tSERVO *a_servo, float *a_sec, float *a_deg, float *x,
       DEBUG_YKINE_MOVE   yLOG_sint    (x_tail->line);
       DEBUG_YKINE_MOVE   yLOG_snote   (x_tail->label);
       if (a_sec != NULL)  *a_sec = x_tail->secs;
-      if (a_deg != NULL)  *a_deg = x_tail->degs;
-      if (x     != NULL)  *x     = x_tail->x_pos;
-      if (z     != NULL)  *z     = x_tail->z_pos;
-      if (y     != NULL)  *y     = x_tail->y_pos;
-      if (xz    != NULL)  *xz    = x_tail->xz_len;
+      if (a_deg != NULL)  *a_deg = x_tail->pure_d;
+      if (x     != NULL)  *x     = x_tail->pure_x;
+      if (z     != NULL)  *z     = x_tail->pure_z;
+      if (y     != NULL)  *y     = x_tail->pure_y;
+      if (xz    != NULL)  *xz    = x_tail->pure_xz;
       DEBUG_YKINE_MOVE   yLOG_sexit   (__FUNCTION__);
-      DEBUG_YKINE_MOVE   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", x_tail->secs, x_tail->degs, x_tail->x_pos, x_tail->z_pos, x_tail->y_pos, x_tail->xz_len);
+      DEBUG_YKINE_MOVE   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", x_tail->secs, x_tail->pure_d, x_tail->pure_x, x_tail->pure_z, x_tail->pure_y, x_tail->pure_xz);
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -601,13 +710,13 @@ ykine_move_savedcurr    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, fl
    DEBUG_YKINE_MOVE   yLOG_sint    (a_move->line);
    DEBUG_YKINE_MOVE   yLOG_snote   (a_move->label);
    if (a_sec != NULL)  *a_sec = a_move->secs;
-   if (a_deg != NULL)  *a_deg = a_move->degs;
-   if (x     != NULL)  *x     = a_move->x_pos;
-   if (z     != NULL)  *z     = a_move->z_pos;
-   if (y     != NULL)  *y     = a_move->y_pos;
-   if (xz    != NULL)  *xz    = a_move->xz_len;
+   if (a_deg != NULL)  *a_deg = a_move->pure_d;
+   if (x     != NULL)  *x     = a_move->pure_x;
+   if (z     != NULL)  *z     = a_move->pure_z;
+   if (y     != NULL)  *y     = a_move->pure_y;
+   if (xz    != NULL)  *xz    = a_move->pure_xz;
    DEBUG_YKINE_MOVE   yLOG_sexit   (__FUNCTION__);
-   DEBUG_YKINE_MOVE   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", a_move->secs, a_move->degs, a_move->x_pos, a_move->z_pos, a_move->y_pos, a_move->xz_len);
+   DEBUG_YKINE_MOVE   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", a_move->secs, a_move->pure_d, a_move->pure_x, a_move->pure_z, a_move->pure_y, a_move->pure_xz);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -646,13 +755,13 @@ ykine_move_savedprev    (tMOVE *a_move, float *a_sec, float *a_deg, float *x, fl
    /*---(return data)--------------------*/
    DEBUG_YKINE_MOVE   yLOG_sint    (x_prev->line);
    DEBUG_YKINE_MOVE   yLOG_snote   (x_prev->label);
-   if (a_deg != NULL)  *a_deg = x_prev->degs;
-   if (x     != NULL)  *x     = x_prev->x_pos;
-   if (z     != NULL)  *z     = x_prev->z_pos;
-   if (y     != NULL)  *y     = x_prev->y_pos;
-   if (xz    != NULL)  *xz    = x_prev->xz_len;
+   if (a_deg != NULL)  *a_deg = x_prev->pure_d;
+   if (x     != NULL)  *x     = x_prev->pure_x;
+   if (z     != NULL)  *z     = x_prev->pure_z;
+   if (y     != NULL)  *y     = x_prev->pure_y;
+   if (xz    != NULL)  *xz    = x_prev->pure_xz;
    DEBUG_YKINE_MOVE   yLOG_sexit   (__FUNCTION__);
-   DEBUG_YKINE_MOVE   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", x_prev->secs, x_prev->degs, x_prev->x_pos, x_prev->z_pos, x_prev->y_pos, x_prev->xz_len);
+   DEBUG_YKINE_MOVE   yLOG_complex ("saves"     , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy, %8.2fxz", x_prev->secs, x_prev->pure_d, x_prev->pure_x, x_prev->pure_z, x_prev->pure_y, x_prev->pure_xz);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -709,11 +818,11 @@ ykine__exact_data        (tSERVO *a_servo, float a_sec)
    x_curr  = a_servo->curr;
    DEBUG_YKINE_EXACT  yLOG_complex ("verb"      , "%s at %d", x_curr->label, x_curr->line);
    /*---(get current values)-------------*/
-   xc  = x_curr->x_pos;
-   zc  = x_curr->z_pos;
-   yc  = x_curr->y_pos;
+   xc  = x_curr->pure_x;
+   zc  = x_curr->pure_z;
+   yc  = x_curr->pure_y;
    sc  = x_curr->secs;
-   dc  = x_curr->degs;
+   dc  = x_curr->pure_d;
    DEBUG_YKINE_EXACT  yLOG_complex ("current"   , "%8.2fs, %8.2fd, %8.2fx, %8.2fz, %8.2fy", sc, dc, xc, zc, yc);
    /*---(get previous values)---------*/
    rc = ykine_move_savedprev  (x_curr, &sp, &dp, &xp, &zp, &yp, NULL);
@@ -802,13 +911,13 @@ ykine_servo__cursor     (char a_dir, char a_type, float *a, float *b, float *c, 
    --rce;  switch (a_type) {
    case YKINE_DEG :
       if (a  != NULL)  *a  = s_curr->secs;
-      if (b  != NULL)  *b  = s_curr->degs;
+      if (b  != NULL)  *b  = s_curr->pure_d;
       break;
    case YKINE_POS :
       if (a  != NULL)  *a  = s_curr->secs;
-      if (b  != NULL)  *b  = s_curr->x_pos;
-      if (c  != NULL)  *c  = s_curr->z_pos;
-      if (d  != NULL)  *d  = s_curr->y_pos;
+      if (b  != NULL)  *b  = s_curr->pure_x;
+      if (c  != NULL)  *c  = s_curr->pure_z;
+      if (d  != NULL)  *d  = s_curr->pure_y;
       break;
    default  :
       DEBUG_YKINE_SCRP   yLOG_snote   ("invalid type");
@@ -858,9 +967,9 @@ char         /*--> retrieve data about current -----------[ ------ [ ------ ]-*/
 ykine_move_curdata       (double *a_x, double *a_z, double *a_y)
 {
    if (s_curr == NULL)   return -1;
-   if (a_x != NULL)  *a_x = s_curr->x_pos;
-   if (a_z != NULL)  *a_z = s_curr->z_pos;
-   if (a_y != NULL)  *a_y = s_curr->y_pos;
+   if (a_x != NULL)  *a_x = s_curr->pure_x;
+   if (a_z != NULL)  *a_z = s_curr->pure_z;
+   if (a_y != NULL)  *a_y = s_curr->pure_y;
    return 0;
 }
 
@@ -900,7 +1009,7 @@ ykine_move_curdata       (double *a_x, double *a_z, double *a_y)
  *>    if (a_sece      != NULL)  *a_sece = x_servo->curr->secs;                                                                                                           <* 
  *>    if (a_dur       != NULL)  *a_dur  = x_servo->curr->dur;                                                                                                            <* 
  *>    if (a_degb      != NULL)  *a_degb = dp;                                                                                                                            <* 
- *>    if (a_dege      != NULL)  *a_dege = x_servo->curr->degs;                                                                                                           <* 
+ *>    if (a_dege      != NULL)  *a_dege = x_servo->curr->pure_d;                                                                                                           <* 
  *>    if (a_seq       != NULL)  *a_seq  = x_servo->curr->seq;                                                                                                            <* 
  *>    if (a_line      != NULL)  *a_line = x_servo->curr->line;                                                                                                           <* 
  *>    if (x_servo->exact == 'y')  return 1;                                                                                                                              <* 
@@ -927,12 +1036,12 @@ ykine_move_curdata       (double *a_x, double *a_z, double *a_y)
  *>       x_prev = x_prev->s_prev;                                                                                                  <* 
  *>    }                                                                                                                            <* 
  *>    if (x_prev        == NULL)      return -4;                                                                                   <* 
- *>    if (a_x1 != NULL)  *a_x1 = x_prev->x_pos;                                                                                    <* 
- *>    if (a_z1 != NULL)  *a_z1 = x_prev->z_pos;                                                                                    <* 
- *>    if (a_y1 != NULL)  *a_y1 = x_prev->y_pos;                                                                                    <* 
- *>    if (a_x2 != NULL)  *a_x2 = x_curr->x_pos;                                                                                    <* 
- *>    if (a_z2 != NULL)  *a_z2 = x_curr->z_pos;                                                                                    <* 
- *>    if (a_y2 != NULL)  *a_y2 = x_curr->y_pos;                                                                                    <* 
+ *>    if (a_x1 != NULL)  *a_x1 = x_prev->pure_x;                                                                                    <* 
+ *>    if (a_z1 != NULL)  *a_z1 = x_prev->pure_z;                                                                                    <* 
+ *>    if (a_y1 != NULL)  *a_y1 = x_prev->pure_y;                                                                                    <* 
+ *>    if (a_x2 != NULL)  *a_x2 = x_curr->pure_x;                                                                                    <* 
+ *>    if (a_z2 != NULL)  *a_z2 = x_curr->pure_z;                                                                                    <* 
+ *>    if (a_y2 != NULL)  *a_y2 = x_curr->pure_y;                                                                                    <* 
  *>    return 0;                                                                                                                    <* 
  *> }                                                                                                                               <*/
 
@@ -995,17 +1104,17 @@ yKINE_move_rpt     (void)
          if (x_move->secs == 0.0)      printf ("      -.--");
          else                          printf ("  %8.2lf"  , x_move->secs);
          /*---(deg)----------------------*/
-         if (x_move->degs    == 0.0)   printf ("      -.--");
-         else                          printf ("  %8.2lf"  , x_move->degs);
+         if (x_move->pure_d    == 0.0) printf ("      -.--");
+         else                          printf ("  %8.2lf"  , x_move->pure_d);
          /*---(x,z,y)--------------------*/
-         if (x_move->x_pos   == 0.0)   printf ("      -.--");
-         else                          printf ("  %8.2lf"  , x_move->x_pos);
-         if (x_move->z_pos   == 0.0)   printf ("      -.--");
-         else                          printf ("  %8.2lf"  , x_move->z_pos);
-         if (x_move->y_pos   == 0.0)   printf ("      -.--");
-         else                          printf ("  %8.2lf"  , x_move->y_pos);
-         if (x_move->xz_len  == 0.0)   printf ("      -.--");
-         else                          printf ("  %8.2lf"  , x_move->xz_len);
+         if (x_move->pure_x   == 0.0)   printf ("      -.--");
+         else                          printf ("  %8.2lf"  , x_move->pure_x);
+         if (x_move->pure_z   == 0.0)   printf ("      -.--");
+         else                          printf ("  %8.2lf"  , x_move->pure_z);
+         if (x_move->pure_y   == 0.0)   printf ("      -.--");
+         else                          printf ("  %8.2lf"  , x_move->pure_y);
+         if (x_move->pure_xz  == 0.0)   printf ("      -.--");
+         else                          printf ("  %8.2lf"  , x_move->pure_xz);
          /*---(end-of-line)--------------*/
          printf ("\n");
          x_move  = x_move->s_next;
@@ -1031,7 +1140,6 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
-   int         x_pos       =    0;
    char        t           [LEN_LABEL] = "";
    char        x_msg       [LEN_RECD ];
    tSERVO     *x_servo     = NULL;
@@ -1078,9 +1186,9 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       ykine_move_savedprev (x_move, &sp, &dp, NULL, NULL, NULL, NULL);
       x_prev = x_move->s_prev;
       if (x_prev != NULL) {
-         x = x_move->x_pos - x_prev->x_pos;
-         z = x_move->z_pos - x_prev->z_pos;
-         y = x_move->y_pos - x_prev->y_pos;
+         x = x_move->pure_x - x_prev->pure_x;
+         z = x_move->pure_z - x_prev->pure_z;
+         y = x_move->pure_y - x_prev->pure_y;
          x_dist = sqrt ((x * x) + (z * z) + (y * y));
       }
    }
@@ -1099,29 +1207,41 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
       x_move = m_tail;
       if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", -1, '-', -1, "-", '-', "-", 0.0, 0.0);
-      else                 sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->degs);
+      else                 sprintf (ykine__unit_answer, "MOVE m_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->pure_d);
+   }
+   else if (strcmp (a_question, "m_lastpu") == 0) {
+      x_move = m_tail;
+      if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
+      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_last pu : %3d %c %2d %-5.5s %c  %6.1lfs  %4dr  %6.1lfd  %6.1lfx  %6.1lfz  %6.1lfy  %6.1lfxz", -1, '-', -1, "-", '-', 0.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      else                 sprintf (ykine__unit_answer, "MOVE m_last pu : %3d %c %2d %-5.5s %c  %6.1lfs  %4dr  %6.1lfd  %6.1lfx  %6.1lfz  %6.1lfy  %6.1lfxz", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->secs, x_move->pure_d, x_move->pure_rc, x_move->pure_x, x_move->pure_z, x_move->pure_y, x_move->pure_xz);
+   }
+   else if (strcmp (a_question, "m_lastad") == 0) {
+      x_move = m_tail;
+      if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
+      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_last ad : %3d %c %2d %-5.5s %c  %6.1lfs  %4dr  %6.1lfd  %6.1lfx  %6.1lfz  %6.1lfy  %6.1lfxz", -1, '-', -1, "-", '-', 0.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      else                 sprintf (ykine__unit_answer, "MOVE m_last ad : %3d %c %2d %-5.5s %c  %6.1lfs  %4dr  %6.1lfd  %6.1lfx  %6.1lfz  %6.1lfy  %6.1lfxz", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->secs, x_move->adapt_d, x_move->adapt_rc, x_move->adapt_x, x_move->adapt_z, x_move->adapt_y, x_move->adapt_xz);
    }
    else if (strcmp (a_question, "m_loc"   ) == 0) {
       x_move = m_tail;
       if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE m_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", 0.0, 0.0, 0.0, 0.0, 0.0);
-      else                 sprintf (ykine__unit_answer, "MOVE m_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos);
+      else                 sprintf (ykine__unit_answer, "MOVE m_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->pure_d, x_move->pure_x, x_move->pure_z, x_move->pure_y);
    }
    else if (strcmp (a_question, "s_last"  ) == 0) {
       x_move = x_servo->tail;
       if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE s_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", -1, '-', -1, "-", '-', "-", 0.0, 0.0);
-      else                 sprintf (ykine__unit_answer, "MOVE s_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->degs);
+      else                 sprintf (ykine__unit_answer, "MOVE s_last    : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->pure_d);
    }
    else if (strcmp (a_question, "s_loc"   ) == 0) {
       x_move = x_servo->tail;
       if (x_move != NULL)  ykine_scrp_by_code   (x_move->verb, t, NULL, NULL);
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE s_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", 0.0, 0.0, 0.0, 0.0, 0.0);
-      else                 sprintf (ykine__unit_answer, "MOVE s_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos);
+      else                 sprintf (ykine__unit_answer, "MOVE s_loc     : %6.3lfs %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->secs, x_move->pure_d, x_move->pure_x, x_move->pure_z, x_move->pure_y);
    }
    else if (strcmp (a_question, "specific") == 0) {
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE specific  : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", -1, '-', -1, "-", '-', "-", 0.0, 0.0);
-      else                 sprintf (ykine__unit_answer, "MOVE specific  : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->degs);
+      else                 sprintf (ykine__unit_answer, "MOVE specific  : %3d %c %2d %-5.5s %c %-20.20s %6.3lfs %6.1lfd", x_move->line, x_move->type, x_move->verb, t, x_move->cell, x_move->label, x_move->secs, x_move->pure_d);
    }
    else if (strcmp (a_question, "header"  ) == 0) {
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE header    : --/-- - -- ----- - --------s --------e --------d");
@@ -1129,11 +1249,15 @@ ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_cnt)
    }
    else if (strcmp (a_question, "detail"  ) == 0) {
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE detail    : --------d --------x --------z --------y --------o");
-      else                 sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8do", x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos, x_move->other);
+      else                 sprintf (ykine__unit_answer, "MOVE detail    : %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8do", x_move->pure_d, x_move->pure_x, x_move->pure_z, x_move->pure_y, x_move->other);
+   }
+   else if (strcmp (a_question, "ticked"  ) == 0) {
+      if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE tick (--) : -- ----   ----- -    -s    -e    -d");
+      else                 sprintf (ykine__unit_answer, "MOVE tick (%2d) : %-2.2s %-4.4s   %-5.5s %c %4.1lfs %4.1lfe %4.1lfd   %6.1lfd %6.1lfx %6.1lfz %6.1lfy", x_move->seq, yKINE_legcaps (a_leg), yKINE_segfour (a_seg), t, x_move->cell, sp, x_move->secs, x_move->dur, x_move->pure_d, x_move->pure_x, x_move->pure_z, x_move->pure_y);
    }
    else if (strcmp (a_question, "accel"   ) == 0) {
       if (x_move == NULL)  sprintf (ykine__unit_answer, "MOVE accel     :      -.-s      -.-d      -.-x      -.-z      -.-y      -.-l  -  -");
-      else                 sprintf (ykine__unit_answer, "MOVE accel     : %8.1lfs %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8.1lfl  %c  %c", x_move->dur, x_move->degs, x_move->x_pos, x_move->z_pos, x_move->y_pos, x_dist, x_move->part, x_move->cell);
+      else                 sprintf (ykine__unit_answer, "MOVE accel     : %8.1lfs %8.1lfd %8.1lfx %8.1lfz %8.1lfy %8.1lfl  %c  %c", x_move->dur, x_move->pure_d, x_move->pure_x, x_move->pure_z, x_move->pure_y, x_dist, x_move->part, x_move->cell);
    }
    else if (strcmp (a_question, "counts"  ) == 0) {
       strlcpy (ykine__unit_answer, "MOVE counts    : ", LEN_RECD);

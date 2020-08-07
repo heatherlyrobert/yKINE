@@ -125,9 +125,9 @@ tMOVE      *s_gait_begin  [YKINE_MAX_SERVO];
  *>          /+---(write header note)-----------+/                                                                                                <* 
  *>          ykine_move_create (g_servo_info + x_servo, YKINE_NOTE , YKINE_NONE, myKINE.s_tline, "incipio"      , '-', YKINE_NONE, 0.0  , 0.0);   <* 
  *>          /+---(write header placeholders)---+/                                                                                                <* 
- *>          ykine_move_addloc (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);                                                                  <* 
+ *>          ykine_move_add_pure (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);                                                                  <* 
  *>          ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, myKINE.s_tline, "wait for turn", '-', YKINE_NONE, x_deg, 3.0);   <* 
- *>          ykine_move_addloc (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);                                                                  <* 
+ *>          ykine_move_add_pure (g_servo_info + x_servo, x_xpos, x_zpos, x_ypos);                                                                  <* 
  *>          ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_tline, "up to neutral", '-', YKINE_NONE, 0.0  , 0.5);   <* 
  *>          ykine_move_create (g_servo_info + x_servo, YKINE_SERVO, YKINE_NONE, myKINE.s_tline, "step to first", '-', YKINE_NONE, 0.0  , 0.5);   <* 
  *>          ykine_move_create (g_servo_info + x_servo, YKINE_WAIT , YKINE_NONE, myKINE.s_tline, "wait for legs", '-', YKINE_NONE, 0.0  , 3.0);   <* 

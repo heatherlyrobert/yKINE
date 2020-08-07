@@ -95,8 +95,9 @@ tVERBS   s_verb_info    [MAX_VERBS] = {
    /* ===[[ special ]]===========================================================*/
    { YKINE_BODE, "e/bod", "error_body"   , 'y' , '-' , YKINE_ZERO   , YKINE_PURE, YKINE_LINEAR, -1, "-"                   , "verb not understood"                               },
    { YKINE_LEGE, "e/leg", "error_legs"   , 'y' , '-' , YKINE_INVERSE, YKINE_PURE, YKINE_LINEAR,  1, "-"                   , "verb not understood"                               },
+   { YKINE_MISS, "miss" , "DEFAULT"      , 'y' , '-' , NULL         , NULL      , NULL        , -1, ykine_scrp_miss       , "default verb handler, verb not found"              },
    { YKINE_NOOP, "noop" , "empty"        , 'y' , '-' , YKINE_NONE   , YKINE_NONE, YKINE_NONE  , -1, "-"                   , "nothing to do"                                     },
-   /* done-------------------*/
+   /* ===[[ done ]]==============================================================*/
    { -1        , NULL   , NULL           ,  0  ,  0  , -1           , -1        , -1          , -1, NULL                  , NULL                                                },
 };
 
@@ -478,10 +479,10 @@ ykine_scrp_prev         (tMOVE *a_move, float *d, float *x, float *z, float *y)
    if (z != NULL)  *z = 0.0;
    if (y != NULL)  *y = 0.0;
    if (a_move == NULL)          return 0;
-   if (d != NULL)  *d = a_move->degs;
-   if (x != NULL)  *x = a_move->x_pos;
-   if (z != NULL)  *z = a_move->z_pos;
-   if (y != NULL)  *y = a_move->y_pos;
+   if (d != NULL)  *d = a_move->pure_d;
+   if (x != NULL)  *x = a_move->pure_x;
+   if (z != NULL)  *z = a_move->pure_z;
+   if (y != NULL)  *y = a_move->pure_y;
    return 0;
 }
 
@@ -496,6 +497,7 @@ ykine_scrp_segno        (int n, char *v)
    char        x_list      [LEN_HUND];
    tSERVO     *x_servo     = NULL;
    float       d, x, z, y;
+   char        PURE_RC     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(mark servers)----------------*/
@@ -517,16 +519,16 @@ ykine_scrp_segno        (int n, char *v)
       if (x_servo->seg == YKINE_FOCU) {
          DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
          ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
-         ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_tline, "segno", '-', YKINE_NONE, d, 0.0);
-         ykine_move_addloc (x_servo, x, z, y);
+         ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_tline, "segno", '-', YKINE_NONE, 0.0);
+         ykine_move_add_pure (x_servo, PURE_RC, d, x, z, y);
          x_servo->segni [x_servo->nsegno] = x_servo->tail;
          ++(x_servo->nsegno);
       } else if (x_servo->seg == YKINE_TIBI) {
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
             ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
-            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_tline, "segno", '-', YKINE_NONE, d, 0.0);
-            ykine_move_addloc (x_servo, x, z, y);
+            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_tline, "segno", '-', YKINE_NONE, 0.0);
+            ykine_move_add_pure (x_servo, PURE_RC, d, x, z, y);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             --x_servo;
@@ -535,8 +537,8 @@ ykine_scrp_segno        (int n, char *v)
          for (i = 0; i < 3; ++i) {
             DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
             ykine_scrp_prev   (x_servo->tail, &d, &x, &z, &y);
-            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_tline, "segno", '-', YKINE_NONE, d, 0.0);
-            ykine_move_addloc (x_servo, x, z, y);
+            ykine_move_create (x_servo, YKINE_NOTE, YKINE_SEGN, myKINE.s_tline, "segno", '-', YKINE_NONE, 0.0);
+            ykine_move_add_pure (x_servo, PURE_RC, d, x, z, y);
             x_servo->segni [x_servo->nsegno] = x_servo->tail;
             ++(x_servo->nsegno);
             ++x_servo;
@@ -830,6 +832,7 @@ ykine_scrp_section      (int n, char *v)
    char        x_leg       =    0;
    char        x_seg       =    0;
    float       d, x, z, y;
+   char        PURE_RC     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get label)----------------------*/
@@ -872,15 +875,15 @@ ykine_scrp_section      (int n, char *v)
       else {
          if (x_tail->secs >= x_max)  continue;
          x_dur   = x_max - x_tail->secs;
-         d       = x_tail->degs;
-         x       = x_tail->x_pos;
-         z       = x_tail->z_pos;
-         y       = x_tail->y_pos;
+         d       = x_tail->pure_d;
+         x       = x_tail->pure_x;
+         z       = x_tail->pure_z;
+         y       = x_tail->pure_y;
       }
       /*---(add filler)----------*/
       DEBUG_YKINE_SCRP   yLOG_complex ("adding"    , "%-10.10s, %6.1fs", x_servo->label, x_dur);
-      ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, myKINE.s_tline, "", '-', YKINE_NONE, d, x_dur);
-      ykine_move_addloc (x_servo, x, z, y);
+      ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, myKINE.s_tline, "", '-', YKINE_NONE, x_dur);
+      ykine_move_add_pure (x_servo, PURE_RC, d, x, z, y);
       /*---(done)----------------*/
    }
    /*---(add section)--------------------*/
@@ -896,6 +899,12 @@ ykine_scrp_section      (int n, char *v)
 /*===----                        script driver                         ----===*/
 /*====================------------------------------------====================*/
 static void      o___DRIVER__________________o (void) {;}
+
+char
+ykine_scrp_miss         (int n, char *v)
+{
+   return 0;
+}
 
 char
 ykine_scrp_crap         (void)
@@ -914,6 +923,7 @@ ykine_scrp_crap         (void)
    char        x_verb      = YKINE_LEGE;
    tSERVO     *x_servo     = NULL;
    float       f, p, t, x, z, y;
+   char        PURE_RC     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
    /*---(check for servos)------------*/
@@ -961,25 +971,25 @@ ykine_scrp_crap         (void)
       x_servo = &(g_servo_info [i]);
       DEBUG_YKINE_SCRP  yLOG_point   ("x_servo"   , x_servo);
       if (x_servo->tail != NULL) {
-         x = x_servo->tail->x_pos;
-         z = x_servo->tail->z_pos;
-         y = x_servo->tail->y_pos;
+         x = x_servo->tail->pure_x;
+         z = x_servo->tail->pure_z;
+         y = x_servo->tail->pure_y;
          DEBUG_YKINE_SCRP  yLOG_complex ("endpoint"  , "%6.1fx, %6.1fz, %6.1fy", x, z, y);
       }
       if (x_verb == YKINE_LEGE) {
          x_servo = &(g_servo_info [i-2]);
-         if (x_servo->tail != NULL)  f = myKINE.fe = x_servo->tail->degs;
+         if (x_servo->tail != NULL)  f = myKINE.fe = x_servo->tail->pure_d;
          x_servo = &(g_servo_info [i-1]);
-         if (x_servo->tail != NULL)  p = myKINE.pe = x_servo->tail->degs;
+         if (x_servo->tail != NULL)  p = myKINE.pe = x_servo->tail->pure_d;
          x_servo = &(g_servo_info [i-0]);
-         if (x_servo->tail != NULL)  t = myKINE.te = x_servo->tail->degs;
+         if (x_servo->tail != NULL)  t = myKINE.te = x_servo->tail->pure_d;
          x_leg = g_servo_info [i].leg;
-         ykine_accel_immediate   (x_verb, x_leg, myKINE.b, "error entry");
-         ykine_move_addloc (x_servo, x, z, y); /* update */
+         ykine_accel_immediate   (x_verb, -10, x_leg, myKINE.b, "error entry");
+         ykine_move_add_pure (x_servo, PURE_RC, 0.0, x, z, y); /* update */
       } else {
          x_servo = &(g_servo_info [i]);
-         ykine_move_create (x_servo, YKINE_SERVO, x_verb, myKINE.s_tline, "error entry", '-', YKINE_NONE, 0.0, s);
-         ykine_move_addloc (x_servo, x, z, y);
+         ykine_move_create (x_servo, YKINE_SERVO, x_verb, myKINE.s_tline, "error entry", '-', YKINE_NONE, s);
+         ykine_move_add_pure (x_servo, PURE_RC, 0.0, x, z, y);
       }
    }
    /*---(complete)-----------------------*/
@@ -1046,115 +1056,39 @@ yKINE_handlers          (void)
    return 0;
 }
 
-char         /* file reading driver ----------------------[--------[--------]-*/
-yKINE_script       (float *a_len, char a_verify)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   int         i           =    0;
-   float       x_len       =  0.0;
-   float       x_sec       =  0.0;
-   uchar       x_verb      [LEN_LABEL] = "";
-   /*---(header)-------------------------*/
-   DEBUG_YKINE_SCRP  yLOG_enter   (__FUNCTION__);
-   if (a_verify == 'y')  printf ("yKINE_script, script intake\n");
-   /*---(prepare)------------------------*/
-   rc = ykine_scrp_begin ();
-   /*---(open stdin)---------------------*/
-   rc = yPARSE_stdin     ();
-   DEBUG_YKINE_SCRP  yLOG_value   ("open"      , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(read lines)---------------------*/
-   DEBUG_YKINE_SCRP  yLOG_note    ("read lines");
-   while (1) {
-      ykine__scrp_prep  ();
-      /*---(parse)-----------------------*/
-      rc = yPARSE_read  (&(myKINE.s_tline), &(myKINE.s_nline), &(myKINE.s_cline), x_verb);
-      if (feof (stdin)) {
-         DEBUG_YKINE_SCRP  yLOG_note    ("end-of-file");
-         break;
-      }
-      if (a_verify == 'y')  printf ("   read %3dt, %3dn, %3dc, %4drc, %2d) %s\n", myKINE.s_tline, myKINE.s_nline, myKINE.s_cline, rc, myKINE.s_iverb, x_verb);
-      DEBUG_YKINE_SCRP  yLOG_complex ("read"      , "%3dt, %3dn, %3dc, %4drc, %2d) %s", myKINE.s_tline, myKINE.s_nline, myKINE.s_cline, rc, myKINE.s_iverb, x_verb);
-      if (rc <= 0) continue;
-      /*---(handle verb)-----------------*/
-      DEBUG_YKINE_SCRP  yLOG_value   ("i_verb"    , myKINE.s_iverb);
-      if (myKINE.s_iverb < 0) {
-         rc = ykine_scrp_crap ();
-         DEBUG_YKINE_SCRP  yLOG_note    ("returned");
-      } else {
-         rc = ykine_scrp_exec ();
-      }
-      DEBUG_YKINE_SCRP  yLOG_value   ("exec"      , rc);
-      /*---(done)------------------------*/
-   }
-   if (a_verify == 'y')  printf ("yKINE_script, done\n");
-   /*---(close stdin)--------------------*/
-   rc = yPARSE_close_in  ();
-   DEBUG_YKINE_SCRP  yLOG_value   ("close"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(fix length)---------------------*/
-   x_len = 0.0;
-   for (i = 0; i < g_nservo; ++i) {
-      yKINE_move_tail (i, &x_sec, NULL);
-      /*> printf ("#%-2d, %-10.10s, %fs\n", i, g_servo_info [i].label, x_sec);        <*/
-      if (x_sec > x_len)  x_len = x_sec;
-   }
-   myKINE.scrp_len = x_len;
-   if (a_len != NULL)  *a_len = x_len;
-   /*> printf ("so, %fs and %fs\n", x_len, myKINE.scrp_len);                          <*/
-   /*> exit (1);                                                                      <*/
-   ykine_hint_final (myKINE.scrp_len);
-   yKINE_sect_rpt   ();
-   /*---(complete)-----------------------*/
-   DEBUG_YKINE_SCRP yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
 char
-yKINE_scrp_prepper      (char a_verify)
+yKINE_scrp_prepper      (char a_pass)
 {
    DEBUG_YKINE_SCRP yLOG_senter  (__FUNCTION__);
-   switch (a_verify) {
-   case 'y' :
-      myKINE.verify = a_verify;
-      DEBUG_YKINE_SCRP yLOG_snote   ("turn on verification");
-      break;
-   default  :
-      myKINE.verify = '-';
-      DEBUG_YKINE_SCRP yLOG_snote   ("no checking");
-      break;
-   }
-   DEBUG_YKINE_SCRP yLOG_schar   (myKINE.verify);
+   DEBUG_YKINE_SCRP yLOG_schar   (a_pass);
+   myKINE.s_pass = a_pass;
    DEBUG_YKINE_SCRP yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char
-yKINE_scrp_finisher     (float *a_len)
+yKINE_scrp_finisher     (char a_pass, float *a_len)
 {
    float       x_len     =  0.0;
    int         i         =    0;
    float       x_sec       =  0.0;
+   DEBUG_YKINE_SCRP yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_SCRP yLOG_schar   (a_pass);
    x_len = 0.0;
    for (i = 0; i < g_nservo; ++i) {
       yKINE_move_tail (i, &x_sec, NULL);
       /*> printf ("#%-2d, %-10.10s, %fs\n", i, g_servo_info [i].label, x_sec);        <*/
       if (x_sec > x_len)  x_len = x_sec;
    }
-   myKINE.scrp_len = x_len;
    if (a_len != NULL)  *a_len = x_len;
+   myKINE.scrp_len = x_len;
+   /*> if (a_len != NULL)  *a_len = x_len;                                            <*/
    /*> printf ("so, %fs and %fs\n", x_len, myKINE.scrp_len);                          <*/
    /*> exit (1);                                                                      <*/
    ykine_hint_final (myKINE.scrp_len);
+   myKINE.s_pass = 0;
    /*> yKINE_sect_rpt   ();                                                           <*/
+   DEBUG_YKINE_SCRP yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -1169,7 +1103,6 @@ char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine__unit_scrp        (char *a_question, int a_num)
 {
    int         i           =    0;
-   int         x_pos       =    0;
    char        x_msg       [LEN_RECD];
    /*---(preprare)-----------------------*/
    strlcpy  (ykine__unit_answer, "SCRP unit        : question not understood", LEN_RECD);

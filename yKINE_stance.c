@@ -527,8 +527,8 @@ ykine_stance_verify_radius (char a_leg)
       rc = ykine__legs_rk_getter (a_leg, d_str, o_str, y_str, &x, &z, &y);
       DEBUG_YKINE_SCRP  yLOG_complex ("position"  , "%8.2fx, %8.2fz, %8.2fy", x, z, y);
       /*---(check ik)--------------------*/
-      rc = yKINE_adapt   (a_leg, x, z, y);
-      /*> rc = yKINE_inverse (a_leg, x, z, y);                                        <*/
+      /*> rc = yKINE_adapt   (a_leg, x, z, y);                                        <*/
+      rc = yKINE_inverse (a_leg, x, z, y);
       /*> printf ("%-10.10sd, %-10.10so, %-10.10sy     pos %8.2fx, %8.2fz, %8.2fy     rc %4d\n", d_str, o_str, y_str, x, z, y, rc);   <*/
       DEBUG_YKINE_SCRP  yLOG_value   ("inverse"   , rc);
       if (rc >= 0)   s_verify [s_row][s_col] = '¬';

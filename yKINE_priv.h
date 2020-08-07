@@ -1,32 +1,5 @@
 /*============================----beg-of-source---============================*/
 
-
-/*===[[ HEADER ]]=============================================================*/
-
-/*   focus         : (RO) robotics
- *   niche         : (sp) spiders
- *   application   : yKINE
- *   purpose       : shared, consistent, and reliable spider kinematics/scipting
- *
- *   base_system   : gnu/linux   (powerful, ubiquitous, technical, and hackable)
- *   lang_name     : ansi-c      (wicked, limitless, universal, and everlasting)
- *   dependencies  : none
- *   size          : small       (less than 2000 slocL)
- * 
- *   author        : rsheatherly
- *   created       : 2009-07     (about when i bought eva and igor)
- *   priorities    : direct, simple, brief, vigorous, and lucid (h.w. fowler)
- *   end goal      : loosely coupled, strict interface, maintainable, portable)
- * 
- */
-/*===[[ SUMMARY ]]============================================================*/
-
-/*   yKINE is a consistent, shared, full-featured, and reliable spider
- *   kinematics library designed around the lynxmotion CH3-R hexapod format
- *   which will free all other application from detailed calculations.
- *
- */
-
 /*===[[ BEG_HEADER ]]=========================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 
@@ -35,6 +8,13 @@
 #define     P_FOCUS     "RO (robotics)"
 #define     P_NICHE     "hx (hexapoda)"
 #define     P_PURPOSE   "shared, consistent, and reliable spider kinematics/scripting"
+
+#define     P_EXECUTE   "libyKINE.so"
+#define     P_FULLPATH  "/usr/local/lib64/libyKINE.so"
+#define     P_ONELINE   "typhoeus-terrigena (earth-born) wicked spider kinematics"
+
+#define     P_SUFFIX    "arac"
+#define     P_CONTENT   "spider movement script"
 
 #define     P_NAMESAKE  "typhoeus-terrigena (earth-born)"
 #define     P_HERITAGE  "most fearsome greek monster, last son of gaia and tartarus"
@@ -51,8 +31,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.3-, prepare basics for demonstration"
-#define     P_VERNUM    "1.3b"
-#define     P_VERTXT    "updating to fix small leg movement issues from scripts"
+#define     P_VERNUM    "1.3c"
+#define     P_VERTXT    "added body-adapted values to moves for better script evaluation"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -60,6 +40,16 @@
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 /*===[[ END_HEADER ]]=========================================================*/
+
+
+/*===[[ SUMMARY ]]============================================================*/
+
+/*   yKINE is a consistent, shared, full-featured, and reliable spider
+ *   kinematics library designed around the lynxmotion CH3-R hexapod format
+ *   which will free all other application from detailed calculations.
+ *
+ */
+
 
 
 /*===[[ HEADERS ]]========================================*/
@@ -114,8 +104,8 @@ struct cLOCAL {
    char        unit;
    int         logger;
    float       scrp_len;
-   char        verify;                      /* flag for script checking       */
    /*---(script)------------*/
+   char        s_pass;                      /* file reading pass              */
    char        s_name      [LEN_RECD];      /* script file name               */
    FILE       *s_file;                      /* script file handle             */
    char        s_orig      [LEN_RECD];      /* original line read             */
@@ -180,6 +170,7 @@ struct cLOCAL {
    char        a_middle    [LEN_LABEL];     /* middle of move acceleration    */
    char        a_plant     [LEN_LABEL];     /* plant acceleration             */
    char        a_body      [LEN_LABEL];     /* body acceleration              */
+   float       step_total;
    /*---(done)--------------*/
 };
 tLOCAL      myKINE;
@@ -208,13 +199,20 @@ struct      cMOVE {
    float       dur;                         /* duration of move               */
    float       secs;                        /* end time of move               */
    int         other;                       /* ¢ identify repeat moves ?      */
-   /*---(angle)-------------*/
-   float       degs;                        /* end servo degrees              */
-   /*---(position)----------*/
-   float       x_pos;                       /* end x position                 */
-   float       z_pos;                       /* end z position                 */
-   float       y_pos;                       /* end y position                 */
-   float       xz_len;                      /* end xz length from center      */
+   /*---(pure move)---------*/
+   char        pure_rc;                     /* kinematics return code         */
+   float       pure_d;                      /* end servo degrees              */
+   float       pure_x;                      /* end x position                 */
+   float       pure_z;                      /* end z position                 */
+   float       pure_y;                      /* end y position                 */
+   float       pure_xz;                     /* end xz length from center      */
+   /*---(adapted)-----------*/
+   char        adapt_rc;                    /* kinematics return code         */
+   float       adapt_d;                     /* end servo degrees              */
+   float       adapt_x;                     /* end x position                 */
+   float       adapt_z;                     /* end z position                 */
+   float       adapt_y;                     /* end y position                 */
+   float       adapt_xz;                    /* end xz length from center      */
    /*---(linked-lists)------*/
    tMOVE      *m_prev;                      /* prev in all moves list         */
    tMOVE      *m_next;                      /* next in all moves list         */
@@ -402,6 +400,10 @@ char        ykine__IK_tibi          (void);
 char        ykine__meta             (void);
 char        ykine__tars             (void);
 char        ykine__foot             (void);
+char*       ykine_calc__unit        (char *a_question, int a_num);
+
+
+
 /*---(unit testing)-----------------+-----------+-----------+-----------+-----*/
 char        ykine__setter           (char *a_request , int a_leg, int a_seg, float a_value);
 char*       ykine__getter           (char *a_question, int a_leg, int a_seg);
@@ -429,6 +431,7 @@ char        ykine_exact_calc_polar  (float l, float d, float *x, float *z);
 char        ykine__exact_check      (tMOVE *a_curr, float a_sec);
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
 char        ykine_exact_context     (char a_leg, float a_margin);
+char        ykine_exact_setbody     (float a_sec);
 
 char        ykine_exact_fake_beg    (float db, float sb, float xb, float zb, float yb, float ob);
 char        ykine_exact_fake_end    (float de, float se, float xe, float ze, float ye, float oe);
@@ -506,6 +509,7 @@ char        ykine_legs_partial      (char a_verb, char a_leg, char a_ik);
 char        ykine_scrp_segno        (int n, char *v);
 char        ykine_scrp_repeat       (int n, char *v);
 char        ykine_scrp_exec         (void);
+char        ykine_scrp_miss         (int n, char *v);
 
 
 char        ykine_servo_purge       (void);
@@ -533,13 +537,13 @@ char        ykine_accel_timing_save (void);
 char        ykine_accel_timing      (void);
 char        ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_deceln, char *a_out);
 char        ykine_accel_body_adj    (float a_pct, char *a_out);
-char        ykine_accel__servo      (char a_verb, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_part, char a_cell);
-char        ykine_accel__zero       (char a_verb, float x, float z, float y, float a_beat, char *a_label, char a_cell);
-char        ykine_accel__single     (char a_verb, char a_leg, float f, float p, float t, float b, char *a_label, char a_part, char a_cell);
+char        ykine_accel__servo      (char a_verb, char a_rc, char a_leg, int a_seg, float a_deg, float a_beat, char *a_label, char a_part, char a_cell);
+char        ykine_accel__zero       (char a_verb, char a_rc, float x, float z, float y, float a_beat, char *a_label, char a_cell);
+char        ykine_accel__single     (char a_verb, char a_rc, char a_leg, float f, float p, float t, float b, char *a_label, char a_part, char a_cell);
 char        ykine_accel_reset       (char a_leg);
 char        ykine_accel_append      (char a_verb, char a_part, char *a_accel);
 char        ykine_accel_execute     (char *a_label);
-char        ykine_accel_immediate   (char a_verb, char a_leg, float b, char *a_label);
+char        ykine_accel_immediate   (char a_verb, char a_rc, char a_leg, float b, char *a_label);
 char        ykine_accel_seq_beg     (char a_leg, float a_wait);
 char        ykine_accel_seq_end     (char a_leg, float a_wait);
 char*       ykine_accel__unit       (char *a_question, int a_num);
@@ -552,8 +556,11 @@ char        ykine_move_init         (void);
 char        ykine__move_new         (tMOVE **a_move);
 char        ykine__move_free        (tMOVE **a_move);
 
-char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, int a_line, char *a_label, char a_part, char a_cell, float a_deg, float a_sec);
-char        ykine_move_addloc       (tSERVO *a_servo, float a_xpos, float a_zpos, float a_ypos);
+char        ykine_move_create       (tSERVO *a_servo, char a_type, char a_verb, int a_line, char *a_label, char a_part, char a_cell, float a_sec);
+char        ykine_move_add_pure     (tSERVO *a_servo, char a_rc, float a_deg, float a_xpos, float a_zpos, float a_ypos);
+char        ykine_move_add_adapt    (tSERVO *a_servo, char a_rc, float a_deg, float a_xpos, float a_zpos, float a_ypos);
+char        ykine_move_add_zero     (tSERVO *a_servo, char a_rc, float a_xpos, float a_zpos, float a_ypos);
+char        ykine_move_add_orient   (tSERVO *a_servo, char a_rc, float a_deg);
 char        ykine_move_repeat       (tSERVO *a_servo, int a_times);
 char        ykine_move_delete       (tMOVE **a_move);
 char        ykine_move_clear_servo  (tSERVO *a_servo);
@@ -629,10 +636,14 @@ char*       ykine_step__unit        (char *a_question, int a_num);
 
 
 
-char        ykine_tick__create      (void);
+/*---(malloc)---------------*/
+char        ykine_tick__new         (void);
 char        ykine_tick__free        (void);
+/*---(accessor)-------------*/
 char        ykine_tick_setbody      (float a_sec);
-char*       ykine_tick__unit        (char *a_question, int a_num);
+char        ykine_tick_fill         (char a_leg, float a_beg, float a_end);
+/*---(unitest)--------------*/
+char*       ykine_tick__unit        (char *a_question, char a_leg, int a_tick);
 
 
 #endif

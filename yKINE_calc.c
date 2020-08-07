@@ -253,18 +253,28 @@ static void      o___BODY____________________o (void) {;}
 char         /*--: establish body zero-point -------------[ leaf   [ ------ ]-*/
 yKINE_zero              (float a_x, float a_z, float a_y)
 {
+   DEBUG_YKINE_CALC   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_CALC   yLOG_svalue  ("z", a_x);
+   DEBUG_YKINE_CALC   yLOG_svalue  ("z", a_z);
+   DEBUG_YKINE_CALC   yLOG_svalue  ("y", a_y);
    myKINE.s_xcenter = a_x;
    myKINE.s_zcenter = a_z;
    myKINE.s_ycenter = a_y;
+   DEBUG_YKINE_CALC   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char         /*--: establish body orientation ------------[ leaf   [ ------ ]-*/
 yKINE_orient            (float a_yaw, float a_pitch, float a_roll)
 {
+   DEBUG_YKINE_CALC   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE_CALC   yLOG_svalue  ("a_yaw"  , a_yaw);
+   DEBUG_YKINE_CALC   yLOG_svalue  ("a_pitch", a_pitch);
+   DEBUG_YKINE_CALC   yLOG_svalue  ("a_roll" , a_roll);
    myKINE.s_yaw     = a_yaw;
    myKINE.s_pitch   = a_pitch;
    myKINE.s_roll    = a_roll;
+   DEBUG_YKINE_CALC   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -1154,6 +1164,40 @@ yKINE_inverse           (char a_leg, float a_x, float a_z, float a_y)
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___UNITTEST________________o (void) {;};
+
+char*      /*----: unit testing accessor for clean validation interface ------*/
+ykine_calc__unit        (char *a_question, int a_num)
+{
+   int         i           =    0;
+   char        t           [LEN_TERSE] = "";
+   /*---(preprare)-----------------------*/
+   strlcpy  (ykine__unit_answer, "CALC unit        : question not understood", LEN_RECD);
+   /*---(answer)------------------------------------------*/
+   if      (strcmp (a_question, "set"     ) == 0) {
+      switch (s_meth) {
+      case YKINE_FK : strlcpy (t, "FK", LEN_TERSE);   break;
+      case YKINE_IK : strlcpy (t, "IK", LEN_TERSE);   break;
+      case YKINE_GK : strlcpy (t, "GK", LEN_TERSE);   break;
+      default       : strlcpy (t, "--", LEN_TERSE);   break;
+      }
+      if (s_leg != NULL)  sprintf (ykine__unit_answer, "CALC set         : SET   leg %2d %-2.2s   seg %2d %-4.4s   meth %1d %-2.2s", s_leg->leg, yKINE_legcaps (s_leg->leg), s_leg->seg, yKINE_segfour (s_leg->seg), s_meth, t);
+      else                sprintf (ykine__unit_answer, "CALC set         : not   leg -- --   seg -- ----   meth - --");
+   }
+   else if (strcmp (a_question, "center"  ) == 0) {
+      sprintf (ykine__unit_answer, "CALC center      : zero %6.1fx %6.1fz %6.1fy   orient %6.1fy %6.1fp %6.1fr", myKINE.s_xcenter, myKINE.s_zcenter, myKINE.s_ycenter, myKINE.s_yaw, myKINE.s_pitch, myKINE.s_roll);
+   }
+   /*---(complete)----------------------------------------*/
+   return ykine__unit_answer;
+}
+
+
 
 
 

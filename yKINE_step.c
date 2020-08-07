@@ -490,8 +490,8 @@ ykine_step_raise       (char a_verb)
       break;
    }
    /*---(inverse kinematics)----------*/
-   rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
-   /*> rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
+   /*> rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
+   rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
    rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
    /*---(create moves)-------------------*/
@@ -541,8 +541,8 @@ ykine_step_plant       (char a_verb)
    /*---(decrease height)-------------*/
    myKINE.ye  = s_ye;
    /*---(inverse kinematics)----------*/
-   /*> rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
-   rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
+   rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
+   /*> rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
    rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
    /*---(create moves)-------------------*/
@@ -795,7 +795,6 @@ char*      /*----: unit testing accessor for clean validation interface ------*/
 ykine_step__unit        (char *a_question, int a_num)
 {
    int         i           =    0;
-   int         x_pos       =    0;
    char        x_msg       [LEN_RECD];
    /*---(preprare)-----------------------*/
    strlcpy  (ykine__unit_answer, "STEP unit        : question not understood", LEN_RECD);
