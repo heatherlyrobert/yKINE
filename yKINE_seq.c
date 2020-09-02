@@ -20,8 +20,8 @@ tMOVE      *s_gait_begin  [YKINE_MAX_SERVO];
  *>    /+---(header)-------------------------+/                                                                     <* 
  *>    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);                                                              <* 
  *>    /+---(defense)------------------------+/                                                                     <* 
- *>    DEBUG_YKINE_SCRP   yLOG_value   ("b"         , myKINE.b);                                                    <* 
- *>    --rce;  if (myKINE.b >= 0.0)  {                                                                              <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_value   ("b"         , g_timing.beats);                                                    <* 
+ *>    --rce;  if (g_timing.beats >= 0.0)  {                                                                              <* 
  *>       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);                                                      <* 
  *>       return rce;                                                                                               <* 
  *>    }                                                                                                            <* 
@@ -37,41 +37,41 @@ tMOVE      *s_gait_begin  [YKINE_MAX_SERVO];
  *>       return rce;                                                                                               <* 
  *>    }                                                                                                            <* 
  *>    /+---(save endpoint)---------------+/                                                                        <* 
- *>    xe         = myKINE.xe;                                                                                      <* 
- *>    ze         = myKINE.ze;                                                                                      <* 
- *>    s_ye       = myKINE.ye;                                                                                      <* 
+ *>    xe         = g_end.tx ;                                                                                      <* 
+ *>    ze         = g_end.tz ;                                                                                      <* 
+ *>    s_ye       = g_end.ty ;                                                                                      <* 
  *>    /+---(set for raise)---------------+/                                                                        <* 
- *>    myKINE.xe  = myKINE.xb;                                                                                      <* 
- *>    myKINE.ze  = myKINE.zb;                                                                                      <* 
+ *>    g_end.tx   = g_beg.tx ;                                                                                      <* 
+ *>    g_end.tz   = g_beg.tz ;                                                                                      <* 
  *>    /+---(increase height)-------------+/                                                                        <* 
  *>    switch (s_cshape) {                                                                                          <* 
  *>    case YKINE_SSQUARE : case YKINE_RSQUARE :                                                                    <* 
  *>       DEBUG_YKINE_SCRP  yLOG_note    ("square handler");                                                        <* 
- *>       if (myKINE.yb >= myKINE.ye)  myKINE.ye = myKINE.yb + myKINE.step_h;                                       <* 
- *>       else                         myKINE.ye = myKINE.ye + myKINE.step_h;                                       <* 
- *>       ye         = myKINE.ye;                                                                                   <* 
+ *>       if (g_beg.ty  >= g_end.ty )  g_end.ty  = g_beg.ty  + myKINE.step_h;                                       <* 
+ *>       else                         g_end.ty  = g_end.ty  + myKINE.step_h;                                       <* 
+ *>       ye         = g_end.ty ;                                                                                   <* 
  *>       break;                                                                                                    <* 
  *>    case YKINE_SDIRECT : case YKINE_RDIRECT :                                                                    <* 
  *>       DEBUG_YKINE_SCRP  yLOG_note    ("direct handler");                                                        <* 
- *>       myKINE.ye = myKINE.yb + myKINE.step_h;                                                                    <* 
+ *>       g_end.ty  = g_beg.ty  + myKINE.step_h;                                                                    <* 
  *>       ye        = s_ye      + myKINE.step_h;                                                                    <* 
  *>       break;                                                                                                    <* 
  *>       break;                                                                                                    <* 
  *>    }                                                                                                            <* 
  *>    /+---(inverse kinematics)----------+/                                                                        <* 
- *>    rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);                                            <* 
+ *>    rc = yKINE_inverse (myKINE.leg, g_end.ex , g_end.ez , g_end.ey );                                            <* 
  *>    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);                                                           <* 
- *>    rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);                   <* 
+ *>    rc = yKINE_angles  (myKINE.leg, YKINE_IK, &g_end.cd , &g_end.fd , &g_end.pd , &g_end.td );                   <* 
  *>    /+---(create moves)-------------------+/                                                                     <* 
- *>    DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);   <* 
- *>    DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);   <* 
- *>    DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);   <* 
- *>    ykine_accel_append (YKINE_IK, 'r', myKINE.a_raise);                                                          <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", g_beg.tx , g_beg.tz , g_beg.ty );   <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", g_end.tx , g_end.tz , g_end.ty );   <* 
+ *>    DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", g_end.fd , g_end.pd , g_end.td );   <* 
+ *>    ykine_accel_append (YKINE_IK, 'r', g_timing.a_raise);                                                          <* 
  *>    /+---(put endpoint back)-----------+/                                                                        <* 
- *>    myKINE.xe = xe;                                                                                              <* 
- *>    myKINE.ze = ze;                                                                                              <* 
- *>    myKINE.yb = myKINE.ye;                                                                                       <* 
- *>    myKINE.ye = ye;                                                                                              <* 
+ *>    g_end.tx  = xe;                                                                                              <* 
+ *>    g_end.tz  = ze;                                                                                              <* 
+ *>    g_beg.ty  = g_end.ty ;                                                                                       <* 
+ *>    g_end.ty  = ye;                                                                                              <* 
  *>    /+---(complete)-----------------------+/                                                                     <* 
  *>    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);                                                              <* 
  *>    return 0;                                                                                                    <* 

@@ -364,7 +364,7 @@ ykine_stepping          (char *a_mods)
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
    ykine_step__defaults ();
-   --rce;  if (myKINE.b >= 0.0) {
+   --rce;  if (g_timing.beats >= 0.0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -408,34 +408,34 @@ ykine_step_accels       (void)
 {
    char        x_end       =    0;
    float       x_pct       =  0.0;
-   strlcpy (myKINE.a_raise , "", LEN_LABEL);
-   strlcpy (myKINE.a_middle, "", LEN_LABEL);
-   strlcpy (myKINE.a_plant , "", LEN_LABEL);
-   if (myKINE.b >= 0.0)  return 0;
+   strlcpy (g_timing.a_raise , "", LEN_LABEL);
+   strlcpy (g_timing.a_middle, "", LEN_LABEL);
+   strlcpy (g_timing.a_plant , "", LEN_LABEL);
+   if (g_timing.beats >= 0.0)  return 0;
    switch (s_cshape) {
    case YKINE_N_DIR    :
-      ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_middle);
+      ykine_accel_make (g_timing.a_acceln, g_timing.a_exact, g_timing.a_speedn, g_timing.a_deceln, g_timing.a_middle);
       break;
    case YKINE_N_RECT   : case YKINE_N_TRAP   :
       x_end = ACCEL_TURTLE; /* speed limit through sharp corners  */
-      if (myKINE.a_speedn < ACCEL_TURTLE)  x_end = myKINE.a_speedn;
-      ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
-      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_middle);
-      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_plant );
+      if (g_timing.a_speedn < ACCEL_TURTLE)  x_end = g_timing.a_speedn;
+      ykine_accel_make (g_timing.a_acceln, g_timing.a_exact, g_timing.a_speedn, x_end            , g_timing.a_raise );
+      ykine_accel_make (x_end            , g_timing.a_exact, g_timing.a_speedn, x_end            , g_timing.a_middle);
+      ykine_accel_make (x_end            , g_timing.a_exact, g_timing.a_speedn, g_timing.a_deceln, g_timing.a_plant );
       break;
    case YKINE_A_RECT   : case YKINE_A_TRAP   :
       x_end = ACCEL_MOD;  /* speed limit through curved corners  */
-      if (myKINE.a_speedn < ACCEL_MOD)     x_end = myKINE.a_speedn;
-      ykine_accel_make (myKINE.a_acceln, myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_raise );
-      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, x_end          , myKINE.a_middle);
-      ykine_accel_make (x_end          , myKINE.a_exact, myKINE.a_speedn, myKINE.a_deceln, myKINE.a_plant );
+      if (g_timing.a_speedn < ACCEL_MOD)     x_end = g_timing.a_speedn;
+      ykine_accel_make (g_timing.a_acceln, g_timing.a_exact, g_timing.a_speedn, x_end            , g_timing.a_raise );
+      ykine_accel_make (x_end            , g_timing.a_exact, g_timing.a_speedn, x_end            , g_timing.a_middle);
+      ykine_accel_make (x_end            , g_timing.a_exact, g_timing.a_speedn, g_timing.a_deceln, g_timing.a_plant );
       break;
    }
    if (myKINE.seq <  0) {
-      ykine_accel_body_adj (0.00 , myKINE.a_body);
+      ykine_accel_body_adj (0.00 , g_timing.a_body);
    } else {
       x_pct = s_seqs [myKINE.seq].grps * myKINE.off;
-      ykine_accel_body_adj (x_pct, myKINE.a_body);
+      ykine_accel_body_adj (x_pct, g_timing.a_body);
    }
    return 0;
 }
@@ -451,8 +451,8 @@ ykine_step_raise       (char a_verb)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_value   ("b"         , myKINE.b);
-   --rce;  if (myKINE.b >= 0.0)  {
+   DEBUG_YKINE_SCRP   yLOG_value   ("b"         , g_timing.beats);
+   --rce;  if (g_timing.beats >= 0.0)  {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -468,42 +468,42 @@ ykine_step_raise       (char a_verb)
       return rce;
    }
    /*---(save endpoint)---------------*/
-   xe         = myKINE.xe;
-   ze         = myKINE.ze;
-   s_ye       = myKINE.ye;
+   xe         = g_end.ex ;
+   ze         = g_end.ez ;
+   s_ye       = g_end.ey ;
    /*---(set for raise)---------------*/
-   myKINE.xe  = myKINE.xb;
-   myKINE.ze  = myKINE.zb;
+   g_end.ex   = g_beg.ex ;
+   g_end.ez   = g_beg.ez ;
    /*---(increase height)-------------*/
    switch (s_cshape) {
    case YKINE_N_RECT  : case YKINE_A_RECT  :
       DEBUG_YKINE_SCRP  yLOG_note    ("square handler");
-      if (myKINE.yb >= myKINE.ye)  myKINE.ye = myKINE.yb + myKINE.step_h;
-      else                         myKINE.ye = myKINE.ye + myKINE.step_h;
-      ye         = myKINE.ye;
+      if (g_beg.ey  >= g_end.ey )  g_end.ey  = g_beg.ey  + myKINE.step_h;
+      else                         g_end.ey  = g_end.ey  + myKINE.step_h;
+      ye         = g_end.ey ;
       break;
    case YKINE_N_TRAP  : case YKINE_A_TRAP  :
       DEBUG_YKINE_SCRP  yLOG_note    ("direct handler");
-      myKINE.ye = myKINE.yb + myKINE.step_h;
+      g_end.ey  = g_beg.ey  + myKINE.step_h;
       ye        = s_ye      + myKINE.step_h;
       break;
       break;
    }
    /*---(inverse kinematics)----------*/
-   /*> rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
-   rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
+   /*> rc = yKINE_adapt   (myKINE.leg, g_end.ex , g_end.ez , g_end.ey );              <*/
+   rc = yKINE_inverse (myKINE.leg, g_end.ex , g_end.ez , g_end.ey );
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
-   rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
+   rc = yKINE_angles  (myKINE.leg, YKINE_IK, &g_end.cd , &g_end.fd , &g_end.pd , &g_end.td );
    /*---(create moves)-------------------*/
-   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
-   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
-   ykine_accel_append (YKINE_IK, 'r', myKINE.a_raise);
+   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", g_beg.ex , g_beg.ez , g_beg.ey );
+   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", g_end.ex , g_end.ez , g_end.ey );
+   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", g_end.fd , g_end.pd , g_end.td );
+   ykine_accel_append (YKINE_IK, 'r', g_timing.a_raise);
    /*---(put endpoint back)-----------*/
-   myKINE.xe = xe;
-   myKINE.ze = ze;
-   myKINE.yb = myKINE.ye;
-   myKINE.ye = ye;
+   g_end.ex  = xe;
+   g_end.ez  = ze;
+   g_beg.ey  = g_end.ey ;
+   g_end.ey  = ye;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -518,8 +518,8 @@ ykine_step_plant       (char a_verb)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YKINE_SCRP   yLOG_value   ("b"         , myKINE.b);
-   --rce;  if (myKINE.b >= 0.0)  {
+   DEBUG_YKINE_SCRP   yLOG_value   ("b"         , g_timing.beats);
+   --rce;  if (g_timing.beats >= 0.0)  {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -535,21 +535,21 @@ ykine_step_plant       (char a_verb)
       return rce;
    }
    /*---(set for raise)---------------*/
-   myKINE.xb  = myKINE.xe;
-   myKINE.zb  = myKINE.ze;
-   myKINE.yb  = myKINE.ye;
+   g_beg.ex   = g_end.ex ;
+   g_beg.ez   = g_end.ez ;
+   g_beg.ey   = g_end.ey ;
    /*---(decrease height)-------------*/
-   myKINE.ye  = s_ye;
+   g_end.ey   = s_ye;
    /*---(inverse kinematics)----------*/
-   rc = yKINE_inverse (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);
-   /*> rc = yKINE_adapt   (myKINE.leg, myKINE.xe, myKINE.ze, myKINE.ye);              <*/
+   rc = yKINE_inverse (myKINE.leg, g_end.ex , g_end.ez , g_end.ey );
+   /*> rc = yKINE_adapt   (myKINE.leg, g_end.ex , g_end.ez , g_end.ey );              <*/
    DEBUG_YKINE_SCRP  yLOG_value   ("kinematics", rc);
-   rc = yKINE_angles  (myKINE.leg, YKINE_IK, &myKINE.ce, &myKINE.fe, &myKINE.pe, &myKINE.te);
+   rc = yKINE_angles  (myKINE.leg, YKINE_IK, &g_end.cd , &g_end.fd , &g_end.pd , &g_end.td );
    /*---(create moves)-------------------*/
-   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
-   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
-   ykine_accel_append (YKINE_IK, 'p', myKINE.a_plant);
+   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", g_beg.ex , g_beg.ez , g_beg.ey );
+   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", g_end.ex , g_end.ez , g_end.ey );
+   DEBUG_YKINE_SCRP   yLOG_complex ("degrees"   , "%8.3ff, %8.3fp, %8.3ft", g_end.fd , g_end.pd , g_end.td );
+   ykine_accel_append (YKINE_IK, 'p', g_timing.a_plant);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -685,12 +685,72 @@ static void      o___SEQUENCING______________o (void) {;};
 static float       xe, ze, ye, fe, pe, te;
 
 char
-ykine_step_begin       (void)
+ykine_step_copy        (tWORK *a, tWORK *b)
+{
+   /*---(coxa)---------------------------*/
+   a->rc          = b->rc;
+   a->sec         = b->sec;
+   a->cd          = b->cd;
+   /*---(femu)---------------------------*/
+   a->fd          = b->fd;
+   a->fx          = b->fx;
+   a->fz          = b->fz;
+   a->fy          = b->fy;
+   /*---(femu)---------------------------*/
+   a->pd          = b->pd;
+   a->px          = b->px;
+   a->pz          = b->pz;
+   a->py          = b->py;
+   /*---(femu)---------------------------*/
+   a->td          = b->td;
+   a->tx          = b->tx;
+   a->tz          = b->tz;
+   a->ty          = b->ty;
+   /*---(real end)-----------------------*/
+   a->ed          = b->ed;
+   a->ex          = b->ex;
+   a->ez          = b->ez;
+   a->ey          = b->ey;
+   /*---(details)------------------------*/
+   /*> a->deg         = b->deg;                                                       <* 
+    *> a->out         = b->out;                                                       <*/
+   a->len         = b->len;
+   a->xz          = b->xz;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+ykine_step__detail      (char *a_label, tWORK *a)
+{
+   DEBUG_YKINE_SCRP   yLOG_complex ("HEAD"      , "%10.10s, %6.1fs, %4drc"        , a_label, a->sec, a->rc);
+   DEBUG_YKINE_SCRP   yLOG_complex ("coxa"      , "%6.1fd"                        , a->cd );
+   DEBUG_YKINE_SCRP   yLOG_complex ("femu"      , "%6.1fd, %6.1fx, %6.1fz, %6.1fy", a->fd , a->fx , a->fz , a->fy );
+   DEBUG_YKINE_SCRP   yLOG_complex ("pate"      , "%6.1fd, %6.1fx, %6.1fz, %6.1fy", a->pd , a->px , a->pz , a->py );
+   DEBUG_YKINE_SCRP   yLOG_complex ("tibi"      , "%6.1fd, %6.1fx, %6.1fz, %6.1fy", a->td , a->tx , a->tz , a->ty );
+   DEBUG_YKINE_SCRP   yLOG_complex ("ends"      , "%6.1fd, %6.1fx, %6.1fz, %6.1fy", a->ed , a->ex , a->ez , a->ey );
+   return 0;
+}
+
+char
+ykine_step_show         (char *a_label)
+{
+   DEBUG_YKINE_SCRP   yLOG_note    (a_label);
+   ykine_step__detail ("pure" , &g_pure);
+   ykine_step__detail ("adapt", &g_adapt);
+   ykine_step__detail ("beg"  , &g_beg);
+   ykine_step__detail ("end"  , &g_end);
+   ykine_step__detail ("cur"  , &g_cur);
+   ykine_step__detail ("sav"  , &g_sav);
+   return 0;
+}
+
+char
+ykine_step_wait        (char a_verb, char a_leg)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   int         x_leg       =    0;
    float       x_wait      =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -701,55 +761,37 @@ ykine_step_begin       (void)
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
-   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   ykine_step_show ("START OF WAIT");
+   /*---(calculate begpoint)----------*/
+   /*> ykine_exact_setbody (g_beg.sec);                                               <* 
+    *> rc = yKINE_inverse (x_leg, g_beg.ex , g_beg.ez , g_beg.ey );                   <* 
+    *> ykine_exact_copy2pure  (g_beg.sec, x_leg, YKINE_IK, rc);                       <* 
+    *> rc = yKINE_adapt   (x_leg, g_beg.ex , g_beg.ez , g_beg.ey );                   <* 
+    *> ykine_exact_copy2adapt (g_beg.sec, x_leg, YKINE_IK, rc);                       <*/
+   /*> DEBUG_YKINE_SCRP  yLOG_complex ("kinematics", "inverse %3d, adapted %3d", g_pure.rc, g_adapt.rc);   <*/
    /*---(save endpoint)---------------*/
-   xe         = myKINE.xe;
-   ze         = myKINE.ze;
-   ye         = myKINE.ye;
-   fe         = myKINE.fe;
-   pe         = myKINE.pe;
-   te         = myKINE.te;
-   /*---(match to beginning)----------*/
-   myKINE.xe  = myKINE.xb;
-   myKINE.ze  = myKINE.zb;
-   myKINE.ye  = myKINE.yb + yKINE_seglen (YKINE_FOOT);
-   myKINE.fe  = myKINE.fb;
-   myKINE.pe  = myKINE.pb;
-   myKINE.te  = myKINE.tb;
-   DEBUG_YKINE_SCRP   yLOG_complex ("r.beg"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("r_end"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
-   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   ykine_step_copy   (&g_sav, &g_end);
+   ykine_step_copy   (&g_end, &g_beg);
+   ykine_step_show   ("AFTER COPIES");
+   /*---(run)-------------------------*/
+   ykine_step_copy   (&g_cur, &g_beg);
+   ykine_exec_partial(a_verb, a_leg, 'e');
    /*---(add to leg)------------------*/
-   x_leg  = myKINE.leg - 1;
-   x_wait = s_seqs [myKINE.seq].offsets [x_leg] * myKINE.off;
-   ykine_accel_seq_beg (myKINE.leg, x_wait);
+   x_wait = s_seqs [myKINE.seq].offsets [a_leg - 1] * myKINE.off;
+   ykine_exec_wait   (myKINE.leg, x_wait);
    /*---(put it back)-----------------*/
-   myKINE.xe  = xe;
-   myKINE.ze  = ze;
-   myKINE.ye  = ye;
-   myKINE.fe  = fe;
-   myKINE.pe  = pe;
-   myKINE.te  = te;
-   DEBUG_YKINE_SCRP   yLOG_complex ("a_beg"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("a_end"     , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
-   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   ykine_step_copy (&g_end, &g_sav);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-ykine_step_end         (void)
+ykine_step_fill        (char a_verb, char a_leg)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   int         x_leg       =    0;
    float       x_wait      =  0.0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
@@ -761,21 +803,22 @@ ykine_step_end         (void)
       return rce;
    }
    /*---(match to beginning)----------*/
-   myKINE.xb  = myKINE.xe = xe;
-   myKINE.zb  = myKINE.ze = ze;
-   myKINE.yb  = myKINE.ye = ye;
-   myKINE.fb  = myKINE.fe = fe;
-   myKINE.pb  = myKINE.pe = pe;
-   myKINE.tb  = myKINE.te = te;
-   myKINE.ye += yKINE_seglen (YKINE_FOOT);
-   DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xb, myKINE.zb, myKINE.yb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("end"       , "%6.1fx, %6.1fz, %6.1fy", myKINE.xe, myKINE.ze, myKINE.ye);
-   DEBUG_YKINE_SCRP   yLOG_complex ("b_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fb, myKINE.pb, myKINE.tb);
-   DEBUG_YKINE_SCRP   yLOG_complex ("e_degs"    , "%8.3ff, %8.3fp, %8.3ft", myKINE.fe, myKINE.pe, myKINE.te);
+   ykine_step_show ("BEFORE FILL");
+   ykine_step_copy (&g_beg, &g_sav);
+   ykine_step_copy (&g_end, &g_sav);
+   ykine_step_show ("AFTER COPIES");
+   /*---(run)-------------------------*/
+   ykine_step_copy   (&g_cur, &g_end);
+   ykine_exec_partial (a_verb, a_leg, 'e');
+   /*> ykine_exact_setbody (g_end.sec);                                               <* 
+    *> rc = yKINE_inverse (x_leg, g_end.ex , g_end.ez , g_end.ey );                   <* 
+    *> ykine_exact_copy2pure  (g_end.sec, x_leg, YKINE_IK, rc);                       <* 
+    *> rc = yKINE_adapt   (x_leg, g_end.ex , g_end.ez , g_end.ey );                   <* 
+    *> ykine_exact_copy2adapt (g_end.sec, x_leg, YKINE_IK, rc);                       <*/
+   /*> DEBUG_YKINE_SCRP  yLOG_complex ("kinematics", "inverse %3d, adapted %3d", g_pure.rc, g_adapt.rc);   <*/
    /*---(add to leg)------------------*/
-   x_leg  = myKINE.leg - 1;
-   x_wait = (s_seqs [myKINE.seq].grps - 1 - s_seqs [myKINE.seq].offsets [x_leg]) * myKINE.off;
-   ykine_accel_seq_end (myKINE.leg, x_wait);
+   x_wait = (s_seqs [myKINE.seq].grps - 1 - s_seqs [myKINE.seq].offsets [a_leg - 1]) * myKINE.off;
+   ykine_exec_fill  (myKINE.leg, x_wait);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -803,7 +846,7 @@ ykine_step__unit        (char *a_question, int a_num)
       sprintf (ykine__unit_answer, "STEP global    : s %c/%2d, h %c/%5.1f, q %c/%2d, o %c/%5.2f", s_cshape, myKINE.step_s, s_cheight, myKINE.step_h, s_cseq, myKINE.seq, s_cspeed, myKINE.off);
    }
    else if (strcmp (a_question, "accels"  ) == 0) {
-      sprintf (ykine__unit_answer, "STEP accels    : [ r %-6.6s, m %-6.6s, p %-6.6s ]", myKINE.a_raise, myKINE.a_middle, myKINE.a_plant);
+      sprintf (ykine__unit_answer, "STEP accels    : [ r %-6.6s, m %-6.6s, p %-6.6s ]", g_timing.a_raise, g_timing.a_middle, g_timing.a_plant);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;

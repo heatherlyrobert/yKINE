@@ -31,8 +31,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.3-, prepare basics for demonstration"
-#define     P_VERNUM    "1.3c"
-#define     P_VERTXT    "added body-adapted values to moves for better script evaluation"
+#define     P_VERNUM    "1.3d"
+#define     P_VERTXT    "unit tested basic ticker loading for body and legs"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -136,45 +136,61 @@ struct cLOCAL {
    float       s_ypos;
    float       s_1st;
    float       s_2nd;
-   /*---(body)--------------*/
-   float       s_height;
-   float       s_xcenter;
-   float       s_zcenter;
-   float       s_ycenter;
-   float       s_yaw;
-   float       s_roll;
-   float       s_pitch;
    /*---(moves)-------------*/
    char        leg;                         /* current leg for move           */
    char        exact;                       /* current move fully completed   */
    char        label       [LEN_LABEL];     /* current move label             */
    char        part;                        /* current move cell note         */
    char        cell;                        /* current move cell note         */
-   double      b;                           /* current moves beats            */
-   char        accel       [LEN_LABEL];     /* current accel string           */
    char        servos      [LEN_HUND];      /* current servo focus list       */
    char        vb, ov, rcc;
-   float       db, sb, xb, zb, xzb, yb, ob, cb, fb, pb, tb;
-   float       de, se, xe, ze, xze, ye, oe, ce, fe, pe, te, le, lxz;
-   float       dc, sc, xc, zc, xzc, yc, oc, cc, fc, pc, tc, lc, pct;
+   float       lxz;
+   float       pct;
    int         step_s;
    float       step_h;
    char        step        [LEN_LABEL];     /* stepping specification         */
    int         seq;
    float       off;
-   char        a_acceln;
-   char        a_deceln;
-   char        a_speedn;
-   float       a_exact;
-   char        a_raise     [LEN_LABEL];     /* raise acceleration             */
-   char        a_middle    [LEN_LABEL];     /* middle of move acceleration    */
-   char        a_plant     [LEN_LABEL];     /* plant acceleration             */
-   char        a_body      [LEN_LABEL];     /* body acceleration              */
    float       step_total;
    /*---(done)--------------*/
 };
 tLOCAL      myKINE;
 #define   YKINE_PACE  0.10
+
+
+
+/*===[[ CALCULATION STRUCTURES ]]=============================================*/
+/*---(body zero-point/orient)---------*/
+typedef struct cCENTER tCENTER;
+struct   cCENTER {
+   float       height;
+   float       xpos , zpos , ypos;
+   float       yaw  , pitch, roll;
+};
+tCENTER g_center;
+
+/*---(move beg, cur,and end)----------*/
+typedef struct cWORK tWORK;
+struct   cWORK {
+   /*---(common)------------*/
+   float       sec;
+   char        rc;
+   /*---(segments)----------*/
+   float       cd;                     /* coxa                                */
+   float       fd, fx, fz, fy;         /* femu                                */
+   float       pd, px, pz, py;         /* pate                                */
+   float       td, tx, tz, ty;         /* tibi                                */
+   float       ed, ex, ez, ey;         /* end/foot                            */
+   /*---(working)-----------*/
+   float       deg, out, len, xz;
+   /*---(done)--------------*/
+};
+tWORK   g_beg;           /* move before                                       */
+tWORK   g_end;           /* expected endpoint                                 */
+tWORK   g_cur;           /* partial move calculation between g_beg/g_end      */
+tWORK   g_sav;           /* helper for steps and gaits                        */
+tWORK   g_pure;          /* result of kinematics calculation                  */
+tWORK   g_adapt;         /* result of kinematics WITH body zero and orient    */
 
 
 
@@ -326,6 +342,36 @@ extern    tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinemati
 extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinematics        */
 
 
+typedef struct cTIMING tTIMING;
+struct cTIMING {
+   /*---(original)----------*/
+   char        request     [LEN_LABEL];
+   /*---(as parsed)---------*/
+   char        accel;
+   char        decel;
+   char        speed;
+   float       step;
+   /*---(indexes)-----------*/
+   char        acceln;
+   char        deceln;
+   char        speedn;
+   /*---(global)------------*/
+   double      beats;
+   float       exact;
+   char        cpart;
+   /*---(working)-----------*/
+   char        a_acceln;
+   char        a_deceln;
+   char        a_speedn;
+   float       a_exact;
+   char        a_raise     [LEN_LABEL];     /* raise acceleration             */
+   char        a_middle    [LEN_LABEL];     /* middle of move acceleration    */
+   char        a_plant     [LEN_LABEL];     /* plant acceleration             */
+   char        a_body      [LEN_LABEL];     /* body acceleration              */
+   /*---(done)--------------*/
+};
+extern tTIMING  g_timing;
+
 #define     MAX_ACCEL         10
 #define     MAX_PARTS         10
 
@@ -430,7 +476,10 @@ char        ykine_exact_calc_length (float xp, float xc, float zp, float zc, flo
 char        ykine_exact_calc_polar  (float l, float d, float *x, float *z);
 char        ykine__exact_check      (tMOVE *a_curr, float a_sec);
 char        ykine__exact_find       (tSERVO *a_servo, float a_sec);
+char        ykine_exact_clearall    (void);
 char        ykine_exact_context     (char a_leg, float a_margin);
+char        ykine_exact_copy2pure   (float a_sec, char a_leg, char a_meth, char a_rc);
+char        ykine_exact_copy2adapt  (float a_sec, char a_leg, char a_meth, char a_rc);
 char        ykine_exact_setbody     (float a_sec);
 
 char        ykine_exact_fake_beg    (float db, float sb, float xb, float zb, float yb, float ob);
@@ -471,10 +520,6 @@ char        ykine_body_pr2ti        (float p, float r, float *d, float *t);
 char        ykine_body_ti2pr        (float d, float t, float *p, float *r);
 char        ykine_body_tilt         (int n, char *v);
 
-/*---(shared)-------------------------*/
-char        ykine_legs_prepservos   (char a_verb);
-char        ykine_legs_get_prev     (int a_leg);
-char        ykine_legs_prepare      (char *a_one, char *a_two, char *a_thr, char *a_label, char *a_mods);
 /*---(forward)------------------------*/
 char        ykine_legs_fk           (int n, char *v);
 /*---(inverse)------------------------*/
@@ -502,8 +547,6 @@ char        ykine_legs_ik2sk        (float a_coxa, float x, float z, float *d, f
 char        ykine_legs_sk2ik        (float a_coxa, float d, float o, float *x, float *z);
 char        ykine_legs_sk           (int n, char *v);
 /*---(step)---------------------------*/
-char        ykine_legs_driver       (int n, uchar *v, char a_verb);
-char        ykine_legs_partial      (char a_verb, char a_leg, char a_ik);
 
 
 char        ykine_scrp_segno        (int n, char *v);
@@ -531,9 +574,9 @@ char        ykine_accel__alloc      (char a_part, float a_dist);
 char        ykine_accel__dist       (float *a_dist, float *a_dur);
 char        ykine_accel__pcts       (float a_dist);
 int         ykine_accel__adjust     (float a_dur);
-char        ykine_accel_calc        (char a_part, char a_meth, char a_action);
-char        ykine_accel_dur         (cchar *a_dur);
-char        ykine_accel_timing_save (void);
+char        ykine_accel__calc       (char a_part, char a_meth, char a_action);
+char        ykine_accel__dur        (cchar *a_dur);
+char        ykine_accel__timing_save(void);
 char        ykine_accel_timing      (void);
 char        ykine_accel_make        (char a_acceln, float a_exact, char a_speedn, char a_deceln, char *a_out);
 char        ykine_accel_body_adj    (float a_pct, char *a_out);
@@ -544,8 +587,8 @@ char        ykine_accel_reset       (char a_leg);
 char        ykine_accel_append      (char a_verb, char a_part, char *a_accel);
 char        ykine_accel_execute     (char *a_label);
 char        ykine_accel_immediate   (char a_verb, char a_rc, char a_leg, float b, char *a_label);
-char        ykine_accel_seq_beg     (char a_leg, float a_wait);
-char        ykine_accel_seq_end     (char a_leg, float a_wait);
+char        ykine_exec_wait         (char a_leg, float a_wait);
+char        ykine_exec_fill         (char a_leg, float a_wait);
 char*       ykine_accel__unit       (char *a_question, int a_num);
 
 
@@ -630,20 +673,33 @@ char        ykine_step_raise        (char a_verb);
 char        ykine_step_plant        (char a_verb);
 char        ykine_step__rounded     (float a_xzlen, float a_pct, float *y);
 char        ykine_step_yshaper      (float a_xzlen, float a_pct, float *y);
-char        ykine_step_begin        (void);
-char        ykine_step_end          (void);
+char        ykine_step_show         (char *a_label);
+char        ykine_step_copy         (tWORK *a, tWORK *b);
+char        ykine_step_wait         (char a_verb, char a_leg);
+char        ykine_step_fill         (char a_verb, char a_leg);
 char*       ykine_step__unit        (char *a_question, int a_num);
 
 
 
 /*---(malloc)---------------*/
+char        ykine_tick_init         (void);
 char        ykine_tick__new         (void);
 char        ykine_tick__free        (void);
 /*---(accessor)-------------*/
 char        ykine_tick_setbody      (float a_sec);
 char        ykine_tick_fill         (char a_leg, float a_beg, float a_end);
+char        yKINE_tick_load         (void);
 /*---(unitest)--------------*/
 char*       ykine_tick__unit        (char *a_question, char a_leg, int a_tick);
+
+
+/*---(shared)-------------------------*/
+char        ykine_exec_servos       (char a_verb);
+char        ykine_exec_get_prev     (int a_leg);
+char        ykine_exec_prepare      (int a_line, char *a_one, char *a_two, char *a_thr, char *a_label, char *a_mods, char a_code, char *a_seg);
+char        ykine_exec_driver       (int a_line, uchar *a_verb, char a_code);
+char        ykine_exec_partial      (char a_verb, char a_leg, char a_ik);
+
 
 
 #endif

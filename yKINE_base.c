@@ -136,7 +136,10 @@ yKINE_init         (void)
     *> kine_attitude     (0.0f, 0.0f, 0.0f);                                          <*/
    /*---(clean legs)---------------------*/
    yKINE_sizing (0);
-   myKINE.s_height = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
+   g_center.yaw    = g_center.pitch   = g_center.roll   =  0.0;
+   g_center.xpos   = g_center.zpos    = g_center.ypos   =  0.0;
+   g_center.height = yKINE_seglen (YKINE_TIBI) + yKINE_seglen (YKINE_FOOT);
+   /*---(initialize)---------------------*/
    rc = ykine_servo_init ();
    DEBUG_YKINE  yLOG_value   ("servo"     , rc);
    rc = ykine_move_init  ();
@@ -157,6 +160,7 @@ yKINE_init         (void)
    DEBUG_YKINE  yLOG_value   ("step"      , rc);
    ykine_stance_verify  ();
    myKINE.s_pace  = YKINE_PACE;
+   ykine_tick_init  ();
    /*---(ready to return)----------------*/
    yLOG_unmute ();
    /*---(complete)-----------------------*/

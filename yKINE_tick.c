@@ -91,6 +91,18 @@ ykine_tick__clear       (char a_init, tTICK *a_tick)
 static void      o___MEMORY__________________o (void) {;};
 
 char
+ykine_tick_init         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   /*---(clear and free)-----------------*/
+   for (i = 0; i < YKINE_MAX_LEGS; ++i)   s_ticks [i] = NULL;
+   s_ntick = 0;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
 ykine_tick__new         (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -127,11 +139,13 @@ ykine_tick__free        (void)
    }
    /*---(clear and free)-----------------*/
    for (i = 0; i < YKINE_MAX_LEGS; ++i) {
-      for (k = 0; k < s_ntick; ++k) {
-         ykine_tick__clear ('-', (s_ticks [i]) + k);
+      if (s_ticks [i] != NULL) {
+         for (k = 0; k < s_ntick; ++k) {
+            ykine_tick__clear ('-', (s_ticks [i]) + k);
+         }
+         free (s_ticks [i]);
+         s_ticks [i] = NULL;
       }
-      free (s_ticks [i]);
-      s_ticks [i] = NULL;
    }
    /*---(globals)------------------------*/
    s_ntick = 0;
@@ -146,33 +160,37 @@ ykine_tick_setbody      (float a_sec)
    char        rce         =  -10;
    char        rc          =    0;
    int         x_tick      =    0;
-   float       x_pos, z_pos, y_pos;
-   float       x_yaw, x_pitch, x_roll;
+   float       x_pos   = 0, z_pos   = 0, y_pos   = 0;
+   float       x_yaw   = 0, x_pitch = 0, x_roll  = 0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_TICK  yLOG_enter   (__FUNCTION__);
    /*---(first pass)---------------------*/
-   if (myKINE.s_pass == 1) {
-      rc = yKINE_exact_all (a_sec);
-      /*> myKINE.vb = YKINE_ZE;                                                       <*/
-      rc = yKINE_exact_leg (YKINE_CENTER, 0.10, NULL, NULL, NULL, NULL, NULL, NULL, &x_pos, &z_pos, &y_pos, NULL, NULL, NULL, NULL, NULL, NULL);
-      /*> myKINE.vb = YKINE_OR;                                                       <*/
-      rc = yKINE_exact_leg (YKINE_BODY  , 0.10, NULL, NULL, NULL, &x_yaw, &x_pitch, &x_roll, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+   /*> if (myKINE.s_pass == 1) {                                                                                                                          <* 
+    *>    rc = yKINE_exact_all (a_sec);                                                                                                                   <* 
+    *>    /+> myKINE.vb = YKINE_ZE;                                                       <+/                                                             <* 
+    *>    rc = yKINE_exact_leg (YKINE_CENTER, 0.10, NULL, NULL, NULL, NULL, NULL, NULL, &x_pos, &z_pos, &y_pos, NULL, NULL, NULL, NULL, NULL, NULL);      <* 
+    *>    /+> myKINE.vb = YKINE_OR;                                                       <+/                                                             <* 
+    *>    rc = yKINE_exact_leg (YKINE_BODY  , 0.10, NULL, NULL, NULL, &x_yaw, &x_pitch, &x_roll, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);   <* 
+    *> }                                                                                                                                                  <* 
+    *> else {                                                                                                                                             <*/
+   /*---(point in time)--------*/
+   x_tick  = a_sec * 10;
+   DEBUG_YKINE_TICK  yLOG_complex ("tick"      , "%8.2fs, %5dt", a_sec, x_tick);
+   /*---(position)-------------*/
+   if (x_tick >= 0 && x_tick < s_ntick) {
+      x_pos   = s_ticks [YKINE_BODY][x_tick].o_xpos;
+      z_pos   = s_ticks [YKINE_BODY][x_tick].o_zpos;
+      y_pos   = s_ticks [YKINE_BODY][x_tick].o_ypos;
    }
-   else {
-      /*---(point in time)--------*/
-      x_tick  = a_sec * 10;
-      DEBUG_YKINE_TICK  yLOG_complex ("tick"      , "%8.2fs, %5dt", a_sec, x_tick);
-      /*---(position)-------------*/
-      /*> x_pos   = s_ticks [YKINE_BODY][x_tick].o_xpos;                                 <* 
-       *> z_pos   = s_ticks [YKINE_BODY][x_tick].o_zpos;                                 <* 
-       *> y_pos   = s_ticks [YKINE_BODY][x_tick].o_ypos;                                 <*/
-      rc = yKINE_zero   (x_pos, z_pos, y_pos);
-      /*---(orientation)----------*/
-      /*> x_yaw   = s_ticks [YKINE_BODY][x_tick].o_femu;                                 <* 
-       *> x_pitch = s_ticks [YKINE_BODY][x_tick].o_pate;                                 <* 
-       *> x_roll  = s_ticks [YKINE_BODY][x_tick].o_tibi;                                 <*/
-      rc = yKINE_orient (x_yaw, x_pitch, x_roll);
+   rc = yKINE_zero   (x_pos, z_pos, y_pos);
+   /*---(orientation)----------*/
+   if (x_tick >= 0 && x_tick < s_ntick) {
+      x_yaw   = s_ticks [YKINE_BODY][x_tick].o_femu;
+      x_pitch = s_ticks [YKINE_BODY][x_tick].o_pate;
+      x_roll  = s_ticks [YKINE_BODY][x_tick].o_tibi;
    }
+   rc = yKINE_orient (x_yaw, x_pitch, x_roll);
+   /*> }                                                                              <*/
    /*---(report-out)---------------------*/
    DEBUG_YKINE_TICK  yLOG_complex ("position"  , "%4drc, %8.2fx, %8.2fz, %8.2fy", rc, x_pos, z_pos, y_pos);
    DEBUG_YKINE_TICK  yLOG_complex ("orient"    , "%4drc, %8.2fy, %8.2fp, %8.2fr", rc, x_yaw, x_pitch, x_roll);
@@ -201,8 +219,8 @@ ykine_tick_fill         (char a_leg, float a_beg, float a_end)
    /*---(header)-------------------------*/
    DEBUG_YKINE_TICK  yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   /*> x_beg = myKINE.sb * 10.0;  /+   * my.p_scale;         +/                       <* 
-    *> x_end = myKINE.se * 10.0;  /+   * my.p_scale;         +/                       <*/
+   /*> x_beg = g_beg.sec * 10.0;  /+   * my.p_scale;         +/                       <* 
+    *> x_end = g_end.sec * 10.0;  /+   * my.p_scale;         +/                       <*/
    x_beg = a_beg * 10;
    x_end = a_end * 10;
    DEBUG_YKINE_TICK  yLOG_complex ("span"      , "%4db to %4de", x_beg, x_end);
@@ -255,7 +273,19 @@ ykine_tick_fill         (char a_leg, float a_beg, float a_end)
    }
 
    /*---(complete)-----------------------*/
-   DEBUG_YKINE_TICK  yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_TICK  yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yKINE_tick_load         (void)
+{
+   char        x_leg       =    0;
+   ykine_tick__free ();
+   ykine_tick__new  ();
+   for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
+      ykine_tick_fill (x_leg, 0, myKINE.scrp_len);
+   }
    return 0;
 }
 
@@ -359,44 +389,16 @@ ykine_tick__unit        (char *a_question, char a_leg, int a_tick)
       sprintf (ykine__unit_answer, "TICK alloc       : %4d %s", s_ntick, t);
    }
    else if (strcmp (a_question, "pos"     ) == 0) {
-      x_tick = s_ticks [a_leg] + a_tick;
+      x_tick = s_ticks [a_leg + 1] + a_tick;
       sprintf (ykine__unit_answer, "TICK pos (%3d) : %c %c   %6.1lfx %6.1lfz %6.1lfy   %6.1lfx %6.1lfz %6.1lfy", a_tick, x_tick->used, x_tick->exact, x_tick->o_xpos, x_tick->o_zpos, x_tick->o_ypos, x_tick->r_xpos, x_tick->r_zpos, x_tick->r_ypos);
+   }
+   else if (strcmp (a_question, "deg"     ) == 0) {
+      x_tick = s_ticks [a_leg + 1] + a_tick;
+      sprintf (ykine__unit_answer, "TICK deg (%3d) : %c %c   %6.1lff %6.1lfp %6.1lft   %6.1lff %6.1lfp %6.1lft", a_tick, x_tick->used, x_tick->exact, x_tick->o_femu, x_tick->o_pate, x_tick->o_tibi, x_tick->r_femu, x_tick->r_pate, x_tick->r_tibi);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;
 }
-
-/*> struct      cTICK {                                                               <* 
- *>    /+---(special)--------------+/                                                 <* 
- *>    char        used;                                                              <* 
- *>    char        exact;                                                             <* 
- *>    char       *label;                                                             <* 
- *>    char        cell;                                                              <* 
- *>    /+---(planned angles)-------+/                                                 <* 
- *>    float       o_femu;                                                            <* 
- *>    float       o_pate;                                                            <* 
- *>    float       o_tibi;                                                            <* 
- *>    /+---(planned endpoint)-----+/                                                 <* 
- *>    float       o_xpos;                                                            <* 
- *>    float       o_zpos;                                                            <* 
- *>    float       o_ypos;                                                            <* 
- *>    /+---(revised endpoint)-----+/                                                 <* 
- *>    float       r_xpos;                                                            <* 
- *>    float       r_zpos;                                                            <* 
- *>    float       r_ypos;                                                            <* 
- *>    /+---(revised angles)-------+/                                                 <* 
- *>    float       r_femu;                                                            <* 
- *>    float       r_pate;                                                            <* 
- *>    float       r_tibi;                                                            <* 
- *>    /+---(opengl endpoint)------+/                                                 <* 
- *>    float       g_xpos;                                                            <* 
- *>    float       g_zpos;                                                            <* 
- *>    float       g_ypos;                                                            <* 
- *>    /+---(success)--------------+/                                                 <* 
- *>    char        rc_kine;                                                           <* 
- *>    float       r_vs_g;                                                            <* 
- *>    /+---(done)-----------------+/                                                 <* 
- *> };                                                                                <*/
 
 
 

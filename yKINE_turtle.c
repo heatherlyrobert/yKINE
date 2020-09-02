@@ -61,8 +61,8 @@ ykine_turtle__reset     (void)
 {
    s_accel = '[';
    s_decel = ']';
-   sprintf (myKINE.accel, "%c%c%c", s_accel, s_speed, s_decel);
-   myKINE.b = -1.0;
+   sprintf (g_timing.request, "%c%c%c", s_accel, s_speed, s_decel);
+   g_timing.beats = -1.0;
    return 0;
 }
 
@@ -243,16 +243,16 @@ ykine_turtle__zero      (int n, uchar *v, char a_verb, float x, float z, float y
    DEBUG_YKINE_SCRP   yLOG_value   ("a_verb"    , a_verb);
    switch (a_verb) {
    case YKINE_TMV :
-      sprintf (x_recd, "zero    (%s, %6.1fr, %6.1fr, =)", myKINE.accel, x, z);
+      sprintf (x_recd, "zero    (%s, %6.1fr, %6.1fr, =)", g_timing.request, x, z);
       break;
    case YKINE_THM :
-      sprintf (x_recd, "zero    (%s, 0.0, 0.0, =)"      , myKINE.accel);
+      sprintf (x_recd, "zero    (%s, 0.0, 0.0, =)"      , g_timing.request);
       break;
    case YKINE_TGO :
-      sprintf (x_recd, "zero    (%s, %6.1f, %6.1f, =)"  , myKINE.accel, x, z);
+      sprintf (x_recd, "zero    (%s, %6.1f, %6.1f, =)"  , g_timing.request, x, z);
       break;
    case YKINE_TRA : case YKINE_TLO :
-      sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %6.1f)"  , myKINE.accel, y);
+      sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %6.1f)"  , g_timing.request, y);
       break;
    case YKINE_TWA :
       sprintf (x_recd, "zero    (%6.1f, =, =, =)"  , x);

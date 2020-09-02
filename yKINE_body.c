@@ -76,11 +76,11 @@ ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float 
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get previous)-------------------*/
-   ykine_legs_get_prev (YKINE_BODY);
+   ykine_exec_get_prev (YKINE_BODY);
    /*---(calculate)-------------------*/
-   rc = ykine_stance_scale   (          myKINE.xb, x_str, &xe);
-   rc = ykine_stance_scale   (          myKINE.zb, z_str, &ze);
-   rc = ykine_stance_height  (YKINE_ZE, myKINE.yb, y_str, &ye);
+   rc = ykine_stance_scale   (          g_beg.ex , x_str, &xe);
+   rc = ykine_stance_scale   (          g_beg.ez , z_str, &ze);
+   rc = ykine_stance_height  (YKINE_ZE, g_beg.ey , y_str, &ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -91,8 +91,8 @@ ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float 
    if (x != NULL)  *x = xe;
    if (z != NULL)  *z = ze;
    if (y != NULL)  *y = ye;
-   myKINE.db = myKINE.de = 0.0;
-   myKINE.ob = myKINE.oe = 0.0;
+   g_beg.deg = g_end.deg = 0.0;
+   g_beg.out = g_end.out = 0.0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -109,15 +109,15 @@ ykine_body_po_getter   (char *d_str, char *o_str, char *y_str, float *x, float *
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get previous)-------------------*/
-   ykine_legs_get_prev (YKINE_BODY);
+   ykine_exec_get_prev (YKINE_BODY);
    /*---(convert to po)---------------*/
-   ykine_body_xz2po (myKINE.xb, myKINE.zb, &myKINE.db, &myKINE.ob);
-   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3fd, %8.2fo, %8.2fy", myKINE.db, myKINE.ob, myKINE.yb);
+   ykine_body_xz2po (g_beg.ex , g_beg.ez , &g_beg.deg, &g_beg.out);
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3fd, %8.2fo, %8.2fy", g_beg.deg, g_beg.out, g_beg.ey );
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_scale   (          myKINE.db, d_str, &de);
-   rc = ykine_stance_scale   (          myKINE.ob, o_str, &oe);
-   rc = ykine_stance_height  (YKINE_PO, myKINE.yb, y_str, &ye);
+   rc = ykine_stance_scale   (          g_beg.deg, d_str, &de);
+   rc = ykine_stance_scale   (          g_beg.out, o_str, &oe);
+   rc = ykine_stance_height  (YKINE_PO, g_beg.ey , y_str, &ye);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -125,18 +125,18 @@ ykine_body_po_getter   (char *d_str, char *o_str, char *y_str, float *x, float *
    }
    DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3fd, %8.2fo, %8.2fy", de, oe, ye);
    /*---(save off)--------------------*/
-   myKINE.de = de;
-   myKINE.oe = oe;
+   g_end.deg = de;
+   g_end.out = oe;
    /*---(convert from po)-------------*/
-   ykine_body_po2xz (myKINE.de, myKINE.oe, x, z);
+   ykine_body_po2xz (g_end.deg, g_end.out, x, z);
    if (y != NULL)  *y = ye;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
-char   ykine_body_zero         (int n, char *v) { return ykine_legs_driver (n, v, YKINE_ZE); }
-char   ykine_body_polar        (int n, char *v) { return ykine_legs_driver (n, v, YKINE_PO); }
+char   ykine_body_zero         (int n, char *v) { return ykine_exec_driver (n, v, YKINE_ZE); }
+char   ykine_body_polar        (int n, char *v) { return ykine_exec_driver (n, v, YKINE_PO); }
 
 
 
@@ -284,13 +284,13 @@ ykine_body_or_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get previous)-------------------*/
-   ykine_legs_get_prev (YKINE_BODY);
+   ykine_exec_get_prev (YKINE_BODY);
    /*---(calculate)-------------------*/
-   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.2fp, %8.2ft", myKINE.fb, myKINE.pb, myKINE.tb);
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.2fp, %8.2ft", g_beg.fd , g_beg.pd , g_beg.td );
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_scale   (myKINE.fb, f_str, &fe);
-   rc = ykine_stance_scale   (myKINE.pb, p_str, &pe);
-   rc = ykine_stance_scale   (myKINE.tb, t_str, &te);
+   rc = ykine_stance_scale   (g_beg.fd , f_str, &fe);
+   rc = ykine_stance_scale   (g_beg.pd , p_str, &pe);
+   rc = ykine_stance_scale   (g_beg.td , t_str, &te);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -301,8 +301,8 @@ ykine_body_or_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    if (f != NULL)  *f = fe;
    if (p != NULL)  *p = pe;
    if (t != NULL)  *t = te;
-   myKINE.db = myKINE.de = 0.0;
-   myKINE.ob = myKINE.oe = 0.0;
+   g_beg.deg = g_end.deg = 0.0;
+   g_beg.out = g_end.out = 0.0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -319,14 +319,14 @@ ykine_body_ti_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get previous)-------------------*/
-   ykine_legs_get_prev (YKINE_BODY);
+   ykine_exec_get_prev (YKINE_BODY);
    /*---(convert to dir/tilt)------------*/
-   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.2fp, %8.2ft", myKINE.fb, myKINE.pb, myKINE.tb);
-   rc = ykine_body_pr2ti       (myKINE.pb, myKINE.tb, &db, &tb);
+   DEBUG_YKINE_SCRP  yLOG_complex ("before"    , "%8.3ff, %8.2fp, %8.2ft", g_beg.fd , g_beg.pd , g_beg.td );
+   rc = ykine_body_pr2ti       (g_beg.pd , g_beg.td , &db, &tb);
    DEBUG_YKINE_SCRP  yLOG_complex ("converted" , "%8.2fd, %8.2ft", db, tb);
    /*---(calculate)-------------------*/
    DEBUG_YKINE_SCRP  yLOG_char    ("from"      , myKINE.s_from);
-   rc = ykine_stance_scale   (myKINE.fb, f_str, &fe);
+   rc = ykine_stance_scale   (g_beg.fd , f_str, &fe);
    rc = ykine_stance_scale   (db       , p_str, &de);
    rc = ykine_stance_scale   (tb       , t_str, &te);
    DEBUG_YKINE_SCRP  yLOG_value   ("adjust"    , rc);
@@ -336,18 +336,18 @@ ykine_body_ti_getter   (char *f_str, char *p_str, char *t_str, float *f, float *
    }
    DEBUG_YKINE_SCRP  yLOG_complex ("after"     , "%8.3ff, %8.2fd, %8.2ft", fe, de, te);
    /*---(convert back to pitch/roll)-----*/
-   rc = ykine_body_ti2pr        (de, te, &myKINE.pe, &myKINE.te);
-   DEBUG_YKINE_SCRP  yLOG_complex ("converted" , "%8.2fp, %8.2fr", myKINE.pe, myKINE.te);
+   rc = ykine_body_ti2pr        (de, te, &g_end.pd , &g_end.td );
+   DEBUG_YKINE_SCRP  yLOG_complex ("converted" , "%8.2fp, %8.2fr", g_end.pd , g_end.td );
    if (f != NULL)  *f = fe;
-   myKINE.db = myKINE.de = 0.0;
-   myKINE.ob = myKINE.oe = 0.0;
+   g_beg.deg = g_end.deg = 0.0;
+   g_beg.out = g_end.out = 0.0;
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
-char   ykine_body_orient       (int n, char *v) { return ykine_legs_driver (n, v, YKINE_OR); }
-char   ykine_body_tilt         (int n, char *v) { return ykine_legs_driver (n, v, YKINE_TI); }
+char   ykine_body_orient       (int n, char *v) { return ykine_exec_driver (n, v, YKINE_OR); }
+char   ykine_body_tilt         (int n, char *v) { return ykine_exec_driver (n, v, YKINE_TI); }
 
 
 

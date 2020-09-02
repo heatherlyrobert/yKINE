@@ -442,47 +442,47 @@ ykine_stance            (int n, char *v)
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(gather fields)---------------*/
-   rc = ykine_legs_prepare (x_one, x_two, x_thr, x_label, x_mods);
+   rc = ykine_exec_prepare (n, x_one, x_two, x_thr, x_label, x_mods, 0, NULL);
    DEBUG_YKINE_SCRP   yLOG_value   ("prepare"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (x_accel, myKINE.accel, LEN_LABEL);
+   strlcpy (x_accel, g_timing.request, LEN_LABEL);
    /*---(create record)------------------*/
-   if (myKINE.b >= 0)   sprintf (x_recd, "zero    (%6.1f, 0.0r, 0.0r, %s, %s)", myKINE.b, x_thr, x_label);
-   else                 sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %s, %s)"   , myKINE.a_body, x_thr, x_label);
+   if (g_timing.beats >= 0)   sprintf (x_recd, "zero    (%6.1f, 0.0r, 0.0r, %s, %s)", g_timing.beats, x_thr, x_label);
+   else                 sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %s, %s)"   , g_timing.a_body, x_thr, x_label);
    DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
    /*---(parse)--------------------------*/
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
    myKINE.s_hidden = 'y';
-   DEBUG_YKINE_SCRP   yLOG_point   ("parse"     , rc);
+   DEBUG_YKINE_SCRP   yLOG_value   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(run)-------------------------*/
    rc = ykine_body_zero (n, "zero");
-   DEBUG_YKINE_SCRP  yLOG_point   ("zero"      , rc);
+   DEBUG_YKINE_SCRP  yLOG_value   ("zero"      , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(create record)------------------*/
-   if (myKINE.b >= 0)   sprintf (x_recd, "radial  (AA, %6.1f, %s, %s, %s, %s, %s)", myKINE.b, x_one, x_two, "-.-", x_label, x_mods);
+   if (g_timing.beats >= 0)   sprintf (x_recd, "radial  (AA, %6.1f, %s, %s, %s, %s, %s)", g_timing.beats, x_one, x_two, "-.-", x_label, x_mods);
    else                 sprintf (x_recd, "radial  (AA, %s, %s, %s, %s, %s, %s)"   , x_accel, x_one, x_two, "-.-", x_label, x_mods);
    DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
    /*---(parse)--------------------------*/
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
    myKINE.s_hidden = 'y';
-   DEBUG_YKINE_SCRP   yLOG_point   ("parse"     , rc);
+   DEBUG_YKINE_SCRP   yLOG_value   ("parse"     , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(run)-------------------------*/
    rc = ykine_legs_rk   (n, "radial");
-   DEBUG_YKINE_SCRP  yLOG_point   ("radial"    , rc);
+   DEBUG_YKINE_SCRP  yLOG_value   ("radial"    , rc);
    --rce;  if (rc <  0) {
       DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -641,13 +641,13 @@ static void      o___HEXAGONAL_______________o (void) {;}
  *                         µ________________/                           
  *                         /                µ                          
  *                        /                  µ                          
- *       South-West      /                    µ     North-East          
+ *       North-West      /                    µ     North-East          
  *                  16  /                      µ  4                     
  *                     /                        µ                       
  *                    /                          µ                      
  *                   /                            µ                     
- * LM  (16+32) 48 __/                              µ__ 6 (2+4)   RM
- *                  µ                              /                    
+ * LM  (16+32) 48 __/              ¬¬              µ__ 6 (2+4)   RM
+ *                  µ              ¬¬              /                    
  *                   µ                            /                     
  *                    µ                          /                      
  *                     µ                        /                       

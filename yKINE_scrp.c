@@ -553,15 +553,17 @@ ykine_scrp_segno        (int n, char *v)
 char  /*--> parse a low level repeat --------------[ ------ [ ------ ]-*/
 ykine_scrp_repeat       (int n, char *v)
 {
-   /*---(locals)-----------+-----------+-*/
-   char        rce         = -10;                /* return code for errors    */
-   char        rc          = 0;
-   int         i           = 0;
-   int         j           = 0;
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         i           =    0;
+   int         j           =    0;
    tSERVO     *x_servo     = NULL;
-   double      c           = 0;
+   double      c           =    0;
    char        x_list      [LEN_HUND];
    int         x_line      =    0;
+   char        x_leg       =    0;
+   char        x_seg       =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(mark servers)----------------*/
@@ -578,26 +580,61 @@ ykine_scrp_repeat       (int n, char *v)
    if (rc >= 0)  rc  = yPARSE_popval   (0.0, &c);
    DEBUG_YKINE_SCRP  yLOG_value   ("c"         , c);
    for (i = 0; i < g_nservo; ++i) {
+      /*---(filter)----------------------*/
       if (x_list [i] == '_')  continue;
-      /*---(handle)----------------------*/
       x_servo = &(g_servo_info [i]);
       if (x_servo == NULL)      continue;
-      if (x_servo->seg == YKINE_FOCU) {
-         DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-         ykine_move_repeat (x_servo, c);
-      } else if (x_servo->seg == YKINE_TIBI) {
-         for (j = 0; j < 3; ++j) {
-            DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
+      x_leg   = x_servo->leg;
+      x_seg   = x_servo->seg;
+      /*---(body)------------------------*/
+      if (x_leg == YKINE_BODY) {
+         DEBUG_YKINE_SCRP   yLOG_info    ("body label", x_servo->label);
+         switch (x_seg) {
+         case YKINE_FOCU : /* zero-point */
             ykine_move_repeat (x_servo, c);
-            --x_servo;
-         }
-      } else {
-         for (j = 0; j < 3; ++j) {
-            DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
-            ykine_move_repeat (x_servo, c);
-            ++x_servo;
+            continue;
+            break;
+         case YKINE_YAW  : /* orientation */
+            for (j = 0; j < 3; ++j) {
+               ykine_move_repeat (x_servo, c);
+               ++x_servo;
+            }
+            continue;
+            break;
+         default         :
+            DEBUG_YKINE_SCRP   yLOG_note    ("can not be processed");
+            continue;
+            break;
          }
       }
+      /*---(legs)------------------------*/
+      else {
+         DEBUG_YKINE_SCRP   yLOG_info    ("leg label" , x_servo->label);
+         switch (x_seg) {
+         case YKINE_FEMU : /* forward */
+            for (j = 0; j < 4; ++j) {
+               DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
+               ykine_move_repeat (x_servo, c);
+               ++x_servo;
+            }
+            continue;
+            break;
+         case YKINE_TIBI : /* inverse */
+            ++x_servo;
+            for (j = 0; j < 4; ++j) {
+               DEBUG_YKINE_SCRP   yLOG_info    ("label"     , x_servo->label);
+               ykine_move_repeat (x_servo, c);
+               --x_servo;
+            }
+            continue;
+            break;
+         default         :
+            DEBUG_YKINE_SCRP   yLOG_note    ("can not be processed");
+            continue;
+            break;
+         }
+      }
+      /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP   yLOG_exit    (__FUNCTION__);
@@ -883,7 +920,8 @@ ykine_scrp_section      (int n, char *v)
       /*---(add filler)----------*/
       DEBUG_YKINE_SCRP   yLOG_complex ("adding"    , "%-10.10s, %6.1fs", x_servo->label, x_dur);
       ykine_move_create (x_servo, YKINE_SERVO, YKINE_NOOP, myKINE.s_tline, "", '-', YKINE_NONE, x_dur);
-      ykine_move_add_pure (x_servo, PURE_RC, d, x, z, y);
+      ykine_move_add_pure  (x_servo, 0, d, x, z, y);
+      ykine_move_add_adapt (x_servo, 0, d, x, z, y);
       /*---(done)----------------*/
    }
    /*---(add section)--------------------*/
@@ -957,13 +995,13 @@ ykine_scrp_crap         (void)
    }
    /*---(get timing)------------------*/
    ykine_accel_timing ();
-   if (myKINE.b < 0.0)  {
+   if (g_timing.beats < 0.0)  {
       DEBUG_YKINE_SCRP  yLOG_note    ("accelerated must convert to normal");
-      myKINE.b = 5.0;
-      strlcpy (myKINE.accel, "", LEN_LABEL);
+      g_timing.beats = 5.0;
+      strlcpy (g_timing.request, "", LEN_LABEL);
    }
    DEBUG_YKINE_SCRP  yLOG_double  ("pace"      , myKINE.s_pace);
-   s = myKINE.b * myKINE.s_pace;
+   s = g_timing.beats * myKINE.s_pace;
    DEBUG_YKINE_SCRP  yLOG_double  ("s"         , s);
    /*---(get servo)-------------------*/
    for (i = 0; i < g_nservo; ++i) {
@@ -978,13 +1016,13 @@ ykine_scrp_crap         (void)
       }
       if (x_verb == YKINE_LEGE) {
          x_servo = &(g_servo_info [i-2]);
-         if (x_servo->tail != NULL)  f = myKINE.fe = x_servo->tail->pure_d;
+         if (x_servo->tail != NULL)  f = g_end.fd  = x_servo->tail->pure_d;
          x_servo = &(g_servo_info [i-1]);
-         if (x_servo->tail != NULL)  p = myKINE.pe = x_servo->tail->pure_d;
+         if (x_servo->tail != NULL)  p = g_end.pd  = x_servo->tail->pure_d;
          x_servo = &(g_servo_info [i-0]);
-         if (x_servo->tail != NULL)  t = myKINE.te = x_servo->tail->pure_d;
+         if (x_servo->tail != NULL)  t = g_end.td  = x_servo->tail->pure_d;
          x_leg = g_servo_info [i].leg;
-         ykine_accel_immediate   (x_verb, -10, x_leg, myKINE.b, "error entry");
+         ykine_accel_immediate   (x_verb, -10, x_leg, g_timing.beats, "error entry");
          ykine_move_add_pure (x_servo, PURE_RC, 0.0, x, z, y); /* update */
       } else {
          x_servo = &(g_servo_info [i]);
@@ -1028,7 +1066,7 @@ ykine_scrp_exec         (void)
       DEBUG_YKINE_SCRP  yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = s_verb_info [myKINE.s_iverb].call (0, s_verb_info [myKINE.s_iverb].terse);
+   rc = s_verb_info [myKINE.s_iverb].call (myKINE.s_tline, s_verb_info [myKINE.s_iverb].terse);
    DEBUG_YKINE_SCRP  yLOG_value   ("call"      , rc);
    /*---(complete)-----------------------*/
    DEBUG_YKINE_SCRP  yLOG_exit    (__FUNCTION__);

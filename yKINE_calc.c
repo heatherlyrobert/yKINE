@@ -67,7 +67,6 @@ ykine__unsetleg    (void)
    return 0;
 }
 
-
 char       /*----: clear most recent kinematics working data -----------------*/
 ykine__wipe        (void)
 {
@@ -257,9 +256,9 @@ yKINE_zero              (float a_x, float a_z, float a_y)
    DEBUG_YKINE_CALC   yLOG_svalue  ("z", a_x);
    DEBUG_YKINE_CALC   yLOG_svalue  ("z", a_z);
    DEBUG_YKINE_CALC   yLOG_svalue  ("y", a_y);
-   myKINE.s_xcenter = a_x;
-   myKINE.s_zcenter = a_z;
-   myKINE.s_ycenter = a_y;
+   g_center.xpos = a_x;
+   g_center.zpos = a_z;
+   g_center.ypos = a_y;
    DEBUG_YKINE_CALC   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
@@ -271,9 +270,9 @@ yKINE_orient            (float a_yaw, float a_pitch, float a_roll)
    DEBUG_YKINE_CALC   yLOG_svalue  ("a_yaw"  , a_yaw);
    DEBUG_YKINE_CALC   yLOG_svalue  ("a_pitch", a_pitch);
    DEBUG_YKINE_CALC   yLOG_svalue  ("a_roll" , a_roll);
-   myKINE.s_yaw     = a_yaw;
-   myKINE.s_pitch   = a_pitch;
-   myKINE.s_roll    = a_roll;
+   g_center.yaw     = a_yaw;
+   g_center.pitch   = a_pitch;
+   g_center.roll    = a_roll;
    DEBUG_YKINE_CALC   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
@@ -793,8 +792,8 @@ ykine__IK_adapt         (void)
    y       =  s_leg [YKINE_TARG].y;
    xz      =  s_leg [YKINE_TARG].xz;
    fl      =  s_leg [YKINE_TARG].fl;
-   DEBUG_YKINE_CALC   yLOG_complex ("zero"     , "%8.2fx , %8.2fz , %8.2fy",  myKINE.s_xcenter,  myKINE.s_zcenter,  myKINE.s_ycenter);
-   DEBUG_YKINE_CALC   yLOG_complex ("orient"   , "%8.2ff , %8.2fp , %8.2ft",  myKINE.s_yaw    ,  myKINE.s_pitch  ,  myKINE.s_roll   );
+   DEBUG_YKINE_CALC   yLOG_complex ("zero"     , "%8.2fx , %8.2fz , %8.2fy",  g_center.xpos ,  g_center.zpos ,  g_center.ypos );
+   DEBUG_YKINE_CALC   yLOG_complex ("orient"   , "%8.2ff , %8.2fp , %8.2ft",  g_center.yaw  ,  g_center.pitch,  g_center.roll );
    DEBUG_YKINE_CALC   yLOG_complex ("original" , "%8.2fx , %8.2fz , %8.2fy , %8.2fxz, %8.2ffl",  x,  z,  y, xz, fl);
    /*---(yaw)----------------------------*/
    DEBUG_YKINE_CALC  yLOG_note    ("yaw calcs");
@@ -802,7 +801,7 @@ ykine__IK_adapt         (void)
    DEBUG_YKINE_CALC  yLOG_double  ("x_dist"    , x_dist);
    x_rads  = - atan2 (z , x);
    DEBUG_YKINE_CALC  yLOG_double  ("x_rads"    , x_rads);
-   x_rads -= (myKINE.s_yaw * DEG2RAD);
+   x_rads -= (g_center.yaw * DEG2RAD);
    DEBUG_YKINE_CALC  yLOG_double  ("new x_rads", x_rads);
    x_degs  = x_rads * RAD2DEG;
    DEBUG_YKINE_CALC  yLOG_double  ("new x_degs", x_degs);
@@ -814,7 +813,7 @@ ykine__IK_adapt         (void)
    DEBUG_YKINE_CALC  yLOG_note    ("rotate calcs");
    x_dist  = x;
    DEBUG_YKINE_CALC  yLOG_double  ("x_dist"    , x_dist);
-   x_rads  = -myKINE.s_roll * DEG2RAD;
+   x_rads  = -g_center.roll * DEG2RAD;
    DEBUG_YKINE_CALC  yLOG_double  ("x_rads"    , x_rads);
    x_degs  = x_rads * RAD2DEG;
    DEBUG_YKINE_CALC  yLOG_double  ("x_degs"    , x_degs);
@@ -830,7 +829,7 @@ ykine__IK_adapt         (void)
    DEBUG_YKINE_CALC  yLOG_note    ("pitch calcs");
    x_dist  = z;
    DEBUG_YKINE_CALC  yLOG_double  ("x_dist"    , x_dist);
-   x_rads  =  myKINE.s_pitch * DEG2RAD;
+   x_rads  =  g_center.pitch * DEG2RAD;
    DEBUG_YKINE_CALC  yLOG_double  ("x_rads"    , x_rads);
    x_degs  = x_rads * RAD2DEG;
    DEBUG_YKINE_CALC  yLOG_double  ("x_degs"    , x_degs);
@@ -843,12 +842,12 @@ ykine__IK_adapt         (void)
    DEBUG_YKINE_CALC  yLOG_double  ("new z", z);
    DEBUG_YKINE_CALC  yLOG_double  ("new y", y);
    /*---(zero-point)---------------------*/
-   x   -=  myKINE.s_xcenter;
-   DEBUG_YKINE_CALC  yLOG_complex ("x-zeroed"  , "zero = %8.2lf, revs = %8.2lf", myKINE.s_xcenter, x);
-   z   -=  myKINE.s_zcenter;
-   DEBUG_YKINE_CALC  yLOG_complex ("z-zeroed"  , "zero = %8.2lf, revs = %8.2lf", myKINE.s_zcenter, z);
-   y   -=  myKINE.s_ycenter;
-   DEBUG_YKINE_CALC  yLOG_complex ("y-zeroed"  , "zero = %8.2lf, revs = %8.2lf", myKINE.s_ycenter, y);
+   x   -=  g_center.xpos;
+   DEBUG_YKINE_CALC  yLOG_complex ("x-zeroed"  , "zero = %8.2lf, revs = %8.2lf", g_center.xpos, x);
+   z   -=  g_center.zpos;
+   DEBUG_YKINE_CALC  yLOG_complex ("z-zeroed"  , "zero = %8.2lf, revs = %8.2lf", g_center.zpos, z);
+   y   -=  g_center.ypos;
+   DEBUG_YKINE_CALC  yLOG_complex ("y-zeroed"  , "zero = %8.2lf, revs = %8.2lf", g_center.ypos, y);
    /*---(save)---------------------------*/
    s_leg [YKINE_TARG].x   =  s_leg [YKINE_TARG].cx  =  x;
    s_leg [YKINE_TARG].z   =  s_leg [YKINE_TARG].cz  =  z;
@@ -1191,7 +1190,7 @@ ykine_calc__unit        (char *a_question, int a_num)
       else                sprintf (ykine__unit_answer, "CALC set         : not   leg -- --   seg -- ----   meth - --");
    }
    else if (strcmp (a_question, "center"  ) == 0) {
-      sprintf (ykine__unit_answer, "CALC center      : zero %6.1fx %6.1fz %6.1fy   orient %6.1fy %6.1fp %6.1fr", myKINE.s_xcenter, myKINE.s_zcenter, myKINE.s_ycenter, myKINE.s_yaw, myKINE.s_pitch, myKINE.s_roll);
+      sprintf (ykine__unit_answer, "CALC center      : zero %6.1fx %6.1fz %6.1fy   orient %6.1fy %6.1fp %6.1fr", g_center.xpos, g_center.zpos, g_center.ypos, g_center.yaw, g_center.pitch, g_center.roll);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;
