@@ -31,8 +31,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.3-, prepare basics for demonstration"
-#define     P_VERNUM    "1.3d"
-#define     P_VERTXT    "unit tested basic ticker loading for body and legs"
+#define     P_VERNUM    "1.3e"
+#define     P_VERTXT    "all unit tests working again with changed exec_partial"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
