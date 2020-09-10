@@ -31,8 +31,8 @@
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.3-, prepare basics for demonstration"
-#define     P_VERNUM    "1.3e"
-#define     P_VERTXT    "all unit tests working again with changed exec_partial"
+#define     P_VERNUM    "1.3f"
+#define     P_VERTXT    "updates to yKINE_exact and others to get the ticker working"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -463,7 +463,7 @@ char        ykine__unit_end         (void);
 char        ykine_exact_calc        (char a_type, float a_beg, float a_end, float a_pct, float *a_cur);
 
 float       ykine_exact_dist_xzy    (void);
-float       ykine_exact_dist_doy    (void);
+float       ykine_exact_dist_doy    (char a_verb);
 float       ykine_exact_dist_ypr    (void);
 char        ykine_exact_dist_route  (char a_verb);
 
@@ -480,6 +480,8 @@ char        ykine_exact_clearall    (void);
 char        ykine_exact_context     (char a_leg, float a_margin);
 char        ykine_exact_copy2pure   (float a_sec, char a_leg, char a_meth, char a_rc);
 char        ykine_exact_copy2adapt  (float a_sec, char a_leg, char a_meth, char a_rc);
+char        ykine_exact_fail2pure   (float a_sec, char a_leg, char a_meth, char a_rc, float a_x, float a_z, float a_y);
+char        ykine_exact_fail2adapt  (float a_sec, char a_leg, char a_meth, char a_rc, float a_x, float a_z, float a_y);
 char        ykine_exact_setbody     (float a_sec);
 
 char        ykine_exact_fake_beg    (float db, float sb, float xb, float zb, float yb, float ob);

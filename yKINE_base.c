@@ -124,11 +124,13 @@ yKINE_init         (void)
    char        rc          =    0;
    int      x_leg = 0;              /* iterator         */
    int      x_seg = 0;              /* iterator         */
+   char        x_mute      =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
    /*---(cut log volume)-----------------*/
-   yLOG_mute  ();
-   DEBUG_YKINE  yLOG_unmute ();
+   /*> yLOGS_mute  ();                                                                <*/
+   x_mute = yLOGS_mute_check ();
+   if (x_mute == 1)   yLOGS_mute ();
    /*---(set body)-----------------------*/
    /*> kine_center       (0.0f, 0.0f);                                                <* 
     *> kine_height       (segs_len [YKINE_TIBI]);                                           <* 
@@ -162,7 +164,7 @@ yKINE_init         (void)
    myKINE.s_pace  = YKINE_PACE;
    ykine_tick_init  ();
    /*---(ready to return)----------------*/
-   yLOG_unmute ();
+   if (x_mute == 1)   yLOGS_unmute ();
    /*---(complete)-----------------------*/
    DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;

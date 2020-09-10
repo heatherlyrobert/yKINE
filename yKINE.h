@@ -471,7 +471,7 @@ char        yKINE_servo_cursor      (char a_dir);
 char        yKINE_sect_cursor       (char a_dir, char *a_major, char *a_minor, int *a_line, char *a_label, float *a_sec);
 
 char        yKINE_exact_all         (float  a_time);
-char        yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_label, char *a_cell, float *f, float *p, float *t, float *x, float *z, float *y, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
+char        yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_label, char *a_cell, char *pure, float *f, float *p, float *t, float *x, float *z, float *y, char *adapt, float *fr, float *pr, float *tr, float *xr, float *zr, float *yr);
 
 char        yKINE_move_cursor       (char a_dir, char a_leg, char a_seg, float *s, float *d);
 char        yKINE_zero_cursor       (char a_dir, float *s, float *x, float *z, float *y);

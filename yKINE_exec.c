@@ -192,7 +192,7 @@ ykine_accel_execute     (char *a_label)
          x_pct  = g_accel_info [i].pct [j];
          x_adj  = g_accel_info [i].adj [j];
          x_verb = g_accel_ends [j].verb;
-         DEBUG_YKINE   yLOG_complex ("keys"      , "%5.1fp %5.1fa %cv", x_pct, x_adj, x_verb);
+         DEBUG_YKINE   yLOG_complex ("keys"      , "%5.1fp %5.1fa %dv", x_pct, x_adj, x_verb);
          rc     = ykine_exact_pct_route (x_verb, x_pct);
          x_pure = ykine_exec_partial    (x_verb, myKINE.leg, 's');
          if (x_verb == YKINE_ZE || x_verb == YKINE_PO) {
@@ -419,16 +419,16 @@ ykine_exec__begpoint    (char a_code, char a_leg, char *a_one, char *a_two, char
    case YKINE_PO :  rc = ykine_body_po_getter  (       a_one, a_two, a_thr, &g_end.ex , &g_end.ez , &g_end.ey );  break;
    case YKINE_OR :  rc = ykine_body_or_getter  (       a_one, a_two, a_thr, &g_end.fd , &g_end.pd , &g_end.td );  break;
    case YKINE_TI :  rc = ykine_body_ti_getter  (       a_one, a_two, a_thr, &g_end.fd , &g_end.pd , &g_end.td );  break;
-      /*---(forward)---------------------*/
+                    /*---(forward)---------------------*/
    case YKINE_FK :  rc = ykine__legs_fk_getter (a_leg, a_one, a_two, a_thr, &g_end.fd , &g_end.pd , &g_end.td );  break;
-      /*---(inverse)---------------------*/
+                    /*---(inverse)---------------------*/
    case YKINE_IK :  rc = ykine__legs_ik_getter (a_leg, a_one, a_two, a_thr, &g_end.ex , &g_end.ez , &g_end.ey );  break;
    case YKINE_CK :  rc = ykine__legs_ck_getter (a_leg, a_one, a_two, a_thr, &g_end.ex , &g_end.ez , &g_end.ey );  break;
    case YKINE_RK :  rc = ykine__legs_rk_getter (a_leg, a_one, a_two, a_thr, &g_end.ex , &g_end.ez , &g_end.ey );  break;
    case YKINE_TK :  rc = ykine__legs_tk_getter (a_leg, a_one, a_two, a_thr, &g_end.ex , &g_end.ez , &g_end.ey );  break;
    case YKINE_NK :  rc = ykine__legs_nk_getter (a_leg, a_one, a_two, a_thr, &g_end.ex , &g_end.ez , &g_end.ey );  break;
    case YKINE_SK :  rc = ykine__legs_sk_getter (a_leg, a_one, a_two, a_thr, &g_end.ex , &g_end.ez , &g_end.ey );  break;
-      /*---(trouble)---------------------*/
+                    /*---(trouble)---------------------*/
    default       :
                     DEBUG_YKINE_SCRP   yLOG_note    ("FAILED, verb type not known");
                     DEBUG_YKINE_SCRP   yLOG_exitr   (__FUNCTION__, rce);
@@ -475,9 +475,11 @@ ykine_exec__endpoint    (char a_code, char a_leg)
       DEBUG_YKINE_SCRP   yLOG_complex ("timing"    , "%6.1fsb, %6.1fst, %6.1f++, %6.1fse", g_beg.sec, myKINE.step_total, myKINE.step_total / 10.0, g_beg.sec);
       ykine_exact_setbody (x_sec_end);
       rc = yKINE_adapt   (a_leg, g_end.ex , g_end.ez , g_end.ey );
-      ykine_exact_copy2adapt (x_sec_end, a_leg, YKINE_IK, rc);
+      if (rc >= 0)  ykine_exact_copy2adapt (x_sec_end, a_leg, YKINE_IK, rc);
+      else          ykine_exact_fail2adapt (x_sec_end, a_leg, YKINE_IK, rc, g_end.ex, g_end.ez, g_end.ey);
       rc = yKINE_inverse (a_leg, g_end.ex , g_end.ez , g_end.ey );
-      ykine_exact_copy2pure  (x_sec_end, a_leg, YKINE_IK, rc);
+      if (rc >= 0)  ykine_exact_copy2pure  (x_sec_end, a_leg, YKINE_IK, rc);
+      else          ykine_exact_fail2pure  (x_sec_end, a_leg, YKINE_IK, rc, g_end.ex, g_end.ez, g_end.ey);
       DEBUG_YKINE_SCRP  yLOG_complex ("kinematics", "inverse %3d, adapted %3d", g_pure.rc, g_adapt.rc);
       break;
    }
@@ -622,28 +624,24 @@ ykine_exec_partial      (char a_verb, char a_leg, char a_ik)
       x = g_cur.ex;
       z = g_cur.ez;
       y = g_cur.ey;
+      /*---(pure)------------------------*/
+      rc = yKINE_inverse     (a_leg, x , z , y );
+      if (rc >= 0)  ykine_exact_copy2pure  (s, a_leg, YKINE_IK, rc);
+      else          ykine_exact_fail2pure  (s, a_leg, YKINE_IK, rc, x, z, y);
+      DEBUG_YKINE_EXACT   yLOG_complex ("inverse"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_pure.rc , g_pure.fd , g_pure.pd , g_pure.td );
+      /*---(adapted)---------------------*/
+      rc = yKINE_adapt       (a_leg, x , z , y );
+      if (rc >= 0)  ykine_exact_copy2adapt (s, a_leg, YKINE_IK, rc);
+      else          ykine_exact_fail2adapt (s, a_leg, YKINE_IK, rc, x, z, y);
+      DEBUG_YKINE_EXACT   yLOG_complex ("apapted"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_adapt.rc, g_adapt.fd, g_adapt.pd, g_adapt.td);
       switch (a_ik) {
       case 'e' :
          DEBUG_YKINE_EXACT   yLOG_note    ("ticker/progress, end with adapted");
-         rc = yKINE_inverse     (a_leg, x , z , y );
-         ykine_exact_copy2pure  (s, a_leg, YKINE_IK, rc);
-         ykine_step_copy        (&g_cur, &g_pure);
-         DEBUG_YKINE_EXACT   yLOG_complex ("inverse"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_pure.rc , g_pure.fd , g_pure.pd , g_pure.td );
-         rc = yKINE_adapt       (a_leg, x , z , y );
-         ykine_exact_copy2adapt (s, a_leg, YKINE_IK, rc);
          ykine_step_copy        (&g_cur, &g_adapt);
-         DEBUG_YKINE_EXACT   yLOG_complex ("apapted"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_adapt.rc, g_adapt.fd, g_adapt.pd, g_adapt.td);
          break;
       case 's' :
          DEBUG_YKINE_EXACT   yLOG_note    ("script reading, end with pure/inverse");
-         rc = yKINE_adapt   (a_leg, x , z , y );
-         ykine_exact_copy2adapt (s, a_leg, YKINE_IK, rc);
-         DEBUG_YKINE_EXACT   yLOG_complex ("apapted"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_adapt.rc, g_adapt.fd, g_adapt.pd, g_adapt.td);
-         rc = yKINE_inverse (a_leg, x , z , y );
-         ykine_step_copy        (&g_cur, &g_adapt);
-         ykine_exact_copy2pure  (s, a_leg, YKINE_IK, rc);
          ykine_step_copy        (&g_cur, &g_pure);
-         DEBUG_YKINE_EXACT   yLOG_complex ("inverse"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_pure.rc , g_pure.fd , g_pure.pd , g_pure.td );
          break;
       }
       /*> yKINE_angles   (a_leg, YKINE_IK, NULL, &g_cur.fd , &g_cur.pd , &g_cur.td );   <*/

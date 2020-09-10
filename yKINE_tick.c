@@ -33,8 +33,9 @@ struct      cTICK {
    float       g_zpos;
    float       g_ypos;
    /*---(success)--------------*/
-   char        rc_kine;
-   float       r_vs_g;
+   char        rc_exact;
+   char        rc_pure;
+   char        rc_adapt;
    /*---(done)-----------------*/
 };
 static tTICK  *s_ticks [YKINE_MAX_LEGS] = { NULL };
@@ -77,8 +78,9 @@ ykine_tick__clear       (char a_init, tTICK *a_tick)
    a_tick->g_zpos      = 0.0;
    a_tick->g_ypos      = 0.0;
    /*---(success)------------------------*/
-   a_tick->rc_kine     =   0;
-   a_tick->r_vs_g      = 0.0;
+   a_tick->rc_exact    =   0;
+   a_tick->rc_pure     =   0;
+   a_tick->rc_adapt    =   0;
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -216,6 +218,8 @@ ykine_tick_fill         (char a_leg, float a_beg, float a_end)
    char        x_leg       [LEN_TERSE];
    tTICK      *x_base      = NULL;
    tTICK      *x_tick      = NULL;
+   char        x_pure      =    0;
+   char        x_adapt     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_TICK  yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
@@ -237,7 +241,7 @@ ykine_tick_fill         (char a_leg, float a_beg, float a_end)
       if (x_pos < 0.0     )  break;
       rc = yKINE_exact_all (x_pos / 10.0);
       if (rc < 0)            continue;
-      rc = yKINE_exact_leg (a_leg, 0.10, &x_exact, x_label, &x_cell, &fo, &po, &to, &xo, &zo, &yo, &fr, &pr, &tr, &xr, &zr, &yr);
+      rc = yKINE_exact_leg (a_leg, 0.10, &x_exact, x_label, &x_cell, &x_pure, &fo, &po, &to, &xo, &zo, &yo, &x_adapt, &fr, &pr, &tr, &xr, &zr, &yr);
       x_tick = x_base + x_pos;
       DEBUG_YKINE_TICK  yLOG_complex ("feedback"  , "%4d pos, %4d rc, %p", x_pos, rc, x_tick);
       DEBUG_YKINE_TICK  yLOG_complex ("results"   , "%ce, %pl, %cc", x_exact, x_label, x_cell);
@@ -265,7 +269,9 @@ ykine_tick_fill         (char a_leg, float a_beg, float a_end)
       x_tick->r_zpos   = zr;
       x_tick->r_ypos   = yr;
       /*---(results)---------------*/
-      x_tick->rc_kine  = rc;
+      x_tick->rc_exact = rc;
+      x_tick->rc_pure  = x_pure;
+      x_tick->rc_adapt = x_adapt;
 
       /*> if   (a_leg < 0)  strlcpy (x_leg, "ce", LEN_TERSE);                         <* 
        *> else              strlcpy (x_leg, yKINE_legtwo (x_leg), LEN_TERSE);         <*/
@@ -288,78 +294,6 @@ yKINE_tick_load         (void)
    }
    return 0;
 }
-
-
-/*> char         /+--> draw texture for progress ticker ------[ ------ [ ------ ]-+/                                                                                                                                                         <* 
- *> TICK_load_exact         (tPANEL *a_panel)                                                                                                                                                                                                <* 
- *> {                                                                                                                                                                                                                                        <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                                                                                                                              <* 
- *>    char        rc          =    0;                                                                                                                                                                                                       <* 
- *>    int         i;                             /+ loop iterator                  +/                                                                                                                                                       <* 
- *>    int         j;                             /+ loop iterator                  +/                                                                                                                                                       <* 
- *>    float       x_pos       =  0.0;                                                                                                                                                                                                       <* 
- *>    float       f, p, t, fr, pr, tr;                                                                                                                                                                                                      <* 
- *>    float       x, y, z, xr, yr, zr;                                                                                                                                                                                                      <* 
- *>    float       x_yaw       =    0;                                                                                                                                                                                                       <* 
- *>    float       x_pitch     =    0;                                                                                                                                                                                                       <* 
- *>    float       x_roll      =    0;                                                                                                                                                                                                       <* 
- *>    char        x_exact     =  '-';                                                                                                                                                                                                       <* 
- *>    char        x_leg       [LEN_TERSE];                                                                                                                                                                                                  <* 
- *>    char        x_label     [LEN_LABEL];                                                                                                                                                                                                  <* 
- *>    char        x_cell      =  '-';                                                                                                                                                                                                       <* 
- *>    DEBUG_GRAF   yLOG_enter   (__FUNCTION__);                                                                                                                                                                                             <* 
- *>    DEBUG_GRAF   yLOG_point   ("panel"     , a_panel);                                                                                                                                                                                    <* 
- *>    DEBUG_GRAF   yLOG_double  ("beg"       , a_panel->beg);                                                                                                                                                                               <* 
- *>    DEBUG_GRAF   yLOG_double  ("my.p_len"  , my.p_len);                                                                                                                                                                                   <* 
- *>    /+---(load original points)-----------+/                                                                                                                                                                                              <* 
- *>    tick_panel_wipe (a_panel, '-');                                                                                                                                                                                                       <* 
- *>    for (i = 0; i < MAX_WIDE; ++i) {                                                                                                                                                                                                      <* 
- *>       x_pos       = a_panel->beg + ((i / 10.0) * my.p_scale);                                                                                                                                                                            <* 
- *>       if (x_pos > my.p_len)  break;                                                                                                                                                                                                      <* 
- *>       if (x_pos < 0.0     )  break;                                                                                                                                                                                                      <* 
- *>       rc = yKINE_exact_all (x_pos);                                                                                                                                                                                                      <* 
- *>       if (rc < 0)  continue;                                                                                                                                                                                                             <* 
- *>       printf ("\n");                                                                                                                                                                                                                     <* 
- *>       if (i % 3 == 0)  printf ("____secs ## CALC __femu __pate __tibi   __xpos __zpos __ypos    _IK   __femu __pate __tibi   __xpos __zpos __ypos\n\n");                                                                                 <* 
- *>       for (j = YKINE_CENTER; j <= YKINE_LR; ++j) {                                                                                                                                                                                       <* 
- *>          rc = yKINE_exact_leg   (j, 0.10, &x_exact, x_label, &x_cell, &f, &p, &t, &x, &z, &y, &fr, &pr, &tr, &xr, &zr, &yr);                                                                                                             <* 
- *>          ++j;                                                                                                                                                                                                                            <* 
- *>          /+> rc = 0;                                                                  <+/                                                                                                                                                <* 
- *>          /+---(special)---------------+/                                                                                                                                                                                                 <* 
- *>          a_panel->detail [j][i].used   = 'y';                                                                                                                                                                                            <* 
- *>          a_panel->detail [j][i].exact  = x_exact;                                                                                                                                                                                        <* 
- *>          if (x_label [0] != '-')  a_panel->detail [j][i].label  = strdup (x_label);                                                                                                                                                      <* 
- *>          a_panel->detail [j][i].cell   = x_cell;                                                                                                                                                                                         <* 
- *>          /+---(original endpoint)-----+/                                                                                                                                                                                                 <* 
- *>          a_panel->detail [j][i].o_xpos = x;                                                                                                                                                                                              <* 
- *>          a_panel->detail [j][i].o_zpos = z;                                                                                                                                                                                              <* 
- *>          a_panel->detail [j][i].o_ypos = y;                                                                                                                                                                                              <* 
- *>          /+---(original angles)-------+/                                                                                                                                                                                                 <* 
- *>          a_panel->detail [j][i].o_femu = f;                                                                                                                                                                                              <* 
- *>          a_panel->detail [j][i].o_pate = p;                                                                                                                                                                                              <* 
- *>          a_panel->detail [j][i].o_tibi = t;                                                                                                                                                                                              <* 
- *>          /+---(revised angles)--------+/                                                                                                                                                                                                 <* 
- *>          a_panel->detail [j][i].r_femu = fr;                                                                                                                                                                                             <* 
- *>          a_panel->detail [j][i].r_pate = pr;                                                                                                                                                                                             <* 
- *>          a_panel->detail [j][i].r_tibi = tr;                                                                                                                                                                                             <* 
- *>          /+---(revised endpoint)------+/                                                                                                                                                                                                 <* 
- *>          a_panel->detail [j][i].r_xpos = xr;                                                                                                                                                                                             <* 
- *>          a_panel->detail [j][i].r_zpos = zr;                                                                                                                                                                                             <* 
- *>          a_panel->detail [j][i].r_ypos = yr;                                                                                                                                                                                             <* 
- *>          /+---(results)---------------+/                                                                                                                                                                                                 <* 
- *>          a_panel->detail [j][i].r_rc = rc;                                                                                                                                                                                               <* 
- *>          /+---(done)------------------+/                                                                                                                                                                                                 <* 
- *>          --j;                                                                                                                                                                                                                            <* 
- *>          if      (j < 0)  strlcpy (x_leg, "ce", LEN_TERSE);                                                                                                                                                                              <* 
- *>          else             strlcpy (x_leg, yKINE_legtwo (j), LEN_TERSE);                                                                                                                                                                  <* 
- *>          printf ("%8.2f %2d %2s   %6.1f %6.1f %6.1f   %6.1f %6.1f %6.1f    %3d   %6.1f %6.1f %6.1f   %6.1f %6.1f %6.1f    %c %-15.15s %c\n", x_pos, j, x_leg, f, p, t, x, z, y, rc, fr, pr, tr, xr, zr, yr, x_exact, x_label, x_cell);   <* 
- *>       }                                                                                                                                                                                                                                  <* 
- *>    }                                                                                                                                                                                                                                     <* 
- *>    /+---(complete)-----------------------+/                                                                                                                                                                                              <* 
- *>    DEBUG_GRAF   yLOG_exit    (__FUNCTION__);                                                                                                                                                                                             <* 
- *>    return 0;                                                                                                                                                                                                                             <* 
- *> }                                                                                                                                                                                                                                        <*/
-
 
 
 
@@ -390,11 +324,11 @@ ykine_tick__unit        (char *a_question, char a_leg, int a_tick)
    }
    else if (strcmp (a_question, "pos"     ) == 0) {
       x_tick = s_ticks [a_leg + 1] + a_tick;
-      sprintf (ykine__unit_answer, "TICK pos (%3d) : %c %c   %6.1lfx %6.1lfz %6.1lfy   %6.1lfx %6.1lfz %6.1lfy", a_tick, x_tick->used, x_tick->exact, x_tick->o_xpos, x_tick->o_zpos, x_tick->o_ypos, x_tick->r_xpos, x_tick->r_zpos, x_tick->r_ypos);
+      sprintf (ykine__unit_answer, "TICK pos (%3d) : %c %c   %4d %6.1lfx %6.1lfz %6.1lfy   %4d %6.1lfx %6.1lfz %6.1lfy", a_tick, x_tick->used, x_tick->exact, x_tick->rc_pure, x_tick->o_xpos, x_tick->o_zpos, x_tick->o_ypos, x_tick->rc_adapt, x_tick->r_xpos, x_tick->r_zpos, x_tick->r_ypos);
    }
    else if (strcmp (a_question, "deg"     ) == 0) {
       x_tick = s_ticks [a_leg + 1] + a_tick;
-      sprintf (ykine__unit_answer, "TICK deg (%3d) : %c %c   %6.1lff %6.1lfp %6.1lft   %6.1lff %6.1lfp %6.1lft", a_tick, x_tick->used, x_tick->exact, x_tick->o_femu, x_tick->o_pate, x_tick->o_tibi, x_tick->r_femu, x_tick->r_pate, x_tick->r_tibi);
+      sprintf (ykine__unit_answer, "TICK deg (%3d) : %c %c   %4d %6.1lff %6.1lfp %6.1lft   %4d %6.1lff %6.1lfp %6.1lft", a_tick, x_tick->used, x_tick->exact, x_tick->rc_pure, x_tick->o_femu, x_tick->o_pate, x_tick->o_tibi, x_tick->rc_adapt, x_tick->r_femu, x_tick->r_pate, x_tick->r_tibi);
    }
    /*---(complete)----------------------------------------*/
    return ykine__unit_answer;
