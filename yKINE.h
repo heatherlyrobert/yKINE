@@ -494,6 +494,12 @@ char        yKINE_handlers          (void);
 char        yKINE_scrp_prepper      (char a_pass);
 char        yKINE_scrp_finisher     (char a_pass, float *a_len);
 
+char        yKINE_ticker            (int a_row, int a_col, char a_type, float *b, float *e, char *r);
+char        yKINE_tick_deg          (int a_leg, int a_tick, float *a_femu, float *a_pate, float *a_tibi);
+char        yKINE_tick_end          (int a_leg, int a_tick, float *x, float *z, float *y);
+char        yKINE_tick_exp          (int a_leg, int a_tick, float *x, float *z, float *y);
+char        yKINE_tick_act          (int a_leg, int a_tick, float *x, float *z, float *y);
+char        yKINE_tick_opengl       (int a_leg, int a_tick, float x, float z, float y);
 
 /*> char        yKINE_phys_flat    (char a_meth, float a_sec, float *a_lowest, int *a_count);   <*/
 

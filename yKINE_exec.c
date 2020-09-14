@@ -476,10 +476,10 @@ ykine_exec__endpoint    (char a_code, char a_leg)
       ykine_exact_setbody (x_sec_end);
       rc = yKINE_adapt   (a_leg, g_end.ex , g_end.ez , g_end.ey );
       if (rc >= 0)  ykine_exact_copy2adapt (x_sec_end, a_leg, YKINE_IK, rc);
-      else          ykine_exact_fail2adapt (x_sec_end, a_leg, YKINE_IK, rc, g_end.ex, g_end.ez, g_end.ey);
+      else          ykine_exact_fail2adapt (x_sec_end, a_leg, YKINE_IK, rc);
       rc = yKINE_inverse (a_leg, g_end.ex , g_end.ez , g_end.ey );
       if (rc >= 0)  ykine_exact_copy2pure  (x_sec_end, a_leg, YKINE_IK, rc);
-      else          ykine_exact_fail2pure  (x_sec_end, a_leg, YKINE_IK, rc, g_end.ex, g_end.ez, g_end.ey);
+      else          ykine_exact_fail2pure  (x_sec_end, a_leg, YKINE_IK, rc);
       DEBUG_YKINE_SCRP  yLOG_complex ("kinematics", "inverse %3d, adapted %3d", g_pure.rc, g_adapt.rc);
       break;
    }
@@ -627,12 +627,12 @@ ykine_exec_partial      (char a_verb, char a_leg, char a_ik)
       /*---(pure)------------------------*/
       rc = yKINE_inverse     (a_leg, x , z , y );
       if (rc >= 0)  ykine_exact_copy2pure  (s, a_leg, YKINE_IK, rc);
-      else          ykine_exact_fail2pure  (s, a_leg, YKINE_IK, rc, x, z, y);
+      else          ykine_exact_fail2pure  (s, a_leg, YKINE_IK, rc);
       DEBUG_YKINE_EXACT   yLOG_complex ("inverse"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_pure.rc , g_pure.fd , g_pure.pd , g_pure.td );
       /*---(adapted)---------------------*/
       rc = yKINE_adapt       (a_leg, x , z , y );
       if (rc >= 0)  ykine_exact_copy2adapt (s, a_leg, YKINE_IK, rc);
-      else          ykine_exact_fail2adapt (s, a_leg, YKINE_IK, rc, x, z, y);
+      else          ykine_exact_fail2adapt (s, a_leg, YKINE_IK, rc);
       DEBUG_YKINE_EXACT   yLOG_complex ("apapted"   , "rc %3d, %8.2ff, %8.2fp, %8.2ft  copied  rc %3d, %8.2ff, %8.2fp, %8.2ft", rc, g_cur.fd , g_cur.pd , g_cur.td , g_adapt.rc, g_adapt.fd, g_adapt.pd, g_adapt.td);
       switch (a_ik) {
       case 'e' :

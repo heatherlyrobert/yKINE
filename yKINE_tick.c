@@ -36,6 +36,7 @@ struct      cTICK {
    char        rc_exact;
    char        rc_pure;
    char        rc_adapt;
+   float       g_error;
    /*---(done)-----------------*/
 };
 static tTICK  *s_ticks [YKINE_MAX_LEGS] = { NULL };
@@ -81,6 +82,7 @@ ykine_tick__clear       (char a_init, tTICK *a_tick)
    a_tick->rc_exact    =   0;
    a_tick->rc_pure     =   0;
    a_tick->rc_adapt    =   0;
+   a_tick->g_error     = 0.0;
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -116,7 +118,7 @@ ykine_tick__new         (void)
       return rce;
    }
    /*---(prepare)------------------------*/
-   s_ntick = myKINE.scrp_len * 10;
+   s_ntick = myKINE.scrp_len * 10 + 1;
    /*---(malloc and clear)---------------*/
    for (i = 0; i < YKINE_MAX_LEGS; ++i) {
       s_ticks [i] = (tTICK *)  malloc (sizeof (tTICK) * s_ntick);
@@ -222,6 +224,7 @@ ykine_tick_fill         (char a_leg, float a_beg, float a_end)
    char        x_adapt     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_TICK  yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_TICK  yLOG_complex ("args"      , "%2d leg, %6.1f beg to %6.1f eng", a_leg, a_beg, a_end);
    /*---(prepare)------------------------*/
    /*> x_beg = g_beg.sec * 10.0;  /+   * my.p_scale;         +/                       <* 
     *> x_end = g_end.sec * 10.0;  /+   * my.p_scale;         +/                       <*/
@@ -287,11 +290,172 @@ char
 yKINE_tick_load         (void)
 {
    char        x_leg       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YKINE_TICK  yLOG_enter   (__FUNCTION__);
    ykine_tick__free ();
    ykine_tick__new  ();
-   for (x_leg = 0; x_leg < YKINE_MAX_LEGS; ++x_leg) {
+   for (x_leg = YKINE_CENTER; x_leg <= YKINE_LR; ++x_leg) {
       ykine_tick_fill (x_leg, 0, myKINE.scrp_len);
    }
+   DEBUG_YKINE_TICK  yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yKINE_ticker            (int a_row, int a_col, char a_type, float *b, float *e, char *r)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(default)------------------------*/
+   if (b != NULL)   *b = 0.0;
+   if (e != NULL)   *e = 0.0;
+   if (r != NULL)   *r =   0;
+   /*---(defenses)-----------------------*/
+   --rce;  if (a_row <  0)               return rce;
+   --rce;  if (a_row >= YKINE_MAX_LEGS)  return rce;
+   --rce;  if (a_col <  0)               return rce;
+   --rce;  if (a_col >= s_ntick - 1)     return rce;
+   --rce;  if (b == NULL)                return rce;
+   --rce;  if (e == NULL)                return rce;
+   --rce;  if (r == NULL)                return rce;
+   --rce;  if (s_ticks [a_row] == NULL)  return rce;
+   /*---(return values)------------------*/
+   switch (a_type) {
+   case 'F' :
+      *b = s_ticks [a_row][a_col + 0].o_femu;
+      *e = s_ticks [a_row][a_col + 1].o_femu;
+      break;
+   case 'P' :
+      *b = s_ticks [a_row][a_col + 0].o_pate;
+      *e = s_ticks [a_row][a_col + 1].o_pate;
+      break;
+   case 'T' :
+      *b = s_ticks [a_row][a_col + 0].o_tibi;
+      *e = s_ticks [a_row][a_col + 1].o_tibi;
+      break;
+   case 'X' :
+      *b = s_ticks [a_row][a_col + 0].o_xpos;
+      *e = s_ticks [a_row][a_col + 1].o_xpos;
+      break;
+   case 'Z' :
+      *b = s_ticks [a_row][a_col + 0].o_zpos;
+      *e = s_ticks [a_row][a_col + 1].o_zpos;
+      break;
+   case 'Y' :
+      *b = s_ticks [a_row][a_col + 0].o_ypos;
+      *e = s_ticks [a_row][a_col + 1].o_ypos;
+      break;
+   case 'f' :
+      *b = s_ticks [a_row][a_col + 0].r_femu;
+      *e = s_ticks [a_row][a_col + 1].r_femu;
+      break;
+   case 'p' :
+      *b = s_ticks [a_row][a_col + 0].r_pate;
+      *e = s_ticks [a_row][a_col + 1].r_pate;
+      break;
+   case 't' :
+      *b = s_ticks [a_row][a_col + 0].r_tibi;
+      *e = s_ticks [a_row][a_col + 1].r_tibi;
+      break;
+   case 'x' :
+      *b = s_ticks [a_row][a_col + 0].r_xpos;
+      *e = s_ticks [a_row][a_col + 1].r_xpos;
+      break;
+   case 'z' :
+      *b = s_ticks [a_row][a_col + 0].r_zpos;
+      *e = s_ticks [a_row][a_col + 1].r_zpos;
+      break;
+   case 'y' :
+      *b = s_ticks [a_row][a_col + 0].r_ypos;
+      *e = s_ticks [a_row][a_col + 1].r_ypos;
+      break;
+   }
+   /*---(return code)--------------------*/
+   switch (a_type) {
+   case 'F' : case 'X' :
+      *r = s_ticks [a_row][a_col + 1].rc_pure;
+      break;
+   case 'f' : case 'x' :
+      *r = s_ticks [a_row][a_col + 1].rc_adapt;
+      break;
+   default  :
+      *r = 0;
+      break;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       data accessors                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___ACCESSORS_______________o (void) {;}
+
+char
+yKINE_tick_deg          (int a_leg, int a_tick, float *a_femu, float *a_pate, float *a_tibi)
+{
+   ++a_leg;
+   if (a_leg == YKINE_BODY) {
+      if (a_femu != NULL)  *a_femu = s_ticks [a_leg][a_tick].o_femu;
+      if (a_pate != NULL)  *a_pate = s_ticks [a_leg][a_tick].o_pate;
+      if (a_tibi != NULL)  *a_tibi = s_ticks [a_leg][a_tick].o_tibi;
+   } else {
+      if (a_femu != NULL)  *a_femu = s_ticks [a_leg][a_tick].r_femu;
+      if (a_pate != NULL)  *a_pate = s_ticks [a_leg][a_tick].r_pate;
+      if (a_tibi != NULL)  *a_tibi = s_ticks [a_leg][a_tick].r_tibi;
+   }
+   return 0;
+}
+
+char
+yKINE_tick_end          (int a_leg, int a_tick, float *x, float *z, float *y)
+{
+   ++a_leg;
+   if (a_leg == YKINE_BODY) {
+      if (x      != NULL)  *x      = s_ticks [a_leg][a_tick].o_xpos;
+      if (z      != NULL)  *z      = s_ticks [a_leg][a_tick].o_zpos;
+      if (y      != NULL)  *y      = s_ticks [a_leg][a_tick].o_ypos;
+   } else {
+      if (x      != NULL)  *x      = s_ticks [a_leg][a_tick].r_xpos;
+      if (z      != NULL)  *z      = s_ticks [a_leg][a_tick].r_zpos;
+      if (y      != NULL)  *y      = s_ticks [a_leg][a_tick].r_ypos;
+   }
+   return 0;
+}
+
+char
+yKINE_tick_exp          (int a_leg, int a_tick, float *x, float *z, float *y)
+{
+   ++a_leg;
+   if (x      != NULL)  *x      = s_ticks [a_leg][a_tick].o_xpos;
+   if (z      != NULL)  *z      = s_ticks [a_leg][a_tick].o_zpos;
+   if (y      != NULL)  *y      = s_ticks [a_leg][a_tick].o_ypos;
+   return 0;
+}
+
+char
+yKINE_tick_act          (int a_leg, int a_tick, float *x, float *z, float *y)
+{
+   ++a_leg;
+   if (x      != NULL)  *x      = s_ticks [a_leg][a_tick].g_xpos;
+   if (z      != NULL)  *z      = s_ticks [a_leg][a_tick].g_zpos;
+   if (y      != NULL)  *y      = s_ticks [a_leg][a_tick].g_ypos;
+   return 0;
+}
+
+char
+yKINE_tick_opengl       (int a_leg, int a_tick, float x, float z, float y)
+{
+   ++a_leg;
+   s_ticks [a_leg][a_tick].g_xpos  = x;
+   s_ticks [a_leg][a_tick].g_zpos  = z;
+   s_ticks [a_leg][a_tick].g_ypos  = y;
+   x -= s_ticks [a_leg][a_tick].o_xpos;
+   z -= s_ticks [a_leg][a_tick].o_zpos;
+   y -= s_ticks [a_leg][a_tick].o_ypos;
+   s_ticks [a_leg][a_tick].g_error = sqrt ((x * x) + (z * z) + (y * y));
    return 0;
 }
 

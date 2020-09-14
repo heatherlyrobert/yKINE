@@ -551,32 +551,28 @@ ykine_exact_copy2adapt  (float a_sec, char a_leg, char a_meth, char a_rc)
 }
 
 char
-ykine_exact_fail2pure   (float a_sec, char a_leg, char a_meth, char a_rc, float a_x, float a_z, float a_y)
+ykine_exact_fail2pure   (float a_sec, char a_leg, char a_meth, char a_rc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    /*---(pull values)--------------------*/
    ykine_exact_clearwork (&g_pure);
    g_pure.sec = a_sec;
-   g_pure.ex  = a_x;
-   g_pure.ez  = a_z;
-   g_pure.ey  = a_y;
+   yKINE_endpoint  (a_leg, YKINE_TARG, a_meth, NULL         , NULL, &(g_pure.ex), &(g_pure.ez), &(g_pure.ey), NULL);
    g_pure.rc  = a_rc;
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char
-ykine_exact_fail2adapt  (float a_sec, char a_leg, char a_meth, char a_rc, float a_x, float a_z, float a_y)
+ykine_exact_fail2adapt  (float a_sec, char a_leg, char a_meth, char a_rc)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    /*---(pull values)--------------------*/
    ykine_exact_clearwork (&g_adapt);
    g_adapt.sec = a_sec;
-   g_adapt.ex  = a_x;
-   g_adapt.ez  = a_z;
-   g_adapt.ey  = a_y;
+   yKINE_endpoint  (a_leg, YKINE_TARG, a_meth, NULL         , NULL, &(g_adapt.ex), &(g_adapt.ez), &(g_adapt.ey), NULL);
    g_adapt.rc  = a_rc;
    /*---(complete)-----------------------*/
    return 0;

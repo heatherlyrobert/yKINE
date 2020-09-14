@@ -32,24 +32,21 @@
  *
  */
 
-#define     YKINE_N_DIR     '>'
-#define     YKINE_A_DIR     '}'
-#define     YKINE_N_RECT    's'
-#define     YKINE_A_RECT    'S'
-#define     YKINE_N_TRAP    'd'
-#define     YKINE_A_TRAP    'D'
-#define     YKINE_N_TRI     't'
-#define     YKINE_A_TRI     'T'
-#define     YKINE_N_PULL    'p'
-#define     YKINE_A_PULL    'P'
-#define     YKINE_N_HEX     'h'
-#define     YKINE_A_HEX     'H'
-#define     YKINE_N_ARC     'a'
-#define     YKINE_A_ARC     'A'
-#define     YKINE_N_BRID    'b'
-#define     YKINE_A_BRID    'B'
-#define     YKINE_N_CURV    'c'
-#define     YKINE_A_CURV    'C'
+#define     YKINE_DIRECT    '>'
+#define     YKINE_S_RECT    'r'
+#define     YKINE_R_RECT    'R'
+#define     YKINE_S_PARA    'p'
+#define     YKINE_R_PARA    'P'
+#define     YKINE_S_LOW     'l'
+#define     YKINE_R_LOW     'L'
+#define     YKINE_S_HEX     'h'
+#define     YKINE_R_HEX     'H'
+#define     YKINE_S_ARC     'a'
+#define     YKINE_R_ARC     'A'
+#define     YKINE_S_BRID    'b'
+#define     YKINE_R_BRID    'B'
+#define     YKINE_S_CURV    'c'
+#define     YKINE_R_CURV    'C'
 
 #define     MAX_SHAPE   30
 typedef struct cSHAPE tSHAPE;
@@ -61,24 +58,21 @@ static struct cSHAPE {
    char        desc        [LEN_DESC];
 };
 static tSHAPE      s_shapes    [MAX_SHAPE] = {
-   { YKINE_N_DIR    , "--", "nor_dire" , "normal, straight path"        , "most direct, space/vacuum"   , "directly from start to finish with no detours"                 },
-   { YKINE_A_DIR    , "a-", "acc_dire" , "accel, straight path"         , "most direct, space/vacuum"   , "directly from start to finish with no detours"                 },
-   { YKINE_N_RECT   , "ss", "nor_rect" , "normal, rectangular path"     , "mechanical, router-like"     , "straight up to max, flat/horizontal, straight down"            },
-   { YKINE_A_RECT   , "rs", "acc_rect" , "accel, retangular path"       , "mechanical, router-like"     , "straight up to max, flat/horizontal, straight down"            },
-   { YKINE_N_TRAP   , "sd", "nor_trap" , "normal, trapazoidal path"     , "mechanical, cautious path"   , "step straight up, incline/decline over, step straight down"    },
-   { YKINE_A_TRAP   , "rd", "acc_trap" , "accel, trapazoidal path"      , "mechanical, cautious path"   , "step straight up, incline/decline over, step straight down"    },
-   { YKINE_N_TRI    , "st", "nor_tri"  , "normal, triangular path"      , "quick obstacle avoidance"    , "direct to middle point at max height, direct back down"        },
-   { YKINE_A_TRI    , "rt", "acc_tri"  , "accel, triangular path"       , "quick obstacle avoidance"    , "direct to middle point at max height, direct back down"        },
-   { YKINE_N_PULL   , "pu", "nor_pull" , "normal, low hexagonal path"   , "rough terrain, obstacles"    , "step straight up, angle to middle/max, angle down, step down"  },
-   { YKINE_A_PULL   , "ap", "acc_pull" , "accel, low hexagonal path"    , "rough terrain, obstacles"    , "step straight up, angle to middle/max, angle down, step down"  },
-   { YKINE_N_HEX    , "hx", "nor_hex"  , "normal, high hexagonal path"  , "rough terrain, very cautious", "step straight up, angle to middle/max, angle down, step down"  },
-   { YKINE_A_HEX    , "ax", "acc_hex"  , "accel, high hexagonal path"   , "rough terrain, very cautious", "step straight up, angle to middle/max, angle down, step down"  },
-   { YKINE_N_ARC    , "ar", "nor_arc"  , "normal, low arcing path"      , "gentle, lazy spider"         , "gentle arcing motion from start to finish"                     },
-   { YKINE_A_ARC    , "aa", "acc_arc"  , "accel, low arcing path"       , "gentle, lazy spider"         , "gentle arcing motion from start to finish"                     },
-   { YKINE_N_BRID   , "br", "nor_brid" , "normal, moderate arcing path" , "quite spider-like path"      , "step straight up, gentle over, and down, step straight down"   },
-   { YKINE_A_BRID   , "ab", "acc_brid" , "accel, moderate arcing path"  , "quite spider-like path"      , "step straight up, gentle over, and down, step straight down"   },
-   { YKINE_N_CURV   , "cv", "nor_curv" , "normal, high arcing path"     , "cautious spider-like path"   , "step straight up, high over, and down, step straight down"     },
-   { YKINE_A_CURV   , "ac", "acc_curv" , "accel, high arcing path"      , "cautious spider-like path"   , "step straight up, high over, and down, step straight down"     },
+   { YKINE_DIRECT   , "--", "direct"   , "straight path"                , "most direct, space/vacuum"   , "directly from start to finish with no detours"                 },
+   { YKINE_S_RECT   , "sr", "sha_rect" , "sharp, rectangular path"      , "mechanical, router-like"     , "straight up to max, flat/horizontal, straight down"            },
+   { YKINE_R_RECT   , "rr", "rou_rect" , "round, retangular path"       , "mechanical, router-like"     , "straight up to max, flat/horizontal, straight down"            },
+   { YKINE_S_PARA   , "sp", "sha_para" , "sharp, parallegram path"      , "mechanical, cautious path"   , "step straight up, incline/decline over, step straight down"    },
+   { YKINE_R_PARA   , "rp", "rou_para" , "round, parallegram path"      , "mechanical, cautious path"   , "step straight up, incline/decline over, step straight down"    },
+   { YKINE_S_LOW    , "sl", "sha_low"  , "sharp, low hexagonal path"    , "rough terrain, obstacles"    , "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_R_LOW    , "rl", "rou_low"  , "round, low hexagonal path"    , "rough terrain, obstacles"    , "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_S_HEX    , "sh", "sha_hex"  , "sharp, high hexagonal path"   , "rough terrain, very cautious", "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_R_HEX    , "rh", "rou_hex"  , "round, high hexagonal path"   , "rough terrain, very cautious", "step straight up, angle to middle/max, angle down, step down"  },
+   { YKINE_S_ARC    , "sa", "sha_arc"  , "sharp, low arcing path"       , "gentle, lazy spider"         , "gentle arcing motion from start to finish"                     },
+   { YKINE_R_ARC    , "ra", "rou_arc"  , "round, low arcing path"       , "gentle, lazy spider"         , "gentle arcing motion from start to finish"                     },
+   { YKINE_S_BRID   , "sb", "sha_brid" , "sharp, moderate arcing path"  , "quite spider-like path"      , "step straight up, gentle over, and down, step straight down"   },
+   { YKINE_R_BRID   , "rb", "rou_brid" , "round, moderate arcing path"  , "quite spider-like path"      , "step straight up, gentle over, and down, step straight down"   },
+   { YKINE_S_CURV   , "sc", "sha_curv" , "sharp, high arcing path"      , "cautious spider-like path"   , "step straight up, high over, and down, step straight down"     },
+   { YKINE_R_CURV   , "rc", "rou_curv" , "round, high arcing path"      , "cautious spider-like path"   , "step straight up, high over, and down, step straight down"     },
    {  0             , "--", "end-list" , ""                                   , ""                                                     },
 };
 static int         s_nshape    = 0;
@@ -168,7 +162,7 @@ static void      o___PROGRAM_________________o (void) {;};
 char
 ykine_step__defaults    (void)
 {
-   s_cshape      = YKINE_N_DIR;
+   s_cshape      = YKINE_DIRECT;
    myKINE.step_s =   0;
    s_cheight     = 'z';
    myKINE.step_h = 0.0;
@@ -413,17 +407,17 @@ ykine_step_accels       (void)
    strlcpy (g_timing.a_plant , "", LEN_LABEL);
    if (g_timing.beats >= 0.0)  return 0;
    switch (s_cshape) {
-   case YKINE_N_DIR    :
+   case YKINE_DIRECT   :
       ykine_accel_make (g_timing.a_acceln, g_timing.a_exact, g_timing.a_speedn, g_timing.a_deceln, g_timing.a_middle);
       break;
-   case YKINE_N_RECT   : case YKINE_N_TRAP   :
+   case YKINE_S_RECT   : case YKINE_S_PARA   :
       x_end = ACCEL_TURTLE; /* speed limit through sharp corners  */
       if (g_timing.a_speedn < ACCEL_TURTLE)  x_end = g_timing.a_speedn;
       ykine_accel_make (g_timing.a_acceln, g_timing.a_exact, g_timing.a_speedn, x_end            , g_timing.a_raise );
       ykine_accel_make (x_end            , g_timing.a_exact, g_timing.a_speedn, x_end            , g_timing.a_middle);
       ykine_accel_make (x_end            , g_timing.a_exact, g_timing.a_speedn, g_timing.a_deceln, g_timing.a_plant );
       break;
-   case YKINE_A_RECT   : case YKINE_A_TRAP   :
+   case YKINE_R_RECT   : case YKINE_R_PARA   :
       x_end = ACCEL_MOD;  /* speed limit through curved corners  */
       if (g_timing.a_speedn < ACCEL_MOD)     x_end = g_timing.a_speedn;
       ykine_accel_make (g_timing.a_acceln, g_timing.a_exact, g_timing.a_speedn, x_end            , g_timing.a_raise );
@@ -476,13 +470,13 @@ ykine_step_raise       (char a_verb)
    g_end.ez   = g_beg.ez ;
    /*---(increase height)-------------*/
    switch (s_cshape) {
-   case YKINE_N_RECT  : case YKINE_A_RECT  :
+   case YKINE_S_RECT  : case YKINE_R_RECT  :
       DEBUG_YKINE_SCRP  yLOG_note    ("square handler");
       if (g_beg.ey  >= g_end.ey )  g_end.ey  = g_beg.ey  + myKINE.step_h;
       else                         g_end.ey  = g_end.ey  + myKINE.step_h;
       ye         = g_end.ey ;
       break;
-   case YKINE_N_TRAP  : case YKINE_A_TRAP  :
+   case YKINE_S_PARA  : case YKINE_R_PARA  :
       DEBUG_YKINE_SCRP  yLOG_note    ("direct handler");
       g_end.ey  = g_beg.ey  + myKINE.step_h;
       ye        = s_ye      + myKINE.step_h;
@@ -656,13 +650,13 @@ ykine_step_yshaper      (float a_xzlen, float a_pct, float *y)
    DEBUG_YKINE_SCRP   yLOG_complex ("args"      , "%6.1fxz, %6.3fp, %p", a_xzlen, a_pct, y);
    DEBUG_YKINE_SCRP   yLOG_char    ("cshape"    , s_cshape);
    switch (s_cshape) {
-   case YKINE_N_DIR    :
+   case YKINE_DIRECT   :
       DEBUG_YKINE_SCRP   yLOG_note    ("straight, nothing to do");
       break;
-   case YKINE_N_RECT   : case YKINE_N_TRAP   :
+   case YKINE_S_RECT   : case YKINE_S_PARA   :
       DEBUG_YKINE_SCRP   yLOG_note    ("sharp, nothing to do");
       break;
-   case YKINE_A_RECT   : case YKINE_A_TRAP   :
+   case YKINE_R_RECT   : case YKINE_R_PARA   :
       DEBUG_YKINE_SCRP   yLOG_note    ("rounded, calling handler");
       rc = ykine_step__rounded (a_xzlen, a_pct, y);
       break;
