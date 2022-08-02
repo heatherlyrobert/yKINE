@@ -132,9 +132,10 @@ yKINE_endpoint     (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    tSEG       *x_leg       = NULL;
    /*---(set the leg)--------------------*/
    switch (a_meth) {
-   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_PK : x_leg = ((tSEG *) pk) + (a_leg * YKINE_MAX_SEGS);  break;
    default        : return -1; break;
    }
    /*---(return actuals)-----------------*/
@@ -155,9 +156,10 @@ yKINE_segment      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    tSEG       *x_leg       = NULL;
    /*---(set the leg)--------------------*/
    switch (a_meth) {
-   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_PK : x_leg = ((tSEG *) pk) + (a_leg * YKINE_MAX_SEGS);  break;
    }
    /*---(return actuals)-----------------*/
    if (a_deg  != NULL)  *a_deg  = x_leg [a_seg].d;
@@ -177,9 +179,10 @@ yKINE_angle        (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_c
    tSEG       *x_leg       = NULL;
    /*---(set the leg)--------------------*/
    switch (a_meth) {
-   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_PK : x_leg = ((tSEG *) pk) + (a_leg * YKINE_MAX_SEGS);  break;
    }
    /*---(return actuals)-----------------*/
    if (a_deg  != NULL)  *a_deg  = x_leg [a_seg].d;
@@ -200,9 +203,10 @@ yKINE_enddiff      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    tSEG       *x_leg       = NULL;
    /*---(set the leg)--------------------*/
    switch (a_meth) {
-   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_PK : x_leg = ((tSEG *) pk) + (a_leg * YKINE_MAX_SEGS);  break;
    default        : return -1;
    }
    /*---(return actuals)-----------------*/
@@ -222,9 +226,10 @@ yKINE_segdiff      (char a_leg, char a_seg, int a_meth, float *a_deg, float *a_l
    tSEG       *x_leg       = NULL;
    /*---(set the leg)--------------------*/
    switch (a_meth) {
-   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_PK : x_leg = ((tSEG *) pk) + (a_leg * YKINE_MAX_SEGS);  break;
    default        : return -1;
    }
    /*---(return actuals)-----------------*/
@@ -244,9 +249,10 @@ yKINE_angles       (char a_leg, char a_meth, float *a_coxa, float *a_femu, float
    tSEG       *x_leg       = NULL;
    /*---(set the leg)--------------------*/
    switch (a_meth) {
-   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_FK : x_leg = ((tSEG *) fk) + (a_leg * YKINE_MAX_SEGS);  break;
    case  YKINE_IK : x_leg = ((tSEG *) ik) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_GK : x_leg = ((tSEG *) gk) + (a_leg * YKINE_MAX_SEGS);  break;
+   case  YKINE_PK : x_leg = ((tSEG *) pk) + (a_leg * YKINE_MAX_SEGS);  break;
    default        : return -1;
    }
    if (a_coxa != NULL)  *a_coxa = x_leg [YKINE_COXA].d;

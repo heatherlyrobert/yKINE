@@ -291,6 +291,7 @@
 #define     YKINE_FK         0
 #define     YKINE_IK         1
 #define     YKINE_GK         2
+#define     YKINE_PK         3
 /*---(specific)-----------------------*/
 #define     YKINE_TK         3
 #define     YKINE_CK         4
@@ -435,6 +436,7 @@ char        yKINE_forward           (char  a_leg, float a_femu, float a_pate, fl
 char        yKINE_inverse           (char  a_leg, float a_x, float a_z, float a_y);
 char        yKINE_adapt             (char  a_leg, float a_x, float a_z, float a_y);
 char        yKINE_opengl            (char  a_leg, char  a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len);
+char        yKINE_pure              (char  a_leg, char  a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len);
 
 float       yKINE_radius            (char *a_entry);
 float       yKINE_height            (char *a_entry);
@@ -492,7 +494,7 @@ char        yKINE_verify_rc         (int a_row, int a_col);
 
 char        yKINE_handlers          (void);
 char        yKINE_scrp_prepper      (char a_pass);
-char        yKINE_scrp_finisher     (char a_pass, float *a_len);
+char        yKINE_scrp_finisher     (char a_pass);
 
 char        yKINE_ticker            (int a_row, int a_col, char a_type, float *b, float *e, char *r);
 char        yKINE_tick_deg          (int a_leg, int a_tick, float *a_femu, float *a_pate, float *a_tibi);

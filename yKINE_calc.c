@@ -48,6 +48,7 @@ ykine__setleg      (int a_num, int a_meth)
    case YKINE_FK :  s_leg = ((tSEG *) fk) + (a_num * YKINE_MAX_SEGS);  break;
    case YKINE_IK :  s_leg = ((tSEG *) ik) + (a_num * YKINE_MAX_SEGS);  break;
    case YKINE_GK :  s_leg = ((tSEG *) gk) + (a_num * YKINE_MAX_SEGS);  break;
+   case YKINE_PK :  s_leg = ((tSEG *) pk) + (a_num * YKINE_MAX_SEGS);  break;
    default       :
                     DEBUG_YKINE_CALC   yLOG_snote   ("meth not legal");
                     DEBUG_YKINE_CALC   yLOG_sexitr  (__FUNCTION__, rce);
@@ -1003,7 +1004,7 @@ ykine__IK_tibi     (void)
 static void      o___OPENGL__________________o (void) {;};
 
 char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
-yKINE_opengl       (char a_leg, char a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
+ykine_save_value   (char a_meth, char a_leg, char a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
 {
    /*---(locals)-----------+-----------+-*/
    double      x_len       = 0.0;
@@ -1014,7 +1015,7 @@ yKINE_opengl       (char a_leg, char a_seg, float a_deg, float a_x, float a_z, f
    /*---(header)-------------------------*/
    DEBUG_YKINE_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   ykine__setleg   (a_leg, YKINE_GK);
+   ykine__setleg   (a_leg, a_meth);
    /*---(target setting)-----------------*/
    DEBUG_YKINE_CALC   yLOG_complex ("object"    , "%1dl (%2.2s), %2ds (%4.4s), %8.3lfd", a_leg, g_leg_data [a_leg].caps, a_seg, g_seg_data [a_seg].four, a_deg);
    /*---(set cumulatives)----------------*/
@@ -1058,6 +1059,18 @@ yKINE_opengl       (char a_leg, char a_seg, float a_deg, float a_x, float a_z, f
    /*---(complete)-----------------------*/
    DEBUG_YKINE_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
+yKINE_opengl       (char a_leg, char a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
+{
+   return ykine_save_value (YKINE_GK, a_leg, a_seg, a_deg, a_x, a_z, a_y, a_len);
+}
+
+char         /*--> set the opengl actual values ----------[ ------ [ ------ ]-*/
+yKINE_pure         (char a_leg, char a_seg, float a_deg, float a_x, float a_z, float a_y, float a_len)
+{
+   return ykine_save_value (YKINE_PK, a_leg, a_seg, a_deg, a_x, a_z, a_y, a_len);
 }
 
 
@@ -1184,6 +1197,7 @@ ykine_calc__unit        (char *a_question, int a_num)
       case YKINE_FK : strlcpy (t, "FK", LEN_TERSE);   break;
       case YKINE_IK : strlcpy (t, "IK", LEN_TERSE);   break;
       case YKINE_GK : strlcpy (t, "GK", LEN_TERSE);   break;
+      case YKINE_PK : strlcpy (t, "PK", LEN_TERSE);   break;
       default       : strlcpy (t, "--", LEN_TERSE);   break;
       }
       if (s_leg != NULL)  sprintf (ykine__unit_answer, "CALC set         : SET   leg %2d %-2.2s   seg %2d %-4.4s   meth %1d %-2.2s", s_leg->leg, yKINE_legcaps (s_leg->leg), s_leg->seg, yKINE_segfour (s_leg->seg), s_meth, t);

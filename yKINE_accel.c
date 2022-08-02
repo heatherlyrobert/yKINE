@@ -34,7 +34,7 @@
  *
  *     4) decel/finish
  *        ]         end at zero
- *        <         finsh at, and assume next action starts close to, max speed
+ *        >         finsh at, and assume next action starts close to, max speed
  *        tsmfx     end at specific speed, assume next action can use this
  *
  *

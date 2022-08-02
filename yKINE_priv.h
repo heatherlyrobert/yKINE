@@ -7,32 +7,33 @@
 
 #define     P_FOCUS     "RO (robotics)"
 #define     P_NICHE     "hx (hexapoda)"
+#define     P_SUBJECT   "wicked spider kinematics"
 #define     P_PURPOSE   "shared, consistent, and reliable spider kinematics/scripting"
-
-#define     P_EXECUTE   "libyKINE.so"
-#define     P_FULLPATH  "/usr/local/lib64/libyKINE.so"
-#define     P_ONELINE   "typhoeus-terrigena (earth-born) wicked spider kinematics"
-
-#define     P_SUFFIX    "arac"
-#define     P_CONTENT   "spider movement script"
 
 #define     P_NAMESAKE  "typhoeus-terrigena (earth-born)"
 #define     P_HERITAGE  "most fearsome greek monster, last son of gaia and tartarus"
 #define     P_IMAGERY   "winged, one-hundred dragon heads, legions of viper coil tentacles"
-#define     P_REASON    "king of monsters to synchronize hundreds of limbs, sensors, and devices"
+#define     P_REASON    "king of monsters to synchronize myriad limbs, sensors, and devices"
+
+#define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
+
+#define     P_BASENAME  "libyKINE.so"
+#define     P_FULLPATH  "/usr/local/lib64/libyKINE.so"
+#define     P_SUFFIX    "arac"
+#define     P_CONTENT   "spider movement script"
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
 #define     P_CODESIZE  "small       (appoximately 10,000 slocl)"
+#define     P_DEPENDS   "none"
 
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2009-07"
-#define     P_DEPENDS   "none"
 
 #define     P_VERMAJOR  "1.--, working and advancing"
 #define     P_VERMINOR  "1.3-, prepare basics for demonstration"
-#define     P_VERNUM    "1.3g"
-#define     P_VERTXT    "ticker working, accessors in place, and supporting arachne properly"
+#define     P_VERNUM    "1.3h"
+#define     P_VERTXT    "turtle back and working nicely ;)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -41,6 +42,23 @@
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 /*===[[ END_HEADER ]]=========================================================*/
 
+
+/*
+ *
+ *  metis § ----- § update project report with stats, header, and header fields
+ *
+ *  metis § ----- § file report with names and statistics
+ *
+ *  metis § ----- § prototype data collection and updates
+ *
+ *  metis § ----- § function header update logic
+ *
+ *  metis § ----- § file scraping c-std and ylib files for functions/macros
+ *
+ *
+ *
+ *
+ */
 
 /*===[[ SUMMARY ]]============================================================*/
 
@@ -67,6 +85,7 @@
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
 #include    <yPARSE.h>       /* CUSTOM  heatherly record parsing/queuing      */
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
+#include    <yKEYS.h>        /* CUSTOM  keeps progress data                   */
 
 
 
@@ -337,9 +356,10 @@ struct cSEG {
    char      p;                   /* planted y/n?                             */
    char      rc;                  /* kinematics status : r = no, 1 = yes      */
 };
-extern    tSEG      gk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* opengl kinematics check   */
 extern    tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinematics        */
 extern    tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinematics        */
+extern    tSEG      gk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* opengl kinematics check   */
+extern    tSEG      pk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* pure endpoint             */
 
 
 typedef struct cTIMING tTIMING;
@@ -507,54 +527,54 @@ char        ykine_hint_final        (float a_sec);
 char        ykine_hint_reset        (void);
 char        ykine_hint_wrap         (void);
 char        ykine_hint__new         (char *a_verb, int a_line, char *a_label, float a_sec);
-char        ykine_scrp_section      (int n, char *v);
+char        ykine_scrp_section      (int n, uchar *a_verb);
 
 char        ykine_body_ze_getter    (char *x_str, char *z_str, char *y_str, float *x, float *z, float *y);
 char        ykine_body_xz2po        (float a_xpos, float a_zpos, float *a_deg, float *a_len);
 char        ykine_body_po2xz        (float a_deg, float a_len, float *a_xpos, float *a_zpos);
 char        ykine_body_po_getter    (char *d_str, char *o_str, char *y_str, float *x, float *z, float *y);
-char        ykine_body_zero         (int n, char *v);
-char        ykine_body_polar        (int n, char *v);
+char        ykine_body_zero         (int n, uchar *a_verb);
+char        ykine_body_polar        (int n, uchar *a_verb);
 char        ykine_body_orient_valid (float y, float p, float r);
 char        ykine_body_ypr2xzy      (float a_yaw, float a_pitch, float a_roll, float *a_x, float *a_z, float *a_y, float *a_l);
-char        ykine_body_orient       (int n, char *v);
+char        ykine_body_orient       (int n, uchar *a_verb);
 char        ykine_body_pr2ti        (float p, float r, float *d, float *t);
 char        ykine_body_ti2pr        (float d, float t, float *p, float *r);
-char        ykine_body_tilt         (int n, char *v);
+char        ykine_body_tilt         (int n, uchar *a_verb);
 
 /*---(forward)------------------------*/
-char        ykine_legs_fk           (int n, char *v);
+char        ykine_legs_fk           (int n, uchar *a_verb);
 /*---(inverse)------------------------*/
-char        ykine_legs_ik           (int n, char *v);
+char        ykine_legs_ik           (int n, uchar *a_verb);
 /*---(relative)-----------------------*/
 char        ykine_legs_ik2rk        (float a_coxa, float x, float z, float *d, float *o);
 char        ykine_legs_rk2ik        (float a_coxa, float d, float o, float *x, float *z);
-char        ykine_legs_rk           (int n, char *v);
+char        ykine_legs_rk           (int n, uchar *a_verb);
 /*---(center)-------------------------*/
 char        ykine_legs_ik2ck        (float a_coxa, float x, float z, float *d, float *o);
 char        ykine_legs_ck2ik        (float a_coxa, float d, float o, float *x, float *z);
-char        ykine_legs_ck           (int n, char *v);
+char        ykine_legs_ck           (int n, uchar *a_verb);
 /*---(tangent)------------------------*/
 char        ykine_legs_tk_dist      (float *l);
 char        ykine_legs_tk_exact     (float p);
 char        ykine_legs_ik2tk        (float a_coxa, float x, float z, float *o, float *t);
 char        ykine_legs_tk2ik        (float a_coxa, float o, float t, float *x, float *z);
-char        ykine_legs_tk           (int n, char *v);
+char        ykine_legs_tk           (int n, uchar *a_verb);
 /*---(neighborhood)-------------------*/
 char        ykine_legs_ik2nk        (float a_coxa, float x, float z, float *nx, float *nz);
 char        ykine_legs_nk2ik        (float a_coxa, float nx, float nz, float *x, float *z);
-char        ykine_legs_nk           (int n, char *v);
+char        ykine_legs_nk           (int n, uchar *a_verb);
 /*---(step)---------------------------*/
 char        ykine_legs_ik2sk        (float a_coxa, float x, float z, float *d, float *o);
 char        ykine_legs_sk2ik        (float a_coxa, float d, float o, float *x, float *z);
-char        ykine_legs_sk           (int n, char *v);
+char        ykine_legs_sk           (int n, uchar *a_verb);
 /*---(step)---------------------------*/
 
 
-char        ykine_scrp_segno        (int n, char *v);
-char        ykine_scrp_repeat       (int n, char *v);
+char        ykine_scrp_segno        (int n, uchar *a_verb);
+char        ykine_scrp_repeat       (int n, uchar *a_verb);
 char        ykine_scrp_exec         (void);
-char        ykine_scrp_miss         (int n, char *v);
+char        ykine_scrp_miss         (int n, uchar *a_verb);
 
 
 char        ykine_servo_purge       (void);
@@ -615,8 +635,8 @@ char        ykine_move_savedprev    (tMOVE  *a_move , float *a_sec, float *a_deg
 char        ykine_move_curdata      (double *a_x, double *a_z, double *a_y);
 char*       ykine__unit_move        (char *a_question, int a_leg, int a_seg, int a_move);
 
-char        ykine_gait_beg          (int n, char *v);
-char        ykine_gait_end          (int n, char *v);
+char        ykine_gait_beg          (int n, uchar *a_verb);
+char        ykine_gait_end          (int n, uchar *a_verb);
 
 char        ykine_scrp_walk         (int   a_repeats);
 char        ykine_scrp_turn         (int   a_repeats);
@@ -626,6 +646,7 @@ char        ykine_scrp_turn         (int   a_repeats);
 /*===[[ YKINE_queue.c ]]======================================================*/
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
 char        ykine_scrp_by_code      (char a_code, char *a_terse, char *a_name, char *a_desc);
+char        ykine_scrp_by_terse     (char *a_terse, char *a_code, char *a_name, char *a_desc);
 char        ykine_scrp_popverb      (int n, uchar *a_verb, char a_exist, void *a_handler);
 char        ykine_scrp_popservo     (void);
 char        ykine_servo_list        (char *a_which);
@@ -636,20 +657,21 @@ char        ykine_servo_list        (char *a_which);
 /*---1----- -----2----- -----3----- -----4-----  ---------comments------------*/
 char        ykine_turtle_init       (void);
 char        ykine_turtle__last      (void);
-char        ykine_turtle_speed      (int n, char *v);
-char        ykine_turtle_wait       (int n, char *v);
-char        ykine_turtle_home       (int n, char *v);
-char        ykine_turtle_move       (int n, char *v);
-char        ykine_turtle_goto       (int n, char *v);
-char        ykine_turtle_head       (int n, char *v);
-char        ykine_turtle_turn       (int n, char *v);
-char        ykine_turtle_raise      (int n, char *v);
-char        ykine_turtle_lower      (int n, char *v);
-char        ykine_turtle_depth      (int n, char *v);
+char        ykine_turtle_speed      (int n, uchar *a_verb);
+char        ykine_turtle_wait       (int n, uchar *a_verb);
+char        ykine_turtle_home       (int n, uchar *a_verb);
+char        ykine_turtle_move       (int n, uchar *a_verb);
+char        ykine_turtle_goto       (int n, uchar *a_verb);
+char        ykine_turtle_head       (int n, uchar *a_verb);
+char        ykine_turtle_turn       (int n, uchar *a_verb);
+char        ykine_turtle_raise      (int n, uchar *a_verb);
+char        ykine_turtle_lower      (int n, uchar *a_verb);
+char        ykine_turtle_depth      (int n, uchar *a_verb);
 char*       ykine_turtle__unit      (char *a_question, int a_num);
 
 
 
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        ykine_stance_spread     (char a_leg, double a_start, char *a_entry, double *a_result);
 char        ykine_stance_radius     (double a_start, char *a_entry, double *a_result);
 char        ykine_stance_radius_head (int *n, char *a_short);
@@ -660,7 +682,7 @@ char        ykine_stance_height_next (int *n, char *a_short);
 char        ykine_stance_scale      (double a_start, char *a_entry, double *a_result);
 char        ykine_stance_scale_head  (int *n, char *a_short);
 char        ykine_stance_scale_next  (int *n, char *a_short);
-char        ykine_stance            (int n, char *v);
+char        ykine_stance            (int n, uchar *a_verb);
 char        ykine_stance_verify     (void);
 char        ykine__neighbors        (float a_x, float a_z, int a_col, int a_row);
 

@@ -224,7 +224,7 @@ ykine_tick_fill         (char a_leg, float a_beg, float a_end)
    char        x_adapt     =    0;
    /*---(header)-------------------------*/
    DEBUG_YKINE_TICK  yLOG_enter   (__FUNCTION__);
-   DEBUG_YKINE_TICK  yLOG_complex ("args"      , "%2d leg, %6.1f beg to %6.1f eng", a_leg, a_beg, a_end);
+   DEBUG_YKINE_TICK  yLOG_complex ("args"      , "%2d leg, %6.1f beg to %6.1f end", a_leg, a_beg, a_end);
    /*---(prepare)------------------------*/
    /*> x_beg = g_beg.sec * 10.0;  /+   * my.p_scale;         +/                       <* 
     *> x_end = g_end.sec * 10.0;  /+   * my.p_scale;         +/                       <*/
@@ -372,14 +372,12 @@ yKINE_ticker            (int a_row, int a_col, char a_type, float *b, float *e, 
    }
    /*---(return code)--------------------*/
    switch (a_type) {
-   case 'F' : case 'X' :
+   case 'F' : case 'P' : case 'T' :
+   case 'X' : case 'Z' : case 'Y' :
       *r = s_ticks [a_row][a_col + 1].rc_pure;
       break;
-   case 'f' : case 'x' :
-      *r = s_ticks [a_row][a_col + 1].rc_adapt;
-      break;
    default  :
-      *r = 0;
+      *r = s_ticks [a_row][a_col + 1].rc_adapt;
       break;
    }
    /*---(complete)-----------------------*/

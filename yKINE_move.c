@@ -415,7 +415,7 @@ ykine_move_add_adapt       (tSERVO *a_servo, char a_rc, float a_deg, float a_xpo
 }
 
 char
-ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
+ykine_move__repeatnote_OLD (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
 {
    /*---(locals)-----------+-----------+-*/
    char        x_label     [LEN_LABEL];
@@ -466,6 +466,29 @@ ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
    return 0;
 }
 
+char
+ykine_move__repeatnote (tSERVO *a_servo, int a_nline, int a_count, int a_segno)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        x_label     [LEN_LABEL];
+   float       d, x, z, y;
+   char        PURE_RC     =    0;
+   /*---(labels)-------------------------*/
+   if (a_count >= 0) {
+      sprintf (x_label, "repeat %d,%d", a_segno, a_count + 1);
+      DEBUG_YKINE_MOVE   yLOG_info    ("RIPETERE"  , x_label);
+   } else {
+      sprintf (x_label, "taeper %d", a_segno);
+      DEBUG_YKINE_MOVE   yLOG_note    ("ERETEPIR to be created");
+   }
+   /*---(moves)--------------------------*/
+   ykine_scrp_prev   (a_servo->tail, &d, &x, &z, &y);
+   ykine_move_create (a_servo, YKINE_NOTE, YKINE_REPT, a_nline, x_label, '-', YKINE_NONE, 0.0);
+   ykine_move_add_pure (a_servo, PURE_RC, 0.0, x, z, y);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
 char         /*--> repeat from the last segno ------------[ ------ [ ------ ]-*/
 ykine_move_repeat      (tSERVO *a_servo, int a_times)
 {
@@ -510,6 +533,7 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
    DEBUG_YKINE_MOVE   yLOG_complex ("x_end"     , "%3d, %3d, %s", x_end->seq, x_end->line, x_end->label);
    /*---(find segno)---------------------*/
    x_seg  = a_servo->segni [a_servo->nsegno];
+   DEBUG_YKINE_MOVE   yLOG_complex ("segno"     , "%3d, %3d, %s", x_seg->seq, x_seg->line, x_seg->label);
    --rce;  if (x_seg == NULL) {
       DEBUG_YKINE_MOVE   yLOG_note    ("bad segni at current position in stack");
       ykine_move_delete (&x_end);
@@ -527,13 +551,21 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
    /*---(find beg)-----------------------*/
    x_beg = x_seg->s_next;
    DEBUG_YKINE_MOVE   yLOG_complex ("x_beg"     , "%3d, %3d, %s", x_beg->seq, x_beg->line, x_beg->label);
+   /*---(verify)-------------------------*/
+   x_curr = x_beg;
+   DEBUG_YKINE_MOVE   yLOG_note    ("VERIFY MOVES TO INCLUDE");
+   while (x_curr != NULL) {
+      DEBUG_YKINE_MOVE   yLOG_complex ("x_curr"    , "%x, %3d, %3d", x_curr, x_curr->seq, x_curr->line);
+      x_curr = x_curr->s_next;
+      if (x_curr == x_end)  break;
+   }
    /*---(add)----------------------------*/
    for (i = 0; i < a_times; ++i) {
       ykine_move__repeatnote (a_servo, x_line, i, x_seg->seq);
       a_servo->tail->other = x_seg->seq;
       x_curr = x_beg;
+      DEBUG_YKINE_MOVE   yLOG_complex ("x_curr (b)", "%x, %3d, %3d", x_curr, x_curr->seq, x_curr->line);
       while (x_curr != NULL) {
-         DEBUG_YKINE_MOVE   yLOG_value   ("line"      , x_curr->line);
          if (x_curr->type != YKINE_NOTE) {
             strlcpy (x_label, a_servo->label, 3);
             DEBUG_YKINE_MOVE   yLOG_info    ("x_label"   , x_label);
@@ -544,7 +576,9 @@ ykine_move_repeat      (tSERVO *a_servo, int a_times)
             DEBUG_YKINE_MOVE   yLOG_value   ("exec"      , rc);
          }
          if (x_curr == x_end)  break;
+         DEBUG_YKINE_MOVE   yLOG_complex ("x_curr (b)", "%x, %3d, %3d", x_curr, x_curr->seq, x_curr->line);
          x_curr = x_curr->s_next;
+         DEBUG_YKINE_MOVE   yLOG_complex ("x_curr (n)", "%x, %3d, %3d", x_curr, x_curr->seq, x_curr->line);
       }
    }
    ykine_move__repeatnote (a_servo, x_line, -1, x_seg->seq);
@@ -844,7 +878,7 @@ ykine__exact_data        (tSERVO *a_servo, float a_sec)
    if (x_range == 0.0)  x_pct   = 0.0;
    else                 x_pct   = (a_sec - sp) / x_range;
    DEBUG_YKINE_EXACT  yLOG_complex ("percent"   , "%8.2fb, %8.2fe, %8.2fr, %8.2fp", sp, sc, x_range, x_pct);
-   ykine_exact_calc ('-', dp, dc, x_pct, &(a_servo->deg));
+   ykine_exact_calc ('d', dp, dc, x_pct, &(a_servo->deg));
    DEBUG_YKINE_EXACT  yLOG_complex ("degrees"   , "%8.2fb, %8.2fe, %8.2fc", dp, dc, a_servo->deg);
    ykine_exact_calc ('-', yp, yc, x_pct, &(a_servo->yexp));
    if (strncmp (x_curr->label, "zp_", 3) == 0) {
@@ -1077,6 +1111,7 @@ yKINE_move_rpt     (void)
    char        x_prefix    [LEN_LABEL];
    char        t           [LEN_LABEL];
    char        x_verb      [LEN_LABEL];
+   char        x_turtle    =  '-';
    printf ("yKINE scripting report of all servo moves\n");
    printf ("\n");
    for (i = 0; i < g_nservo; ++i) {
@@ -1092,21 +1127,28 @@ yKINE_move_rpt     (void)
          if (x_count %  5 == 0)  printf ("\n");
          /*---(indents)------------------*/
          strlcpy (x_prefix, "", LEN_LABEL);
-         ykine_scrp_by_code (x_move->verb, t, NULL, NULL);
-         if (strcmp (t, "segno") == 0) {
-            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "  ", LEN_LABEL);
-            ++x_level;
-         } else if (strncmp (t, "ripetere ", 9) == 0) {
-            --x_level;
-            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "  ", LEN_LABEL);
-            ++x_level;
-         } else if (strcmp (t, "eretepir") == 0) {
-            --x_level;
-            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "  ", LEN_LABEL);
-         } else {
-            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "  ", LEN_LABEL);
+         ykine_scrp_by_code (x_move->verb, NULL, t, NULL);
+         x_turtle = '-';
+         if (strcmp (t, "zero") == 0 || strcmp (t, "turn") == 0 || strcmp (t, "head") == 0)  {
+            if (strcmp (x_move->label, ""      ) != 0) {
+               strlcpy (t, "turtle"     , LEN_LABEL);
+               x_turtle = 'y';
+            }
          }
-         sprintf (x_verb, "%s%2d %s", x_prefix, x_move->verb, t);
+         if (strcmp (t, "segno") == 0) {
+            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "´·", LEN_LABEL);
+            ++x_level;
+         } else if (strncmp (x_move->label, "taeper", 6) == 0) {
+            --x_level;
+            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "´·", LEN_LABEL);
+         } else if (strcmp (t, "ripetere") == 0) {
+            --x_level;
+            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "´·", LEN_LABEL);
+            ++x_level;
+         } else {
+            for (j = 0; j < x_level; ++j)   strlcat (x_prefix, "´·", LEN_LABEL);
+         }
+         sprintf (x_verb, "%s%s", x_prefix, t);
          /*---(keys)---------------------*/
          printf ("   %4d  %c  %-15.15s  %-15.15s  %4d  %c",
                x_move->seq, x_move->type, x_verb, x_move->label,
@@ -1120,7 +1162,8 @@ yKINE_move_rpt     (void)
          printf ("   ");
          if (x_move->pure_rc   == 0.0) printf ("    --");
          else                          printf ("  %4d"     , x_move->pure_rc);
-         if (x_move->pure_d    == 0.0) printf ("      -.--");
+         if (x_turtle          == 'y') printf ("  %8.2lf"  , x_move->pure_d);
+         else if (x_move->pure_d == 0.0) printf ("      -.--");
          else                          printf ("  %8.2lf"  , x_move->pure_d);
          if (x_move->pure_x    == 0.0) printf ("      -.--");
          else                          printf ("  %8.2lf"  , x_move->pure_x);

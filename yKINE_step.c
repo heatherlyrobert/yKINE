@@ -141,12 +141,13 @@ tSEQ        s_seqs      [MAX_SEQ] = {
    { 'S', "r.spiral"       , "5.4.3.2.1.0" , 6, { 5, 4, 3, 2, 1, 0 }, 0.34, "rolling left to right"        },
    { 'r', "ripple"         , "0.3.1.4.2.5" , 6, { 0, 2, 4, 1, 3, 5 }, 0.34, "back and forth opposing legs" },
    { 'R', "r.ripple"       , "5.2.4.1.3.0" , 6, { 5, 3, 1, 4, 2, 0 }, 0.34, "back and forth opposing legs" },
-   { 'a', "alternate"      , "0.2.4.1.5.5" , 6, { 0, 3, 1, 4, 2, 5 }, 0.34, "triple sequence"              },
+   { 'a', "alternate"      , "0.2.4.1.3.5" , 6, { 0, 3, 1, 4, 2, 5 }, 0.34, "triple sequence"              },
    { 'A', "r.alternate"    , "5.3.1.4.2.0" , 6, { 5, 2, 4, 1, 3, 0 }, 0.34, "triple sequence"              },
    { 'd', "double"         , "03.14.25"    , 3, { 0, 1, 2, 0, 1, 2 }, 1.00, "synchronize opposing pairs"   },
    { 'D', "r.double"       , "25.14.03"    , 3, { 2, 1, 0, 2, 1, 0 }, 1.00, "synchronize opposing pairs"   },
    { 't', "triple"         , "024.135"     , 2, { 0, 1, 0, 1, 0, 1 }, 1.00, "alternating triangles"        },
    { 'T', "r.triple"       , "135.024"     , 2, { 1, 0, 1, 0, 1, 0 }, 1.00, "alternating triangles"        },
+   { 'e', "every"          , "012345"      , 1, { 0, 0, 0, 0, 0, 0 }, 1.00, "all at the same time"         },
    {  0 , "end-list"       , ""                                                   },
 };
 int         s_nseq      = 0;

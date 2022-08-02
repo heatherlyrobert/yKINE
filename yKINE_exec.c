@@ -554,11 +554,11 @@ ykine_exec_driver       (int a_line, uchar *a_verb, char a_code)
       /*---(inverse kinematics)----------*/
       rc = ykine_exec__endpoint (a_code, x_leg);
       /*---(if step, create raise)-------*/
-      rc = ykine_accel_reset (x_leg);
-      rc = ykine_step_wait   (a_code, x_leg);
-      rc = ykine_step_raise  (a_code);
+      rc = ykine_accel_reset    (x_leg);
+      rc = ykine_step_wait      (a_code, x_leg);
+      rc = ykine_step_raise     (a_code);
       /*---(get distance)----------------*/
-      ykine_exact_dist_route (a_code);
+      ykine_exact_dist_route    (a_code);
       DEBUG_YKINE_SCRP  yLOG_double  ("distance"  , g_end.len);
       /*---(process moves)---------------*/
       DEBUG_YKINE_SCRP   yLOG_complex ("beg"       , "%6.1fx, %6.1fz, %6.1fy", g_beg.ex , g_beg.ez , g_beg.ey );
@@ -567,9 +567,9 @@ ykine_exec_driver       (int a_line, uchar *a_verb, char a_code)
       if (g_timing.beats >= 0)  ykine_accel_immediate (a_code, x_pure, x_leg, g_timing.beats    , x_label);
       else                      ykine_accel_append    (a_code, 'm', g_timing.a_middle);
       /*---(if step, create plant)-------*/
-      rc = ykine_step_plant    (a_code);
-      rc = ykine_accel_execute (x_label);
-      rc = ykine_step_fill   (a_code, x_leg);
+      rc = ykine_step_plant     (a_code);
+      rc = ykine_accel_execute  (x_label);
+      rc = ykine_step_fill      (a_code, x_leg);
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/

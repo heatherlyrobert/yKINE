@@ -414,8 +414,8 @@ ykine_gait__update      (char a_scrp, char a_count)
 /*====================------------------------------------====================*/
 static void      o___COMPLEX_________________o (void) {;}
 
-char ykine_gait_beg      (int n, char *v) { ykine_gait__begin    ('y');    }
-char ykine_gait_end      (int n, char *v) { ykine_gait__update   ('y', 0); }
+char ykine_gait_beg      (int n, uchar *a_verb) { ykine_gait__begin    ('y');    }
+char ykine_gait_end      (int n, uchar *a_verb) { ykine_gait__update   ('y', 0); }
 
 
 /*> char      /+--> walking ---------------------------[--------[--------]-+/                                 <* 

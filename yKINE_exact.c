@@ -24,26 +24,59 @@ ykine_exact_calc        (char a_type, float a_beg, float a_end, float a_pct, flo
    double      x_inc       = 0.0;
    /*---(defenses)-----------------------*/
    --rce;  if (a_cur == NULL)     return rce;
+   DEBUG_YKINE   yLOG_senter  (__FUNCTION__);
+   DEBUG_YKINE   yLOG_schar   (a_type);
    /*---(fix degree range)---------------*/
+   /*> if (a_type == 'd') {                                                           <* 
+    *>    while (a_beg > a_end)    a_end = 360.0 + a_end;                             <* 
+    *> }                                                                              <*/
+   DEBUG_YKINE   yLOG_sdouble (a_beg);
+   DEBUG_YKINE   yLOG_sdouble (a_end);
+   x_range = a_end - a_beg;
+   DEBUG_YKINE   yLOG_sdouble (x_range);
    if (a_type == 'd') {
-      while (a_beg > a_end)    a_end = 360.0 + a_end;
+      if (a_end <= 0.0 && a_beg <= 0.0)  {
+         ;;
+      }
+      else if (a_end >= 0.0 && a_beg >= 0.0)  {
+         ;;
+      }
+      else if (a_end > a_beg && x_range > 180.0) {
+         if (a_beg < 0.0)  a_beg += 360;
+         if (a_end < 0.0)  a_end += 360;
+      }
+      else if (a_end < a_beg && x_range < -180.0) {
+         if (a_beg < 0.0)  a_beg += 360;
+         if (a_end < 0.0)  a_end += 360;
+      }
+      DEBUG_YKINE   yLOG_sdouble (a_beg);
+      DEBUG_YKINE   yLOG_sdouble (a_end);
    }
    /*---(calculate)----------------------*/
    if (a_beg <= a_end) {
+      DEBUG_YKINE   yLOG_snote   ("pos move");
       x_range = a_end - a_beg;
       x_inc   = x_range * a_pct;
       *a_cur  = a_beg + x_inc;
    } else {
+      DEBUG_YKINE   yLOG_snote   ("neg move");
       x_range = a_beg - a_end;
       x_inc   = x_range * a_pct;
       *a_cur  = a_beg - x_inc;
    }
    /*---(limits on degrees)--------------*/
+   /*> if (a_type == 'd') {                                                           <* 
+    *>    while (*a_cur <    0.0)   *a_cur  = 360.0 + *a_cur;                         <* 
+    *>    while (*a_cur >  360.0)   *a_cur  = *a_cur - 360.0;                         <* 
+    *> }                                                                              <*/
+   DEBUG_YKINE   yLOG_sdouble (*a_cur);
    if (a_type == 'd') {
-      while (*a_cur <    0.0)   *a_cur  = 360.0 + *a_cur;
-      while (*a_cur >  360.0)   *a_cur  = *a_cur - 360.0;
+      while (*a_cur <= -180.0)   *a_cur  = 360.0 + *a_cur;
+      while (*a_cur >   180.0)   *a_cur  = *a_cur - 360.0;
+      DEBUG_YKINE   yLOG_sdouble (*a_cur);
    }
    /*---(complete)-----------------------*/
+   DEBUG_YKINE   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -195,11 +228,12 @@ ykine_exact_pct_xzy     (float a_pct)
    ykine_exact_calc ('-', g_beg.ex , g_end.ex , a_pct, &g_cur.ex );
    ykine_exact_calc ('-', g_beg.ez , g_end.ez , a_pct, &g_cur.ez );
    ykine_exact_calc ('-', g_beg.ey , g_end.ey , a_pct, &g_cur.ey );
-   ykine_exact_calc ('-', g_beg.fd , g_end.fd , a_pct, &g_cur.fd );
-   ykine_exact_calc ('-', g_beg.pd , g_end.pd , a_pct, &g_cur.pd );
-   ykine_exact_calc ('-', g_beg.td , g_end.td , a_pct, &g_cur.td );
+   g_cur.cd = g_beg.cd;
+   ykine_exact_calc ('d', g_beg.fd , g_end.fd , a_pct, &g_cur.fd );
+   ykine_exact_calc ('d', g_beg.pd , g_end.pd , a_pct, &g_cur.pd );
+   ykine_exact_calc ('d', g_beg.td , g_end.td , a_pct, &g_cur.td );
    DEBUG_YKINE   yLOG_complex ("linear"    , "%8.2fx, %8.2fz, %8.2fy", g_cur.ex , g_cur.ez , g_cur.ey );
-   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2ff, %8.2fp, %8.2ft", g_cur.fd , g_cur.pd , g_cur.td );
+   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2fc, %8.2ff, %8.2fp, %8.2ft", g_cur.cd, g_cur.fd , g_cur.pd , g_cur.td );
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -209,6 +243,7 @@ ykine_exact_pct_doy     (char a_verb, float a_pct)
 {
    myKINE.pct = a_pct;
    ykine_exact_calc ('-', g_beg.sec, g_end.sec, a_pct, &g_cur.sec);
+   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2fc, %8.2ff, %8.2fp, %8.2ft", g_cur.cd, g_cur.fd , g_cur.pd , g_cur.td );
    switch (a_verb) {
    case YKINE_PO :
       DEBUG_YKINE   yLOG_note    ("zero polar kinematics");
@@ -231,12 +266,13 @@ ykine_exact_pct_doy     (char a_verb, float a_pct)
       ykine_legs_ik2sk (g_cur.cd , g_end.ex , g_end.ez , &g_end.deg, &g_end.out);
       break;
    }
-   DEBUG_YKINE   yLOG_complex ("begin"     , "%8.2fx, %8.2fz, %8.2fd, %8.2fo", g_beg.ex , g_beg.ex , g_beg.deg, g_beg.out);
-   DEBUG_YKINE   yLOG_complex ("end"       , "%8.2fx, %8.2fz, %8.2fd, %8.2fo", g_end.ex , g_end.ex , g_end.deg, g_end.out);
-   ykine_exact_calc ('-', g_beg.deg, g_end.deg, a_pct, &g_cur.deg);
+   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2fc, %8.2ff, %8.2fp, %8.2ft", g_cur.cd, g_cur.fd , g_cur.pd , g_cur.td );
+   DEBUG_YKINE   yLOG_complex ("begin"     , "%8.2fx, %8.2fz, %8.2fd, %8.2fo", g_beg.ex , g_beg.ez, g_beg.deg, g_beg.out);
+   DEBUG_YKINE   yLOG_complex ("end"       , "%8.2fx, %8.2fz, %8.2fd, %8.2fo", g_end.ex , g_end.ez, g_end.deg, g_end.out);
+   ykine_exact_calc ('d', g_beg.deg, g_end.deg, a_pct, &g_cur.deg);
    ykine_exact_calc ('-', g_beg.out, g_end.out, a_pct, &g_cur.out);
    ykine_exact_calc ('-', g_beg.ey , g_end.ey , a_pct, &g_cur.ey );
-   DEBUG_YKINE   yLOG_complex ("polar"     , "%8.2fd, %8.2fo, %8.2fy", g_cur.deg, g_cur.out, g_cur.ey );
+   DEBUG_YKINE   yLOG_complex ("polar"     , "%8.2fp, %8.2fd, %8.2fo, %8.2fy", a_pct, g_cur.deg, g_cur.out, g_cur.ey );
    switch (a_verb) {
    case YKINE_PO :  ykine_body_po2xz (           g_cur.deg, g_cur.out, &g_cur.ex , &g_cur.ez );  break;
    case YKINE_CK :  ykine_legs_ck2ik (g_cur.cd , g_cur.deg, g_cur.out, &g_cur.ex , &g_cur.ez );  break;
@@ -244,10 +280,11 @@ ykine_exact_pct_doy     (char a_verb, float a_pct)
    case YKINE_SK :  ykine_legs_sk2ik (g_cur.cd , g_cur.deg, g_cur.out, &g_cur.ex , &g_cur.ez );  break;
    }
    DEBUG_YKINE   yLOG_complex ("endpoint"  , "%8.2fx, %8.2fz, %8.2fy", g_cur.ex , g_cur.ez , g_cur.ey );
-   ykine_exact_calc ('-', g_beg.fd , g_end.fd , a_pct, &g_cur.fd );
-   ykine_exact_calc ('-', g_beg.pd , g_end.pd , a_pct, &g_cur.pd );
-   ykine_exact_calc ('-', g_beg.td , g_end.td , a_pct, &g_cur.td );
-   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2ff, %8.2fp, %8.2ft", g_cur.fd , g_cur.pd , g_cur.td );
+   g_cur.cd = g_beg.cd;
+   ykine_exact_calc ('d', g_beg.fd , g_end.fd , a_pct, &g_cur.fd );
+   ykine_exact_calc ('d', g_beg.pd , g_end.pd , a_pct, &g_cur.pd );
+   ykine_exact_calc ('d', g_beg.td , g_end.td , a_pct, &g_cur.td );
+   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2fc, %8.2ff, %8.2fp, %8.2ft", g_cur.cd, g_cur.fd , g_cur.pd , g_cur.td );
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -257,10 +294,11 @@ ykine_exact_pct_ypr     (float a_pct)
 {
    myKINE.pct = a_pct;
    ykine_exact_calc ('-', g_beg.sec, g_end.sec, a_pct, &g_cur.sec);
-   ykine_exact_calc ('-', g_beg.fd , g_end.fd , a_pct, &g_cur.fd );
-   ykine_exact_calc ('-', g_beg.pd , g_end.pd , a_pct, &g_cur.pd );
-   ykine_exact_calc ('-', g_beg.td , g_end.td , a_pct, &g_cur.td );
-   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2ff, %8.2fp, %8.2ft", g_cur.fd , g_cur.pd , g_cur.td );
+   g_cur.cd = g_beg.cd;
+   ykine_exact_calc ('d', g_beg.fd , g_end.fd , a_pct, &g_cur.fd );
+   ykine_exact_calc ('d', g_beg.pd , g_end.pd , a_pct, &g_cur.pd );
+   ykine_exact_calc ('d', g_beg.td , g_end.td , a_pct, &g_cur.td );
+   DEBUG_YKINE   yLOG_complex ("angles"    , "%8.2fc, %8.2ff, %8.2fp, %8.2ft", g_cur.cd, g_cur.fd , g_cur.pd , g_cur.td );
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -453,16 +491,22 @@ ykine_move_getservos    (char a_leg, char a_seg, tMOVE **a_curr, tMOVE **a_prev,
 char
 ykine_move_copyout      (tMOVE *a_move, float *d, float *s, float *x, float *z, float *y, float *xz)
 {
+   /*---(header)-------------------------*/
+   DEBUG_YKINE  yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE  yLOG_point   ("a_move"    , a_move);
    /*---(defaults)-----------------------*/
    if (a_move == NULL) {
+      DEBUG_YKINE  yLOG_note    ("empty move");
       if (d  != NULL)  *d  = 0.0;
       if (s  != NULL)  *s  = 0.0;
       if (x  != NULL)  *x  = 0.0;
       if (z  != NULL)  *z  = 0.0;
       if (y  != NULL)  *y  = 0.0;
       if (xz != NULL)  *xz = 0.0;
+      DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
       return 0;
    }
+   DEBUG_YKINE  yLOG_complex ("b.angles"  , "%6.1fd, %6.1fs, %6.1fx, %6.1fz, %6.1fy, %6.1fxz" , a_move->pure_d , a_move->secs   , a_move->pure_x , a_move->pure_z , a_move->pure_y , a_move->pure_xz);
    /*---(good move)----------------------*/
    if (d  != NULL)  *d  = a_move->pure_d;
    if (s  != NULL)  *s  = a_move->secs;
@@ -473,6 +517,7 @@ ykine_move_copyout      (tMOVE *a_move, float *d, float *s, float *x, float *z, 
    /*---(leg correction)-----------------*/
    /*> if (y != NULL && a_move->servo->leg != YKINE_BODY)  *y -= yKINE_seglen (YKINE_FOOT);   <*/
    /*---(complete)-----------------------*/
+   DEBUG_YKINE  yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -515,6 +560,7 @@ ykine_exact_copy2pure   (float a_sec, char a_leg, char a_meth, char a_rc)
    char        rc          =    0;
    /*---(pull values)--------------------*/
    g_pure.sec  = a_sec;
+   g_pure.cd   = yKINE_legdeg (a_leg);
    rc = yKINE_endpoint  (a_leg, YKINE_THOR, a_meth, &(g_pure.cd) , NULL, NULL         , NULL         , NULL         , NULL);
    rc = yKINE_endpoint  (a_leg, YKINE_FEMU, a_meth, &(g_pure.fd) , NULL, &(g_pure.fx) , &(g_pure.fz) , &(g_pure.fy) , NULL);
    rc = yKINE_endpoint  (a_leg, YKINE_PATE, a_meth, &(g_pure.pd) , NULL, &(g_pure.px) , &(g_pure.pz) , &(g_pure.py) , NULL);
@@ -536,6 +582,7 @@ ykine_exact_copy2adapt  (float a_sec, char a_leg, char a_meth, char a_rc)
    char        rc          =    0;
    /*---(pull values)--------------------*/
    g_adapt.sec = a_sec;
+   g_adapt.cd  = yKINE_legdeg (a_leg);
    rc = yKINE_endpoint  (a_leg, YKINE_THOR, a_meth, &(g_adapt.cd), NULL, NULL         , NULL         , NULL         , NULL);
    rc = yKINE_endpoint  (a_leg, YKINE_FEMU, a_meth, &(g_adapt.fd), NULL, &(g_adapt.fx), &(g_adapt.fz), &(g_adapt.fy), NULL);
    rc = yKINE_endpoint  (a_leg, YKINE_PATE, a_meth, &(g_adapt.pd), NULL, &(g_adapt.px), &(g_adapt.pz), &(g_adapt.py), NULL);
@@ -595,6 +642,8 @@ ykine_exact_context     (char a_leg, float a_margin)
    }
    /*---(body and legs)------------------*/
    else {
+      /*---(coxa)---------------------------*/
+      g_beg.cd = g_end.cd = g_cur.cd = g_sav.cd = g_pure.cd = g_adapt.cd = yKINE_legdeg (a_leg);
       /*---(femur/yaw)----------------------*/
       ykine_move_getservos (a_leg , YKINE_FEMU , &x_curr, &x_prev, NULL);
       ykine_move_copyout   (x_prev, &g_beg.fd , NULL      , NULL      , NULL      , NULL      , NULL       );
@@ -764,7 +813,7 @@ yKINE_exact_leg         (char a_leg, float a_margin, char *a_exact, char *a_labe
    if (pure  != NULL)  *pure  = g_pure.rc ;
    if (adapt != NULL)  *adapt = g_adapt.rc;
    /*---(save current angles)------------*/
-   g_cur.cd  = g_pure.cd ;
+   /*> g_cur.cd  = g_pure.cd ;                                                        <*/
    if (f     != NULL)  *f     = g_pure.fd ;
    if (p     != NULL)  *p     = g_pure.pd ;
    if (t     != NULL)  *t     = g_pure.td ;
@@ -845,9 +894,9 @@ ykine_exact_setbody     (float a_sec)
    else                 x_pct   = (a_sec - sb) / x_range;
    DEBUG_YKINE  yLOG_complex ("percent"   , "sb %6.1fs, se %6.1fs, ra %6.1fs, pc %6.1fs", sb, se, x_range, x_pct);
    ykine_exact_calc ('-', sb, se, x_pct, &sc);
-   ykine_exact_calc ('-', fb, fe, x_pct, &fc);
-   ykine_exact_calc ('-', pb, pe, x_pct, &pc);
-   ykine_exact_calc ('-', tb, te, x_pct, &tc);
+   ykine_exact_calc ('d', fb, fe, x_pct, &fc);
+   ykine_exact_calc ('d', pb, pe, x_pct, &pc);
+   ykine_exact_calc ('d', tb, te, x_pct, &tc);
    DEBUG_YKINE   yLOG_complex ("ang-cur"   , "%8.2fsc, %8.2ffc, %8.2fpc, %8.2ftc", sc, fc, pc, tc);
    rc = yKINE_orient (fc, pc, tc);
    /*---(complete)-----------------------*/

@@ -29,7 +29,7 @@ static tSPREAD s_spreads [MAX_SPREADS] = {
    { "king" , "king_crab"           , {  30,   0, -30,  30,   0, -30 } , "big sideways legs crab spread"                  },
    { "blue" , "blue_crab"           , {  45,   0, -45,  45,   0, -45 } , "traditional sideways crab leg configuration"    },
    { "ghost", "ghost_crab"          , {  60,   0, -60,  60,   0, -60 } , "all legs sideways giving narrowest profile"     },
-   { "tri"  , "tristar"             , {  30, -30,  30, -30,  30, -30 } , "three groups of parallel legs at even spread"   },
+   { "tri"  , "tri_star"            , {  30, -30,  30, -30,  30, -30 } , "three groups of parallel legs at even spread"   },
    { "naul" , "nautilus_left"       , {  45,  45,  45,  45,  45,  45 } , "legs all loosely radially curled to the left"   },
    { "naur" , "nautilus_right"      , { -45, -45, -45, -45, -45, -45 } , "legs all loosely radially curled to the right"  },
    { "coul" , "conch_left"          , {  80,  80,  80,  80,  80,  80 } , "legs all tightly radially curled to the left"   },
@@ -427,7 +427,7 @@ yKINE_scale          (char *a_entry)
 static void      o___STANCE__________________o (void) {;}
 
 char
-ykine_stance            (int n, char *v)
+ykine_stance            (int n, uchar *a_verb)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;               /* return code for errors    */
@@ -441,6 +441,7 @@ ykine_stance            (int n, char *v)
    char        x_recd      [LEN_RECD];
    /*---(header)-------------------------*/
    DEBUG_YKINE_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YKINE_SCRP  yLOG_complex ("args"      , "%3d, %s", n, a_verb);
    /*---(gather fields)---------------*/
    rc = ykine_exec_prepare (n, x_one, x_two, x_thr, x_label, x_mods, 0, NULL);
    DEBUG_YKINE_SCRP   yLOG_value   ("prepare"   , rc);
@@ -450,8 +451,8 @@ ykine_stance            (int n, char *v)
    }
    strlcpy (x_accel, g_timing.request, LEN_LABEL);
    /*---(create record)------------------*/
-   if (g_timing.beats >= 0)   sprintf (x_recd, "zero    (%6.1f, 0.0r, 0.0r, %s, %s)", g_timing.beats, x_thr, x_label);
-   else                 sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %s, %s)"   , g_timing.a_body, x_thr, x_label);
+   if (g_timing.beats >= 0)   sprintf (x_recd, "zero    (%6.1f, 0.0r, 0.0r, %s, %s)", g_timing.beats , x_thr, x_label);
+   else                       sprintf (x_recd, "zero    (%s, 0.0r, 0.0r, %s, %s)"   , g_timing.a_body, x_thr, x_label);
    DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
    /*---(parse)--------------------------*/
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);
@@ -470,7 +471,7 @@ ykine_stance            (int n, char *v)
    }
    /*---(create record)------------------*/
    if (g_timing.beats >= 0)   sprintf (x_recd, "radial  (AA, %6.1f, %s, %s, %s, %s, %s)", g_timing.beats, x_one, x_two, "-.-", x_label, x_mods);
-   else                 sprintf (x_recd, "radial  (AA, %s, %s, %s, %s, %s, %s)"   , x_accel, x_one, x_two, "-.-", x_label, x_mods);
+   else                       sprintf (x_recd, "radial  (AA, %s, %s, %s, %s, %s, %s)"   , x_accel       , x_one, x_two, "-.-", x_label, x_mods);
    DEBUG_YKINE_SCRP   yLOG_info    ("x_recd"    , x_recd);
    /*---(parse)--------------------------*/
    rc = yPARSE_hidden (&(myKINE.s_nline), &(myKINE.s_cline), x_recd);

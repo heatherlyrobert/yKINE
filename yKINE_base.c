@@ -18,6 +18,7 @@ char        yKINE_ver     [500];
 tSEG      fk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* forward kinematics        */
 tSEG      ik [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* inverse kinematics        */
 tSEG      gk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* opengl kinematics         */
+tSEG      pk [YKINE_MAX_LEGS] [YKINE_MAX_SEGS];    /* pure endpoint             */
 
 
 

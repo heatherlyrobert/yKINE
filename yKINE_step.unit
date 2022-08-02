@@ -734,7 +734,7 @@ SCRP          (STEP) verify rounded-shaper for rectangular and parallelogram   
 
    COND       initialize the global data                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((06.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     start testing                        ykine__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     code     set up variables                     - - - - - - - - - - - - -   float     y  =  0.0;                                                                                                                                                                                                       
+     local    set up variables                     - - - - - - - - - - - - -   float     y  =  0.0;                                                                                                                                                                                                       
 
    GROUP      start with testing the middle stage (always above)                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 

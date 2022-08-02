@@ -221,7 +221,7 @@ ykine_legs_ik2rk        (float a_coxa, float x, float z, float *d, float *o)
    /*---(calc inner triangle)---------*/
    xi      =  dxzi * cos (a_coxa * DEG2RAD);
    zi      = -dxzi * sin (a_coxa * DEG2RAD);
-   DEBUG_YKINE_SCRP  yLOG_complex ("inner"     , "%8.2fdzxi, %8.2fxi, %8.2fzi", dxzi, xi, zi);
+   DEBUG_YKINE_SCRP  yLOG_complex ("inner"     , "%8.2fdxzi, %8.2fxi, %8.2fzi", dxzi, xi, zi);
    /*---(calc outer triangle)---------*/
    xo      = x - xi;
    zo      = z - zi;
@@ -749,13 +749,13 @@ ykine__legs_fallback     (void)
    return 0;
 }
 
-char       ykine_legs_fk   (int n, char *v)  { return ykine_exec_driver (n, v, YKINE_FK); }
-char       ykine_legs_ik   (int n, char *v)  { return ykine_exec_driver (n, v, YKINE_IK); }
-char       ykine_legs_ck   (int n, char *v)  { return ykine_exec_driver (n, v, YKINE_CK); }
-char       ykine_legs_rk   (int n, char *v)  { return ykine_exec_driver (n, v, YKINE_RK); }
-char       ykine_legs_tk   (int n, char *v)  { return ykine_exec_driver (n, v, YKINE_TK); }
-char       ykine_legs_nk   (int n, char *v)  { return ykine_exec_driver (n, v, YKINE_NK); }
-char       ykine_legs_sk   (int n, char *v)  { return ykine_exec_driver (n, v, YKINE_SK); }
+char       ykine_legs_fk   (int n, uchar *a_verb)  { return ykine_exec_driver (n, a_verb, YKINE_FK); }
+char       ykine_legs_ik   (int n, uchar *a_verb)  { return ykine_exec_driver (n, a_verb, YKINE_IK); }
+char       ykine_legs_ck   (int n, uchar *a_verb)  { return ykine_exec_driver (n, a_verb, YKINE_CK); }
+char       ykine_legs_rk   (int n, uchar *a_verb)  { return ykine_exec_driver (n, a_verb, YKINE_RK); }
+char       ykine_legs_tk   (int n, uchar *a_verb)  { return ykine_exec_driver (n, a_verb, YKINE_TK); }
+char       ykine_legs_nk   (int n, uchar *a_verb)  { return ykine_exec_driver (n, a_verb, YKINE_NK); }
+char       ykine_legs_sk   (int n, uchar *a_verb)  { return ykine_exec_driver (n, a_verb, YKINE_SK); }
 
 
 
